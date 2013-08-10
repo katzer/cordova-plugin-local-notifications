@@ -19,15 +19,15 @@ LocalNotification.prototype = {
      */
     add: function (options) {
         var defaults = {
-            date:      false,
-            message:   '',
-            hasAction: true,
-            action:    'View',
-            badge:     0,
-            id:        0,
-            sound:     '',
-            background:'',
-            foreground:''
+            date:       false,
+            message:    '',
+            hasAction:  true,
+            action:     'View',
+            badge:      0,
+            id:         0,
+            sound:      '',
+            background: '',
+            foreground: ''
         };
 
         for (var key in defaults) {
