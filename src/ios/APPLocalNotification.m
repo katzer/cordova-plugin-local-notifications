@@ -1,5 +1,5 @@
 /**
- *  CDVLocalNotification.h
+ *  APPLocalNotification.m
  *  Cordova LocalNotification Plugin
  *
  *  Created by Sebastian Katzer (github.com/katzer) on 10/08/2013.
@@ -7,17 +7,17 @@
  *  GPL v2 licensed
  */
 
- #import "CDVLocalNotification.h"
+ #import "APPLocalNotification.h"
 
 
-@implementation CDVLocalNotification
+@implementation APPLocalNotification
 
 /**
  * Fügt eine neue Notification-Eintrag hinzu.
  *
  * @param {NSMutableDictionary} options
  */
-- (void) addNotification:(CDVInvokedUrlCommand*)command {
+- (void) add:(CDVInvokedUrlCommand*)command {
 	NSArray             *arguments    = [command arguments];
 	NSMutableDictionary *options      = [arguments objectAtIndex:0];
 	UILocalNotification *notification = [this prepareNotification:options];

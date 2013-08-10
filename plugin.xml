@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-        id="de.appplant.maintcall.cordova.plugin.local-notifications"
+        id="de.appplant.cordova.plugin.local-notifications"
         version="0.0.1">
 
     <name>LocalNotifications</name>
@@ -21,7 +21,7 @@
 
         <config-file target="config.xml" parent="/*">
 		<feature name="LocalNotofication">
-			<param name="ios-package" value="CDVLocalNotification"/>
+			<param name="ios-package" value="APPLocalNotification"/>
 		</feature>
         </config-file>
 
@@ -29,8 +29,8 @@
             <clobbers target="plugin.notification.local" />
         </js-module>
 
-	<header-file src="src/ios/CDVLocalNotification.h" />
-	<source-file src="src/ios/CDVLocalNotification.m" />
+	<header-file src="src/ios/APPLocalNotification.h" />
+	<source-file src="src/ios/APPLocalNotification.m" />
 
     </platform>
 

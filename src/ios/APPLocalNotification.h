@@ -1,5 +1,5 @@
 /**
- *  CDVLocalNotification.h
+ *  APPLocalNotification.h
  *  Cordova LocalNotification Plugin
  *
  *  Created by Sebastian Katzer (github.com/katzer) on 10/08/2013.
@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 
-@interface CDVLocalNotification : CDVPlugin {
+@interface APPLocalNotification : CDVPlugin {
 
 }
 
@@ -24,7 +24,7 @@
 @end
 
 
-@interface CDVLocalNotification (Private)
+@interface APPLocalNotification (Private)
 
 - (NSMutableDictionary*) repeatDict;
 - (NSMutableDictionary*) userDict:(NSMutableDictionary*)options;
