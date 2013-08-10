@@ -27,7 +27,7 @@
 @interface APPLocalNotification (Private)
 
 - (NSMutableDictionary*) repeatDict;
-- (NSMutableDictionary*) userDict:(NSMutableDictionary*)options;
+- (NSDictionary*) userDict:(NSMutableDictionary*)options;
 - (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
 
 @end

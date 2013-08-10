@@ -71,7 +71,7 @@
 /**
  * @private
  */
-- (NSMutableDictionary*) userDict:(NSMutableDictionary*)options {
+- (NSDictionary*) userDict:(NSMutableDictionary*)options {
 	NSString     *notificationId = [options objectForKey:@"id"];
     NSString     *bg             = [options objectForKey:@"background"];
     NSString     *fg             = [options objectForKey:@"foreground"];
