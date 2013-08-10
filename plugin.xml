@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="de.appplant.maintcall.cordova.plugin.local-notifications"
+        version="0.0.1">
+
+    <name>LocalNotifications</name>
+
+    <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
+    <keywords>notification, localnotification, ios</keywords>
+    <license>GPL v2 License</license>
+
+    <author>Sebastián Katzer (github.com/katzer)</author>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <!-- ios -->
+    <platform name="ios">
+
+        <config-file target="config.xml" parent="/*">
+		<feature name="LocalNotofication">
+			<param name="ios-package" value="CDVLocalNotification"/>
+		</feature>
+        </config-file>
+
+        <js-module src="www/local-notification.js" name="LocalNotification">
+            <clobbers target="plugin.notification.local" />
+        </js-module>
+
+	<header-file src="src/ios/CDVLocalNotification.h" />
+	<source-file src="src/ios/CDVLocalNotification.m" />
+
+    </platform>
+
+</plugin>
