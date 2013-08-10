@@ -20,9 +20,9 @@
 - (void) add:(CDVInvokedUrlCommand*)command {
 	NSArray             *arguments    = [command arguments];
 	NSMutableDictionary *options      = [arguments objectAtIndex:0];
-	UILocalNotification *notification = [this prepareNotification:options];
+	UILocalNotification *notification = [self prepareNotification:options];
 
-    notification.userInfo = [this userDict:options];
+    notification.userInfo = [self userDict:options];
 
 	[[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
@@ -99,7 +99,7 @@
 	notification.fireDate                   = date;
 	notification.hasAction                  = hasAction;
 	notification.timeZone                   = [NSTimeZone defaultTimeZone];
-    notification.repeatInterval             = [[[this repeatDict] objectForKey: repeat] intValue];
+    notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
 	notification.alertBody                  = ([msg isEqualToString:@""])?nil:msg;
 	notification.alertAction                = action;
     notification.soundName                  = sound;
