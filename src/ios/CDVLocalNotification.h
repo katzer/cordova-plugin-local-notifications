@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 
-@interface LocalNotification : CDVPlugin {
+@interface CDVLocalNotification : CDVPlugin {
 
 }
 
@@ -24,7 +24,7 @@
 @end
 
 
-@interface CDVPrinter (Private)
+@interface CDVLocalNotification (Private)
 
 - (NSMutableDictionary*) repeatDict;
 - (NSMutableDictionary*) userDict:(NSMutableDictionary*)options;

@@ -7,10 +7,10 @@
  *  GPL v2 licensed
  */
 
- #import "LocalNotification.h"
+ #import "CDVLocalNotification.h"
 
 
-@implementation LocalNotification
+@implementation CDVLocalNotification
 
 /**
  * Fügt eine neue Notification-Eintrag hinzu.
