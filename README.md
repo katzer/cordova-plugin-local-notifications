@@ -22,6 +22,8 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.
 The plugin creates the object ```window.plugin.notification.local``` with three methods:
 
 ### add() ###
+All settings are optional. If no date object is given, the notification will popup immediately.
+
 To add a custom notification:
 ```javascript
 window.plugin.notification.local.add({
