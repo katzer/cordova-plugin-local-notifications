@@ -17,7 +17,8 @@
  *
  * @param {NSMutableDictionary} options
  */
-- (void) add:(CDVInvokedUrlCommand*)command {
+- (void) add:(CDVInvokedUrlCommand*)command
+{
 	NSArray             *arguments    = [command arguments];
 	NSMutableDictionary *options      = [arguments objectAtIndex:0];
 	UILocalNotification *notification = [self prepareNotification:options];
@@ -32,7 +33,8 @@
  *
  * @param {NSString} id Die ID der Notification
  */
-- (void) cancel:(CDVInvokedUrlCommand*)command {
+- (void) cancel:(CDVInvokedUrlCommand*)command
+{
 	NSArray  *arguments      = [command arguments];
 	NSString *notificationId = [arguments objectAtIndex:0];
 	NSArray  *notifications  = [[UIApplication sharedApplication] scheduledLocalNotifications];
@@ -49,14 +51,16 @@
 /**
  * Entfernt alle registrierten Einträge.
  */
-- (void) cancelAll:(CDVInvokedUrlCommand*)command {
+- (void) cancelAll:(CDVInvokedUrlCommand*)command
+{
 	[[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 /**
  * @private
  */
-- (NSMutableDictionary*) repeatDict {
+- (NSMutableDictionary*) repeatDict
+{
 	NSMutableDictionary *repeatDict = [[NSMutableDictionary alloc] init];
 
     [repeatDict setObject:[NSNumber numberWithInt:NSDayCalendarUnit]   forKey:@"daily"];
@@ -71,7 +75,8 @@
 /**
  * @private
  */
-- (NSDictionary*) userDict:(NSMutableDictionary*)options {
+- (NSDictionary*) userDict:(NSMutableDictionary*)options
+{
 	NSString     *notificationId = [options objectForKey:@"id"];
     NSString     *bg             = [options objectForKey:@"background"];
     NSString     *fg             = [options objectForKey:@"foreground"];
@@ -84,7 +89,8 @@
 /**
  * @private
  */
-- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options {
+- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options
+{
 	double               timestamp          = [[options objectForKey:@"date"] doubleValue];
 	NSString*            msg                = [options objectForKey:@"message"];
 	NSString*            action             = [options objectForKey:@"action"];
