@@ -15,7 +15,7 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.
 ```
 
 ## Release Notes ##
-#### Version 0.1.0 (10.08.2013) ####
+#### Version 0.2.0 (11.08.2013) ####
 - Added iOS support
 
 ## Using the plugin ##
