@@ -7,7 +7,16 @@
  *  GPL v2 licensed
  */
 
- #import "APPLocalNotification.h"
+#import "APPLocalNotification.h"
+
+
+@interface APPLocalNotification (Private)
+
+- (NSMutableDictionary*) repeatDict;
+- (NSDictionary*) userDict:(NSMutableDictionary*)options;
+- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
+
+@end
 
 
 @implementation APPLocalNotification

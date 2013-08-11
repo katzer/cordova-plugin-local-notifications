@@ -22,12 +22,3 @@
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
 
 @end
-
-
-@interface APPLocalNotification (Private)
-
-- (NSMutableDictionary*) repeatDict;
-- (NSDictionary*) userDict:(NSMutableDictionary*)options;
-- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
-
-@end
