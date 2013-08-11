@@ -16,6 +16,8 @@
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
 - (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
 
+- (void)aWindowBecameMain:(NSNotification *)notification;
+
 @end
 
 
@@ -48,10 +50,12 @@
 	NSString *notificationId = [arguments objectAtIndex:0];
 	NSArray  *notifications  = [[UIApplication sharedApplication] scheduledLocalNotifications];
 
-	for (UILocalNotification *notification in notifications) {
+	for (UILocalNotification *notification in notifications)
+    {
 		NSString *notId = [notification.userInfo objectForKey:@"notificationId"];
 
-		if ([notificationId isEqualToString:notId]) {
+		if ([notificationId isEqualToString:notId])
+        {
 			[[UIApplication sharedApplication] cancelLocalNotification:notification];
 		}
 	}
@@ -86,13 +90,11 @@
  */
 - (NSDictionary*) userDict:(NSMutableDictionary*)options
 {
-	NSString     *notificationId = [options objectForKey:@"id"];
-    NSString     *bg             = [options objectForKey:@"background"];
-    NSString     *fg             = [options objectForKey:@"foreground"];
+	NSString* id = [options objectForKey:@"id"];
+    NSString* bg = [options objectForKey:@"background"];
+    NSString* fg = [options objectForKey:@"foreground"];
 
-	NSDictionary *userDict       = [NSDictionary dictionaryWithObjectsAndKeys:notificationId, @"notificationId", bg, @"background", fg, @"foreground", nil];
-
-	return userDict;
+	return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", nil];
 }
 
 /**
@@ -115,12 +117,42 @@
 	notification.hasAction                  = hasAction;
 	notification.timeZone                   = [NSTimeZone defaultTimeZone];
     notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
-	notification.alertBody                  = ([msg isEqualToString:@""])?nil:msg;
+	notification.alertBody                  = ([msg isEqualToString:@""]) ? nil : msg;
 	notification.alertAction                = action;
     notification.soundName                  = sound;
     notification.applicationIconBadgeNumber = badge;
 
     return notification;
+}
+
+/**
+ * @private
+ * Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist.
+ */
+- (void) didReceiveLocalNotification:(NSNotification *)localNotification
+{
+    UILocalNotification* notification = [localNotification object];
+    UIApplicationState   state        = [[UIApplication sharedApplication] applicationState];
+    bool                 isActive     = state == UIApplicationStateActive;
+
+    NSString* id         = [notification.userInfo objectForKey:@"id"];
+    NSString* callbackFn = [notification.userInfo objectForKey:isActive ? @"foreground" : @"background"];
+
+    if (callbackFn.length > 0)
+    {
+        NSString* jsCallBack = [NSString stringWithFormat:@"%@(%@)", callbackFn, id];
+
+        [self writeJavascript:jsCallBack];
+    }
+}
+
+/**
+ * @private
+ * Registriert den Observer für LocalNotification Events.
+ */
+- (void) pluginInitialize
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:) name:CDVLocalNotification object:nil];
 }
 
 @end
