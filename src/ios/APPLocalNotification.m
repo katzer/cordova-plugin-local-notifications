@@ -15,8 +15,7 @@
 - (NSMutableDictionary*) repeatDict;
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
 - (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
-
-- (void)aWindowBecameMain:(NSNotification *)notification;
+- (void) didReceiveLocalNotification:(NSNotification *)localNotification;
 
 @end
 
