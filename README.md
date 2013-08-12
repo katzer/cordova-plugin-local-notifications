@@ -16,7 +16,8 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.
 
 ## Release Notes ##
 #### Version 0.2.0 (11.08.2013) ####
-- Added iOS support
+- Added iOS support<br>
+  *Based on the LocalNotifications iOS plugin made by* ***Rodrigo Moyle***
 
 ## Using the plugin ##
 The plugin creates the object ```window.plugin.notification.local``` with three methods:
