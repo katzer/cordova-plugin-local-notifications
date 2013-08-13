@@ -6,7 +6,8 @@ A bunch of local-notification plugins for Cordova 3.x.x
 by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
 ## Supported Platforms ##
-- **iOS**
+- **iOS**<br>
+See [Local and Push Notification Programming Guide](http://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/WhatAreRemoteNotif.html) for detailed informations and screenshots.
 
 ## Adding the Plugin to your project ##
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
