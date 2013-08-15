@@ -1,7 +1,7 @@
 Cordova LocalNotification-Plugin
 ==================================
 
-A bunch of local-notification plugins for Cordova 3.x.x
+A bunch of local notification plugins for Cordova 3.x.x
 
 by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
