@@ -15,6 +15,12 @@ Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/gui
 cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
 ```
 
+## Removing the Plugin from your project
+Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
+```
+cordova plugin rm de.appplant.cordova.plugin.local-notifications
+```
+
 ## Release Notes ##
 #### Version 0.2.0 (11.08.2013) ####
 - Added iOS support<br>
