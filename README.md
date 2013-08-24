@@ -5,11 +5,11 @@ A bunch of local notification plugins for Cordova 3.x.x
 
 by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
-## Supported Platforms ##
+## Supported Platforms
 - **iOS**<br>
 See [Local and Push Notification Programming Guide](http://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/WhatAreRemoteNotif.html) for detailed informations and screenshots.
 
-## Adding the Plugin to your project ##
+## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
 ```
 cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
@@ -21,15 +21,15 @@ Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/gui
 cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
-## Release Notes ##
-#### Version 0.2.0 (11.08.2013) ####
+## Release Notes
+#### Version 0.2.0 (11.08.2013)
 - Added iOS support<br>
   *Based on the LocalNotifications iOS plugin made by* ***Rodrigo Moyle***
 
-## Using the plugin ##
+## Using the plugin
 The plugin creates the object ```window.plugin.notification.local``` with three methods:
 
-### add() ###
+### add()
 All settings are optional. If no date object is given, the notification will popup immediately.
 
 To add a custom notification:
@@ -45,19 +45,19 @@ window.plugin.notification.local.add({
 });
 ```
 
-### clear() ###
-To clear a specific notification:
+### cancel()
+To cancel a specific notification:
 ```javascript
-window.plugin.notification.local.clear(__id__);
+window.plugin.notification.local.cancel(__id__);
 ```
 
-### clearAll() ###
-To clear all notifications:
+### cancelAll()
+To cancel all notifications:
 ```javascript
-window.plugin.notification.local.clearAll();
+window.plugin.notification.local.cancelAll();
 ```
 
-#### Example ####
+#### Example
 ```javascript
 var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
