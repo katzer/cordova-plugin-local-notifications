@@ -35,13 +35,13 @@ All settings are optional. If no date object is given, the notification will pop
 To add a custom notification:
 ```javascript
 window.plugin.notification.local.add({
-    date: date,// this expects a date object
+    date: date, // this expects a date object
     message: message, // the message that is displayed
     repeat: repeat, // has the options of 'weekly','daily','monthly','yearly')
-    badge: badge, // displays number badge to notification
-    foreground: forground, //  a javascript function to be called if the app is running
+    badge: badge, // (only iOS) displays number badge to notification
+    foreground: forground, // a javascript function to be called if the app is running
     background: background, // a javascript function to be called if the app is in the background
-    sound: sound // a sound to be played, the sound must be located in your project's resources and must be a caf file
+    sound: sound // (only iOS) a sound to be played, the sound must be located in your project's resources and must be a caf file
 });
 ```
 
@@ -63,13 +63,11 @@ var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
 window.plugin.notification.local.add({
-    date: _60_seconds_from_now,
-    message: 'Hello world!',
-    repeat: 'weekly', // will fire every week on this day
-    badge: 1,
+    date:       _60_seconds_from_now,
+    message:    'Hello world!',
+    repeat:     'weekly', // will fire every week on this day
     foreground: 'foreground',
-    background: 'background',
-    sound: 'sub.caf'
+    background: 'background'
 });
 
 function foreground (id) {
