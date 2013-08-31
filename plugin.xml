@@ -44,8 +44,7 @@
         </config-file>
 
         <source-file src="src/android/AlarmReceiver.java" target-dir="src/de/appplant/cordova/plugin" />
-        <source-file src="src/android/AlarmHelper.java" target-dir="src/de/appplant/cordova/plugin" />
-        <source-file src="src/android/AlarmOptions.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/LocalNotificationOptions.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/AlarmRestoreOnBoot.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin" />
 

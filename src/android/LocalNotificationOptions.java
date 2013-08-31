@@ -21,7 +21,7 @@ public class LocalNotificationOptions {
     /*
      * Options that can be set when this plugin is invoked
      */
-    private Calendar calender     = Calendar.getInstance();
+    private Calendar calendar     = Calendar.getInstance();
     private String title          = "";
     private String subTitle       = "";
     private String ticker         = "";
@@ -45,7 +45,7 @@ public class LocalNotificationOptions {
             int hour  = Integer.parseInt(dateParts[3]);
             int min   = Integer.parseInt(dateParts[4]);
 
-    		calender.set(year, month, day, hour, min);
+    		calendar.set(year, month, day, hour, min);
 	    }
 
 	    if (!"".equals(message)) {
@@ -65,8 +65,8 @@ public class LocalNotificationOptions {
     /**
      * Gibt den Kalender mit dem Datum der nächsten Notification an.
      */
-    public Calendar getCalender() {
-	   return calender;
+    public Calendar getCalendar() {
+	   return calendar;
     }
 
     /**

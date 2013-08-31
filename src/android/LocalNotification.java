@@ -9,11 +9,18 @@
 
 package de.appplant.cordova.plugin;
 
+import java.util.Calendar;
+import java.util.Map;
+import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.content.Context;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
@@ -30,12 +37,6 @@ public class LocalNotification extends CordovaPlugin {
 
     public static final String PLUGIN_NAME = "LocalNotification";
 
-    /**
-     * Delegate object that does the actual alarm registration. Is reused by the
-     * AlarmRestoreOnBoot class.
-     */
-    private AlarmHelper alarm = null;
-
     @Override
     public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         JSONObject arguments             = args.getJSONObject(0);
@@ -44,8 +45,6 @@ public class LocalNotification extends CordovaPlugin {
         options.parse(arguments);
 
         String alarmId = options.getNotificationId();
-
-        alarm = new AlarmHelper(cordova.getActivity());
 
         if (action.equalsIgnoreCase("add")) {
             persist(alarmId, args);
@@ -76,21 +75,34 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Set an alarm
      *
-     * @param repeatDaily
-     *            If true, the alarm interval will be set to one day.
-     * @param title
-     *            The title of the alarm as shown in the Android notification
-     *            panel
-     * @param subTitle
-     *            The subtitle of the alarm
-     * @param alarmId
-     *            The unique ID of the notification
-     * @param calender
-     *            A calendar object that represents the time at which the alarm
-     *            should first be started
+     * @param options
+     *            The options that can be specified per alarm.
      */
     public void add(LocalNotificationOptions options) {
-        alarm.add(options);
+        Calendar calendar = options.getCalendar();
+        long triggerTime  = calendar.getTimeInMillis();
+        int hour          = calendar.get(Calendar.HOUR_OF_DAY);
+        int min           = calendar.get(Calendar.MINUTE);
+
+        Intent intent     = new Intent(cordova.getActivity(), AlarmReceiver.class);
+
+        intent.setAction("" + options.getNotificationId());
+        intent.putExtra(AlarmReceiver.TITLE, options.getTitle());
+        intent.putExtra(AlarmReceiver.SUBTITLE, options.getSubTitle());
+        intent.putExtra(AlarmReceiver.TICKER_TEXT, options.getTicker());
+        intent.putExtra(AlarmReceiver.NOTIFICATION_ID, options.getNotificationId());
+        intent.putExtra(AlarmReceiver.HOUR_OF_DAY, hour);
+        intent.putExtra(AlarmReceiver.MINUTE, min);
+
+        PendingIntent sender = PendingIntent.getBroadcast(cordova.getActivity(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        /* Get the AlarmManager service */
+        AlarmManager am      = getAlarmManager();
+
+        if (options.isRepeatDaily()) {
+            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, AlarmManager.INTERVAL_DAY, sender);
+        } else {
+            am.set(AlarmManager.RTC_WAKEUP, triggerTime, sender);
+        }
     }
 
     /**
@@ -101,22 +113,40 @@ public class LocalNotification extends CordovaPlugin {
      *            registered using add()
      */
     public void cancel (String notificationId) {
-        alarm.cancel(notificationId);
+        /*
+         * Create an intent that looks similar, to the one that was registered
+         * using add. Making sure the notification id in the action is the same.
+         * Now we can search for such an intent using the 'getService' method
+         * and cancel it.
+         */
+        Intent intent = new Intent(cordova.getActivity(), AlarmReceiver.class);
+
+        intent.setAction("" + notificationId);
+
+        PendingIntent pi = PendingIntent.getBroadcast(cordova.getActivity(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager am  = getAlarmManager();
+
+        try {
+            am.cancel(pi);
+        } catch (Exception e) {}
     }
 
     /**
      * Cancel all notifications that were created by this plugin.
+     *
+     * Android can only unregister a specific alarm. There is no such thing
+     * as cancelAll. Therefore we rely on the Shared Preferences which holds
+     * all our alarms to loop through these alarms and unregister them one
+     * by one.
      */
     public void cancelAll() {
-        /*
-         * Android can only unregister a specific alarm. There is no such thing
-         * as cancelAll. Therefore we rely on the Shared Preferences which holds
-         * all our alarms to loop through these alarms and unregister them one
-         * by one.
-         */
         SharedPreferences settings = cordova.getActivity().getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE);
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
 
-        alarm.cancelAll(settings);
+        for (String alarmId : alarmIds) {
+            cancel(alarmId);
+        }
     }
 
     /**
@@ -124,17 +154,13 @@ public class LocalNotification extends CordovaPlugin {
      * This will allow the application to restore the alarm upon device reboot.
      * Also this is used by the cancelAll method.
      *
-     * @see #cancelAllNotifications()
-     *
-     * @param optionsArr
+     * @param args
      *            The assumption is that parse has been called already.
-     *
-     * @return true when successfull, otherwise false
      */
-    private void persist (String alarmId, JSONArray optionsArr) {
+    private void persist (String alarmId, JSONArray args) {
         Editor editor = cordova.getActivity().getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE).edit();
 
-        editor.putString(alarmId, optionsArr.toString());
+        editor.putString(alarmId, args.toString());
         editor.commit();
     }
 
@@ -159,5 +185,9 @@ public class LocalNotification extends CordovaPlugin {
 
         editor.clear();
         editor.commit();
+    }
+
+    private AlarmManager getAlarmManager () {
+        return (AlarmManager) cordova.getActivity().getSystemService(Context.ALARM_SERVICE);
     }
 }
