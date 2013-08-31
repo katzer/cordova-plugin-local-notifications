@@ -2,12 +2,12 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
         id="de.appplant.cordova.plugin.local-notifications"
-        version="0.2.0">
+        version="0.4.0.dev">
 
     <name>LocalNotifications</name>
 
     <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
-    <keywords>notification, localnotification, ios</keywords>
+    <keywords>notification, local notification, alarm, ios, android</keywords>
     <license>GPL v2 License</license>
 
     <author>Sebastián Katzer (github.com/katzer)</author>
@@ -16,21 +16,38 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
+    <js-module src="www/local-notification.js" name="LocalNotification">
+        <clobbers target="plugin.notification.local" />
+    </js-module>
+
     <!-- ios -->
     <platform name="ios">
 
         <config-file target="config.xml" parent="/*">
-		<feature name="LocalNotification">
-			<param name="ios-package" value="APPLocalNotification"/>
-		</feature>
+    		<feature name="LocalNotification">
+    			<param name="ios-package" value="APPLocalNotification"/>
+    		</feature>
         </config-file>
-
-        <js-module src="www/local-notification.js" name="LocalNotification">
-            <clobbers target="plugin.notification.local" />
-        </js-module>
 
 	<header-file src="src/ios/APPLocalNotification.h" />
 	<source-file src="src/ios/APPLocalNotification.m" />
+
+    </platform>
+
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="LocalNotification">
+                <param name="android-package" value="de.appplant.cordova.plugin.LocalNotification"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/AlarmReceiver.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/AlarmHelper.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/AlarmOptions.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/AlarmRestoreOnBoot.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin" />
 
     </platform>
 
