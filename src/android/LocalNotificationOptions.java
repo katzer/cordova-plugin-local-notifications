@@ -21,12 +21,16 @@ public class LocalNotificationOptions {
     /*
      * Options that can be set when this plugin is invoked
      */
-    private Calendar calendar     = Calendar.getInstance();
-    private String title          = "";
-    private String subTitle       = "";
-    private String ticker         = "";
-    private boolean repeatDaily   = false;
-    private String notificationId = null;
+    private Calendar calendar = Calendar.getInstance();
+    private String title      = null;
+    private String subTitle   = null;
+    private String sound      = null;
+    private long interval     = 0;
+    private String foreground = null;
+    private String background = null;
+    private int icon          = -1;
+    private int badge         = 0;
+    private String id         = null;
 
     /**
      * Parse options passed from javascript part of this plugin.
@@ -48,9 +52,13 @@ public class LocalNotificationOptions {
                 subTitle = lines[1];
         }
 
-        ticker         = options.optString("ticker");
-        repeatDaily    = options.optBoolean("repeatDaily");
-        notificationId = options.optString("id");
+        sound      = options.optString("sound");
+        icon       = options.optInt("icon");
+        //interval   = options.optString("repeat");
+        foreground = options.optString("foreground");
+        background = options.optString("background");
+        badge      = options.optInt("badge");
+        id         = options.optString("id");
     }
 
     /**
@@ -75,20 +83,51 @@ public class LocalNotificationOptions {
     }
 
     /**
-     * Gibt den Ticker der Notification an.
+     * Gibt den Pfad zum Sound der Notification an.
      */
-    public String getTicker () {
-       return ticker;
+    public String getSound () {
+       return sound;
     }
 
-    public boolean isRepeatDaily () {
-       return repeatDaily;
+    /**
+     * Gibt den Pfad zum Icon der Notification an.
+     */
+    public int getIcon () {
+       return icon;
+    }
+
+    /**
+     * Gibt den Pfad zur Callback-Funktion der Notification an.
+     */
+    public String getForeground () {
+       return foreground;
+    }
+
+    /**
+     * Gibt den Pfad zur Callback-Funktion der Notification an.
+     */
+    public String getBackground () {
+       return background;
+    }
+
+    /**
+     * Gibt das Intervall an, in dem die Notification aufpoppen soll (daily, weekly, monthly, yearly)
+     */
+    public long getInterval () {
+       return interval;
+    }
+
+    /**
+     * Gibt die Badge-Nummer der Notification an.
+     */
+    public int getBadge () {
+       return badge;
     }
 
     /**
      * Gibt die Callback-ID des PluginResults an.
      */
-    public String getNotificationId () {
-       return notificationId;
+    public String getId () {
+       return id;
     }
 }
