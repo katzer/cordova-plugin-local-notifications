@@ -14,10 +14,10 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.Notification.Builder;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -25,6 +25,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
+class MyActivity extends Activity {
+
+}
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -69,17 +73,21 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 			int currentMin  = now.get(Calendar.MINUTE);
 
 			if (currentHour != alarmHour && currentMin != alarmMin) {
-
 				return;
 			}
 		}
+
+		String packageName          = context.getPackageName();
+		Intent launchIntent         = context.getPackageManager().getLaunchIntentForPackage(packageName);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Builder notification = new Notification.Builder(context)
 		.setContentTitle(options.getTitle())
 		.setContentText(options.getSubTitle())
 		//.setVibrate(new long[] { 0, 100, 200, 300 })
 		.setDefaults(Notification.DEFAULT_SOUND)
-		.setNumber(0)
+		.setNumber(options.getBadge())
+		.setContentIntent(contentIntent)
 		.setSmallIcon(options.getIcon());
 
 		/*
