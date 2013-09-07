@@ -9,6 +9,9 @@
 
 package de.appplant.cordova.plugin;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.json.JSONObject;
 
 import android.R;
@@ -48,6 +51,17 @@ public class LocalNotificationOptions {
      */
     public long getDate() {
         return date;
+    }
+
+    /**
+     * Gibt die Zeit als Kalender an.
+     */
+    public Calendar getCalendar () {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(new Date(getDate()));
+
+        return calendar;
     }
 
     /**
