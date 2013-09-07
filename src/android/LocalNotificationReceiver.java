@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.Notification.Builder;
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -25,10 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-class MyActivity extends Activity {
-
-}
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
