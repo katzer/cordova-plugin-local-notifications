@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationManager;
@@ -62,8 +63,10 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		 */
 		if (options.getInterval() > 0) {
 			Calendar now    = Calendar.getInstance();
-			int alarmHour   = 0;//bundle.getInt(HOUR_OF_DAY);
-			int alarmMin    = 0;//bundle.getInt(MINUTE);
+			Calendar alarm  = options.getCalendar();
+
+			int alarmHour   = alarm.get(Calendar.HOUR_OF_DAY);
+			int alarmMin    = alarm.get(Calendar.MINUTE);
 			int currentHour = now.get(Calendar.HOUR_OF_DAY);
 			int currentMin  = now.get(Calendar.MINUTE);
 
@@ -79,11 +82,15 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		Builder notification = new Notification.Builder(context)
 		.setContentTitle(options.getTitle())
 		.setContentText(options.getSubTitle())
-		//.setVibrate(new long[] { 0, 100, 200, 300 })
-		.setDefaults(Notification.DEFAULT_SOUND)
 		.setNumber(options.getBadge())
 		.setContentIntent(contentIntent)
+		.setTicker(options.getTitle())
 		.setSmallIcon(options.getIcon());
+
+		if (!context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName())) {
+			// app is in background
+			notification.setDefaults(Notification.DEFAULT_SOUND);
+		}
 
 		/*
 		 * If you want all reminders to stay in the notification bar, you should
