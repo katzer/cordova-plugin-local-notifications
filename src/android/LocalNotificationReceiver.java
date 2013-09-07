@@ -87,8 +87,13 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		.setTicker(options.getTitle())
 		.setSmallIcon(options.getIcon());
 
-		if (!context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName())) {
-			// app is in background
+		try {
+			if (!context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName())) {
+				// app is in background
+				notification.setDefaults(Notification.DEFAULT_SOUND);
+			}
+		} catch (Exception e) {
+			// missing GET_TASKS permission
 			notification.setDefaults(Notification.DEFAULT_SOUND);
 		}
 
