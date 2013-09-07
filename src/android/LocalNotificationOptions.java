@@ -33,10 +33,21 @@ public class LocalNotificationOptions {
      * Parse options passed from javascript part of this plugin.
      */
     LocalNotificationOptions (JSONObject options) {
+        String repeat = options.optString("repeat");
+
         this.options = options;
         date         = options.optLong("date") * 1000;
-        //interval   = options.optString("repeat");
         id           = options.optString("id");
+
+        if (repeat.equalsIgnoreCase("daily")) {
+            interval = 86400000;
+        } else if (repeat.equalsIgnoreCase("weekly")) {
+            interval = 604800000;
+        } else if (repeat.equalsIgnoreCase("monthly")) {
+            interval = 2678400000L; // 31 days
+        } else if (repeat.equalsIgnoreCase("yearly")) {
+            interval = 31536000000L;
+        }
     }
 
     /**
