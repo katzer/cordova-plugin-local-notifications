@@ -43,6 +43,14 @@
             </feature>
         </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <receiver android:name="de.appplant.cordova.plugin.LocalNotificationReceiver" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.GET_TASKS" />
+        </config-file>
+
         <source-file src="src/android/AlarmReceiver.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotificationOptions.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/AlarmRestoreOnBoot.java" target-dir="src/de/appplant/cordova/plugin" />
