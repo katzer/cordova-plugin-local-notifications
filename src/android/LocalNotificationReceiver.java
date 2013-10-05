@@ -90,9 +90,12 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		.setSmallIcon(options.getIcon());
 
 		try {
-			if (!context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName())) {
+			if (isInBackground(context)) {
 				// app is in background
 				notification.setDefaults(Notification.DEFAULT_SOUND);
+			} else {
+				// exec foreground callback
+				invokeForegroundCallback(options);
 			}
 		} catch (Exception e) {
 			// missing GET_TASKS permission
@@ -106,5 +109,34 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		 * the alarm intent.
 		 */
 		notificationMgr.notify(id, notification.build());
+	}
+
+	/**
+	 * Gibt an, ob die App im Hintergrund läuft.
+	 */
+	private boolean isInBackground (Context context) {
+		return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
+	}
+
+	/**
+	 * Ruft die `foreground` Callback Funktion auf.
+	 */
+	private void invokeForegroundCallback (LocalNotificationOptions options) {
+		String function = options.getForeground();
+
+		if (function != null) {
+			LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+		}
+	}
+
+	/**
+	 * Ruft die `background` Callback Funktion auf.
+	 */
+	private void invokeBackgroundCallback (LocalNotificationOptions options) {
+		String function = options.getBackground();
+
+		if (function != null) {
+			LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+		}
 	}
 }
