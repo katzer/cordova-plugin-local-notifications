@@ -73,7 +73,9 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 			if (currentHour != alarmHour && currentMin != alarmMin) {
 				return;
 			}
-		}
+		} else {
+			LocalNotification.unpersist(options.getId());
+		};
 
 		String packageName          = context.getPackageName();
 		Intent launchIntent         = context.getPackageManager().getLaunchIntentForPackage(packageName);
