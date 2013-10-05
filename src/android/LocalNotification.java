@@ -44,24 +44,22 @@ public class LocalNotification extends CordovaPlugin {
         String alarmId = options.getId();
 
         if (action.equalsIgnoreCase("add")) {
-            if (alarmId != null)
-                persist(alarmId, args);
-
+            persist(alarmId, args);
             add(options);
 
             return true;
         }
 
         if (action.equalsIgnoreCase("cancel")) {
-            unpersist(alarmId);
             cancel(alarmId);
+            unpersist(alarmId);
 
             return true;
         }
 
         if (action.equalsIgnoreCase("cancelAll")) {
-            unpersistAll();
             cancelAll();
+            unpersistAll();
 
             return true;
         }
@@ -149,8 +147,10 @@ public class LocalNotification extends CordovaPlugin {
     private void persist (String alarmId, JSONArray args) {
         Editor editor = cordova.getActivity().getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE).edit();
 
-        editor.putString(alarmId, args.toString());
-        editor.commit();
+        if (alarmId != null) {
+            editor.putString(alarmId, args.toString());
+            editor.commit();
+        }
     }
 
     /**
@@ -162,8 +162,10 @@ public class LocalNotification extends CordovaPlugin {
     private void unpersist (String alarmId) {
         Editor editor = cordova.getActivity().getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE).edit();
 
-        editor.remove(alarmId);
-        editor.commit();
+        if (alarmId != null) {
+            editor.remove(alarmId);
+            editor.commit();
+        }
     }
 
     /**
