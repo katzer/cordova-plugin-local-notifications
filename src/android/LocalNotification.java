@@ -26,6 +26,7 @@ import android.content.SharedPreferences.Editor;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaWebView;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
@@ -38,15 +39,16 @@ public class LocalNotification extends CordovaPlugin {
     public static final String PLUGIN_NAME  = "LocalNotification";
 
     public static CordovaInterface cordova = null;
+    public static  CordovaWebView webView = null;
 
     @Override
     public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         JSONObject arguments             = args.getJSONObject(0);
         LocalNotificationOptions options = new LocalNotificationOptions(arguments);
 
-        LocalNotification.cordova = super.cordova;
-
         String alarmId = options.getId();
+
+        rememberCordovaVarsForStaticUse();
 
         if (action.equalsIgnoreCase("add")) {
             persist(alarmId, args);
@@ -184,5 +186,13 @@ public class LocalNotification extends CordovaPlugin {
 
     private static AlarmManager getAlarmManager () {
         return (AlarmManager) cordova.getActivity().getSystemService(Context.ALARM_SERVICE);
+    }
+
+    /**
+     * Save required Cordova specific variables for later use.
+     */
+    private void rememberCordovaVarsForStaticUse () {
+        LocalNotification.cordova = super.cordova;
+        LocalNotification.webView = super.webView;
     }
 }
