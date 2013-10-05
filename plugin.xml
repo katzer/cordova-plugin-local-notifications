@@ -68,9 +68,9 @@
             <uses-permission android:name="android.permission.GET_TASKS" />
         </config-file>
 
-        <source-file src="src/android/AlarmReceiver.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/LocalNotificationReceiver.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotificationOptions.java" target-dir="src/de/appplant/cordova/plugin" />
-        <source-file src="src/android/AlarmRestoreOnBoot.java" target-dir="src/de/appplant/cordova/plugin" />
+        <source-file src="src/android/LocalNotificationRestore.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin" />
 
     </platform>
