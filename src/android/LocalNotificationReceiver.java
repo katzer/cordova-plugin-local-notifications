@@ -34,7 +34,7 @@ import android.os.Bundle;
  */
 public class LocalNotificationReceiver extends BroadcastReceiver {
 
-	public final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
+	public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
 
 	private Context context;
 	private LocalNotificationOptions options;
