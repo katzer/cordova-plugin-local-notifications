@@ -25,7 +25,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
 ## Release Notes
-#### Version 0.4.0 (not yet released)
+#### Version 0.4.0 (06.10.2013)
 - Added Android support<br>
   *Based on the LocalNotifications Android plugin made by* ***Daniël (dvtoever)***
 
