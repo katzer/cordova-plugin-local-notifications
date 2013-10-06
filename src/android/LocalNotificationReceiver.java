@@ -41,8 +41,8 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive (Context context, Intent intent) {
-		LocalNotificationOptions options    = null;
-		Bundle bundle                       = intent.getExtras();
+		LocalNotificationOptions options = null;
+		Bundle bundle                    = intent.getExtras();
 		JSONObject args;
 
 		try {
@@ -137,8 +137,8 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	private void showNotification (Builder notification) {
-		NotificationManager notificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		int id                              = 0;
+		NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		int id                  = 0;
 
 		try {
 			id = Integer.parseInt(options.getId());
@@ -146,10 +146,10 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 
         if (Build.VERSION.SDK_INT<16) {
             // build notification for HoneyComb to ICS
-            notificationMgr.notify(id, notification.getNotification());
+        	mgr.notify(id, notification.getNotification());
         } else if (Build.VERSION.SDK_INT>15) {
             // Notification for Jellybean and above
-        	notificationMgr.notify(id, notification.build());
+        	mgr.notify(id, notification.build());
         }
 	}
 
