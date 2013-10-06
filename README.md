@@ -49,6 +49,10 @@ window.plugin.notification.local.add({
     sound: sound // (only iOS) a sound to be played, the sound must be located in your project's resources and must be a caf file
 });
 ```
+**Android:** The `message` property can be devided into *title* and *subtitle* section:
+```javascript
+message: "Title\r\nSubtitle comes after linebreak"
+```
 
 ### cancel()
 The method cancels a notification which was previously added. It takes the ID of the notification as an argument.
