@@ -38,8 +38,8 @@ public class LocalNotification extends CordovaPlugin {
 
     public static final String PLUGIN_NAME  = "LocalNotification";
 
-    public static CordovaInterface cordova = null;
-    public static  CordovaWebView webView = null;
+    public static CordovaInterface cordova  = null;
+    public static  CordovaWebView webView   = null;
 
     @Override
     public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
