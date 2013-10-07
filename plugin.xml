@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
         id="de.appplant.cordova.plugin.local-notifications"
-        version="0.4.0.dev">
+        version="0.4.0">
 
     <name>LocalNotifications</name>
 
