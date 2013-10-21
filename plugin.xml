@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notifications"
-        version="0.4.0">
+        version="0.6.0dev">
 
     <name>LocalNotifications</name>
 
@@ -23,21 +23,18 @@
 
     <!-- ios -->
     <platform name="ios">
-
         <config-file target="config.xml" parent="/*">
-    		<feature name="LocalNotification">
-    			<param name="ios-package" value="APPLocalNotification"/>
-    		</feature>
+            <feature name="LocalNotification">
+                <param name="ios-package" value="APPLocalNotification"/>
+            </feature>
         </config-file>
 
-	<header-file src="src/ios/APPLocalNotification.h" />
-	<source-file src="src/ios/APPLocalNotification.m" />
-
+        <header-file src="src/ios/APPLocalNotification.h" />
+        <source-file src="src/ios/APPLocalNotification.m" />
     </platform>
 
     <!-- android -->
     <platform name="android">
-
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="android-package" value="de.appplant.cordova.plugin.LocalNotification"/>
@@ -73,7 +70,17 @@
         <source-file src="src/android/LocalNotificationOptions.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotificationRestore.java" target-dir="src/de/appplant/cordova/plugin" />
         <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin" />
+    </platform>
 
+    <!-- wp8 -->
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="LocalNotification">
+                <param name="wp-package" value="LocalNotification"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp8/LocalNotification.cs" />
     </platform>
 
 </plugin>
