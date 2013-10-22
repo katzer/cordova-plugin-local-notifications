@@ -103,8 +103,9 @@
 {
 	double               timestamp          = [[options objectForKey:@"date"] doubleValue];
 	NSString*            msg                = [options objectForKey:@"message"];
-    NSString*            sound              = [options objectForKey:@"sound"];
-    NSString*            repeat             = [options objectForKey:@"repeat"];
+	NSString*            title              = [options objectForKey:@"title"];
+	NSString*            sound              = [options objectForKey:@"sound"];
+	NSString*            repeat             = [options objectForKey:@"repeat"];
 	NSInteger            badge              = [[options objectForKey:@"badge"] intValue];
 
 	NSDate*              date               = [NSDate dateWithTimeIntervalSince1970:timestamp];
@@ -112,10 +113,10 @@
 
 	notification.fireDate                   = date;
 	notification.timeZone                   = [NSTimeZone defaultTimeZone];
-    notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
-	notification.alertBody                  = ([msg isEqualToString:@""]) ? nil : msg;
-    notification.soundName                  = sound;
-    notification.applicationIconBadgeNumber = badge;
+	notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
+	notification.alertBody                  = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
+	notification.soundName                  = sound;
+	notification.applicationIconBadgeNumber = badge;
 
     return notification;
 }
