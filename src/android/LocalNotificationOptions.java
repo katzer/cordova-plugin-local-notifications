@@ -90,15 +90,6 @@ public class LocalNotificationOptions {
     }
 
     /**
-     * Gibt den Untertitel der Notification an.
-     */
-    public String getSubTitle () {
-        String[] lines = getMessage().split("\\r?\\n");
-
-        return (lines.length > 1) ? lines[1] : "";
-    }
-
-    /**
      * Gibt den Pfad zum Sound der Notification an.
      */
     public String getSound () {
