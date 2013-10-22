@@ -13,7 +13,7 @@ See [Local and Push Notification Programming Guide](http://developer.apple.com/l
 See [Notification Guide](http://developer.android.com/guide/topics/ui/notifiers/notifications.html) for detailed informations and screenshots.
 
 - **WP8**<br>
-See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj207047(v=vs.105).aspx) for detailed informations and screenshots.
+See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj207047.aspx) for detailed informations and screenshots.
 
 
 ## Adding the Plugin to your project
