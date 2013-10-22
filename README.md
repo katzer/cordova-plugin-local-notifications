@@ -13,7 +13,7 @@ See [Local and Push Notification Programming Guide](http://developer.apple.com/l
 See [Notification Guide](http://developer.android.com/guide/topics/ui/notifiers/notifications.html) for detailed informations and screenshots.
 
 - **WP8**<br>
-See [Tiles, Lock and Notifications for Windows Phone 8](http://code.msdn.microsoft.com/Tiles-Lock-and-Notification-e63f498b) for detailed informations and screenshots.
+See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj207047(v=vs.105).aspx) for detailed informations and screenshots.
 
 
 ## Adding the Plugin to your project
@@ -82,7 +82,7 @@ window.plugin.notification.local.cancelAll();
 var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
-var notificationId = window.plugin.notification.local.add({
+window.plugin.notification.local.add({
     id:         1,
     date:       _60_seconds_from_now,
     message:    'Hello world!',
