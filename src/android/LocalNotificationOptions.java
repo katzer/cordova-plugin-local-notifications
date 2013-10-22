@@ -86,7 +86,7 @@ public class LocalNotificationOptions {
      * Gibt den Titel der Notification an.
      */
     public String getTitle () {
-        return getMessage().split("\\r?\\n")[0];
+        return options.optString("title");
     }
 
     /**
