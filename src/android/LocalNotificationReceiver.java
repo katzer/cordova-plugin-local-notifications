@@ -100,7 +100,7 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 	private Builder buildNotification () {
 		Builder notification = new Notification.Builder(context)
 		.setContentTitle(options.getTitle())
-		.setContentText(options.getSubTitle())
+		.setContentText(options.getMessage())
 		.setNumber(options.getBadge())
 		.setTicker(options.getTitle())
 		.setSmallIcon(options.getIcon());
