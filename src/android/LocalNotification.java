@@ -7,7 +7,7 @@
  *  GPL v2 licensed
  */
 
-package de.appplant.cordova.plugin;
+package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Map;
 import java.util.Set;
