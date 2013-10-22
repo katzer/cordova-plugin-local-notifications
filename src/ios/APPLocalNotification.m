@@ -103,21 +103,17 @@
 {
 	double               timestamp          = [[options objectForKey:@"date"] doubleValue];
 	NSString*            msg                = [options objectForKey:@"message"];
-	NSString*            action             = [options objectForKey:@"action"];
     NSString*            sound              = [options objectForKey:@"sound"];
     NSString*            repeat             = [options objectForKey:@"repeat"];
 	NSInteger            badge              = [[options objectForKey:@"badge"] intValue];
-	bool                 hasAction          = ([[options objectForKey:@"hasAction"] intValue] == 1) ? YES : NO;
 
 	NSDate*              date               = [NSDate dateWithTimeIntervalSince1970:timestamp];
 	UILocalNotification* notification       = [[UILocalNotification alloc] init];
 
 	notification.fireDate                   = date;
-	notification.hasAction                  = hasAction;
 	notification.timeZone                   = [NSTimeZone defaultTimeZone];
     notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
 	notification.alertBody                  = ([msg isEqualToString:@""]) ? nil : msg;
-	notification.alertAction                = action;
     notification.soundName                  = sound;
     notification.applicationIconBadgeNumber = badge;
 
