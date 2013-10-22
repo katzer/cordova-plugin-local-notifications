@@ -21,11 +21,10 @@ LocalNotification.prototype = {
         var defaults = {
             date:       false,
             message:    '',
-            hasAction:  true,
-            action:     'View',
+            title:      '',
             badge:      0,
             id:         0,
-            sound:      '',
+            sound:      '', // nur iOS
             background: '',
             foreground: ''
         };
