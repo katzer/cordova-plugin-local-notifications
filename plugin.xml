@@ -48,14 +48,14 @@
              * Android notification bar. The notification uses the default notification
              * sound and it vibrates the phone.
             -->
-            <receiver android:name="de.appplant.cordova.plugin.LocalNotificationReceiver" />
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.LocalNotificationReceiver" />
 
             <!--
              * This class is triggered upon reboot of the device. It needs to re-register
              * the alarms with the AlarmManager since these alarms are lost in case of
              * reboot.
              -->
-            <receiver android:name="de.appplant.cordova.plugin.LocalNotificationRestore" >
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.LocalNotificationRestore" >
                 <intent-filter>
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
