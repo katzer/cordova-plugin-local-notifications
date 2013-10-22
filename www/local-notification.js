@@ -16,6 +16,7 @@ LocalNotification.prototype = {
      * Fügt einen neuen Eintrag zur Registry hinzu.
      *
      * @param {Object} options
+     * @return {Number} Die ID der Notification
      */
     add: function (options) {
         var defaults = {
@@ -40,6 +41,8 @@ LocalNotification.prototype = {
         }
 
         cordova.exec(null, null, 'LocalNotification','add', [defaults]);
+
+        return defaults.id;
     },
 
     /**
