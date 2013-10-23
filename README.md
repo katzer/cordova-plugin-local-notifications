@@ -77,6 +77,7 @@ The method cancels all notifications which were previously added by the applicat
 window.plugin.notification.local.cancelAll();
 ```
 
+
 ## Example
 ```javascript
 var now                  = new Date().getTime(),
@@ -100,3 +101,9 @@ function background (id) {
     console.log('I WAS IN THE BACKGROUND ID='+id)
 }
 ```
+
+
+## Quirks
+### Windows Phone 8.0
+Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.
+
