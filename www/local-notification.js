@@ -30,6 +30,12 @@ LocalNotification.prototype = {
             foreground: ''
         };
 
+        var callbackFn = function (callbackName, id) {
+            if (callbackName) {
+                eval(callbackName + '(' + id + ')');
+            }
+        };
+
         for (var key in defaults) {
             if (options[key] !== undefined) {
                 defaults[key] = options[key];
@@ -40,7 +46,7 @@ LocalNotification.prototype = {
             defaults.date = Math.round(defaults.date.getTime()/1000);
         }
 
-        cordova.exec(null, null, 'LocalNotification','add', [defaults]);
+        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [defaults]);
 
         return defaults.id;
     },
