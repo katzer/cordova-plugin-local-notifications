@@ -102,7 +102,7 @@ namespace Cordova.Extension.Commands
                 tile.Count = options.Badge;
             }
 
-            tile.Title       = options.Title;
+            tile.BackTitle   = options.Title;
             tile.BackContent = options.Message;
 
             return tile;
