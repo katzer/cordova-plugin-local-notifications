@@ -78,7 +78,6 @@ namespace Cordova.Extension.Commands
                 // Empty strings for the text values and URIs will result in the property being cleared.
                 StandardTileData TileData = new StandardTileData
                 {
-                    Title       = "",
                     BackTitle   = "",
                     BackContent = ""
                 };
@@ -103,7 +102,6 @@ namespace Cordova.Extension.Commands
                 tile.Count = options.Badge;
             }
 
-            tile.BackTitle   = options.Title;
             tile.Title       = options.Title;
             tile.BackContent = options.Message;
 
