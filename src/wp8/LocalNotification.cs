@@ -44,6 +44,11 @@ namespace Cordova.Extension.Commands
 
                 // Update the Application Tile
                 AppTile.Update(TileData);
+
+                if (!string.IsNullOrEmpty(options.Foreground))
+                {
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, options.Foreground + "," + options.ID));
+                }
             }
 
             DispatchCommandResult();
