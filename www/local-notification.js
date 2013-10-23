@@ -30,10 +30,8 @@ LocalNotification.prototype = {
             foreground: ''
         };
 
-        var callbackFn = function (callbackName, id) {
-            if (callbackName) {
-                eval(callbackName + '(' + id + ')');
-            }
+        var callbackFn = function (cmd) {
+            eval(cmd);
         };
 
         for (var key in defaults) {

@@ -47,7 +47,9 @@ namespace Cordova.Extension.Commands
 
                 if (!string.IsNullOrEmpty(options.Foreground))
                 {
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, options.Foreground + "," + options.ID));
+                    string arguments = String.Format("{0}({1})", options.Foreground, options.ID);
+
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, arguments));
                 }
             }
 
