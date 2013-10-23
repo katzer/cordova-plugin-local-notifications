@@ -31,7 +31,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ## Release Notes
 #### Version 0.6.0 (not yet released)
 - Added WP8 support<br>
-  *Based on the LiveTiles WP8 plugin made by* ***XXX***
+  *Based on the LiveTiles WP8 plugin made by* ***Jesse MacFadyen (purplecabbage)***
 - [enhancement:] The `add()` function now returns the id of the created notification.
 - [feature:] Added new `title` property.
 
@@ -49,7 +49,7 @@ The plugin creates the object ```window.plugin.notification.local``` with the fo
 
 ### add()
 The method allows to add a custom notification. It takes an hash as an argument to specify the notification's properties and returns the ID for the notification.<br>
-All properties are optional. If no date object is given, the notification will popup immediately.
+All properties are optional. If no date object is given, the notification will pop-up immediately.
 
 ```javascript
 window.plugin.notification.local.add({
