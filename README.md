@@ -61,7 +61,6 @@ window.plugin.notification.local.add({
     badge: badge, // displays number badge to notification
     foreground: forground, // a javascript function to be called if the app is running
     background: background, // a javascript function to be called if the app is in the background
-    sound: sound // (only iOS) a sound to be played, the sound must be located in your project's resources and must be a caf file
 });
 ```
 
