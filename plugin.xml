@@ -37,7 +37,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
-                <param name="android-package" value="de.appplant.cordova.plugin.LocalNotification"/>
+                <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
             </feature>
         </config-file>
 
