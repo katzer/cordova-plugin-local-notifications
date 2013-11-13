@@ -148,7 +148,7 @@
 
     if (callbackFn.length > 0)
     {
-        NSString* jsCallBack = [NSString stringWithFormat:@"%@(%@)", callbackFn, id];
+        NSString* jsCallBack = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
 
         [self writeJavascript:jsCallBack];
     }
