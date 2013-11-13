@@ -51,9 +51,9 @@
 
 	for (UILocalNotification *notification in notifications)
     {
-		NSString *notId = [notification.userInfo objectForKey:@"notificationId"];
+		NSString *id = [notification.userInfo objectForKey:@"id"];
 
-		if ([notificationId isEqualToString:notId])
+		if ([notificationId isEqualToString:id])
         {
 			[[UIApplication sharedApplication] cancelLocalNotification:notification];
 		}
@@ -106,25 +106,16 @@
 	NSString*            title              = [options objectForKey:@"title"];
 	NSString*            sound              = [options objectForKey:@"sound"];
 	NSString*            repeat             = [options objectForKey:@"repeat"];
-    bool                 hasAction          = ([[options objectForKey:@"hasAction"] intValue] == 1)?YES:NO;
 	NSInteger            badge              = [[options objectForKey:@"badge"] intValue];
+
 	NSDate*              date               = [NSDate dateWithTimeIntervalSince1970:timestamp];
-    
 	UILocalNotification* notification       = [[UILocalNotification alloc] init];
 
 	notification.fireDate                   = date;
 	notification.timeZone                   = [NSTimeZone defaultTimeZone];
 	notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
-    if ([msg isEqualToString:@""]) {
-        //No message, we just want to update the badge
-        notification.alertBody = nil;
-    } else {
-        notification.alertBody              = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
-    }
-	if ( ! [sound isEqualToString:@""]) {
-        notification.soundName              = sound;
-    }
-    notification.hasAction                  = hasAction;
+	notification.alertBody                  = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
+	notification.soundName                  = sound;
 	notification.applicationIconBadgeNumber = badge;
 
     return notification;
