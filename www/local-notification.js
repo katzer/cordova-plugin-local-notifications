@@ -40,6 +40,10 @@ LocalNotification.prototype = {
             }
         }
 
+        if (defaults.id) {
+            defaults.id = defaults.id.toString();
+        }
+
         if (typeof defaults.date == 'object') {
             defaults.date = Math.round(defaults.date.getTime()/1000);
         }
@@ -55,7 +59,7 @@ LocalNotification.prototype = {
      * @param {String} id
      */
     cancel: function (id) {
-        cordova.exec(null, null, 'LocalNotification', 'cancel', [id]);
+        cordova.exec(null, null, 'LocalNotification', 'cancel', [id.toString()]);
     },
 
     /**
