@@ -29,13 +29,13 @@
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
-	NSArray             *arguments    = [command arguments];
-	NSMutableDictionary *options      = [arguments objectAtIndex:0];
-	UILocalNotification *notification = [self prepareNotification:options];
+    NSArray             *arguments    = [command arguments];
+    NSMutableDictionary *options      = [arguments objectAtIndex:0];
+    UILocalNotification *notification = [self prepareNotification:options];
 
     notification.userInfo = [self userDict:options];
 
-	[[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
 /**
@@ -45,19 +45,19 @@
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
-	NSArray  *arguments      = [command arguments];
-	NSString *notificationId = [arguments objectAtIndex:0];
-	NSArray  *notifications  = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    NSArray  *arguments      = [command arguments];
+    NSString *notificationId = [arguments objectAtIndex:0];
+    NSArray  *notifications  = [[UIApplication sharedApplication] scheduledLocalNotifications];
 
-	for (UILocalNotification *notification in notifications)
+    for (UILocalNotification *notification in notifications)
     {
-		NSString *id = [notification.userInfo objectForKey:@"id"];
+        NSString *id = [notification.userInfo objectForKey:@"id"];
 
-		if ([notificationId isEqualToString:id])
+        if ([notificationId isEqualToString:id])
         {
-			[[UIApplication sharedApplication] cancelLocalNotification:notification];
-		}
-	}
+            [[UIApplication sharedApplication] cancelLocalNotification:notification];
+        }
+    }
 }
 
 /**
@@ -65,7 +65,7 @@
  */
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
-	[[UIApplication sharedApplication] cancelAllLocalNotifications];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 /**
@@ -73,7 +73,7 @@
  */
 - (NSMutableDictionary*) repeatDict
 {
-	NSMutableDictionary *repeatDict = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *repeatDict = [[NSMutableDictionary alloc] init];
 
     [repeatDict setObject:[NSNumber numberWithInt:NSDayCalendarUnit]   forKey:@"daily"];
     [repeatDict setObject:[NSNumber numberWithInt:NSWeekCalendarUnit]  forKey:@"weekly"];
@@ -89,11 +89,11 @@
  */
 - (NSDictionary*) userDict:(NSMutableDictionary*)options
 {
-	NSString* id = [options objectForKey:@"id"];
+    NSString* id = [options objectForKey:@"id"];
     NSString* bg = [options objectForKey:@"background"];
     NSString* fg = [options objectForKey:@"foreground"];
 
-	return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", nil];
 }
 
 /**
@@ -101,17 +101,17 @@
  */
 - (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options
 {
-	double               timestamp          = [[options objectForKey:@"date"] doubleValue];
-	NSString*            msg                = [options objectForKey:@"message"];
+    double               timestamp          = [[options objectForKey:@"date"] doubleValue];
+    NSString*            msg                = [options objectForKey:@"message"];
     NSString*            title              = [options objectForKey:@"title"];
     NSString*            sound              = [options objectForKey:@"sound"];
     NSString*            repeat             = [options objectForKey:@"repeat"];
     bool                 hasAction          = ([[options objectForKey:@"hasAction"] intValue] == 1)?YES:NO;
     NSInteger            badge              = [[options objectForKey:@"badge"] intValue];
     NSDate*              date               = [NSDate dateWithTimeIntervalSince1970:timestamp];
-    
+
     UILocalNotification* notification       = [[UILocalNotification alloc] init];
-  
+
     notification.fireDate                   = date;
     notification.timeZone                   = [NSTimeZone defaultTimeZone];
     notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
@@ -123,12 +123,12 @@
         notification.alertBody              = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
     }
 
-  	if ( ! [sound isEqualToString:@""]) {
+    if ( ! [sound isEqualToString:@""]) {
         notification.soundName              = sound;
     }
 
     notification.hasAction                  = hasAction;
-	notification.applicationIconBadgeNumber = badge;
+    notification.applicationIconBadgeNumber = badge;
 
     return notification;
 }
