@@ -12,6 +12,7 @@ package de.appplant.cordova.plugin.localnotification;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.cordova.CordovaInterface;
 import org.json.JSONObject;
 
 import android.R;
@@ -100,7 +101,17 @@ public class LocalNotificationOptions {
      * Gibt den Pfad zum Icon der Notification an.
      */
     public int getIcon () {
-        return options.optInt("icon", R.drawable.ic_menu_info_details);
+        int icon                 = R.drawable.ic_menu_info_details;
+        CordovaInterface cordova = LocalNotification.cordova;
+        String packageName       = cordova.getActivity().getPackageName();
+
+        try {
+            Class<?> klass = Class.forName(packageName + ".R$drawable");
+
+            icon = (Integer) klass.getDeclaredField("icon").get(Integer.class);
+        } catch (Exception e) {}
+
+        return options.optInt("icon", icon);
     }
 
     /**
