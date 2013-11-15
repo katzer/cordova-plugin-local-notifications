@@ -15,8 +15,6 @@ import java.util.Date;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONObject;
 
-import android.R;
-
 /**
  * Class that helps to store the options that can be specified per alarm.
  */
@@ -101,15 +99,20 @@ public class LocalNotificationOptions {
      * Gibt den Pfad zum Icon der Notification an.
      */
     public int getIcon () {
-        int icon                 = R.drawable.ic_menu_info_details;
+        int icon                 = 0;
         CordovaInterface cordova = LocalNotification.cordova;
         String packageName       = cordova.getActivity().getPackageName();
+        String iconName          = options.optString("icon", "icon");
 
-        try {
-            Class<?> klass = Class.forName(packageName + ".R$drawable");
+        icon = getIconValue(packageName, iconName);
 
-            icon = (Integer) klass.getDeclaredField("icon").get(Integer.class);
-        } catch (Exception e) {}
+        if (icon == 0) {
+            icon = getIconValue("android", iconName);
+        }
+
+        if (icon == 0) {
+            icon = android.R.drawable.ic_menu_info_details;
+        }
 
         return options.optInt("icon", icon);
     }
@@ -147,5 +150,23 @@ public class LocalNotificationOptions {
      */
     public String getId () {
         return id;
+    }
+
+    /**
+     * Gibt den Zahlwert des Icons an.
+     *
+     * @param {String} className
+     * @param {String} iconName
+     */
+    private int getIconValue (String className, String iconName) {
+        int icon = 0;
+
+        try {
+            Class<?> klass  = Class.forName(className + ".R$drawable");
+
+            icon = (Integer) klass.getDeclaredField(iconName).get(Integer.class);
+        } catch (Exception e) {}
+
+        return icon;
     }
 }
