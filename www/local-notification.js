@@ -25,6 +25,7 @@ LocalNotification.prototype = {
             title:      '',
             badge:      0,
             id:         0,
+            icon:       'icon', // nur Android
             sound:      '', // nur iOS
             background: '',
             foreground: ''
