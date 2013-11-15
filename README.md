@@ -36,6 +36,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 - [feature:] Added new `title` property.
 - [bugfix:] `cancel` under iOS did not work do to wrong dict key.
 - [enhancement:] All notifications under Android display the app icon by default.
+- [feature:] Icon can be specified under Android.
 
 #### Version 0.4.0 (06.10.2013)
 - Added Android support<br>
