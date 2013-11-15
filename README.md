@@ -105,6 +105,20 @@ function background (id) {
 
 
 ## Quirks
+### How to specify the notification icon under Android
+By default all notifications will display the app icon. But an specific icon can be defined through the following way.
+```javascript
+/**
+ * Displays the <package.name>.R.drawable.ic_launcher icon
+ */
+window.plugin.notification.local.add({ icon: 'ic_launcher' });
+
+/**
+ * Displays the android.R.drawable.ic_dialog_email icon
+ */
+window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
+```
+
 ### Windows Phone 8.0
 Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.
 
