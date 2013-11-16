@@ -62,6 +62,7 @@ window.plugin.notification.local.add({
     title: title, // the title of the message
     repeat: repeat, // has the options of daily', 'weekly',''monthly','yearly')
     badge: badge, // displays number badge to notification
+    sound: sound // a sound to be played
     foreground: forground, // a javascript function to be called if the app is running
     background: background, // a javascript function to be called if the app is in the background
 });
@@ -91,6 +92,7 @@ window.plugin.notification.local.add({
     message:    'Hello world!',
     title:      'Check that out!',
     repeat:     'weekly', // will fire every week on this day
+    sound:      'sub.caf' // iOS
     foreground: 'foreground',
     background: 'background'
 });
@@ -119,6 +121,8 @@ window.plugin.notification.local.add({ icon: 'ic_launcher' });
  */
 window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
+### Notification sound under iOS
+The sound must be located in your project's resources and must be a caf file.
 
 ### Windows Phone 8.0
 Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.
