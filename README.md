@@ -93,7 +93,6 @@ window.plugin.notification.local.add({
     message:    'Hello world!',
     title:      'Check that out!',
     repeat:     'weekly', // will fire every week on this day
-    sound:      'sub.caf' // iOS
     foreground: 'foreground',
     background: 'background'
 });
@@ -124,6 +123,12 @@ window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
 ### Notification sound under iOS
 The sound must be located in your project's resources and must be a caf file.
+```javascript
+/**
+ * Plays the sound if the notification pop's up.
+ */
+window.plugin.notification.local.add({ sound: 'sub.caf' });
+```
 
 ### LiveTile background images under WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
