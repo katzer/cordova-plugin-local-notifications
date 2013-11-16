@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace De.APPPlant.Cordova.Plugin.LocalNotification
@@ -19,6 +21,19 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
         /// </summary>
         [DataMember(IsRequired = false, Name = "message")]
         public string Message { get; set; }
+
+        /// <summary>
+        /// Gekürzte Nachricht (alles ab dem Zeilenumbruch entfernt)
+        /// </summary>
+        public string ShortMessage
+        {
+            get
+            {
+                string[] separator = new string[] { "\r\n", "\n" };
+
+                return Message.Split(separator, StringSplitOptions.RemoveEmptyEntries).First();
+            }
+        }
 
         /// <summary>
         /// Displays number badge to notification
@@ -55,5 +70,23 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
         /// </summary>
         [DataMember(IsRequired = false, Name = "foreground")]
         public string Foreground { get; set; }
+
+        /// <summary>
+        /// The notification small background image to be displayed
+        /// </summary>
+        [DataMember(IsRequired = false, Name = "smallImage")]
+        public string SmallImage { get; set; }
+
+        /// <summary>
+        /// The notification background image to be displayed
+        /// </summary>
+        [DataMember(IsRequired = false, Name = "image")]
+        public string Image { get; set; }
+
+        /// <summary>
+        /// The notification wide background image to be displayed
+        /// </summary>
+        [DataMember(IsRequired = false, Name = "wideImage")]
+        public string WideImage { get; set; }
     }
 }

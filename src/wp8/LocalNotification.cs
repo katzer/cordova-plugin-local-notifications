@@ -29,18 +29,18 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Sets application live tile
         /// </summary>
-        public void add (string jsonArgs)
+        public void add(string jsonArgs)
         {
-            string[] args                    = JsonHelper.Deserialize<string[]>(jsonArgs);
+            string[] args = JsonHelper.Deserialize<string[]>(jsonArgs);
             LocalNotificationOptions options = JsonHelper.Deserialize<LocalNotificationOptions>(args[0]);
             // Application Tile is always the first Tile, even if it is not pinned to Start.
-            ShellTile AppTile                = ShellTile.ActiveTiles.First();
+            ShellTile AppTile = ShellTile.ActiveTiles.First();
 
             if (AppTile != null)
             {
                 // Set the properties to update for the Application Tile
                 // Empty strings for the text values and URIs will result in the property being cleared.
-                StandardTileData TileData = CreateTileData(options);
+                FlipTileData TileData = CreateTileData(options);
 
                 // Update the Application Tile
                 AppTile.Update(TileData);
@@ -59,7 +59,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Clears the application live tile
         /// </summary>
-        public void cancel (string jsonArgs)
+        public void cancel(string jsonArgs)
         {
             cancelAll(jsonArgs);
         }
@@ -67,7 +67,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Clears the application live tile
         /// </summary>
-        public void cancelAll (string jsonArgs)
+        public void cancelAll(string jsonArgs)
         {
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile AppTile = ShellTile.ActiveTiles.First();
@@ -76,10 +76,14 @@ namespace Cordova.Extension.Commands
             {
                 // Set the properties to update for the Application Tile
                 // Empty strings for the text values and URIs will result in the property being cleared.
-                StandardTileData TileData = new StandardTileData
+                FlipTileData TileData = new FlipTileData
                 {
-                    BackTitle   = "",
-                    BackContent = ""
+                    BackTitle            = "",
+                    BackContent          = "",
+                    WideBackContent      = "",
+                    SmallBackgroundImage = new Uri("appdata:Background.png"),
+                    BackgroundImage      = new Uri("appdata:Background.png"),
+                    WideBackgroundImage  = new Uri("/Assets/Tiles/FlipCycleTileLarge.png", UriKind.Relative),
                 };
 
                 // Update the Application Tile
@@ -92,9 +96,9 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Creates tile data
         /// </summary>
-        private StandardTileData CreateTileData (LocalNotificationOptions options)
+        private FlipTileData CreateTileData(LocalNotificationOptions options)
         {
-            StandardTileData tile = new StandardTileData();
+            FlipTileData tile = new FlipTileData();
 
             // Badge sollte nur gelöscht werden, wenn expliziet eine `0` angegeben wurde
             if (options.Badge != 0)
@@ -102,8 +106,24 @@ namespace Cordova.Extension.Commands
                 tile.Count = options.Badge;
             }
 
-            tile.BackTitle   = options.Title;
-            tile.BackContent = options.Message;
+            tile.BackTitle       = options.Title;
+            tile.BackContent     = options.ShortMessage;
+            tile.WideBackContent = options.Message;
+
+            if (!String.IsNullOrEmpty(options.SmallImage))
+            {
+                tile.SmallBackgroundImage = new Uri(options.SmallImage, UriKind.RelativeOrAbsolute);
+            }
+
+            if (!String.IsNullOrEmpty(options.Image))
+            {
+                tile.BackgroundImage = new Uri(options.Image, UriKind.RelativeOrAbsolute);
+            }
+
+            if (!String.IsNullOrEmpty(options.WideImage))
+            {
+                tile.WideBackgroundImage = new Uri(options.WideImage, UriKind.RelativeOrAbsolute);
+            }
 
             return tile;
         }
