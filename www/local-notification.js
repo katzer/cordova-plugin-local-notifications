@@ -25,10 +25,19 @@ LocalNotification.prototype = {
             title:      '',
             badge:      0,
             id:         0,
-            icon:       'icon', // nur Android
-            sound:      '', // nur iOS
             background: '',
             foreground: ''
+        };
+
+        switch (device.platform) {
+            case 'Android':
+                defaults.icon = 'icon'; break;
+            case 'iOS':
+                defaults.sound = ''; break;
+            case 'WinCE': case 'Win32NT':
+                defaults.smallImage = null;
+                defaults.image = null;
+                defaults.wideImage = null;
         };
 
         var callbackFn = function (cmd) {
