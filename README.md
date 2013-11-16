@@ -107,8 +107,8 @@ function background (id) {
 ```
 
 
-## Quirks
-### How to specify the notification icon under Android
+## Platform specifics
+### Notification icon under Android
 By default all notifications will display the app icon. But an specific icon can be defined through the `icon` property.
 ```javascript
 /**
@@ -132,11 +132,11 @@ window.plugin.notification.local.add({ sound: 'sub.caf' });
 
 ### LiveTile background images under WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
-An image must be defined as a relative or absolute URI. All images will be reseted by canceling the notification.
+An image must be defined as a relative or absolute URI.
 ```javascript
 /**
  * Displays the application image as the livetile's background image
  */
 window.plugin.notification.local.add({ image: 'appdata:ApplicationImage.png' })
 ```
-
+All images can be restored to the default ones by canceling the notification.
