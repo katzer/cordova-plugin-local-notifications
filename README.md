@@ -14,6 +14,7 @@ See [Notification Guide](http://developer.android.com/guide/topics/ui/notifiers/
 
 - **WP8**<br>
 See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj207047.aspx) for detailed informations and screenshots.
+<br>*Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.*
 
 
 ## Adding the Plugin to your project
@@ -109,7 +110,7 @@ function background (id) {
 
 ## Quirks
 ### How to specify the notification icon under Android
-By default all notifications will display the app icon. But an specific icon can be defined through the following way.
+By default all notifications will display the app icon. But an specific icon can be defined through the `icon` property.
 ```javascript
 /**
  * Displays the <package.name>.R.drawable.ic_launcher icon
@@ -124,6 +125,13 @@ window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ### Notification sound under iOS
 The sound must be located in your project's resources and must be a caf file.
 
-### Windows Phone 8.0
-Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.
+### LiveTile background images under WP8
+LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
+An image must be defined as a relative or absolute URI. All images will be reseted by canceling the notification.
+```javascript
+/**
+ * Displays the application image as the livetile's background image
+ */
+window.plugin.notification.local.add({ image: 'appdata:ApplicationImage.png' })
+```
 
