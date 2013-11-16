@@ -30,7 +30,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
 ## Release Notes
-#### Version 0.6.0 (not yet released)
+#### Version 0.6.0 (16.11.2013)
 - Added WP8 support<br>
   *Based on the LiveTiles WP8 plugin made by* ***Jesse MacFadyen (purplecabbage)***
 - [enhancement:] The `add()` function now returns the id of the created notification.
