@@ -135,8 +135,8 @@ LiveTile's have the ability to display images for different sizes. These images 
 An image must be defined as a relative or absolute URI.
 ```javascript
 /**
- * Displays the application image as the livetile's background image
+ * Displays the application icon as the livetile's background image
  */
-window.plugin.notification.local.add({ image: 'appdata:ApplicationImage.png' })
+window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
 All images can be restored to the default ones by canceling the notification.
