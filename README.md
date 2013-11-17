@@ -140,3 +140,10 @@ An image must be defined as a relative or absolute URI.
 window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
 All images can be restored to the default ones by canceling the notification.
+
+## Quirks
+### Adding a notification under WP8
+An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
+
+### Canceling a notification under WP8
+The methods `cancel` and `cancelAll` have the same effect.
