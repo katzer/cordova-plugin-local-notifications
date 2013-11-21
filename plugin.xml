@@ -79,11 +79,11 @@
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="wp-package" value="LocalNotification"/>
-                <param name="wp-package" value="LocalNotificationOptions"/>
             </feature>
         </config-file>
 
         <source-file src="src/wp8/LocalNotification.cs" />
+        <source-file src="src/wp8/LocalNotificationOptions.cs" />
     </platform>
 
 </plugin>
