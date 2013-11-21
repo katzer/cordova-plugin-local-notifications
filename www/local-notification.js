@@ -20,11 +20,12 @@ LocalNotification.prototype = {
      */
     add: function (options) {
         var defaults = {
-            date:       false,
+            date:       new Date(),
             message:    '',
             title:      '',
             badge:      0,
             id:         0,
+            repeat:     '',
             background: '',
             foreground: ''
         };
