@@ -57,15 +57,14 @@ All properties are optional. If no date object is given, the notification will p
 
 ```javascript
 window.plugin.notification.local.add({
-    id: id, // a unique id of the notifiction
-    date: date, // this expects a date object
-    message: message, // the message that is displayed
-    title: title, // the title of the message
-    repeat: repeat, // has the options of daily', 'weekly',''monthly','yearly')
-    badge: badge, // displays number badge to notification
-    sound: sound // a sound to be played
-    foreground: forground, // a javascript function to be called if the app is running
-    background: background, // a javascript function to be called if the app is in the background
+    id:         String, // a unique id of the notifiction
+    date:       Date,   // this expects a date object
+    message:    String, // the message that is displayed
+    title:      String, // the title of the message
+    repeat:     String, // has the options of daily', 'weekly',''monthly','yearly')
+    badge:      Number, // displays number badge to notification
+    foreground: String, // a javascript function to be called if the app is running
+    background: String, // a javascript function to be called if the app is in the background
 });
 ```
 
@@ -88,11 +87,11 @@ var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
 window.plugin.notification.local.add({
-    id:         1,
+    id:         1,                       // is converted to a string
     date:       _60_seconds_from_now,
     message:    'Hello world!',
     title:      'Check that out!',
-    repeat:     'weekly', // will fire every week on this day
+    repeat:     'weekly',                // will fire every week on this day
     foreground: 'foreground',
     background: 'background'
 });
@@ -107,8 +106,8 @@ function background (id) {
 ```
 
 
-## Quirks
-### How to specify the notification icon under Android
+## Platform specifics
+### Notification icon under Android
 By default all notifications will display the app icon. But an specific icon can be defined through the `icon` property.
 ```javascript
 /**
@@ -132,11 +131,18 @@ window.plugin.notification.local.add({ sound: 'sub.caf' });
 
 ### LiveTile background images under WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
-An image must be defined as a relative or absolute URI. All images will be reseted by canceling the notification.
+An image must be defined as a relative or absolute URI.
 ```javascript
 /**
- * Displays the application image as the livetile's background image
+ * Displays the application icon as the livetile's background image
  */
-window.plugin.notification.local.add({ image: 'appdata:ApplicationImage.png' })
+window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
+All images can be restored to the default ones by canceling the notification.
 
+## Quirks
+### Adding a notification under WP8
+An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
+
+### Canceling a notification under WP8
+The methods `cancel` and `cancelAll` have the same effect.
