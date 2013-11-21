@@ -63,7 +63,6 @@ window.plugin.notification.local.add({
     title: title, // the title of the message
     repeat: repeat, // has the options of daily', 'weekly',''monthly','yearly')
     badge: badge, // displays number badge to notification
-    sound: sound // a sound to be played
     foreground: forground, // a javascript function to be called if the app is running
     background: background, // a javascript function to be called if the app is in the background
 });
