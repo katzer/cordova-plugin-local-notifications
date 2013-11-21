@@ -43,21 +43,19 @@ public class LocalNotification extends CordovaPlugin {
 
     @Override
     public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        JSONObject arguments             = args.getJSONObject(0);
-        LocalNotificationOptions options = new LocalNotificationOptions(arguments);
-
-        String alarmId = options.getId();
-
         rememberCordovaVarsForStaticUse();
 
         if (action.equalsIgnoreCase("add")) {
-            persist(alarmId, args);
-            add(options);
+            addWithoutBlocking(args);
 
             return true;
         }
 
         if (action.equalsIgnoreCase("cancel")) {
+            JSONObject arguments             = args.getJSONObject(0);
+            LocalNotificationOptions options = new LocalNotificationOptions(arguments);
+            String alarmId                   = options.getId();
+
             cancel(alarmId);
             unpersist(alarmId);
 
@@ -73,6 +71,18 @@ public class LocalNotification extends CordovaPlugin {
 
         // Returning false results in a "MethodNotFound" error.
         return false;
+    }
+
+    private static void addWithoutBlocking (final JSONArray args) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                JSONObject arguments             = args.optJSONObject(0);
+                LocalNotificationOptions options = new LocalNotificationOptions(arguments);
+
+                persist(options.getId(), args);
+                add(options);
+            }
+        });
     }
 
     /**
