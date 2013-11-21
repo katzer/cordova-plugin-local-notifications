@@ -17,6 +17,11 @@ See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/libr
 <br>*Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.*
 
 
+## Dependencies
+Cordova will check all dependencies and install them if they are missing.
+- [org.apache.cordova.device](https://github.com/apache/cordova-plugin-device) *(since v0.6.0)*
+
+
 ## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
 ```
