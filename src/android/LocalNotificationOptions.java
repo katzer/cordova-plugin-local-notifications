@@ -15,6 +15,7 @@ import java.util.Date;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONObject;
 
+import android.app.AlarmManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
@@ -42,13 +43,13 @@ public class LocalNotificationOptions {
         id           = options.optString("id");
 
         if (repeat.equalsIgnoreCase("daily")) {
-            interval = 86400000;
+            interval = AlarmManager.INTERVAL_DAY;
         } else if (repeat.equalsIgnoreCase("weekly")) {
-            interval = 604800000;
+            interval = AlarmManager.INTERVAL_DAY*7;
         } else if (repeat.equalsIgnoreCase("monthly")) {
-            interval = 2678400000L; // 31 days
+            interval = AlarmManager.INTERVAL_DAY*31; // 31 days
         } else if (repeat.equalsIgnoreCase("yearly")) {
-            interval = 31536000000L;
+            interval = AlarmManager.INTERVAL_DAY*365;
         }
     }
 
