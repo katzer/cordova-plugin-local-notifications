@@ -132,7 +132,7 @@ window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
 
 ### Notification sound under Android
-The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be dinfed through the `sound` property.<br>
+The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be defined through the `sound` property.<br>
 The sound must be a absolute or relative Uri pointing to the sound file.
 ```javascript
 /**
