@@ -30,6 +30,9 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
 ## Release Notes
+#### Version 0.6.1 (not yet released)
+- [feature:] Sound can be specified under Android.
+
 #### Version 0.6.0 (16.11.2013)
 - Added WP8 support<br>
   *Based on the LiveTiles WP8 plugin made by* ***Jesse MacFadyen (purplecabbage)***
@@ -63,6 +66,7 @@ window.plugin.notification.local.add({
     title:      String, // the title of the message
     repeat:     String, // has the options of daily', 'weekly',''monthly','yearly')
     badge:      Number, // displays number badge to notification
+    sound:      String, // a sound to be played (iOS & Android)
     foreground: String, // a javascript function to be called if the app is running
     background: String, // a javascript function to be called if the app is in the background
 });
@@ -120,6 +124,27 @@ window.plugin.notification.local.add({ icon: 'ic_launcher' });
  */
 window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
+
+### Notification sound under Android
+The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be dinfed through the `sound` property.<br>
+The sound must be a absolute or relative Uri pointing to the sound file.
+```javascript
+/**
+ * Plays the sound if the notification pop's up.
+ */
+window.plugin.notification.local.add({ sound: 'res/sounds/beep.mp3' });
+
+/**
+ * Plays the `RingtoneManager.TYPE_ALARM` sound.
+ */
+window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
+
+/**
+ * Plays no sound if the notification pop's up.
+ */
+window.plugin.notification.local.add({ sound: null });
+```
+
 ### Notification sound under iOS
 The sound must be located in your project's resources and must be a caf file.
 ```javascript
@@ -139,6 +164,7 @@ An image must be defined as a relative or absolute URI.
 window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
 All images can be restored to the default ones by canceling the notification.
+
 
 ## Quirks
 ### Adding a notification under WP8

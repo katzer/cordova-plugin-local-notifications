@@ -103,17 +103,8 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 		.setContentText(options.getMessage())
 		.setNumber(options.getBadge())
 		.setTicker(options.getTitle())
-		.setSmallIcon(options.getIcon());
-
-		try {
-			if (isInBackground(context)) {
-				// app is in background
-				notification.setDefaults(Notification.DEFAULT_SOUND);
-			}
-		} catch (Exception e) {
-			// missing GET_TASKS permission
-			notification.setDefaults(Notification.DEFAULT_SOUND);
-		}
+		.setSmallIcon(options.getIcon())
+		.setSound(options.getSound());
 
 		setClickEvent(notification);
 

@@ -15,6 +15,9 @@ import java.util.Date;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONObject;
 
+import android.media.RingtoneManager;
+import android.net.Uri;
+
 /**
  * Class that helps to store the options that can be specified per alarm.
  */
@@ -91,8 +94,20 @@ public class LocalNotificationOptions {
     /**
      * Gibt den Pfad zum Sound der Notification an.
      */
-    public String getSound () {
-        return options.optString("sound", null);
+    public Uri getSound () {
+        String sound = options.optString("sound", null);
+
+        if (sound != null) {
+            try {
+                int soundId = (Integer) RingtoneManager.class.getDeclaredField(sound).get(Integer.class);
+
+                return RingtoneManager.getDefaultUri(soundId);
+            } catch (Exception e) {
+                return Uri.parse(sound);
+            }
+        }
+
+        return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     }
 
     /**

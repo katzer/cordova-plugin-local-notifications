@@ -31,7 +31,8 @@ LocalNotification.prototype = {
 
         switch (device.platform) {
             case 'Android':
-                defaults.icon = 'icon'; break;
+                defaults.icon= 'icon';
+                defaults.sound = null; break;
             case 'iOS':
                 defaults.sound = ''; break;
             case 'WinCE': case 'Win32NT':
