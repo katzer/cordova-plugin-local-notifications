@@ -57,14 +57,14 @@ All properties are optional. If no date object is given, the notification will p
 
 ```javascript
 window.plugin.notification.local.add({
-    id: id, // a unique id of the notifiction
-    date: date, // this expects a date object
-    message: message, // the message that is displayed
-    title: title, // the title of the message
-    repeat: repeat, // has the options of daily', 'weekly',''monthly','yearly')
-    badge: badge, // displays number badge to notification
-    foreground: forground, // a javascript function to be called if the app is running
-    background: background, // a javascript function to be called if the app is in the background
+    id:         String, // a unique id of the notifiction
+    date:       Date,   // this expects a date object
+    message:    String, // the message that is displayed
+    title:      String, // the title of the message
+    repeat:     String, // has the options of daily', 'weekly',''monthly','yearly')
+    badge:      Number, // displays number badge to notification
+    foreground: String, // a javascript function to be called if the app is running
+    background: String, // a javascript function to be called if the app is in the background
 });
 ```
 
@@ -87,11 +87,11 @@ var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
 window.plugin.notification.local.add({
-    id:         1,
+    id:         1,                       // is converted to a string
     date:       _60_seconds_from_now,
     message:    'Hello world!',
     title:      'Check that out!',
-    repeat:     'weekly', // will fire every week on this day
+    repeat:     'weekly',                // will fire every week on this day
     foreground: 'foreground',
     background: 'background'
 });
