@@ -98,33 +98,33 @@
 
 /**
  * @private
+ * Erstellt die Notification und setzt deren Eigenschaften.
  */
 - (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options
 {
-    double               timestamp          = [[options objectForKey:@"date"] doubleValue];
-    NSString*            msg                = [options objectForKey:@"message"];
-    NSString*            title              = [options objectForKey:@"title"];
-    NSString*            sound              = [options objectForKey:@"sound"];
-    NSString*            repeat             = [options objectForKey:@"repeat"];
-    bool                 hasAction          = ([[options objectForKey:@"hasAction"] intValue] == 1)?YES:NO;
-    NSInteger            badge              = [[options objectForKey:@"badge"] intValue];
-    NSDate*              date               = [NSDate dateWithTimeIntervalSince1970:timestamp];
+    UILocalNotification* notification = [[UILocalNotification alloc] init];
 
-    UILocalNotification* notification       = [[UILocalNotification alloc] init];
+    double    timestamp = [[options objectForKey:@"date"] doubleValue];
+    NSString* msg       = [options objectForKey:@"message"];
+    NSString* title     = [options objectForKey:@"title"];
+    NSString* sound     = [options objectForKey:@"sound"];
+    NSString* repeat    = [options objectForKey:@"repeat"];
+    bool      hasAction = ([[options objectForKey:@"hasAction"] intValue] == 1)?YES:NO;
+    NSInteger badge     = [[options objectForKey:@"badge"] intValue];
+    NSDate*   date      = [NSDate dateWithTimeIntervalSince1970:timestamp];
 
-    notification.fireDate                   = date;
-    notification.timeZone                   = [NSTimeZone defaultTimeZone];
-    notification.repeatInterval             = [[[self repeatDict] objectForKey: repeat] intValue];
+    notification.fireDate       = date;
+    notification.timeZone       = [NSTimeZone defaultTimeZone];
+    notification.repeatInterval = [[[self repeatDict] objectForKey: repeat] intValue];
 
-    if ([msg isEqualToString:@""]) {
-        //No message, we just want to update the badge
-        notification.alertBody              = nil;
-    } else {
-        notification.alertBody              = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
+    if (![msg isEqualToString:@""])
+    {
+        notification.alertBody = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
     }
 
-    if (sound != (NSString *) [NSNull null]) {
-        notification.soundName              = [sound isEqualToString:@""] ? UILocalNotificationDefaultSoundName : sound;
+    if (sound != (NSString *) [NSNull null])
+    {
+        notification.soundName = [sound isEqualToString:@""] ? UILocalNotificationDefaultSoundName : sound;
     }
 
     notification.hasAction                  = hasAction;
