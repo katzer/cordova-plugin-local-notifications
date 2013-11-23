@@ -123,8 +123,8 @@
         notification.alertBody              = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
     }
 
-    if ( ! [sound isEqualToString:@""]) {
-        notification.soundName              = sound;
+    if (sound != (NSString *) [NSNull null]) {
+        notification.soundName              = [sound isEqualToString:@""] ? UILocalNotificationDefaultSoundName : sound;
     }
 
     notification.hasAction                  = hasAction;
