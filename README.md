@@ -17,6 +17,11 @@ See [Local notifications for Windows Phone](http://msdn.microsoft.com/en-us/libr
 <br>*Windows Phone 8.0 has no notification center. Instead local notifications are realized through live tiles updates.*
 
 
+## Dependencies
+Cordova will check all dependencies and install them if they are missing.
+- [org.apache.cordova.device](https://github.com/apache/cordova-plugin-device) *(since v0.6.0)*
+
+
 ## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
 ```
@@ -127,7 +132,7 @@ window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
 
 ### Notification sound under Android
-The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be dinfed through the `sound` property.<br>
+The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be defined through the `sound` property.<br>
 The sound must be a absolute or relative Uri pointing to the sound file.
 ```javascript
 /**
@@ -173,3 +178,12 @@ An application can only display one notification at a time. Each time a new noti
 
 ### Canceling a notification under WP8
 The methods `cancel` and `cancelAll` have the same effect.
+
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
