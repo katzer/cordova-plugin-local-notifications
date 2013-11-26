@@ -159,6 +159,7 @@ The sound must be located in your project's resources and must be a caf file.
  */
 window.plugin.notification.local.add({ sound: 'sub.caf' });
 ```
+**Note:** The right to play notification sounds in the notification center settings has to be granted.
 
 ### LiveTile background images under WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
@@ -173,6 +174,8 @@ All images can be restored to the default ones by canceling the notification.
 
 
 ## Quirks
+### No sound is played on iOS 7
+The right to play notification sounds in the notification center settings has to be granted.
 ### Adding a notification under WP8
 An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
 
