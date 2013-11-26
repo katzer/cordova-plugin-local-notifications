@@ -34,142 +34,142 @@ import android.os.Bundle;
  */
 public class LocalNotificationReceiver extends BroadcastReceiver {
 
-	public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
+    public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
 
-	private Context context;
-	private LocalNotificationOptions options;
+    private Context context;
+    private LocalNotificationOptions options;
 
-	@Override
-	public void onReceive (Context context, Intent intent) {
-		LocalNotificationOptions options = null;
-		Bundle bundle                    = intent.getExtras();
-		JSONObject args;
+    @Override
+    public void onReceive (Context context, Intent intent) {
+        LocalNotificationOptions options = null;
+        Bundle bundle                    = intent.getExtras();
+        JSONObject args;
 
-		try {
-			args    = new JSONObject(bundle.getString(OPTIONS));
-			options = new LocalNotificationOptions(args, context);
-		} catch (JSONException e) {}
+        try {
+            args    = new JSONObject(bundle.getString(OPTIONS));
+            options = new LocalNotificationOptions(args, context);
+        } catch (JSONException e) {}
 
-		this.context = context;
-		this.options = options;
+        this.context = context;
+        this.options = options;
 
-		if (options.getInterval() == 0) {
-			LocalNotification.unpersist(options.getId());
-		} else if (isFirstAlarmInFuture()) {
-			return;
-		}
+        if (options.getInterval() == 0) {
+            LocalNotification.unpersist(options.getId());
+        } else if (isFirstAlarmInFuture()) {
+            return;
+        }
 
-		Builder notification = buildNotification();
+        Builder notification = buildNotification();
 
-		if (!isInBackground(context)) {
-			// exec foreground callback
-			invokeForegroundCallback(options);
-		}
+        if (!isInBackground(context)) {
+            // exec foreground callback
+            invokeForegroundCallback(options);
+        }
 
-		showNotification(notification);
-	}
+        showNotification(notification);
+    }
 
-	/*
-	 * If you set a repeating alarm at 11:00 in the morning and it
-	 * should trigger every morning at 08:00 o'clock, it will
-	 * immediately fire. E.g. Android tries to make up for the
-	 * 'forgotten' reminder for that day. Therefore we ignore the event
-	 * if Android tries to 'catch up'.
-	 */
-	private Boolean isFirstAlarmInFuture () {
-		if (options.getInterval() > 0) {
-			Calendar now    = Calendar.getInstance();
-			Calendar alarm  = options.getCalendar();
+    /*
+     * If you set a repeating alarm at 11:00 in the morning and it
+     * should trigger every morning at 08:00 o'clock, it will
+     * immediately fire. E.g. Android tries to make up for the
+     * 'forgotten' reminder for that day. Therefore we ignore the event
+     * if Android tries to 'catch up'.
+     */
+    private Boolean isFirstAlarmInFuture () {
+        if (options.getInterval() > 0) {
+            Calendar now    = Calendar.getInstance();
+            Calendar alarm  = options.getCalendar();
 
-			int alarmHour   = alarm.get(Calendar.HOUR_OF_DAY);
-			int alarmMin    = alarm.get(Calendar.MINUTE);
-			int currentHour = now.get(Calendar.HOUR_OF_DAY);
-			int currentMin  = now.get(Calendar.MINUTE);
+            int alarmHour   = alarm.get(Calendar.HOUR_OF_DAY);
+            int alarmMin    = alarm.get(Calendar.MINUTE);
+            int currentHour = now.get(Calendar.HOUR_OF_DAY);
+            int currentMin  = now.get(Calendar.MINUTE);
 
-			if (currentHour != alarmHour && currentMin != alarmMin) {
-				return true;
-			}
-		}
+            if (currentHour != alarmHour && currentMin != alarmMin) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Erstellt die Notification.
-	 */
-	private Builder buildNotification () {
-		Builder notification = new Notification.Builder(context)
-		.setContentTitle(options.getTitle())
-		.setContentText(options.getMessage())
-		.setNumber(options.getBadge())
-		.setTicker(options.getTitle())
-		.setSmallIcon(options.getIcon())
-		.setSound(options.getSound());
+    /**
+     * Erstellt die Notification.
+     */
+    private Builder buildNotification () {
+        Builder notification = new Notification.Builder(context)
+        .setContentTitle(options.getTitle())
+        .setContentText(options.getMessage())
+        .setNumber(options.getBadge())
+        .setTicker(options.getTitle())
+        .setSmallIcon(options.getIcon())
+        .setSound(options.getSound());
 
-		setClickEvent(notification);
+        setClickEvent(notification);
 
-		return notification;
-	}
+        return notification;
+    }
 
-	/**
-	 * Fügt der Notification einen onclick Handler hinzu.
-	 */
-	private Builder setClickEvent (Builder notification) {
-		String packageName          = context.getPackageName();
-		Intent launchIntent         = context.getPackageManager().getLaunchIntentForPackage(packageName);
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    /**
+     * Fügt der Notification einen onclick Handler hinzu.
+     */
+    private Builder setClickEvent (Builder notification) {
+        String packageName          = context.getPackageName();
+        Intent launchIntent         = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		return notification.setContentIntent(contentIntent);
-	}
+        return notification.setContentIntent(contentIntent);
+    }
 
-	/**
-	 * Zeigt die Notification an.
-	 */
-	@SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
-	private void showNotification (Builder notification) {
-		NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		int id                  = 0;
+    /**
+     * Zeigt die Notification an.
+     */
+    @SuppressWarnings("deprecation")
+    @SuppressLint("NewApi")
+    private void showNotification (Builder notification) {
+        NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int id                  = 0;
 
-		try {
-			id = Integer.parseInt(options.getId());
-		} catch (Exception e) {}
+        try {
+            id = Integer.parseInt(options.getId());
+        } catch (Exception e) {}
 
         if (Build.VERSION.SDK_INT<16) {
             // build notification for HoneyComb to ICS
-        	mgr.notify(id, notification.getNotification());
+            mgr.notify(id, notification.getNotification());
         } else if (Build.VERSION.SDK_INT>15) {
             // Notification for Jellybean and above
-        	mgr.notify(id, notification.build());
+            mgr.notify(id, notification.build());
         }
-	}
+    }
 
-	/**
-	 * Gibt an, ob die App im Hintergrund läuft.
-	 */
-	private boolean isInBackground (Context context) {
-		return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
-	}
+    /**
+     * Gibt an, ob die App im Hintergrund läuft.
+     */
+    private boolean isInBackground (Context context) {
+        return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
+    }
 
-	/**
-	 * Ruft die `foreground` Callback Funktion auf.
-	 */
-	private void invokeForegroundCallback (LocalNotificationOptions options) {
-		String function = options.getForeground();
+    /**
+     * Ruft die `foreground` Callback Funktion auf.
+     */
+    private void invokeForegroundCallback (LocalNotificationOptions options) {
+        String function = options.getForeground();
 
-		if (function != null) {
-			LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-		}
-	}
+        if (function != null) {
+            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+        }
+    }
 
-	/**
-	 * Ruft die `background` Callback Funktion auf.
-	 */
-	private void invokeBackgroundCallback (LocalNotificationOptions options) {
-		String function = options.getBackground();
+    /**
+     * Ruft die `background` Callback Funktion auf.
+     */
+    private void invokeBackgroundCallback (LocalNotificationOptions options) {
+        String function = options.getBackground();
 
-		if (function != null) {
-			LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-		}
-	}
+        if (function != null) {
+            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+        }
+    }
 }
