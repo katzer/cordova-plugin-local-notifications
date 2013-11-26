@@ -29,13 +29,15 @@
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
-    NSArray             *arguments    = [command arguments];
-    NSMutableDictionary *options      = [arguments objectAtIndex:0];
-    UILocalNotification *notification = [self prepareNotification:options];
+    [self.commandDelegate runInBackground:^{
+        NSArray             *arguments    = [command arguments];
+        NSMutableDictionary *options      = [arguments objectAtIndex:0];
+        UILocalNotification *notification = [self prepareNotification:options];
 
-    notification.userInfo = [self userDict:options];
+        notification.userInfo = [self userDict:options];
 
-    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }];
 }
 
 /**

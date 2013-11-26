@@ -39,6 +39,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 - [feature:] Sound can be specified under Android.
 - [enhancement:] Adding notifications on Android does not block the ui thread anymore.
 - [bugfix:] The app did stop/crash after removing them from recent apps list.
+- [enhancement:] Adding notifications on iOS does not block the ui thread anymore.
 
 #### Version 0.6.0 (16.11.2013)
 - Added WP8 support<br>
