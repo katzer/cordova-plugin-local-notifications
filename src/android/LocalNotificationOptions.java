@@ -12,10 +12,10 @@ package de.appplant.cordova.plugin.localnotification;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.cordova.CordovaInterface;
 import org.json.JSONObject;
 
 import android.app.AlarmManager;
+import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
@@ -29,6 +29,7 @@ public class LocalNotificationOptions {
      */
     private JSONObject options = new JSONObject();
     private String id          = null;
+    private String packageName = null;
     private long interval      = 0;
     private long date          = 0;
 
@@ -36,6 +37,24 @@ public class LocalNotificationOptions {
      * Parse options passed from javascript part of this plugin.
      */
     LocalNotificationOptions (JSONObject options) {
+        packageName = LocalNotification.cordova.getActivity().getPackageName();
+
+        parse(options);
+    }
+
+    /**
+     * Parse options passed from javascript part of this plugin.
+     */
+    LocalNotificationOptions (JSONObject options, Context context) {
+        packageName = context.getPackageName();
+
+        parse(options);
+    }
+
+    /**
+     * Parst die übergebenen Eigenschaften.
+     */
+    private void parse (JSONObject options) {
         String repeat = options.optString("repeat");
 
         this.options = options;
@@ -115,10 +134,8 @@ public class LocalNotificationOptions {
      * Gibt den Pfad zum Icon der Notification an.
      */
     public int getIcon () {
-        int icon                 = 0;
-        CordovaInterface cordova = LocalNotification.cordova;
-        String packageName       = cordova.getActivity().getPackageName();
-        String iconName          = options.optString("icon", "icon");
+        int icon        = 0;
+        String iconName = options.optString("icon", "icon");
 
         icon = getIconValue(packageName, iconName);
 
