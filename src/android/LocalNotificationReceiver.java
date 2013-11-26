@@ -47,7 +47,7 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
 
 		try {
 			args    = new JSONObject(bundle.getString(OPTIONS));
-			options = new LocalNotificationOptions(args);
+			options = new LocalNotificationOptions(args, context);
 		} catch (JSONException e) {}
 
 		this.context = context;
