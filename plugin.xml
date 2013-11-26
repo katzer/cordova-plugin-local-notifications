@@ -9,7 +9,7 @@
 
     <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
     <keywords>notification, local notification, alarm, scheduler, tile, live tiles, ios, android, windows phone 8, wp8</keywords>
-    <license>GPL v2 License</license>
+    <license>LGPL v2.1 License</license>
 
     <author>Sebastián Katzer (github.com/katzer)</author>
 
