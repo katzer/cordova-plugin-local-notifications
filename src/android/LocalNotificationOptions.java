@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.media.RingtoneManager;
@@ -33,28 +34,18 @@ public class LocalNotificationOptions {
     private long interval      = 0;
     private long date          = 0;
 
-    /**
-     * Parse options passed from javascript part of this plugin.
-     */
-    LocalNotificationOptions (JSONObject options) {
-        packageName = LocalNotification.cordova.getActivity().getPackageName();
-
-        parse(options);
+    LocalNotificationOptions (Activity activity) {
+        packageName = activity.getPackageName();
     }
 
-    /**
-     * Parse options passed from javascript part of this plugin.
-     */
-    LocalNotificationOptions (JSONObject options, Context context) {
+    LocalNotificationOptions (Context context) {
         packageName = context.getPackageName();
-
-        parse(options);
     }
 
     /**
      * Parst die übergebenen Eigenschaften.
      */
-    private void parse (JSONObject options) {
+    public LocalNotificationOptions parse (JSONObject options) {
         String repeat = options.optString("repeat");
 
         this.options = options;
@@ -70,6 +61,8 @@ public class LocalNotificationOptions {
         } else if (repeat.equalsIgnoreCase("yearly")) {
             interval = AlarmManager.INTERVAL_DAY*365;
         }
+
+        return this;
     }
 
     /**

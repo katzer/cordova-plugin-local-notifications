@@ -48,7 +48,7 @@ public class LocalNotificationRestore extends BroadcastReceiver {
 
             try {
                 args    = new JSONObject(alarms.getString(alarmId, ""));
-                options = new LocalNotificationOptions(args, context);
+                options = new LocalNotificationOptions(context).parse(args);
 
                 LocalNotification.add(options);
             } catch (JSONException e) {}

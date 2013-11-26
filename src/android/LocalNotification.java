@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.content.Context;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.SharedPreferences;
@@ -36,10 +37,10 @@ import org.apache.cordova.CordovaWebView;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    public static final String PLUGIN_NAME  = "LocalNotification";
+    public static final String PLUGIN_NAME = "LocalNotification";
 
-    public static CordovaInterface cordova  = null;
-    public static  CordovaWebView webView   = null;
+    public static CordovaInterface cordova = null;
+    public static CordovaWebView webView   = null;
 
     @Override
     public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -53,7 +54,8 @@ public class LocalNotification extends CordovaPlugin {
 
         if (action.equalsIgnoreCase("cancel")) {
             JSONObject arguments             = args.getJSONObject(0);
-            LocalNotificationOptions options = new LocalNotificationOptions(arguments);
+            Activity activity                = cordova.getActivity();
+            LocalNotificationOptions options = new LocalNotificationOptions(activity).parse(arguments);
             String alarmId                   = options.getId();
 
             cancel(alarmId);
@@ -77,7 +79,8 @@ public class LocalNotification extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 JSONObject arguments             = args.optJSONObject(0);
-                LocalNotificationOptions options = new LocalNotificationOptions(arguments);
+                Activity activity                = cordova.getActivity();
+                LocalNotificationOptions options = new LocalNotificationOptions(activity).parse(arguments);
 
                 persist(options.getId(), args);
                 add(options);
