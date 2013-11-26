@@ -26,32 +26,32 @@ import android.content.SharedPreferences;
  */
 public class LocalNotificationRestore extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		String pluginName = LocalNotification.PLUGIN_NAME;
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String pluginName = LocalNotification.PLUGIN_NAME;
 
-		if (LocalNotification.cordova == null) {
-			return;
-		}
+        if (LocalNotification.cordova == null) {
+            return;
+        }
 
-		// Obtain alarm details form Shared Preferences
-		SharedPreferences alarms = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
-		Set<String> alarmIds     = alarms.getAll().keySet();
+        // Obtain alarm details form Shared Preferences
+        SharedPreferences alarms = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
+        Set<String> alarmIds     = alarms.getAll().keySet();
 
-		/*
-		 * For each alarm, parse its alarm options and register is again with
-		 * the Alarm Manager
-		 */
-		for (String alarmId : alarmIds) {
-			LocalNotificationOptions options;
-			JSONObject args;
+        /*
+         * For each alarm, parse its alarm options and register is again with
+         * the Alarm Manager
+         */
+        for (String alarmId : alarmIds) {
+            LocalNotificationOptions options;
+            JSONObject args;
 
-			try {
-				args    = new JSONObject(alarms.getString(alarmId, ""));
-				options = new LocalNotificationOptions(args, context);
+            try {
+                args    = new JSONObject(alarms.getString(alarmId, ""));
+                options = new LocalNotificationOptions(args, context);
 
-				LocalNotification.add(options);
-			} catch (JSONException e) {}
-		}
-	}
+                LocalNotification.add(options);
+            } catch (JSONException e) {}
+        }
+    }
 }
