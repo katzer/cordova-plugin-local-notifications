@@ -93,17 +93,20 @@ window.plugin.notification.local.cancelAll();
 ```
 
 
-## Example
+## Examples
 ```javascript
 var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
+/**
+ * Will fire every week on this day, 60 seconds from now.
+ */
 window.plugin.notification.local.add({
-    id:         1,                       // is converted to a string
+    id:         1, // is converted to a string
+    title:      'Great app!',
+    message:    'Reminder',
+    repeat:     'Dont forget to buy some flowers.',
     date:       _60_seconds_from_now,
-    message:    'Hello world!',
-    title:      'Check that out!',
-    repeat:     'weekly',                // will fire every week on this day
     foreground: 'foreground',
     background: 'background'
 });
@@ -115,6 +118,18 @@ function foreground (id) {
 function background (id) {
     console.log('I WAS IN THE BACKGROUND ID='+id)
 }
+```
+```javascript
+/**
+ * Pop's up immediately
+ */
+window.plugin.notification.local.add({ message: 'Great app!' });
+```
+```javascript
+/**
+ * Plays no sound if the notification pop's up
+ */
+window.plugin.notification.local.add({ sound: null });
 ```
 
 
@@ -138,26 +153,21 @@ The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound 
 The sound must be a absolute or relative Uri pointing to the sound file.
 ```javascript
 /**
- * Plays the sound if the notification pop's up.
+ * Plays the sound if the notification pop's up
  */
 window.plugin.notification.local.add({ sound: 'res/sounds/beep.mp3' });
 
 /**
- * Plays the `RingtoneManager.TYPE_ALARM` sound.
+ * Plays the `RingtoneManager.TYPE_ALARM` sound
  */
 window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
-
-/**
- * Plays no sound if the notification pop's up.
- */
-window.plugin.notification.local.add({ sound: null });
 ```
 
 ### Notification sound on iOS
 The sound must be located in your project's resources and must be a caf file.
 ```javascript
 /**
- * Plays the sound if the notification pop's up.
+ * Plays the sound if the notification pop's up
  */
 window.plugin.notification.local.add({ sound: 'sub.caf' });
 ```
