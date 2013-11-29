@@ -9,7 +9,7 @@ by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 - **iOS**<br>
 See [Local and Push Notification Programming Guide](http://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/WhatAreRemoteNotif.html) for detailed informations and screenshots.
 
-- **Android**<br>
+- **Android** *(SDK >=11)*<br>
 See [Notification Guide](http://developer.android.com/guide/topics/ui/notifiers/notifications.html) for detailed informations and screenshots.
 
 - **WP8**<br>
