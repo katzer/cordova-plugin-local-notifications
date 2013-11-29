@@ -1,10 +1,9 @@
 /**
- *  LocalNotificationOptions.java
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 31/08/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 package de.appplant.cordova.plugin.localnotification;
@@ -23,29 +22,26 @@ import android.net.Uri;
 /**
  * Class that helps to store the options that can be specified per alarm.
  */
-public class LocalNotificationOptions {
+public class Options {
 
-    /*
-     * Options that can be set when this plugin is invoked
-     */
     private JSONObject options = new JSONObject();
     private String id          = null;
     private String packageName = null;
     private long interval      = 0;
     private long date          = 0;
 
-    LocalNotificationOptions (Activity activity) {
+    Options (Activity activity) {
         packageName = activity.getPackageName();
     }
 
-    LocalNotificationOptions (Context context) {
+    Options (Context context) {
         packageName = context.getPackageName();
     }
 
     /**
      * Parst die übergebenen Eigenschaften.
      */
-    public LocalNotificationOptions parse (JSONObject options) {
+    public Options parse (JSONObject options) {
         String repeat = options.optString("repeat");
 
         this.options = options;

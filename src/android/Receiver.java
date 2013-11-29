@@ -1,10 +1,9 @@
 /**
- *  LocalNotificationReceiver.java
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 31/08/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 package de.appplant.cordova.plugin.localnotification;
@@ -32,22 +31,22 @@ import android.os.Bundle;
  * Android notification bar. The notification uses the default notification
  * sound and it vibrates the phone.
  */
-public class LocalNotificationReceiver extends BroadcastReceiver {
+public class Receiver extends BroadcastReceiver {
 
     public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
 
     private Context context;
-    private LocalNotificationOptions options;
+    private Options options;
 
     @Override
     public void onReceive (Context context, Intent intent) {
-        LocalNotificationOptions options = null;
-        Bundle bundle                    = intent.getExtras();
+        Options options = null;
+        Bundle bundle   = intent.getExtras();
         JSONObject args;
 
         try {
             args    = new JSONObject(bundle.getString(OPTIONS));
-            options = new LocalNotificationOptions(context).parse(args);
+            options = new Options(context).parse(args);
         } catch (JSONException e) {}
 
         this.context = context;
@@ -62,8 +61,7 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
         Builder notification = buildNotification();
 
         if (!isInBackground(context)) {
-            // exec foreground callback
-            invokeForegroundCallback(options);
+            invokeForegroundCallback();
         }
 
         showNotification(notification);
@@ -154,22 +152,26 @@ public class LocalNotificationReceiver extends BroadcastReceiver {
     /**
      * Ruft die `foreground` Callback Funktion auf.
      */
-    private void invokeForegroundCallback (LocalNotificationOptions options) {
-        String function = options.getForeground();
+    private void invokeForegroundCallback () {
+            String function = options.getForeground();
 
-        if (function != null) {
-            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-        }
+            // after reboot, LocalNotification.webView is always null
+            // may be call foreground callback later
+            if (function != null && LocalNotification.webView != null) {
+                    LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+            }
     }
 
     /**
      * Ruft die `background` Callback Funktion auf.
      */
-    private void invokeBackgroundCallback (LocalNotificationOptions options) {
-        String function = options.getBackground();
+    private void invokeBackgroundCallback () {
+            String function = options.getBackground();
 
-        if (function != null) {
-            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-        }
+            // after reboot, LocalNotification.webView is always null
+            // may be call background callback later
+            if (function != null && LocalNotification.webView != null) {
+                    LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+            }
     }
 }

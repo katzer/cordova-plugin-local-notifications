@@ -50,14 +50,14 @@
              * Android notification bar. The notification uses the default notification
              * sound and it vibrates the phone.
             -->
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.LocalNotificationReceiver" />
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.Receiver" />
 
             <!--
              * This class is triggered upon reboot of the device. It needs to re-register
              * the alarms with the AlarmManager since these alarms are lost in case of
              * reboot.
              -->
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.LocalNotificationRestore" >
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.Restore" >
                 <intent-filter>
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
@@ -66,12 +66,13 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.GET_TASKS" />
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
         </config-file>
 
-        <source-file src="src/android/LocalNotificationReceiver.java" target-dir="src/de/appplant/cordova/plugin/localnotification" />
-        <source-file src="src/android/LocalNotificationOptions.java" target-dir="src/de/appplant/cordova/plugin/localnotification" />
-        <source-file src="src/android/LocalNotificationRestore.java" target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin/localnotification" />
+        <source-file src="src/android/Receiver.java"          target-dir="src/de/appplant/cordova/plugin/localnotification" />
+        <source-file src="src/android/Options.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
+        <source-file src="src/android/Restore.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 
     <!-- wp8 -->

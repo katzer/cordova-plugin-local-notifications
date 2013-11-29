@@ -1,18 +1,17 @@
 /**
- *  LocalNotificationRestore.java
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 31/08/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,15 +23,11 @@ import android.content.SharedPreferences;
  * the alarms with the AlarmManager since these alarms are lost in case of
  * reboot.
  */
-public class LocalNotificationRestore extends BroadcastReceiver {
+public class Restore extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String pluginName = LocalNotification.PLUGIN_NAME;
-
-        if (LocalNotification.cordova == null) {
-            return;
-        }
 
         // Obtain alarm details form Shared Preferences
         SharedPreferences alarms = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
@@ -43,14 +38,12 @@ public class LocalNotificationRestore extends BroadcastReceiver {
          * the Alarm Manager
          */
         for (String alarmId : alarmIds) {
-            LocalNotificationOptions options;
-            JSONObject args;
-
             try {
-                args    = new JSONObject(alarms.getString(alarmId, ""));
-                options = new LocalNotificationOptions(context).parse(args);
+                JSONArray args  = new JSONArray(alarms.getString(alarmId, ""));
+                Options options = new Options(context).parse(args.getJSONObject(0));
 
                 LocalNotification.add(options);
+
             } catch (JSONException e) {}
         }
     }
