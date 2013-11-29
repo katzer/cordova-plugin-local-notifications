@@ -36,19 +36,23 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 
 ## Release Notes
 #### Version 0.6.1 (not yet released)
-- [feature:] Sound can be specified under Android.
+- [feature:] Sound can be specified on Android.
 - [enhancement:] Adding notifications on Android does not block the ui thread anymore.
 - [bugfix:] The app did stop/crash after removing them from recent apps list.
 - [enhancement:] Adding notifications on iOS does not block the ui thread anymore.
+- [bugfix:] Added missing `RECEIVE_BOOT_COMPLETED`permission on Android.
+- [enhancement:] Rework the code for Android. Thanks to ***samsara (samsarayg)***.
+- [bugfix:] `cancel` on iOS did not work do to wrong param type.
+- [enhancement:] `cancel` & `cancelAll` remove the notification(s) from notification center as well on Android.
 
 #### Version 0.6.0 (16.11.2013)
 - Added WP8 support<br>
   *Based on the LiveTiles WP8 plugin made by* ***Jesse MacFadyen (purplecabbage)***
 - [enhancement:] The `add()` function now returns the id of the created notification.
 - [feature:] Added new `title` property.
-- [bugfix:] `cancel` under iOS did not work do to wrong dict key.
-- [enhancement:] All notifications under Android display the app icon by default.
-- [feature:] Icon can be specified under Android.
+- [bugfix:] `cancel` on iOS did not work do to wrong dict key.
+- [enhancement:] All notifications on Android display the app icon by default.
+- [feature:] Icon can be specified on Android.
 
 #### Version 0.4.0 (06.10.2013)
 - Added Android support<br>
