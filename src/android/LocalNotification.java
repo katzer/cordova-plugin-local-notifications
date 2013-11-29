@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -26,7 +27,7 @@ import org.apache.cordova.CordovaWebView;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    public static final String PLUGIN_NAME = "LocalNotification";
+    public final static String PLUGIN_NAME = "LocalNotification";
 
     public static CordovaWebView webView   = null;
     public static Context context          = null;
@@ -77,9 +78,7 @@ public class LocalNotification extends CordovaPlugin {
      *            The options that can be specified per alarm.
      */
     public static void add (Options options) {
-        Helper helper = new Helper(context);
-
-        helper.add(options);
+        getHelper().add(options);
     }
 
     /**
@@ -90,9 +89,7 @@ public class LocalNotification extends CordovaPlugin {
      *            registered using add()
      */
     public static void cancel (String notificationId) {
-        Helper helper = new Helper(context);
-
-        helper.cancel(notificationId);
+        getHelper().cancel(notificationId);
     }
 
     /**
@@ -104,9 +101,7 @@ public class LocalNotification extends CordovaPlugin {
      * by one.
      */
     public static void cancelAll() {
-        Helper helper = new Helper(context);
-
-        helper.cancelAll();
+        getHelper().cancelAll();
     }
 
     /**
@@ -114,13 +109,13 @@ public class LocalNotification extends CordovaPlugin {
      * This will allow the application to restore the alarm upon device reboot.
      * Also this is used by the cancelAll method.
      *
+     * @param alarmId
+     *            The Id of the notification that must be persisted.
      * @param args
      *            The assumption is that parse has been called already.
      */
     public static void persist (String alarmId, JSONArray args) {
-        Helper helper = new Helper(context);
-
-        helper.persist(alarmId, args);
+        getHelper().persist(alarmId, args);
     }
 
     /**
@@ -130,18 +125,25 @@ public class LocalNotification extends CordovaPlugin {
      *            The Id of the notification that must be removed.
      */
     public static void unpersist (String alarmId) {
-        Helper helper = new Helper(context);
-
-        helper.unpersist(alarmId);
+        getHelper().unpersist(alarmId);
     }
 
     /**
      * Clear all alarms from the Android shared Preferences.
      */
     public static void unpersistAll () {
-        Helper helper = new Helper(context);
+        getHelper().unpersistAll();
+    }
 
-        helper.unpersistAll();
+    /**
+     * Local storage of the application.
+     */
+    public static SharedPreferences getSharedPreferences () {
+        return context.getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE);
+    }
+
+    private final static Helper getHelper () {
+        return new Helper(context);
     }
 
     /**
@@ -149,6 +151,6 @@ public class LocalNotification extends CordovaPlugin {
      */
     private void rememberCordovaVarsForStaticUse () {
         LocalNotification.webView = super.webView;
-        LocalNotification.context = super.cordova.getActivity();
+        LocalNotification.context = super.cordova.getActivity().getApplicationContext();
     }
 }

@@ -47,7 +47,9 @@ public class Receiver extends BroadcastReceiver {
         try {
             args    = new JSONObject(bundle.getString(OPTIONS));
             options = new Options(context).parse(args);
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+            return;
+        }
 
         this.context = context;
         this.options = options;

@@ -14,6 +14,7 @@ import java.util.Set;
 import org.json.JSONArray;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +23,10 @@ import android.content.SharedPreferences.Editor;
 
 public class Helper {
 
-	private Context context;
+    private Context context;
 
     public Helper(Context context) {
-    	this.context = context;
+        this.context = context;
     }
 
     /**
@@ -36,10 +37,10 @@ public class Helper {
      */
     public void add (Options options) {
         long triggerTime = options.getDate();
-        Intent intent    = new Intent(context, Receiver.class);
 
-        intent.setAction("" + options.getId());
-        intent.putExtra(Receiver.OPTIONS, options.getJSONObject().toString());
+        Intent intent = new Intent(context, Receiver.class)
+            .setAction("" + options.getId())
+            .putExtra(Receiver.OPTIONS, options.getJSONObject().toString());
 
         AlarmManager am  = getAlarmManager();
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -66,15 +67,15 @@ public class Helper {
          * and cancel it.
          */
 
-        Intent intent = new Intent(context, Receiver.class);
-        intent.setAction("" + notificationId);
+        Intent intent = new Intent(context, Receiver.class)
+            .setAction("" + notificationId);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager am  = getAlarmManager();
+        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager am        = getAlarmManager();
+        NotificationManager nc = getNotificationManager();
 
-        try {
-            am.cancel(pi);
-        } catch (Exception e) {}
+        am.cancel(pi);
+        nc.cancel(Integer.parseInt(notificationId));
     }
 
     /**
@@ -86,13 +87,16 @@ public class Helper {
      * by one.
      */
     public void cancelAll() {
-        SharedPreferences settings = context.getSharedPreferences(LocalNotification.PLUGIN_NAME, Context.MODE_PRIVATE);
+        SharedPreferences settings = LocalNotification.getSharedPreferences();
+        NotificationManager nc     = getNotificationManager();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
 
         for (String alarmId : alarmIds) {
             cancel(alarmId);
         }
+
+        nc.cancelAll();
     }
 
     /**
@@ -100,11 +104,13 @@ public class Helper {
      * This will allow the application to restore the alarm upon device reboot.
      * Also this is used by the cancelAll method.
      *
+     * @param alarmId
+     *            The Id of the notification that must be persisted.
      * @param args
      *            The assumption is that parse has been called already.
      */
     public void persist (String alarmId, JSONArray args) {
-        Editor editor = context.getSharedPreferences(LocalNotification.PLUGIN_NAME, Context.MODE_PRIVATE).edit();
+        Editor editor = LocalNotification.getSharedPreferences().edit();
 
         if (alarmId != null) {
             editor.putString(alarmId, args.toString());
@@ -119,7 +125,7 @@ public class Helper {
      *            The Id of the notification that must be removed.
      */
     public void unpersist (String alarmId) {
-        Editor editor = context.getSharedPreferences(LocalNotification.PLUGIN_NAME, Context.MODE_PRIVATE).edit();
+        Editor editor = LocalNotification.getSharedPreferences().edit();
 
         if (alarmId != null) {
             editor.remove(alarmId);
@@ -131,7 +137,7 @@ public class Helper {
      * Clear all alarms from the Android shared Preferences.
      */
     public void unpersistAll () {
-        Editor editor = context.getSharedPreferences(LocalNotification.PLUGIN_NAME, Context.MODE_PRIVATE).edit();
+        Editor editor = LocalNotification.getSharedPreferences().edit();
 
         editor.clear();
         editor.commit();
@@ -139,5 +145,9 @@ public class Helper {
 
     private AlarmManager getAlarmManager () {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    private NotificationManager getNotificationManager () {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 }

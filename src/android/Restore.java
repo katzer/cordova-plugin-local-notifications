@@ -1,9 +1,10 @@
 /**
+ *  LocalNotificationRestore.java
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer).
+ *  Created by Sebastian Katzer (github.com/katzer) on 31/08/2013.
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  LGPL v2.1 licensed
+ *  GPL v2 licensed
  */
 
 package de.appplant.cordova.plugin.localnotification;
@@ -27,10 +28,8 @@ public class Restore extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String pluginName = LocalNotification.PLUGIN_NAME;
-
         // Obtain alarm details form Shared Preferences
-        SharedPreferences alarms = context.getSharedPreferences(pluginName, Context.MODE_PRIVATE);
+        SharedPreferences alarms = LocalNotification.getSharedPreferences();
         Set<String> alarmIds     = alarms.getAll().keySet();
 
         /*
