@@ -97,17 +97,20 @@ window.plugin.notification.local.cancelAll();
 ```
 
 
-## Example
+## Examples
 ```javascript
 var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
+/**
+ * Will fire every week on this day, 60 seconds from now.
+ */
 window.plugin.notification.local.add({
-    id:         1,                       // is converted to a string
+    id:         1, // is converted to a string
+    title:      'Great app!',
+    message:    'Reminder',
+    repeat:     'Dont forget to buy some flowers.',
     date:       _60_seconds_from_now,
-    message:    'Hello world!',
-    title:      'Check that out!',
-    repeat:     'weekly',                // will fire every week on this day
     foreground: 'foreground',
     background: 'background'
 });
@@ -120,10 +123,22 @@ function background (id) {
     console.log('I WAS IN THE BACKGROUND ID='+id)
 }
 ```
+```javascript
+/**
+ * Pop's up immediately
+ */
+window.plugin.notification.local.add({ message: 'Great app!' });
+```
+```javascript
+/**
+ * Plays no sound if the notification pop's up
+ */
+window.plugin.notification.local.add({ sound: null });
+```
 
 
 ## Platform specifics
-### Notification icon under Android
+### Notification icon on Android
 By default all notifications will display the app icon. But an specific icon can be defined through the `icon` property.
 ```javascript
 /**
@@ -137,37 +152,32 @@ window.plugin.notification.local.add({ icon: 'ic_launcher' });
 window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
 ```
 
-### Notification sound under Android
+### Notification sound on Android
 The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound can be defined through the `sound` property.<br>
 The sound must be a absolute or relative Uri pointing to the sound file.
 ```javascript
 /**
- * Plays the sound if the notification pop's up.
+ * Plays the sound if the notification pop's up
  */
 window.plugin.notification.local.add({ sound: 'res/sounds/beep.mp3' });
 
 /**
- * Plays the `RingtoneManager.TYPE_ALARM` sound.
+ * Plays the `RingtoneManager.TYPE_ALARM` sound
  */
 window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
-
-/**
- * Plays no sound if the notification pop's up.
- */
-window.plugin.notification.local.add({ sound: null });
 ```
 
-### Notification sound under iOS
+### Notification sound on iOS
 The sound must be located in your project's resources and must be a caf file.
 ```javascript
 /**
- * Plays the sound if the notification pop's up.
+ * Plays the sound if the notification pop's up
  */
 window.plugin.notification.local.add({ sound: 'sub.caf' });
 ```
 **Note:** The right to play notification sounds in the notification center settings has to be granted.
 
-### LiveTile background images under WP8
+### LiveTile background images on WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
 An image must be defined as a relative or absolute URI.
 ```javascript
@@ -182,10 +192,10 @@ All images can be restored to the default ones by canceling the notification.
 ## Quirks
 ### No sound is played on iOS 7
 The right to play notification sounds in the notification center settings has to be granted.
-### Adding a notification under WP8
+### Adding a notification on WP8
 An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
 
-### Canceling a notification under WP8
+### Canceling a notification on WP8
 The methods `cancel` and `cancelAll` have the same effect.
 
 
