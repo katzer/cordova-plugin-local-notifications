@@ -98,13 +98,13 @@ public class LocalNotification extends CordovaPlugin {
         intent.setAction("" + options.getId());
         intent.putExtra(LocalNotificationReceiver.OPTIONS, options.getJSONObject().toString());
 
-        AlarmManager am      = getAlarmManager();
-        PendingIntent sender = PendingIntent.getBroadcast(cordova.getActivity(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager am  = getAlarmManager();
+        PendingIntent pi = PendingIntent.getBroadcast(cordova.getActivity(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (options.getInterval() > 0) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, options.getInterval(), sender);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, options.getInterval(), pi);
         } else {
-            am.set(AlarmManager.RTC_WAKEUP, triggerTime, sender);
+            am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
         }
     }
 
