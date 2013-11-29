@@ -53,13 +53,10 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         if (action.equalsIgnoreCase("cancel")) {
-            JSONObject arguments             = args.getJSONObject(0);
-            Activity activity                = cordova.getActivity();
-            LocalNotificationOptions options = new LocalNotificationOptions(activity).parse(arguments);
-            String alarmId                   = options.getId();
+            String id = args.optString(0);
 
-            cancel(alarmId);
-            unpersist(alarmId);
+            cancel(id);
+            unpersist(id);
 
             return true;
         }
