@@ -4,7 +4,7 @@
  *
  *  Created by Sebastian Katzer (github.com/katzer) on 31/08/2013.
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 package de.appplant.cordova.plugin.localnotification;
