@@ -36,6 +36,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 
 ## Release Notes
 #### Version 0.6.1 (not yet released)
+- Release under the LGPL 2.1 license.
 - [feature:] Sound can be specified on Android.
 - [enhancement:] Adding notifications on Android does not block the ui thread anymore.
 - [bugfix:] The app did stop/crash after removing them from recent apps list.
@@ -214,3 +215,7 @@ ren platforms\wp8\cordova\version.bat platforms\wp8\cordova\version
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## License
+
+This software is released under the [LGPL 2.1 License](http://opensource.org/licenses/LGPL-2.1).
