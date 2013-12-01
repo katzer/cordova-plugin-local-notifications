@@ -1,10 +1,9 @@
 /**
- *  APPLocalNotification.h
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 10/08/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 #import <Foundation/Foundation.h>

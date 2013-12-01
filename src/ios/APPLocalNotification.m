@@ -1,21 +1,22 @@
 /**
- *  APPLocalNotification.m
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 10/08/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 #import "APPLocalNotification.h"
 
-
 @interface APPLocalNotification (Private)
 
 - (NSMutableDictionary*) repeatDict;
+// Alle zusätzlichen Metadaten der Notification als Hash
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
-- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options;
-- (void) didReceiveLocalNotification:(NSNotification *)localNotification;
+// Erstellt die Notification und setzt deren Eigenschaften
+- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options;
+// Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist
+- (void) didReceiveLocalNotification:(NSNotification*)localNotification;
 
 @end
 
@@ -25,16 +26,14 @@
 /**
  * Fügt eine neue Notification-Eintrag hinzu.
  *
- * @param {NSMutableDictionary} options
+ * @param {NSMutableDictionary} options Die Eigenschaften der Notification
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSArray             *arguments    = [command arguments];
-        NSMutableDictionary *options      = [arguments objectAtIndex:0];
-        UILocalNotification *notification = [self prepareNotification:options];
-
-        notification.userInfo = [self userDict:options];
+        NSArray* arguments                = [command arguments];
+        NSMutableDictionary* options      = [arguments objectAtIndex:0];
+        UILocalNotification* notification = [self notificationWithProperties:options];
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     }];
@@ -47,9 +46,9 @@
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
-    NSArray  *arguments      = [command arguments];
-    NSString *notificationId = [arguments objectAtIndex:0];
-    NSArray  *notifications  = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    NSArray* arguments       = [command arguments];
+    NSString* notificationId = [arguments objectAtIndex:0];
+    NSArray* notifications   = [[UIApplication sharedApplication] scheduledLocalNotifications];
 
     for (UILocalNotification *notification in notifications)
     {
@@ -75,7 +74,7 @@
  */
 - (NSMutableDictionary*) repeatDict
 {
-    NSMutableDictionary *repeatDict = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* repeatDict = [[NSMutableDictionary alloc] init];
 
     [repeatDict setObject:[NSNumber numberWithInt:NSDayCalendarUnit]   forKey:@"daily"];
     [repeatDict setObject:[NSNumber numberWithInt:NSWeekCalendarUnit]  forKey:@"weekly"];
@@ -87,7 +86,7 @@
 }
 
 /**
- * @private
+ * Alle zusätzlichen Metadaten der Notification als Hash.
  */
 - (NSDictionary*) userDict:(NSMutableDictionary*)options
 {
@@ -99,10 +98,9 @@
 }
 
 /**
- * @private
  * Erstellt die Notification und setzt deren Eigenschaften.
  */
-- (UILocalNotification*) prepareNotification:(NSMutableDictionary*)options
+- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options
 {
     UILocalNotification* notification = [[UILocalNotification alloc] init];
 
@@ -111,53 +109,64 @@
     NSString* title     = [options objectForKey:@"title"];
     NSString* sound     = [options objectForKey:@"sound"];
     NSString* repeat    = [options objectForKey:@"repeat"];
-    bool      hasAction = ([[options objectForKey:@"hasAction"] intValue] == 1)?YES:NO;
     NSInteger badge     = [[options objectForKey:@"badge"] intValue];
-    NSDate*   date      = [NSDate dateWithTimeIntervalSince1970:timestamp];
 
-    notification.fireDate       = date;
+    notification.fireDate       = [NSDate dateWithTimeIntervalSince1970:timestamp];
     notification.timeZone       = [NSTimeZone defaultTimeZone];
     notification.repeatInterval = [[[self repeatDict] objectForKey: repeat] intValue];
+    notification.userInfo       = [self userDict:options];
+
+    notification.applicationIconBadgeNumber = badge;
+
 
     if (![msg isEqualToString:@""])
     {
-        notification.alertBody = title ? [NSString stringWithFormat:@"%@\n%@", title, msg] : msg;
+        if (title)
+        {
+            notification.alertBody = [NSString stringWithFormat:@"%@\n%@", title, msg];
+        }
+        else
+        {
+            notification.alertBody = msg;
+        }
     }
 
-    if (sound != (NSString *) [NSNull null])
+    if (sound != (NSString*)[NSNull null])
     {
-        notification.soundName = [sound isEqualToString:@""] ? UILocalNotificationDefaultSoundName : sound;
+        if ([sound isEqualToString:@""]) {
+            notification.soundName = UILocalNotificationDefaultSoundName;
+        }
+        else
+        {
+            notification.soundName = sound;
+        }
     }
-
-    notification.hasAction                  = hasAction;
-    notification.applicationIconBadgeNumber = badge;
 
     return notification;
 }
 
 /**
- * @private
  * Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist.
  */
-- (void) didReceiveLocalNotification:(NSNotification *)localNotification
+- (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
-    UILocalNotification* notification = [localNotification object];
-    UIApplicationState   state        = [[UIApplication sharedApplication] applicationState];
-    bool                 isActive     = state == UIApplicationStateActive;
+    UIApplicationState state          = [[UIApplication sharedApplication] applicationState];
+    bool isActive                     = state == UIApplicationStateActive;
 
-    NSString* id         = [notification.userInfo objectForKey:@"id"];
-    NSString* callbackFn = [notification.userInfo objectForKey:isActive ? @"foreground" : @"background"];
+    UILocalNotification* notification = [localNotification object];
+    NSString* id                      = [notification.userInfo objectForKey:@"id"];
+    NSString* callbackType            = isActive ? @"foreground" : @"background";
+    NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
 
     if (callbackFn.length > 0)
     {
-        NSString* jsCallBack = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
+        NSString* callback = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
 
-        [self writeJavascript:jsCallBack];
+        [self writeJavascript:callback];
     }
 }
 
 /**
- * @private
  * Registriert den Observer für LocalNotification Events.
  */
 - (void) pluginInitialize
