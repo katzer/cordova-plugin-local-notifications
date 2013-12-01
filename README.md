@@ -195,9 +195,17 @@ The right to play notification sounds in the notification center settings has to
 ### Adding a notification on WP8
 An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
 
-### Canceling a notification on WP8
-The methods `cancel` and `cancelAll` have the same effect.
+### TypeError: Cannot read property 'currentVersion' of null
+Along with Cordova 3.2 and Windows Phone 8 the `version.bat` script has to be renamed to `version`.
 
+On Mac or Linux
+```
+mv platforms/wp8/cordova/version.bat platforms/wp8/cordova/version
+```
+On Windows
+```
+ren platforms\wp8\cordova\version.bat platforms\wp8\cordova\version
+```
 
 ## Contributing
 
