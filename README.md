@@ -99,13 +99,11 @@ window.plugin.notification.local.cancelAll();
 
 
 ## Examples
+#### Will fire every week on this day, 60 seconds from now
 ```javascript
 var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
-/**
- * Will fire every week on this day, 60 seconds from now.
- */
 window.plugin.notification.local.add({
     id:         1, // is converted to a string
     title:      'Great app!',
@@ -124,16 +122,12 @@ function background (id) {
     console.log('I WAS IN THE BACKGROUND ID='+id)
 }
 ```
+#### Pop's up immediately
 ```javascript
-/**
- * Pop's up immediately
- */
 window.plugin.notification.local.add({ message: 'Great app!' });
 ```
+#### Plays no sound if the notification pop's up
 ```javascript
-/**
- * Plays no sound if the notification pop's up
- */
 window.plugin.notification.local.add({ sound: null });
 ```
 
