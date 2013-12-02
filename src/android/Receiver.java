@@ -115,9 +115,10 @@ public class Receiver extends BroadcastReceiver {
      * Fügt der Notification einen onclick Handler hinzu.
      */
     private Builder setClickEvent (Builder notification) {
-        String packageName          = context.getPackageName();
-        Intent launchIntent         = context.getPackageManager().getLaunchIntentForPackage(packageName);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(context, ReceiverActivity.class)
+            .putExtra(OPTIONS, options.getJSONObject().toString());
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         return notification.setContentIntent(contentIntent);
     }
@@ -159,19 +160,6 @@ public class Receiver extends BroadcastReceiver {
 
             // after reboot, LocalNotification.webView is always null
             // may be call foreground callback later
-            if (function != null && LocalNotification.webView != null) {
-                    LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-            }
-    }
-
-    /**
-     * Ruft die `background` Callback Funktion auf.
-     */
-    private void invokeBackgroundCallback () {
-            String function = options.getBackground();
-
-            // after reboot, LocalNotification.webView is always null
-            // may be call background callback later
             if (function != null && LocalNotification.webView != null) {
                     LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
             }

@@ -63,6 +63,13 @@
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
+
+            <!--
+             * The receiver activity is triggered when a notification is clicked by a user.
+             * The activity calls the background callback and brings the launch inten
+             * up to foreground.
+            -->
+            <activity android:name="de.appplant.cordova.plugin.localnotification.ReceiverActivity"></activity>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
@@ -74,6 +81,7 @@
         <source-file src="src/android/Receiver.java"          target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/Options.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/Restore.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
+        <source-file src="src/android/ReceiverActivity.java"  target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 
     <!-- wp8 -->
