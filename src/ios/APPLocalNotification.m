@@ -158,7 +158,7 @@
     NSString* callbackType            = isActive ? @"foreground" : @"background";
     NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
 
-    if (callbackFn.length > 0)
+    if (callbackFn && callbackFn.length > 0)
     {
         NSString* callback = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
 

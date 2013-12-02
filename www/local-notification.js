@@ -26,8 +26,8 @@ LocalNotification.prototype = {
             badge:      0,
             id:         0,
             repeat:     '',
-            background: '',
-            foreground: ''
+            background: undefined,
+            foreground: undefined
         };
 
         switch (device.platform) {
