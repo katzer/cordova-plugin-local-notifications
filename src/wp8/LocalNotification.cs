@@ -1,10 +1,9 @@
 /**
- *  LocalNotification.cs
  *  Cordova LocalNotification Plugin
  *
- *  Created by Sebastian Katzer (github.com/katzer) on 07/10/2013.
+ *  Created by Sebastian Katzer (github.com/katzer).
  *  Copyright 2013 Sebastian Katzer. All rights reserved.
- *  GPL v2 licensed
+ *  LGPL v2.1 licensed
  */
 
 using System;

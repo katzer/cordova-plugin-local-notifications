@@ -1,3 +1,11 @@
+/**
+ *  Cordova LocalNotification Plugin
+ *
+ *  Created by Sebastian Katzer (github.com/katzer).
+ *  Copyright 2013 Sebastian Katzer. All rights reserved.
+ *  LGPL v2.1 licensed
+ */
+
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
