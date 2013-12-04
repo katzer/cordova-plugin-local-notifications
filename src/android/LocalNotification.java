@@ -210,8 +210,8 @@ public class LocalNotification extends CordovaPlugin {
      * Set the application context if not already set.
      */
     public static void setContext (Context context) {
-        if (this.context == null) {
-            this.context = context;
+        if (LocalNotification.context == null) {
+            LocalNotification.context = context;
         }
     }
 
