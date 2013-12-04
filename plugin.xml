@@ -3,14 +3,14 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notifications"
-        version="0.6.1">
+        version="0.6.2">
 
     <name>LocalNotifications</name>
 
     <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
     <keywords>notification, local notification, alarm, scheduler, tile, live tiles, ios, android, windows phone 8, wp8</keywords>
-    <license>LGPL v2.1 License</license>
+    <license>Apache 2.0</license>
 
     <author>Sebastián Katzer</author>
 

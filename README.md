@@ -35,6 +35,9 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
 ## Release Notes
+#### Version 0.6.2 (04.12.2013)
+- Release under the Apache 2.0 license.
+
 #### Version 0.6.1 (04.12.2013)
 - Release under the LGPL 2.1 license.
 - [feature:] Sound can be specified on Android.
@@ -220,4 +223,4 @@ The launch mode for the main activity has to be set to `singleInstance`
 
 ## License
 
-This software is released under the [LGPL 2.1 License](http://opensource.org/licenses/LGPL-2.1).
+This software is released under the [Apache 2.0 License](http://opensource.org/licenses/Apache-2.0).
