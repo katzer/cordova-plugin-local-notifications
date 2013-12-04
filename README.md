@@ -46,6 +46,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 - [bugfix:] `cancel` on iOS did not work do to wrong param type.
 - [enhancement:] `cancel` & `cancelAll` remove the notification(s) from notification center as well on Android.
 - [bugfix:] Missing background callback on Android.
+- [bugfix:] Android notification is not shown when the app is not running.
 
 #### Version 0.6.0 (16.11.2013)
 - Added WP8 support<br>

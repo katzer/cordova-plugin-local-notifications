@@ -40,6 +40,8 @@ public class Restore extends BroadcastReceiver {
                 JSONArray args  = new JSONArray(alarms.getString(alarmId, ""));
                 Options options = new Options(context).parse(args.getJSONObject(0));
 
+                // The context got lost after reboot
+                LocalNotification.setContext(context);
                 LocalNotification.add(options);
 
             } catch (JSONException e) {}

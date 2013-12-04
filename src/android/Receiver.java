@@ -54,6 +54,9 @@ public class Receiver extends BroadcastReceiver {
         this.context = context;
         this.options = options;
 
+        // The context may got lost if the app was not running before
+        LocalNotification.setContext(context);
+
         if (options.getInterval() == 0) {
             LocalNotification.unpersist(options.getId());
         } else if (isFirstAlarmInFuture()) {

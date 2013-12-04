@@ -194,6 +194,15 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Set the application context if not already set.
+     */
+    public static void setContext (Context context) {
+        if (this.context == null) {
+            this.context = context;
+        }
+    }
+
+    /**
      * The Local storage for the application.
      */
     public static SharedPreferences getSharedPreferences () {
