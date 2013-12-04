@@ -107,9 +107,9 @@ var now                  = new Date().getTime(),
 
 window.plugin.notification.local.add({
     id:         1, // is converted to a string
-    title:      'Great app!',
-    message:    'Reminder',
-    repeat:     'Dont forget to buy some flowers.',
+    title:      'Reminder',
+    message:    'Dont forget to buy some flowers.',
+    repeat:     'weekly',
     date:       _60_seconds_from_now,
     foreground: 'foreground',
     background: 'background'
