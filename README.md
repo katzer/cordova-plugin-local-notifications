@@ -35,7 +35,7 @@ cordova plugin rm de.appplant.cordova.plugin.local-notifications
 ```
 
 ## Release Notes
-#### Version 0.6.1 (not yet released)
+#### Version 0.6.1 (04.12.2013)
 - Release under the LGPL 2.1 license.
 - [feature:] Sound can be specified on Android.
 - [enhancement:] Adding notifications on Android does not block the ui thread anymore.
