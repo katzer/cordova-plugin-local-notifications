@@ -132,7 +132,8 @@ public class Receiver extends BroadcastReceiver {
      */
     private Builder setClickEvent (Builder notification) {
         Intent intent = new Intent(context, ReceiverActivity.class)
-            .putExtra(OPTIONS, options.getJSONObject().toString());
+            .putExtra(OPTIONS, options.getJSONObject().toString())
+            .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 

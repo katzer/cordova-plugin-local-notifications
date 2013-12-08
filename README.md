@@ -35,6 +35,9 @@ cordova plugin rm de.appplant.cordova.plugin.local-notification
 ```
 
 ## Release Notes
+#### Version 0.7.0 (not yet released)
+- [bugfix:] Black screen on Android (#23)
+
 #### Version 0.6.2 (04.12.2013)
 - Release under the Apache 2.0 license.
 
