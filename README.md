@@ -161,7 +161,7 @@ The sound must be a absolute or relative Uri pointing to the sound file. The def
 /**
  * Plays the `beep.mp3` sound if the notification pop's up
  */
-window.plugin.notification.local.add({ sound: "android.resource://" + package_name + "/raw/beep" });
+window.plugin.notification.local.add({ sound: 'android.resource://' + package_name + '/raw/beep' });
 
 /**
  * Plays the `RingtoneManager.TYPE_ALARM` sound
