@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -135,7 +136,9 @@ public class Receiver extends BroadcastReceiver {
             .putExtra(OPTIONS, options.getJSONObject().toString())
             .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        int requestCode = new Random().nextInt();
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         return notification.setContentIntent(contentIntent);
     }
