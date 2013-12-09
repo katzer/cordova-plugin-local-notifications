@@ -160,15 +160,16 @@ The default sound is `RingtoneManager.TYPE_NOTIFICATION`. But an specific sound 
 The sound must be a absolute or relative Uri pointing to the sound file.
 ```javascript
 /**
- * Plays the sound if the notification pop's up
+ * Plays the `beep.mp3` sound if the notification pop's up
  */
-window.plugin.notification.local.add({ sound: 'res/sounds/beep.mp3' });
+window.plugin.notification.local.add({ "android.resource://" + package_name + "/raw/beep" });
 
 /**
  * Plays the `RingtoneManager.TYPE_ALARM` sound
  */
 window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
 ```
+**Note:** Images or sounds must be placed into the res-folder and not into the assets-folder.
 
 ### Notification sound on iOS
 The sound must be located in your project's resources and must be a caf file.
