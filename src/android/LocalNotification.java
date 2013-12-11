@@ -138,7 +138,10 @@ public class LocalNotification extends CordovaPlugin {
         NotificationManager nc = getNotificationManager();
 
         am.cancel(pi);
-        nc.cancel(Integer.parseInt(notificationId));
+
+        try {
+            nc.cancel(Integer.parseInt(notificationId));
+        } catch (Exception e) {}
     }
 
     /**
