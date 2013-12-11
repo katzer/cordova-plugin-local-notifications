@@ -34,6 +34,17 @@ Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/gui
 cordova plugin rm de.appplant.cordova.plugin.local-notification
 ```
 
+## PhoneGap Build
+Add the following xml to your config.xml to always use the latest version of this plugin:
+```
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" />
+```
+or to use this exact version: 
+```
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.6.2" />
+```
+More informations can be found [here](https://build.phonegap.com/plugins/331).
+
 ## Release Notes
 #### Version 0.7.0 (not yet released)
 - [bugfix:] Black screen on Android (#23)
