@@ -40,6 +40,9 @@ public class Restore extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // The application context needs to be set as first
+        LocalNotification.setContext(context);
+
         // Obtain alarm details form Shared Preferences
         SharedPreferences alarms = LocalNotification.getSharedPreferences();
         Set<String> alarmIds     = alarms.getAll().keySet();
@@ -53,8 +56,6 @@ public class Restore extends BroadcastReceiver {
                 JSONArray args  = new JSONArray(alarms.getString(alarmId, ""));
                 Options options = new Options(context).parse(args.getJSONObject(0));
 
-                // The context got lost after reboot
-                LocalNotification.setContext(context);
                 LocalNotification.add(options);
 
             } catch (JSONException e) {}
