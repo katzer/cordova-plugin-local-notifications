@@ -5,7 +5,7 @@
         id="de.appplant.cordova.plugin.local-notification"
         version="0.7.0dev">
 
-    <name>LocalNotifications</name>
+    <name>LocalNotification</name>
 
     <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
