@@ -39,7 +39,7 @@ Add the following xml to your config.xml to always use the latest version of thi
 ```
 <gap:plugin name="de.appplant.cordova.plugin.local-notification" />
 ```
-or to use this exact version: 
+or to use this exact version:
 ```
 <gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.6.2" />
 ```
@@ -48,6 +48,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 ## Release Notes
 #### Version 0.7.0 (not yet released)
 - [bugfix:] Black screen on Android (#23)
+- Calling `cancel` on Android with an invalid String as ID does not throw an error anymore.
 
 #### Version 0.6.2 (04.12.2013)
 - Release under the Apache 2.0 license.
