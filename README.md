@@ -103,11 +103,12 @@ window.plugin.notification.local.add({
     background: String, // a javascript function to be called if the app is in the background
 });
 ```
+**Note:** On Android the notification id needs to be a string which can be converted to a number. If the ID has an invalid format, it will be ignored, but canceling the notification will fail.
 
 ### cancel()
 The method cancels a notification which was previously added. It takes the ID of the notification as an argument.
 ```javascript
-window.plugin.notification.local.cancel(__id__);
+window.plugin.notification.local.cancel(String);
 ```
 
 ### cancelAll()
