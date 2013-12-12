@@ -47,6 +47,8 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 
 ## Release Notes
 #### Version 0.7.0 (not yet released)
+
+#### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
 - [bugfix:] App throws an error on reboot on Android.
 - Calling `cancel` on Android with an invalid String as ID does not throw an error anymore.
