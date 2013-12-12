@@ -70,7 +70,7 @@ public class ReceiverActivity extends Activity {
         // after reboot, LocalNotification.webView is always null
         // may be call background callback later
         if (function != null && LocalNotification.webView != null) {
-            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+            LocalNotification.webView.sendJavascript("setTimeout('" + function + "(" + options.getId() + ")',0)");
         }
     }
 }
