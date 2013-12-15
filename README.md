@@ -47,6 +47,8 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 
 ## Release Notes
 #### Version 0.7.0 (not yet released)
+- [bugfix:] App throws an error on iOS if `message` is null.
+- [bugfix:] Removed extra line break on iOS if `title` is null or empty.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
