@@ -157,6 +157,12 @@ window.plugin.notification.local.add({ message: 'Great app!' });
 ```javascript
 window.plugin.notification.local.add({ sound: null });
 ```
+#### Cancel notification immediatly after creation
+```javascript
+window.plugin.notification.local.add({ id: 1, message: 'Reminder' });
+// `add` is executed asynchron!
+setTimeout('plugin.notification.local.cancel(1)', 200);
+```
 
 
 ## Platform specifics
