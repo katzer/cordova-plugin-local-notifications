@@ -59,19 +59,21 @@
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
-    NSArray* arguments       = [command arguments];
-    NSString* notificationId = [arguments objectAtIndex:0];
-    NSArray* notifications   = [[UIApplication sharedApplication] scheduledLocalNotifications];
+    [self.commandDelegate runInBackground:^{
+        NSArray* arguments       = [command arguments];
+        NSString* notificationId = [arguments objectAtIndex:0];
+        NSArray* notifications   = [[UIApplication sharedApplication] scheduledLocalNotifications];
 
-    for (UILocalNotification *notification in notifications)
-    {
-        NSString *id = [notification.userInfo objectForKey:@"id"];
-
-        if ([notificationId isEqualToString:id])
+        for (UILocalNotification* notification in notifications)
         {
-            [[UIApplication sharedApplication] cancelLocalNotification:notification];
+            NSString* id = [notification.userInfo objectForKey:@"id"];
+
+            if ([notificationId isEqualToString:id])
+            {
+                [[UIApplication sharedApplication] cancelLocalNotification:notification];
+            }
         }
-    }
+    }];
 }
 
 /**
