@@ -49,6 +49,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 #### Version 0.7.0 (not yet released)
 - [bugfix:] App throws an error on iOS if `message` is null.
 - [bugfix:] Removed extra line break on iOS if `title` is null or empty.
+- [bugfix:] Notification on iOS will be canceled if a new one with the same ID was added.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.

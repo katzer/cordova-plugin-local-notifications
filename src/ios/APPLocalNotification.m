@@ -23,6 +23,8 @@
 
 @interface APPLocalNotification (Private)
 
+// Entfernt die zur ID passende Meldung
+ - (void) cancelNotificationWithId:(NSString*)notificationId;
 - (NSMutableDictionary*) repeatDict;
 // Alle zusätzlichen Metadaten der Notification als Hash
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
@@ -47,32 +49,24 @@
         NSArray* arguments                = [command arguments];
         NSMutableDictionary* options      = [arguments objectAtIndex:0];
         UILocalNotification* notification = [self notificationWithProperties:options];
+        NSString* notificationId          = [notification.userInfo objectForKey:@"id"];
+
+        [self cancelNotificationWithId:notificationId];
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     }];
 }
 
 /**
- * Entfernt den anhand der ID angegebenen Eintrag.
- *
- * @param {NSString} id Die ID der Notification
+ * Entfernt die zur ID passende Meldung.
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
         NSArray* arguments       = [command arguments];
         NSString* notificationId = [arguments objectAtIndex:0];
-        NSArray* notifications   = [[UIApplication sharedApplication] scheduledLocalNotifications];
 
-        for (UILocalNotification* notification in notifications)
-        {
-            NSString* id = [notification.userInfo objectForKey:@"id"];
-
-            if ([notificationId isEqualToString:id])
-            {
-                [[UIApplication sharedApplication] cancelLocalNotification:notification];
-            }
-        }
+        [self cancelNotificationWithId:notificationId];
     }];
 }
 
@@ -82,6 +76,31 @@
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
+}
+
+/**
+ * Entfernt die zur ID passende Meldung.
+ *
+ * @param {NSString} id Die ID der Notification
+ */
+- (void) cancelNotificationWithId:(NSString*)notificationId
+{
+    NSArray* notifications = [[UIApplication sharedApplication] scheduledLocalNotifications];
+
+    if (notificationId == (NSString*)[NSNull null] || [notificationId isEqualToString:@""])
+    {
+        return;
+    }
+
+    for (UILocalNotification* notification in notifications)
+    {
+        NSString* id = [notification.userInfo objectForKey:@"id"];
+
+        if ([notificationId isEqualToString:id])
+        {
+            [[UIApplication sharedApplication] cancelLocalNotification:notification];
+        }
+    }
 }
 
 /**
