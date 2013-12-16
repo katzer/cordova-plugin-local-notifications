@@ -93,6 +93,12 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
         public string Foreground { get; set; }
 
         /// <summary>
+        /// Setting this flag will make it so the notification is automatically canceled when the user clicks it
+        /// </summary>
+        [DataMember(IsRequired = false, Name = "autoCancel")]
+        public bool AutoCancel { get; set; }
+
+        /// <summary>
         /// The notification small background image to be displayed
         /// </summary>
         [DataMember(IsRequired = false, Name = "smallImage")]

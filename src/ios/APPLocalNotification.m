@@ -23,8 +23,6 @@
 
 @interface APPLocalNotification (Private)
 
-// Entfernt die zur ID passende Meldung
- - (void) cancelNotificationWithId:(NSString*)notificationId;
 - (NSMutableDictionary*) repeatDict;
 // Alle zusätzlichen Metadaten der Notification als Hash
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
@@ -58,7 +56,9 @@
 }
 
 /**
- * Entfernt die zur ID passende Meldung.
+ * Entfernt den anhand der ID angegebenen Eintrag.
+ *
+ * @param {NSString} id Die ID der Notification
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
@@ -79,7 +79,7 @@
 }
 
 /**
- * Entfernt die zur ID passende Meldung.
+ * Entfernt den anhand der ID angegebenen Eintrag.
  *
  * @param {NSString} id Die ID der Notification
  */
@@ -127,8 +127,9 @@
     NSString* id = [options objectForKey:@"id"];
     NSString* bg = [options objectForKey:@"background"];
     NSString* fg = [options objectForKey:@"foreground"];
+    NSString* ac = [options objectForKey:@"autoCancel"];
 
-    return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", ac, @"autoCancel", nil];
 }
 
 /**
@@ -191,6 +192,12 @@
     NSString* id                      = [notification.userInfo objectForKey:@"id"];
     NSString* callbackType            = isActive ? @"foreground" : @"background";
     NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
+    BOOL autoCancel                   = [[notification.userInfo objectForKey:@"autoCancel"] boolValue];
+
+    if (autoCancel && !isActive)
+    {
+        [[UIApplication sharedApplication] cancelLocalNotification:notification];
+    }
 
     if (callbackFn && callbackFn.length > 0)
     {

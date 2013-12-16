@@ -38,10 +38,8 @@ import android.net.Uri;
 public class Options {
 
     private JSONObject options = new JSONObject();
-    private String id          = null;
     private String packageName = null;
     private long interval      = 0;
-    private long date          = 0;
 
     Options (Activity activity) {
         packageName = activity.getPackageName();
@@ -58,8 +56,6 @@ public class Options {
         String repeat = options.optString("repeat");
 
         this.options = options;
-        date         = options.optLong("date") * 1000;
-        id           = options.optString("id");
 
         if (repeat.equalsIgnoreCase("daily")) {
             interval = AlarmManager.INTERVAL_DAY;
@@ -85,7 +81,7 @@ public class Options {
      * Gibt die Zeit in Sekunden an, wann die Notification aufpoppen soll.
      */
     public long getDate() {
-        return date;
+        return options.optLong("date", 0) * 1000;
     }
 
     /**
@@ -103,14 +99,14 @@ public class Options {
      * Gibt die Nachricht der Notification an.
      */
     public String getMessage () {
-        return options.optString("message");
+        return options.optString("message", "");
     }
 
     /**
      * Gibt den Titel der Notification an.
      */
     public String getTitle () {
-        return options.optString("title");
+        return options.optString("title", "");
     }
 
     /**
@@ -184,7 +180,14 @@ public class Options {
      * Gibt die Callback-ID des PluginResults an.
      */
     public String getId () {
-        return id;
+        return options.optString("id", "0");
+    }
+
+    /**
+     * Gibt an, ob die Notification automatisch geschlossen werden soll, wenn der Benutzer darauf klickt.
+     */
+    public Boolean getAutoCancel () {
+        return options.optBoolean("autoCancel", false);
     }
 
     /**

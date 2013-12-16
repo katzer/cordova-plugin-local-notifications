@@ -121,7 +121,8 @@ public class Receiver extends BroadcastReceiver {
         .setNumber(options.getBadge())
         .setTicker(options.getTitle())
         .setSmallIcon(options.getIcon())
-        .setSound(options.getSound());
+        .setSound(options.getSound())
+        .setAutoCancel(options.getAutoCancel());
 
         setClickEvent(notification);
 

@@ -50,6 +50,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [bugfix:] App throws an error on iOS if `message` is null.
 - [bugfix:] Removed extra line break on iOS if `title` is null or empty.
 - [bugfix:] Notification on iOS will be canceled if a new one with the same ID was added.
+- [enhancement:] Added `autoCancel` flag.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
@@ -99,15 +100,16 @@ All properties are optional. If no date object is given, the notification will p
 
 ```javascript
 window.plugin.notification.local.add({
-    id:         String, // a unique id of the notifiction
-    date:       Date,   // this expects a date object
-    message:    String, // the message that is displayed
-    title:      String, // the title of the message
-    repeat:     String, // has the options of daily', 'weekly',''monthly','yearly')
-    badge:      Number, // displays number badge to notification
-    sound:      String, // a sound to be played (iOS & Android)
-    foreground: String, // a javascript function to be called if the app is running
-    background: String, // a javascript function to be called if the app is in the background
+    id:         String,  // A unique id of the notifiction
+    date:       Date,    // This expects a date object
+    message:    String,  // The message that is displayed
+    title:      String,  // The title of the message
+    repeat:     String,  // Has the options of daily', 'weekly',''monthly','yearly')
+    badge:      Number,  // Displays number badge to notification
+    sound:      String,  // A sound to be played (iOS & Android)
+    autoCancel: Boolean, // Setting this flag and the notification is automatically canceled when the user clicks it
+    foreground: String,  // A javascript function to be called if the app is running
+    background: String,  // A javascript function to be called if the app is in the background
 });
 ```
 **Note:** On Android the notification id needs to be a string which can be converted to a number. If the ID has an invalid format, it will be ignored, but canceling the notification will fail.
