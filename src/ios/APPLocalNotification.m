@@ -117,7 +117,7 @@
 {
     UILocalNotification* notification = [[UILocalNotification alloc] init];
 
-    double    timestamp = [[options objectForKey:@"date"] doubleValue];
+    double    timestamp = [[options objectForKey:@"date"] doubleValue] + 1;
     NSString* msg       = [options objectForKey:@"message"];
     NSString* title     = [options objectForKey:@"title"];
     NSString* sound     = [options objectForKey:@"sound"];
