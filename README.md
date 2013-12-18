@@ -51,6 +51,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [bugfix:] Removed extra line break on iOS if `title` is null or empty.
 - [bugfix:] Notification on iOS will be canceled if a new one with the same ID was added.
 - [enhancement:] Added `autoCancel` flag.
+- [bugfix:] `cancel` on iOS did not work.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
