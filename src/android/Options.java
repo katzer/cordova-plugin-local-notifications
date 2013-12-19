@@ -57,7 +57,9 @@ public class Options {
 
         this.options = options;
 
-        if (repeat.equalsIgnoreCase("daily")) {
+        if (repeat.equalsIgnoreCase("hourly")) {
+            interval = AlarmManager.INTERVAL_HOUR;
+        } if (repeat.equalsIgnoreCase("daily")) {
             interval = AlarmManager.INTERVAL_DAY;
         } else if (repeat.equalsIgnoreCase("weekly")) {
             interval = AlarmManager.INTERVAL_DAY*7;
@@ -65,6 +67,8 @@ public class Options {
             interval = AlarmManager.INTERVAL_DAY*31; // 31 days
         } else if (repeat.equalsIgnoreCase("yearly")) {
             interval = AlarmManager.INTERVAL_DAY*365;
+        } else {
+            interval = Integer.getInteger(repeat, 0) * 60000;
         }
 
         return this;

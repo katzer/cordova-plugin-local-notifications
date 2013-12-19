@@ -50,8 +50,10 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [bugfix:] App throws an error on iOS if `message` is null.
 - [bugfix:] Removed extra line break on iOS if `title` is null or empty.
 - [bugfix:] Notification on iOS will be canceled if a new one with the same ID was added.
-- [enhancement:] Added `autoCancel` flag.
+- [feature:] Added `autoCancel` flag.
 - [bugfix:] `cancel` on iOS did not work.
+- [enhancement:] Added 'hourly' as a new repeat time aliase.
+- [feature:] Repeat with custom intervals on Android.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
@@ -105,7 +107,7 @@ window.plugin.notification.local.add({
     date:       Date,    // This expects a date object
     message:    String,  // The message that is displayed
     title:      String,  // The title of the message
-    repeat:     String,  // Has the options of daily', 'weekly',''monthly','yearly')
+    repeat:     String,  // Has the options of 'hourly', 'daily', 'weekly', 'monthly', 'yearly'
     badge:      Number,  // Displays number badge to notification
     sound:      String,  // A sound to be played (iOS & Android)
     autoCancel: Boolean, // Setting this flag and the notification is automatically canceled when the user clicks it
@@ -160,12 +162,6 @@ window.plugin.notification.local.add({ message: 'Great app!' });
 ```javascript
 window.plugin.notification.local.add({ sound: null });
 ```
-#### Cancel notification immediatly after creation
-```javascript
-window.plugin.notification.local.add({ id: 1, message: 'Reminder' });
-// `add` is executed asynchron!
-setTimeout('plugin.notification.local.cancel(1)', 200);
-```
 
 
 ## Platform specifics
@@ -218,6 +214,13 @@ An image must be defined as a relative or absolute URI.
 window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
 All images can be restored to the default ones by canceling the notification.
+### Custom repeating interval on Android
+To specify a custom interval, the `repeat` property can be assigned with an number in minutes.
+```
+/**
+ * Schedules the notification quarterly every 15 mins
+ */
+window.plugin.notification.local.add({ repeat: 15 });
 
 
 ## Quirks

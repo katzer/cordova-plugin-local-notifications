@@ -148,10 +148,11 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 {
     NSMutableDictionary* repeatDict = [[NSMutableDictionary alloc] init];
 
-    [repeatDict setObject:[NSNumber numberWithInt:NSDayCalendarUnit]   forKey:@"daily"];
+    [repeatDict setObject:[NSNumber numberWithInt:NSCalendarUnitHour]  forKey:@"hourly"];
+    [repeatDict setObject:[NSNumber numberWithInt:NSCalendarUnitDay]   forKey:@"daily"];
     [repeatDict setObject:[NSNumber numberWithInt:NSWeekCalendarUnit]  forKey:@"weekly"];
-    [repeatDict setObject:[NSNumber numberWithInt:NSMonthCalendarUnit] forKey:@"monthly"];
-    [repeatDict setObject:[NSNumber numberWithInt:NSYearCalendarUnit]  forKey:@"yearly"];
+    [repeatDict setObject:[NSNumber numberWithInt:NSCalendarUnitMonth] forKey:@"monthly"];
+    [repeatDict setObject:[NSNumber numberWithInt:NSCalendarUnitYear]  forKey:@"yearly"];
     [repeatDict setObject:[NSNumber numberWithInt:0]                   forKey:@""];
 
     return repeatDict;
