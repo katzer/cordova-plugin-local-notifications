@@ -37,7 +37,7 @@ LocalNotification.prototype = {
             title:      '',
             autoCancel: false,
             badge:      0,
-            id:         0,
+            id:         '0',
             repeat:     '',
             background: '',
             foreground: ''
