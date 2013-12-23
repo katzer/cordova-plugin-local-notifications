@@ -37,10 +37,12 @@ LocalNotification.prototype = {
             title:      '',
             autoCancel: false,
             badge:      0,
-            id:         0,
+            id:         Date.now().toString(16),
             repeat:     '',
-            background: '',
-            foreground: ''
+            callback:   function (notification) {
+               console.log('Local notification returned ground: '+
+                            notification.ground+', id: '+notification.id);
+               }
         };
 
         switch (device.platform) {
@@ -53,10 +55,6 @@ LocalNotification.prototype = {
                 defaults.smallImage = null;
                 defaults.image = null;
                 defaults.wideImage = null;
-        };
-
-        var callbackFn = function (cmd) {
-            eval(cmd);
         };
 
         for (var key in defaults) {
@@ -73,7 +71,7 @@ LocalNotification.prototype = {
             defaults.date = Math.round(defaults.date.getTime()/1000);
         }
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [defaults]);
+        cordova.exec(defaults.callback, null, 'LocalNotification', 'add', [defaults]);
 
         return defaults.id;
     },
@@ -98,3 +96,4 @@ LocalNotification.prototype = {
 var plugin = new LocalNotification();
 
 module.exports = plugin;
+

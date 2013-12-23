@@ -20,6 +20,7 @@
  */
 
 #import "APPLocalNotification.h"
+#import <Cordova/CDV.h>
 
 @interface APPLocalNotification (Private)
 
@@ -30,7 +31,7 @@
 // Alle zusätzlichen Metadaten der Notification als Hash
 - (NSDictionary*) userDict:(NSMutableDictionary*)options;
 // Erstellt die Notification und setzt deren Eigenschaften
-- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options;
+- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options :(NSString*)cbID;
 // Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification;
 // Hilfsmethode gibt an, ob er String NULL oder Empty ist
@@ -54,7 +55,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     [self.commandDelegate runInBackground:^{
         NSArray* arguments                = [command arguments];
         NSMutableDictionary* options      = [arguments objectAtIndex:0];
-        UILocalNotification* notification = [self notificationWithProperties:options];
+        UILocalNotification* notification = [self notificationWithProperties:options :command.callbackId ];
         NSString* notificationId          = [notification.userInfo objectForKey:@"id"];
 
         [self cancelNotificationWithId:notificationId];
@@ -162,20 +163,23 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 /**
  * Alle zusätzlichen Metadaten der Notification als Hash.
  */
-- (NSDictionary*) userDict:(NSMutableDictionary*)options
+- (NSDictionary*) userDict:(NSMutableDictionary*)options :(NSString*)cbID
 {
     NSString* id = [options objectForKey:@"id"];
-    NSString* bg = [options objectForKey:@"background"];
-    NSString* fg = [options objectForKey:@"foreground"];
     NSString* ac = [options objectForKey:@"autoCancel"];
 
-    return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", ac, @"autoCancel", nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            id,@"id",
+            ac, @"autoCancel",
+            cbID, @"callbackId",
+            nil
+            ];
 }
 
 /**
  * Erstellt die Notification und setzt deren Eigenschaften.
  */
-- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options
+- (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options :(NSString*)cbID
 {
     UILocalNotification* notification = [[UILocalNotification alloc] init];
 
@@ -189,10 +193,9 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     notification.fireDate       = [NSDate dateWithTimeIntervalSince1970:timestamp];
     notification.timeZone       = [NSTimeZone defaultTimeZone];
     notification.repeatInterval = [[[self repeatDict] objectForKey: repeat] intValue];
-    notification.userInfo       = [self userDict:options];
+    notification.userInfo       = [self userDict:options :cbID];
 
     notification.applicationIconBadgeNumber = badge;
-
 
     if (![self strIsNullOrEmpty:msg])
     {
@@ -231,7 +234,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     UILocalNotification* notification = [localNotification object];
     NSString* id                      = [notification.userInfo objectForKey:@"id"];
     NSString* callbackType            = isActive ? @"foreground" : @"background";
-    NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
+    NSString* callbackId              = [notification.userInfo objectForKey:@"callbackId"];
     BOOL autoCancel                   = [[notification.userInfo objectForKey:@"autoCancel"] boolValue];
 
     if (autoCancel && !isActive)
@@ -239,12 +242,18 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         [self cancelNotificationWithId:id];
     }
 
-    if (![self strIsNullOrEmpty:callbackFn])
-    {
-        NSString* js = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
+    NSDictionary* results =  [NSDictionary dictionaryWithObjectsAndKeys:
+                              id,@"id",
+                              callbackType, @"ground",
+                              nil
+                              ];
 
-        [self writeJavascript:js];
-    }
+    CDVPluginResult* pluginResult = nil;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:results ];
+    [pluginResult setKeepCallbackAsBool:YES];
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    // NSLog(@"APPLocalNotification.m result sent for callbackId: %@", callbackId);
 }
 
 /**
