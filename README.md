@@ -55,6 +55,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [enhancement:] Added 'hourly' as a new repeat time aliase.
 - [feature:] Repeat with custom intervals on Android.
 - **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
+- [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
