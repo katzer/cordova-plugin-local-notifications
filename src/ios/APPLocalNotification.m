@@ -240,9 +240,9 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     if (![self strIsNullOrEmpty:callbackFn])
     {
-        NSString* js = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, id];
+        NSString* js = [NSString stringWithFormat:@"setTimeout('%@(\"%@\")',0)", callbackFn, id];
 
-        [self writeJavascript:js];
+        [self.commandDelegate evalJs:js];
     }
 }
 
