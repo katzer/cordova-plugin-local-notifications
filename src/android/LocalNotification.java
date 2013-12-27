@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
@@ -53,10 +54,15 @@ public class LocalNotification extends CordovaPlugin {
     public static Context context          = null;
 
     @Override
-    public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public void initialize (CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+
         LocalNotification.webView = super.webView;
         LocalNotification.context = super.cordova.getActivity().getApplicationContext();
+    }
 
+    @Override
+    public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equalsIgnoreCase("add")) {
             JSONObject arguments  = args.optJSONObject(0);
             final Options options = new Options(context).parse(arguments);
