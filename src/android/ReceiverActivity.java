@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 public class ReceiverActivity extends Activity {
 
@@ -74,7 +75,7 @@ public class ReceiverActivity extends Activity {
 
         // after reboot, LocalNotification.webView is always null
         // may be call background callback later
-        if (function != null && LocalNotification.webView != null) {
+        if (!TextUtils.isEmpty(function) && LocalNotification.webView != null) {
             LocalNotification.webView.sendJavascript("setTimeout('" + function + "(" + options.getId() + ")',0)");
         }
     }

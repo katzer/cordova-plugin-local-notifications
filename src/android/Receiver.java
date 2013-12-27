@@ -38,6 +38,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -177,12 +178,12 @@ public class Receiver extends BroadcastReceiver {
      * Ruft die `foreground` Callback Funktion auf.
      */
     private void invokeForegroundCallback () {
-            String function = options.getForeground();
+        String function = options.getForeground();
 
-            // after reboot, LocalNotification.webView is always null
-            // may be call foreground callback later
-            if (function != null && LocalNotification.webView != null) {
-                    LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
-            }
+        // after reboot, LocalNotification.webView is always null
+        // may be call foreground callback later
+        if (!TextUtils.isEmpty(function) && LocalNotification.webView != null) {
+            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+        }
     }
 }
