@@ -54,11 +54,12 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [bugfix:] `cancel` on iOS did not work.
 - [enhancement:] Added 'hourly' as a new repeat time aliase.
 - [feature:] Repeat with custom intervals on Android.
+- **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
 - [bugfix:] App throws an error on reboot on Android.
-- Calling `cancel` on Android with an invalid String as ID does not throw an error anymore.
+- [enhancement:] Calling `cancel` on Android with an invalid String as ID does not throw an error anymore.
 
 #### Version 0.6.2 (04.12.2013)
 - Release under the Apache 2.0 license.

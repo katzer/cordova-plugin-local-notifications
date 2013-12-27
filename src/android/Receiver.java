@@ -183,7 +183,7 @@ public class Receiver extends BroadcastReceiver {
         // after reboot, LocalNotification.webView is always null
         // may be call foreground callback later
         if (!TextUtils.isEmpty(function) && LocalNotification.webView != null) {
-            LocalNotification.webView.sendJavascript(function + "(" + options.getId() + ")");
+            LocalNotification.webView.sendJavascript("setTimeout('" + function + "(\"" + options.getId() + "\")',0)");
         }
     }
 }
