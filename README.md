@@ -218,11 +218,12 @@ window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 All images can be restored to the default ones by canceling the notification.
 ### Custom repeating interval on Android
 To specify a custom interval, the `repeat` property can be assigned with an number in minutes.
-```
+```javascript
 /**
  * Schedules the notification quarterly every 15 mins
  */
 window.plugin.notification.local.add({ repeat: 15 });
+```
 
 
 ## Quirks
