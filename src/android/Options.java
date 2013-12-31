@@ -68,7 +68,9 @@ public class Options {
         } else if (repeat.equalsIgnoreCase("yearly")) {
             interval = AlarmManager.INTERVAL_DAY*365;
         } else {
-            interval = Integer.getInteger(repeat, 0) * 60000;
+        	try {
+        		interval = Integer.parseInt(repeat) * 60000;
+        	} catch (Exception e) {};
         }
 
         return this;
