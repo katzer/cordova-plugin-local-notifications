@@ -41,7 +41,6 @@
 // Schlüssel-Präfix für alle archivierten Meldungen
 NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
-
 @implementation APPLocalNotification
 
 /**
@@ -167,8 +166,14 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     NSString* bg = [options objectForKey:@"background"];
     NSString* fg = [options objectForKey:@"foreground"];
     NSString* ac = [options objectForKey:@"autoCancel"];
+    NSString* js = [options objectForKey:@"json"];
 
-    return [NSDictionary dictionaryWithObjectsAndKeys:id, @"id", bg, @"background", fg, @"foreground", ac, @"autoCancel", nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            id, @"id",
+            bg, @"background",
+            fg, @"foreground",
+            ac, @"autoCancel",
+            js, @"json", nil];
 }
 
 /**
@@ -229,6 +234,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     UILocalNotification* notification = [localNotification object];
     NSString* id                      = [notification.userInfo objectForKey:@"id"];
+    NSString* json                    = [notification.userInfo objectForKey:@"json"];
     NSString* callbackType            = isActive ? @"foreground" : @"background";
     NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
     BOOL autoCancel                   = [[notification.userInfo objectForKey:@"autoCancel"] boolValue];
@@ -240,7 +246,8 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     if (![self strIsNullOrEmpty:callbackFn])
     {
-        NSString* js = [NSString stringWithFormat:@"setTimeout('%@(\"%@\")',0)", callbackFn, id];
+        NSString* params = [NSString stringWithFormat:@"\"%@\",\\'%@\\'", id, json];
+        NSString* js     = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, params];
 
         [self.commandDelegate evalJs:js];
     }

@@ -75,6 +75,12 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
         public string Repeat { get; set; }
 
         /// <summary>
+        /// Notification specific data
+        /// </summary>
+        [DataMember(IsRequired = false, Name = "json")]
+        public string JSON { get; set; }
+
+        /// <summary>
         /// Message-ID
         /// </summary>
         [DataMember(IsRequired = false, Name = "id")]

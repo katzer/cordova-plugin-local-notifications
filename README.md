@@ -57,6 +57,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
 - [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
 - [enhancement:] Notifications are repeated more precisely.
+- [feature:] Added `json` property to pass custom data through the notification.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
@@ -112,7 +113,8 @@ window.plugin.notification.local.add({
     title:      String,  // The title of the message
     repeat:     String,  // Has the options of 'hourly', 'daily', 'weekly', 'monthly', 'yearly'
     badge:      Number,  // Displays number badge to notification
-    sound:      String,  // A sound to be played (iOS & Android)
+    sound:      String,  // A sound to be played
+    json:       String,  // Data to be passed through the notification
     autoCancel: Boolean, // Setting this flag and the notification is automatically canceled when the user clicks it
     foreground: String,  // A javascript function to be called if the app is running
     background: String,  // A javascript function to be called if the app is in the background
@@ -164,6 +166,19 @@ window.plugin.notification.local.add({ message: 'Great app!' });
 #### Plays no sound if the notification pop's up
 ```javascript
 window.plugin.notification.local.add({ sound: null });
+```
+#### Pass data through the notification
+```javascript
+window.plugin.notification.local.add({
+    id:         1,
+    message:    'I love BlackBerry!',
+    json:       { test: 123 },
+    foreground: 'forground'
+});
+
+function foreground (id, json) {
+    console.log(id, JSON.parse(json).test);
+}
 ```
 
 

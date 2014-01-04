@@ -209,6 +209,13 @@ public class Options {
     }
 
     /**
+     * Gibt die zusätzlichen Daten als String an.
+     */
+    public String getJSON () {
+        return options.optString("json", "");
+    }
+
+    /**
      * Gibt den Zahlwert des Icons an.
      *
      * @param {String} className

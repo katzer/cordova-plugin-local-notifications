@@ -79,7 +79,8 @@ public class ReceiverActivity extends Activity {
         if (TextUtils.isEmpty(function))
             return;
 
-        final String js = "setTimeout('" + function + "(\"" + options.getId() + "\")',0)";
+        String params   = "\"" + options.getId() + "\",\\'" + JSONObject.quote(options.getJSON()) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
+        final String js = "setTimeout('" + function + "(" + params + ")',0)";
 
         // after reboot, LocalNotification.webView is always null
         // call background callback later
