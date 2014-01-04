@@ -41,9 +41,9 @@ Add the following xml to your config.xml to always use the latest version of thi
 ```
 or to use this exact version:
 ```
-<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.6.2" />
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.6.3" />
 ```
-More informations can be found [here](https://build.phonegap.com/plugins/331).
+More informations can be found [here](https://build.phonegap.com/plugins/356).
 
 ## Release Notes
 #### Version 0.7.0 (not yet released)
@@ -159,21 +159,24 @@ function background (id) {
     console.log('I WAS IN THE BACKGROUND ID='+id)
 }
 ```
+
 #### Pop's up immediately
 ```javascript
 window.plugin.notification.local.add({ message: 'Great app!' });
 ```
+
 #### Plays no sound if the notification pop's up
 ```javascript
 window.plugin.notification.local.add({ sound: null });
 ```
+
 #### Pass data through the notification
 ```javascript
 window.plugin.notification.local.add({
     id:         1,
     message:    'I love BlackBerry!',
     json:       { test: 123 },
-    foreground: 'forground'
+    foreground: 'foreground'
 });
 
 function foreground (id, json) {
@@ -232,6 +235,7 @@ An image must be defined as a relative or absolute URI.
 window.plugin.notification.local.add({ image: 'appdata:ApplicationIcon.png' })
 ```
 All images can be restored to the default ones by canceling the notification.
+
 ### Custom repeating interval on Android
 To specify a custom interval, the `repeat` property can be assigned with an number in minutes.
 ```javascript
@@ -245,6 +249,7 @@ window.plugin.notification.local.add({ repeat: 15 });
 ## Quirks
 ### No sound is played on iOS 7
 The right to play notification sounds in the notification center settings has to be granted.
+
 ### Adding a notification on WP8
 An application can only display one notification at a time. Each time a new notification has to be added, the application live tile's data will be overwritten by the new ones.
 
@@ -266,6 +271,7 @@ The launch mode for the main activity has to be set to `singleInstance`
 <activity ... android:launchMode="singleInstance" ... />
 ```
 
+
 ## Contributing
 
 1. Fork it
@@ -273,6 +279,7 @@ The launch mode for the main activity has to be set to `singleInstance`
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
 
 ## License
 
