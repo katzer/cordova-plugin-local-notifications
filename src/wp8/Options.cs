@@ -29,7 +29,7 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
     /// Represents LiveTile options
     /// </summary>
     [DataContract]
-    class LocalNotificationOptions
+    class Options
     {
         /// <summary>
         /// The Title that is displayed

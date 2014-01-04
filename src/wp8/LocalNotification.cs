@@ -43,8 +43,8 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public void add(string jsonArgs)
         {
-            string[] args = JsonHelper.Deserialize<string[]>(jsonArgs);
-            LocalNotificationOptions options = JsonHelper.Deserialize<LocalNotificationOptions>(args[0]);
+            string[] args   = JsonHelper.Deserialize<string[]>(jsonArgs);
+            Options options = JsonHelper.Deserialize<Options>(args[0]);
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile AppTile = ShellTile.ActiveTiles.First();
 
@@ -108,7 +108,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Creates tile data
         /// </summary>
-        private FlipTileData CreateTileData(LocalNotificationOptions options)
+        private FlipTileData CreateTileData(Options options)
         {
             FlipTileData tile = new FlipTileData();
 

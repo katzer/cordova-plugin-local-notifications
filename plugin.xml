@@ -93,7 +93,7 @@
         </config-file>
 
         <source-file src="src/wp8/LocalNotification.cs" />
-        <source-file src="src/wp8/LocalNotificationOptions.cs" />
+        <source-file src="src/wp8/Options.cs" />
     </platform>
 
 </plugin>
