@@ -76,6 +76,8 @@ public class Receiver extends BroadcastReceiver {
             LocalNotification.unpersist(options.getId());
         } else if (isFirstAlarmInFuture()) {
             return;
+        } else {
+            LocalNotification.add(options.moveDate());
         }
 
         Builder notification = buildNotification();

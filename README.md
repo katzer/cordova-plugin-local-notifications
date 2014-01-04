@@ -56,6 +56,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/331).
 - [feature:] Repeat with custom intervals on Android.
 - **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
 - [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
+- [enhancement:] Notifications are repeated more precisely.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.

@@ -114,11 +114,7 @@ public class LocalNotification extends CordovaPlugin {
         AlarmManager am  = getAlarmManager();
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        if (options.getInterval() > 0) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime, options.getInterval(), pi);
-        } else {
-            am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
-        }
+        am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
     }
 
     /**

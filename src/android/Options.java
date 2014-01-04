@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.localnotification;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -68,10 +69,21 @@ public class Options {
         } else if (repeat.equalsIgnoreCase("yearly")) {
             interval = AlarmManager.INTERVAL_DAY*365;
         } else {
-        	try {
-        		interval = Integer.parseInt(repeat) * 60000;
-        	} catch (Exception e) {};
+            try {
+                interval = Integer.parseInt(repeat) * 60000;
+            } catch (Exception e) {};
         }
+
+        return this;
+    }
+
+    /**
+     * Setzt die neue Zeit an Hand des Intervalls.
+     */
+    public Options moveDate () {
+        try {
+            options.put("date", (getDate() + interval) / 1000);
+        } catch (JSONException e) {}
 
         return this;
     }
@@ -84,7 +96,7 @@ public class Options {
     }
 
     /**
-     * Gibt die Zeit in Sekunden an, wann die Notification aufpoppen soll.
+     * Gibt die Zeit in Millisekunden an, wann die Notification aufpoppen soll.
      */
     public long getDate() {
         return options.optLong("date", 0) * 1000;
