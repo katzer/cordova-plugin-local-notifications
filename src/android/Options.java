@@ -147,7 +147,7 @@ public class Options {
     }
 
     /**
-     * Gibt den Pfad zum Icon der Notification an.
+     * Gibt den ID Code des Bildes an.
      */
     public int getIcon () {
         int icon        = 0;
@@ -164,6 +164,22 @@ public class Options {
         }
 
         return options.optInt("icon", icon);
+    }
+
+    /**
+     * Gibt den ID Code des kleinen Bildes an.
+     */
+    public int getSmallIcon () {
+        int resId       = 0;
+        String iconName = options.optString("smallIcon", "");
+
+        resId = getIconValue(packageName, iconName);
+
+        if (resId == 0) {
+            resId = getIconValue("android", iconName);
+        }
+
+        return options.optInt("smallIcon", resId);
     }
 
     /**

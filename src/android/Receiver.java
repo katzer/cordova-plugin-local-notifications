@@ -36,6 +36,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -118,12 +120,15 @@ public class Receiver extends BroadcastReceiver {
      * Erstellt die Notification.
      */
     private Builder buildNotification () {
+        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
+
         Builder notification = new Notification.Builder(context)
         .setContentTitle(options.getTitle())
         .setContentText(options.getMessage())
         .setNumber(options.getBadge())
         .setTicker(options.getTitle())
-        .setSmallIcon(options.getIcon())
+        .setSmallIcon(options.getSmallIcon())
+        .setLargeIcon(icon)
         .setSound(options.getSound())
         .setAutoCancel(options.getAutoCancel());
 

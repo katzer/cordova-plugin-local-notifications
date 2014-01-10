@@ -58,6 +58,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 - [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
 - [enhancement:] Notifications are repeated more precisely.
 - [feature:] Added `json` property to pass custom data through the notification.
+- [enhancement:] Added Android specific property `smallImage`.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
@@ -186,8 +187,8 @@ function foreground (id, json) {
 
 
 ## Platform specifics
-### Notification icon on Android
-By default all notifications will display the app icon. But an specific icon can be defined through the `icon` property.
+### Small and large icons on Android
+By default all notifications will display the app icon. But an specific icon can be defined through the `icon` and `smallIcon` properties.
 ```javascript
 /**
  * Displays the <package.name>.R.drawable.ic_launcher icon
@@ -197,7 +198,7 @@ window.plugin.notification.local.add({ icon: 'ic_launcher' });
 /**
  * Displays the android.R.drawable.ic_dialog_email icon
  */
-window.plugin.notification.local.add({ icon: 'ic_dialog_email' });
+window.plugin.notification.local.add({ smallIcon: 'ic_dialog_email' });
 ```
 
 ### Notification sound on Android
