@@ -47,13 +47,8 @@ public class ReceiverActivity extends Activity {
             JSONObject args = new JSONObject(bundle.getString(Receiver.OPTIONS));
             Options options = new Options(getApplicationContext()).parse(args);
 
-            if (LocalNotification.webView == null) {
-                launchMainIntent();
-                invokeBackgroundCallback(options);
-            } else {
-                invokeBackgroundCallback(options);
-                launchMainIntent();
-            }
+            launchMainIntent();
+            invokeBackgroundCallback(options);
         } catch (JSONException e) {}
     }
 
