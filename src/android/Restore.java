@@ -22,7 +22,6 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Set;
-import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,18 +54,11 @@ public class Restore extends BroadcastReceiver {
         for (String alarmId : alarmIds) {
             try {
                 JSONArray args  = new JSONArray(alarms.getString(alarmId, ""));
-                
-                /* If this notification was registered for a time when the
-                 * device was off then change the date to now to ensure that no
-                 * notifications are missed
-                 */
-                Date now = new Date();
-                if (now.after(new Date(args.optLong("date") * 1000))) {
-                    args.put("date", (now.getTime() / 1000));
-                }
-
                 Options options = new Options(context).parse(args.getJSONObject(0));
 
+                /*
+                 * If the trigger date was in the past, the notification will be displayed immediately.
+                 */
                 LocalNotification.add(options);
 
             } catch (JSONException e) {}
