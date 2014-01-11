@@ -214,7 +214,7 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Set the application context if not already set.
      */
-    public static void setContext (Context context) {
+    protected static void setContext (Context context) {
         if (LocalNotification.context == null) {
             LocalNotification.context = context;
         }
@@ -223,21 +223,21 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * The Local storage for the application.
      */
-    public static SharedPreferences getSharedPreferences () {
+    protected static SharedPreferences getSharedPreferences () {
         return context.getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE);
     }
 
     /**
      * The alarm manager for the application.
      */
-    private static AlarmManager getAlarmManager () {
+    protected static AlarmManager getAlarmManager () {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
     /**
      * The notification manager for the application.
      */
-    private static NotificationManager getNotificationManager () {
+    protected static NotificationManager getNotificationManager () {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 }
