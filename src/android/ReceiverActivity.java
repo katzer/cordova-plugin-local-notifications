@@ -21,9 +21,6 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,12 +77,7 @@ public class ReceiverActivity extends Activity {
         // after reboot, LocalNotification.webView is always null
         // call background callback later
         if (LocalNotification.webView == null) {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LocalNotification.webView.sendJavascript(js);
-                }
-            }, 4000);
+            LocalNotification.callbackQueue.add(js);
         } else {
             LocalNotification.webView.sendJavascript(js);
         }

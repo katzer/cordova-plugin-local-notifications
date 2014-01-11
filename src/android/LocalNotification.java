@@ -21,6 +21,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,10 +49,12 @@ import android.content.SharedPreferences.Editor;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    protected final static String PLUGIN_NAME = "LocalNotification";
+    protected final static String PLUGIN_NAME      = "LocalNotification";
 
-    protected static CordovaWebView webView   = null;
-    protected static Context context          = null;
+    protected static CordovaWebView webView        = null;
+    protected static Context context               = null;
+
+    protected static ArrayList<String> callbackQueue = new ArrayList<String>();
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -59,6 +62,8 @@ public class LocalNotification extends CordovaPlugin {
 
         LocalNotification.webView = super.webView;
         LocalNotification.context = super.cordova.getActivity().getApplicationContext();
+
+        execPendingCallbacks();
     }
 
     @Override
@@ -239,5 +244,16 @@ public class LocalNotification extends CordovaPlugin {
      */
     protected static NotificationManager getNotificationManager () {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    /**
+     * Calls all pending callbacks after the webview was created.
+     */
+    private void execPendingCallbacks () {
+        for (String js : callbackQueue) {
+            webView.sendJavascript(js);
+        }
+
+        callbackQueue.clear();
     }
 }
