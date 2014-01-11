@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Set;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
