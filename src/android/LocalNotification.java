@@ -48,10 +48,10 @@ import android.content.SharedPreferences.Editor;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    public final static String PLUGIN_NAME = "LocalNotification";
+    protected final static String PLUGIN_NAME = "LocalNotification";
 
-    public static CordovaWebView webView   = null;
-    public static Context context          = null;
+    protected static CordovaWebView webView   = null;
+    protected static Context context          = null;
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
