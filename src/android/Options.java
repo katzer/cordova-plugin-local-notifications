@@ -179,6 +179,10 @@ public class Options {
             resId = getIconValue("android", iconName);
         }
 
+        if (resId == 0) {
+            resId = getIcon();
+        }
+        
         return options.optInt("smallIcon", resId);
     }
 
