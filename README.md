@@ -217,14 +217,15 @@ window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
 **Note:** Local sound files must be placed into the res-folder and not into the assets-folder.
 
 ### Notification sound on iOS
-The sound must be located in your project's resources and must be a caf file.
+You can package the audio data in an *aiff*, *wav*, or *caf* file. Then, in Xcode, add the sound file to your project as a nonlocalized resource of the application bundle. You may use the *afconvert* tool to convert sounds.
 ```javascript
 /**
  * Plays the sound if the notification pop's up
  */
 window.plugin.notification.local.add({ sound: 'sub.caf' });
 ```
-**Note:** The right to play notification sounds in the notification center settings has to be granted.
+**Note:** The right to play notification sounds in the notification center settings has to be granted.<br>
+**Note:** Custom sounds must be under 30 seconds when played. If a custom sound is over that limit, the default system sound is played instead.
 
 ### LiveTile background images on WP8
 LiveTile's have the ability to display images for different sizes. These images can be defined through the `smallImage`, `image` and `wideImage` properties.<br>
