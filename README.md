@@ -60,6 +60,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 - [feature:] Added `json` property to pass custom data through the notification.
 - [enhancement:] Added Android specific property `smallImage`.
 - [enhancement:] Added Android specific property `ongoing`.
+- [enhancement:] Setting launchMode to *singleInstance* isn't necessary anymore.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
