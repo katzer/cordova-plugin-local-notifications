@@ -130,7 +130,8 @@ public class Receiver extends BroadcastReceiver {
         .setSmallIcon(options.getSmallIcon())
         .setLargeIcon(icon)
         .setSound(options.getSound())
-        .setAutoCancel(options.getAutoCancel());
+        .setAutoCancel(options.getAutoCancel())
+        .setOngoing(options.getOngoing());
 
         setClickEvent(notification);
 

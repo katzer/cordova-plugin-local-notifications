@@ -182,7 +182,7 @@ public class Options {
         if (resId == 0) {
             resId = getIcon();
         }
-        
+
         return options.optInt("smallIcon", resId);
     }
 
@@ -226,6 +226,10 @@ public class Options {
      */
     public Boolean getAutoCancel () {
         return options.optBoolean("autoCancel", false);
+    }
+
+    public Boolean getOngoing() {
+        return options.optBoolean("ongoing", false);
     }
 
     /**

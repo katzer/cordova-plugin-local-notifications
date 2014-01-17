@@ -117,6 +117,7 @@ window.plugin.notification.local.add({
     sound:      String,  // A sound to be played
     json:       String,  // Data to be passed through the notification
     autoCancel: Boolean, // Setting this flag and the notification is automatically canceled when the user clicks it
+    ongoing:    Boolean, // Prevent clearing of notification (Android only)
     foreground: String,  // A javascript function to be called if the app is running
     background: String,  // A javascript function to be called if the app is in the background
 });

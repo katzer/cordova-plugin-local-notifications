@@ -36,6 +36,7 @@ LocalNotification.prototype = {
             message:    '',
             title:      '',
             autoCancel: false,
+            ongoing:    false,
             badge:      0,
             id:         '0',
             json:       '',
