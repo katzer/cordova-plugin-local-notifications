@@ -47,6 +47,9 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 
 ## Release Notes
 #### Version 0.7.0 (not yet released)
+- **Note:** The new way of callback registration will be not compatible with previous versions! See #62
+
+#### Version 0.7.0beta1 (17.01.2014)
 - [bugfix:] App throws an error on iOS if `message` is null.
 - [bugfix:] Removed extra line break on iOS if `title` is null or empty.
 - [bugfix:] Notification on iOS will be canceled if a new one with the same ID was added.
