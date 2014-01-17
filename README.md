@@ -53,12 +53,13 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 - [feature:] Added `autoCancel` flag.
 - [bugfix:] `cancel` on iOS did not work.
 - [enhancement:] Added 'hourly' as a new repeat time aliase.
-- [feature:] Repeat with custom intervals on Android.
+- [enhancement:] Repeat with custom intervals on Android.
 - **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
 - [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
 - [enhancement:] Notifications are repeated more precisely.
 - [feature:] Added `json` property to pass custom data through the notification.
 - [enhancement:] Added Android specific property `smallImage`.
+- [enhancement:] Added Android specific property `ongoing`.
 
 #### Version 0.6.3 (12.12.2013)
 - [bugfix:] Black screen on Android.
