@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -40,9 +40,7 @@ LocalNotification.prototype = {
             badge:      0,
             id:         '0',
             json:       '',
-            repeat:     '',
-            background: '',
-            foreground: ''
+            repeat:     ''
         };
 
         switch (device.platform) {
@@ -56,10 +54,6 @@ LocalNotification.prototype = {
                 defaults.smallImage = null;
                 defaults.image = null;
                 defaults.wideImage = null;
-        };
-
-        var callbackFn = function (cmd) {
-            eval(cmd);
         };
 
         for (var key in defaults) {
@@ -76,7 +70,7 @@ LocalNotification.prototype = {
             defaults.date = Math.round(defaults.date.getTime()/1000);
         }
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [defaults]);
+        cordova.exec(null, null, 'LocalNotification', 'add', [defaults]);
 
         return defaults.id;
     },
@@ -95,7 +89,43 @@ LocalNotification.prototype = {
      */
     cancelAll: function () {
         cordova.exec(null, null, 'LocalNotification', 'cancelAll', []);
-    }
+    },
+
+    /**
+     * Occurs when a notification was added.
+     *
+     * @param {String} id    The ID of the notification
+     * @param {String} state Either "foreground" or "background"
+     * @param {String} json  A custom (JSON) string
+     */
+    onadd: function (id, state, json) {},
+
+    /**
+     * Occurs when the notification is triggered.
+     *
+     * @param {String} id    The ID of the notification
+     * @param {String} state Either "foreground" or "background"
+     * @param {String} json  A custom (JSON) string
+     */
+    ontrigger: function (id, state, json) {},
+
+    /**
+     * Fires after the notification was clicked.
+     *
+     * @param {String} id    The ID of the notification
+     * @param {String} state Either "foreground" or "background"
+     * @param {String} json  A custom (JSON) string
+     */
+    onclick: function (id, state, json) {},
+
+    /**
+     * Fires if the notification was canceled.
+     *
+     * @param {String} id    The ID of the notification
+     * @param {String} state Either "foreground" or "background"
+     * @param {String} json  A custom (JSON) string
+     */
+    oncancel: function (id, state, json) {}
 };
 
 var plugin = new LocalNotification();

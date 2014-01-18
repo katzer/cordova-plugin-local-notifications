@@ -48,6 +48,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 ## Release Notes
 #### Version 0.7.0 (not yet released)
 - **Note:** The new way of callback registration will be not compatible with previous versions! See #62
+- [feature:] Added new callback registration interface and new callback types.
 
 #### Version 0.7.0beta1 (17.01.2014)
 - [bugfix:] App throws an error on iOS if `message` is null.
@@ -123,8 +124,6 @@ window.plugin.notification.local.add({
     json:       String,  // Data to be passed through the notification
     autoCancel: Boolean, // Setting this flag and the notification is automatically canceled when the user clicks it
     ongoing:    Boolean, // Prevent clearing of notification (Android only)
-    foreground: String,  // A javascript function to be called if the app is running
-    background: String,  // A javascript function to be called if the app is in the background
 });
 ```
 **Note:** On Android the notification id needs to be a string which can be converted to a number. If the ID has an invalid format, it will be ignored, but canceling the notification will fail.
@@ -141,6 +140,15 @@ The method cancels all notifications which were previously added by the applicat
 window.plugin.notification.local.cancelAll();
 ```
 
+### onadd() | ontrigger() | onclick() | oncancel()
+There are 4 different callback types available. For each of them one listener can be specified. The listener has to be a function and takes the following arguments:
+ - event: The Name of the event
+ - id: The ID of the notification
+ - json:  A custom (JSON) string
+```javascript
+window.plugin.notification.local.on_callback_ = function (id, state, json) {};
+```
+
 
 ## Examples
 #### Will fire every week on this day, 60 seconds from now
@@ -149,22 +157,12 @@ var now                  = new Date().getTime(),
     _60_seconds_from_now = new Date(now + 60*1000);
 
 window.plugin.notification.local.add({
-    id:         1, // is converted to a string
-    title:      'Reminder',
-    message:    'Dont forget to buy some flowers.',
-    repeat:     'weekly',
-    date:       _60_seconds_from_now,
-    foreground: 'foreground',
-    background: 'background'
+    id:      1, // is converted to a string
+    title:   'Reminder',
+    message: 'Dont forget to buy some flowers.',
+    repeat:  'weekly',
+    date:    _60_seconds_from_now
 });
-
-function foreground (id) {
-    console.log('I WAS RUNNING ID='+id)
-}
-
-function background (id) {
-    console.log('I WAS IN THE BACKGROUND ID='+id)
-}
 ```
 
 #### Pop's up immediately
@@ -177,16 +175,20 @@ window.plugin.notification.local.add({ message: 'Great app!' });
 window.plugin.notification.local.add({ sound: null });
 ```
 
+#### Callback registration
+```javascript
+window.plugin.notification.local.onadd = function (id, state, json) {};
+```
+
 #### Pass data through the notification
 ```javascript
 window.plugin.notification.local.add({
     id:         1,
     message:    'I love BlackBerry!',
-    json:       { test: 123 },
-    foreground: 'foreground'
+    json:       { test: 123 }
 });
 
-function foreground (id, json) {
+window.plugin.notification.local.onclick = function (id, state, json) {
     console.log(id, JSON.parse(json).test);
 }
 ```

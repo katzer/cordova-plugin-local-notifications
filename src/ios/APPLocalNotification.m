@@ -1,5 +1,5 @@
 /*
- Copyright 2013 appPlant UG
+ Copyright 2013-2014 appPlant UG
 
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -54,10 +54,13 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         NSArray* arguments                = [command arguments];
         NSMutableDictionary* options      = [arguments objectAtIndex:0];
         UILocalNotification* notification = [self notificationWithProperties:options];
-        NSString* notificationId          = [notification.userInfo objectForKey:@"id"];
+        NSString* id                      = [notification.userInfo objectForKey:@"id"];
+        NSString* json                    = [notification.userInfo objectForKey:@"json"];
 
-        [self cancelNotificationWithId:notificationId];
+        [self cancelNotificationWithId:id];
         [self archiveNotification:notification];
+
+        [self fireEvent:@"add" id:id json:json];
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     }];
@@ -71,10 +74,13 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSArray* arguments       = [command arguments];
-        NSString* notificationId = [arguments objectAtIndex:0];
+        NSArray* arguments = [command arguments];
+        NSString* id       = [arguments objectAtIndex:0];
 
-        [self cancelNotificationWithId:notificationId];
+        UILocalNotification* notification = [self cancelNotificationWithId:id];
+        NSString* json                    = [notification.userInfo objectForKey:@"json"];
+
+        [self fireEvent:@"cancel" id:id json:json];
     }];
 }
 
@@ -105,7 +111,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
  *
  * @param {NSString} id Die ID der Notification
  */
-- (void) cancelNotificationWithId:(NSString*)id
+- (UILocalNotification*) cancelNotificationWithId:(NSString*)id
 {
     if (![self strIsNullOrEmpty:id])
     {
@@ -118,8 +124,12 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
             [[UIApplication sharedApplication] cancelLocalNotification:notification];
+
+            return notification;
         }
     }
+
+    return NULL;
 }
 
 /**
@@ -163,17 +173,11 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 - (NSDictionary*) userDict:(NSMutableDictionary*)options
 {
     NSString* id = [options objectForKey:@"id"];
-    NSString* bg = [options objectForKey:@"background"];
-    NSString* fg = [options objectForKey:@"foreground"];
     NSString* ac = [options objectForKey:@"autoCancel"];
     NSString* js = [options objectForKey:@"json"];
 
     return [NSDictionary dictionaryWithObjectsAndKeys:
-            id, @"id",
-            bg, @"background",
-            fg, @"foreground",
-            ac, @"autoCancel",
-            js, @"json", nil];
+            id, @"id", ac, @"autoCancel", js, @"json", nil];
 }
 
 /**
@@ -231,12 +235,11 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 {
     UIApplicationState state          = [[UIApplication sharedApplication] applicationState];
     bool isActive                     = state == UIApplicationStateActive;
+    NSString* event                   = isActive ? @"trigger" : @"click";
 
     UILocalNotification* notification = [localNotification object];
     NSString* id                      = [notification.userInfo objectForKey:@"id"];
     NSString* json                    = [notification.userInfo objectForKey:@"json"];
-    NSString* callbackType            = isActive ? @"foreground" : @"background";
-    NSString* callbackFn              = [notification.userInfo objectForKey:callbackType];
     BOOL autoCancel                   = [[notification.userInfo objectForKey:@"autoCancel"] boolValue];
 
     if (autoCancel && !isActive)
@@ -244,13 +247,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         [self cancelNotificationWithId:id];
     }
 
-    if (![self strIsNullOrEmpty:callbackFn])
-    {
-        NSString* params = [NSString stringWithFormat:@"\"%@\",\\'%@\\'", id, json];
-        NSString* js     = [NSString stringWithFormat:@"setTimeout('%@(%@)',0)", callbackFn, params];
-
-        [self.commandDelegate evalJs:js];
-    }
+    [self fireEvent:event id:id json:json];
 }
 
 /**
@@ -267,6 +264,25 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 - (BOOL) strIsNullOrEmpty:(NSString*)str
 {
     return (str == (NSString*)[NSNull null] || [str isEqualToString:@""]) ? YES : NO;
+}
+
+/**
+ * Fires the given event.
+ *
+ * @param {String} event The Name of the event
+ * @param {String} id    The ID of the notification
+ * @param {String} json  A custom (JSON) string
+ */
+- (void) fireEvent:(NSString*) event id:(NSString*) id json:(NSString*) json
+{
+    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+    bool isActive            = state == UIApplicationStateActive;
+    NSString* stateName      = isActive ? @"foreground" : @"background";
+
+    NSString* params = [NSString stringWithFormat:@"\"%@\",\"%@\",\\'%@\\'", id, stateName, json];
+    NSString* js     = [NSString stringWithFormat:@"setTimeout('plugin.notification.local.on%@(%@)',0)", event, params];
+
+    [self.commandDelegate evalJs:js];
 }
 
 @end

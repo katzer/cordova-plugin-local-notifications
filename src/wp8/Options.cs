@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -85,18 +85,6 @@ namespace De.APPPlant.Cordova.Plugin.LocalNotification
         /// </summary>
         [DataMember(IsRequired = false, Name = "id")]
         public string ID { get; set; }
-
-        /// <summary>
-        /// A javascript function to be called if the app is in the background
-        /// </summary>
-        [DataMember(IsRequired = false, Name = "background")]
-        public string Background { get; set; }
-
-        /// <summary>
-        /// A javascript function to be called if the app is running
-        /// </summary>
-        [DataMember(IsRequired = false, Name = "foreground")]
-        public string Foreground { get; set; }
 
         /// <summary>
         /// Setting this flag will make it so the notification is automatically canceled when the user clicks it

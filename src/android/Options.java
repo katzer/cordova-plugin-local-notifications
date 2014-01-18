@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -187,20 +187,6 @@ public class Options {
     }
 
     /**
-     * Gibt den Pfad zur Callback-Funktion der Notification an.
-     */
-    public String getForeground () {
-        return options.optString("foreground", null);
-    }
-
-    /**
-     * Gibt den Pfad zur Callback-Funktion der Notification an.
-     */
-    public String getBackground () {
-        return options.optString("background", null);
-    }
-
-    /**
      * Gibt das Intervall an, in dem die Notification aufpoppen soll (daily, weekly, monthly, yearly)
      */
     public long getInterval () {
@@ -226,10 +212,6 @@ public class Options {
      */
     public Boolean getAutoCancel () {
         return options.optBoolean("autoCancel", false);
-    }
-
-    public Boolean getOngoing() {
-        return options.optBoolean("ongoing", false);
     }
 
     /**
