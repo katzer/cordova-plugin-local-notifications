@@ -20,10 +20,82 @@
 */
 
 var LocalNotification = function () {
-
+    this._deafults = {
+        message:    '',
+        title:      '',
+        autoCancel: false,
+        ongoing:    false,
+        badge:      0,
+        id:         '0',
+        json:       '',
+        repeat:     ''
+    };
 };
 
 LocalNotification.prototype = {
+    /**
+     * Gibt alle Standardeinstellungen an.
+     *
+     * @return {Object}
+     */
+    getDefaults: function () {
+        return this._deafults;
+    },
+
+    /**
+     * Überschreibt die Standardeinstellungen.
+     *
+     * @param {Object} defaults
+     */
+    setDefaults: function (newDefaults) {
+        var defaults = this.getDefaults();
+
+        for (var key in defaults) {
+            if (newDefaults[key] !== undefined) {
+                defaults[key] = newDefaults[key];
+            }
+        }
+    },
+
+    /**
+     * @private
+     * Merged die Eigenschaften mit den Standardwerten.
+     *
+     * @param {Object} options
+     * @retrun {Object}
+     */
+    mergeWithDefaults: function (options) {
+        var defaults = this.getDefaults();
+
+        for (var key in defaults) {
+            if (options[key] === undefined) {
+                options[key] = defaults[key];
+            }
+        }
+
+        return options;
+    },
+
+    /**
+     * @private
+     */
+    applyPlatformSpecificOptions: function () {
+        var defaults = this._deafults;
+
+        switch (device.platform) {
+        case 'Android':
+            defaults.icon      = 'icon';
+            defaults.smallIcon = null;
+            defaults.sound     = 'TYPE_NOTIFICATION'; break;
+        case 'iOS':
+            defaults.sound = ''; break;
+        case 'WinCE': case 'Win32NT':
+            defaults.smallImage = null;
+            defaults.image      = null;
+            defaults.wideImage  = null;
+        };
+    },
+
     /**
      * Fügt einen neuen Eintrag zur Registry hinzu.
      *
@@ -31,48 +103,23 @@ LocalNotification.prototype = {
      * @return {Number} Die ID der Notification
      */
     add: function (options) {
-        var defaults = {
-            date:       new Date(),
-            message:    '',
-            title:      '',
-            autoCancel: false,
-            ongoing:    false,
-            badge:      0,
-            id:         '0',
-            json:       '',
-            repeat:     ''
-        };
+        var options = this.mergeWithDefaults(options);
 
-        switch (device.platform) {
-            case 'Android':
-                defaults.icon = 'icon';
-                defaults.smallIcon = null;
-                defaults.sound = 'TYPE_NOTIFICATION'; break;
-            case 'iOS':
-                defaults.sound = ''; break;
-            case 'WinCE': case 'Win32NT':
-                defaults.smallImage = null;
-                defaults.image = null;
-                defaults.wideImage = null;
-        };
-
-        for (var key in defaults) {
-            if (options[key] !== undefined) {
-                defaults[key] = options[key];
-            }
+        if (options.id) {
+            options.id = options.id.toString();
         }
 
-        if (defaults.id) {
-            defaults.id = defaults.id.toString();
+        if (options.date === undefined) {
+            options.date = new Date();
         }
 
-        if (typeof defaults.date == 'object') {
-            defaults.date = Math.round(defaults.date.getTime()/1000);
+        if (typeof options.date == 'object') {
+            options.date = Math.round(options.date.getTime()/1000);
         }
 
-        cordova.exec(null, null, 'LocalNotification', 'add', [defaults]);
+        cordova.exec(null, null, 'LocalNotification', 'add', [options]);
 
-        return defaults.id;
+        return options.id;
     },
 
     /**
@@ -129,5 +176,9 @@ LocalNotification.prototype = {
 };
 
 var plugin = new LocalNotification();
+
+document.addEventListener('deviceready', function () {
+    plugin.applyPlatformSpecificOptions();
+}, false);
 
 module.exports = plugin;

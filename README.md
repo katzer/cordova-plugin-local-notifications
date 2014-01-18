@@ -49,6 +49,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 #### Version 0.7.0 (not yet released)
 - **Note:** The new way of callback registration will be not compatible with previous versions! See #62
 - [feature:] Added new callback registration interface and new callback types.
+- [feature:] Added the ability to override notifications default properties.
 
 #### Version 0.7.0beta1 (17.01.2014)
 - [bugfix:] App throws an error on iOS if `message` is null.
@@ -149,6 +150,18 @@ There are 4 different callback types available. For each of them one listener ca
 window.plugin.notification.local.on_callback_ = function (id, state, json) {};
 ```
 
+### getDefaults()
+Gives an overview about all available notification properties for the platform and their default values. The function returns an object.
+```javascript
+window.plugin.notification.local.getDefaults();
+```
+
+### setDefaults ()
+Overrides the default properties. The function takes an object as argument.
+```javascript
+window.plugin.notification.local.setDefaults(Object);
+```
+
 
 ## Examples
 #### Will fire every week on this day, 60 seconds from now
@@ -191,6 +204,11 @@ window.plugin.notification.local.add({
 window.plugin.notification.local.onclick = function (id, state, json) {
     console.log(id, JSON.parse(json).test);
 }
+```
+
+### Change the default value for autoCancel
+```javascript
+window.plugin.notification.local.setDefaults({ autoCancel: true });
 ```
 
 
