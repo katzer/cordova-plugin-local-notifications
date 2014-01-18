@@ -47,7 +47,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 
 ## Release Notes
 #### Version 0.7.0 (not yet released)
-- **Note:** The new way of callback registration will be not compatible with previous versions! See #62
+**Note:** The new way of callback registration will be not compatible with previous versions! See #62
 - [feature:] Added new callback registration interface and new callback types.
 - [feature:] Added the ability to override notifications default properties.
 
@@ -146,6 +146,7 @@ There are 4 different callback types available. For each of them one listener ca
  - event: The Name of the event
  - id: The ID of the notification
  - json:  A custom (JSON) string
+
 ```javascript
 window.plugin.notification.local.on_callback_ = function (id, state, json) {};
 ```
