@@ -230,7 +230,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         }
         else
         {
-            notification.soundName = sound;
+            notification.soundName = [self.commandDelegate pathForResource:sound];
         }
     }
 
