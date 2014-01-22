@@ -24,7 +24,6 @@ var LocalNotification = function () {
         message:    '',
         title:      '',
         autoCancel: false,
-        ongoing:    false,
         badge:      0,
         id:         '0',
         json:       '',
@@ -84,11 +83,12 @@ LocalNotification.prototype = {
 
         switch (device.platform) {
         case 'Android':
-            defaults.icon      = 'icon';
-            defaults.smallIcon = null;
-            defaults.sound     = 'TYPE_NOTIFICATION'; break;
+            defaults.icon       = 'icon';
+            defaults.smallIcon  = null;
+            defaults.ongoing    = false;
+            defaults.sound      = 'TYPE_NOTIFICATION'; break;
         case 'iOS':
-            defaults.sound = ''; break;
+            defaults.sound      = ''; break;
         case 'WinCE': case 'Win32NT':
             defaults.smallImage = null;
             defaults.image      = null;
