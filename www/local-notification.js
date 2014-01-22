@@ -103,7 +103,8 @@ LocalNotification.prototype = {
      * @return {Number} Die ID der Notification
      */
     add: function (options) {
-        var options = this.mergeWithDefaults(options);
+        var options    = this.mergeWithDefaults(options),
+            callbackFn = null;
 
         if (options.id) {
             options.id = options.id.toString();
@@ -117,7 +118,13 @@ LocalNotification.prototype = {
             options.date = Math.round(options.date.getTime()/1000);
         }
 
-        cordova.exec(null, null, 'LocalNotification', 'add', [options]);
+        if (['WinCE', 'Win32NT'].indexOf(device.platform)) {
+            callbackFn = function (cmd) {
+                eval(cmd);
+            };
+        }
+
+        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [options]);
 
         return options.id;
     },
