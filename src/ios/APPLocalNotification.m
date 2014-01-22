@@ -244,12 +244,15 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 {
     UIApplicationState state          = [[UIApplication sharedApplication] applicationState];
     bool isActive                     = state == UIApplicationStateActive;
-    NSString* event                   = isActive ? @"trigger" : @"click";
 
     UILocalNotification* notification = [localNotification object];
     NSString* id                      = [notification.userInfo objectForKey:@"id"];
     NSString* json                    = [notification.userInfo objectForKey:@"json"];
     BOOL autoCancel                   = [[notification.userInfo objectForKey:@"autoCancel"] boolValue];
+
+    NSDate* now                       = [NSDate date];
+    NSTimeInterval fireDateDistance   = [now timeIntervalSinceDate:notification.fireDate];
+    NSString* event                   = (fireDateDistance < 0.01) ? @"trigger" : @"click";
 
     if (autoCancel && !isActive)
     {
