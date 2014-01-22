@@ -54,15 +54,10 @@ namespace Cordova.Extension.Commands
                 // Empty strings for the text values and URIs will result in the property being cleared.
                 FlipTileData TileData = CreateTileData(options);
 
-                // Update the Application Tile
                 AppTile.Update(TileData);
 
-                if (!string.IsNullOrEmpty(options.Foreground))
-                {
-                    string arguments = String.Format("{0}({1})", options.Foreground, options.ID);
-
-                    DispatchCommandResult(new PluginResult(PluginResult.Status.OK, arguments));
-                }
+                FireEvent("trigger", options.ID, options.JSON);
+                FireEvent("add", options.ID, options.JSON);
             }
 
             DispatchCommandResult();
@@ -73,7 +68,12 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public void cancel(string jsonArgs)
         {
+            string[] args         = JsonHelper.Deserialize<string[]>(jsonArgs);
+            string notificationID = args[0];
+
             cancelAll(jsonArgs);
+
+            FireEvent("cancel", notificationID, "");
         }
 
         /// <summary>
@@ -138,6 +138,22 @@ namespace Cordova.Extension.Commands
             }
 
             return tile;
+        }
+
+        /// <summary>
+        /// Fires the given event.
+        /// </summary>
+        private void FireEvent (string Event, string Id, string JSON = "")
+        {
+            string state = "foreground";
+            string args  = String.Format("\'{0}\',\'{1}\',\'{2}\'", Id, state, JSON);
+            string js    = String.Format("window.plugin.notification.local.on{0}({1})", Event, args);
+
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, js);
+
+            pluginResult.KeepCallback = true;
+
+            DispatchCommandResult(pluginResult);
         }
     }
 }
