@@ -46,7 +46,7 @@ or to use this exact version:
 More informations can be found [here](https://build.phonegap.com/plugins/356).
 
 ## Release Notes
-#### Version 0.7.0 (not yet released)
+#### Version 0.7.0 (22.01.2014)
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62
 - [feature:] Added new callback registration interface and new callback types.
 - [feature:] Added the ability to override notifications default properties.
