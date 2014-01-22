@@ -122,7 +122,7 @@ public class Receiver extends BroadcastReceiver {
         .setContentTitle(options.getTitle())
         .setContentText(options.getMessage())
         .setNumber(options.getBadge())
-        .setTicker(options.getTitle())
+        .setTicker(options.getMessage())
         .setSmallIcon(options.getSmallIcon())
         .setLargeIcon(icon)
         .setSound(options.getSound())

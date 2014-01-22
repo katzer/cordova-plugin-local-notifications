@@ -50,7 +50,8 @@ More informations can be found [here](https://build.phonegap.com/plugins/356).
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62
 - [feature:] Added new callback registration interface and new callback types.
 - [feature:] Added the ability to override notifications default properties.
-- [bugfix:] Fixed build failure if iOS/MacOS/Xcode were to old (#68)
+- [bugfix:] Fixed build failure if iOS/MacOS/Xcode were to old (#68).
+- [chance] The message and not the title will be used as the ticker text.
 
 #### Version 0.7.0beta1 (17.01.2014)
 - [bugfix:] App throws an error on iOS if `message` is null.
