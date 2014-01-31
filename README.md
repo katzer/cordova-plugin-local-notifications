@@ -41,11 +41,14 @@ Add the following xml to your config.xml to always use the latest version of thi
 ```
 or to use this exact version:
 ```
-<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.6.3" />
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.0" />
 ```
-More informations can be found [here](https://build.phonegap.com/plugins/356).
+More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Release Notes
+#### Version 0.7.1 (not yet released)
+- [bugfix:] `oncancel` wasnt fired if `autoCancel` was set to true.
+
 #### Version 0.7.0 (22.01.2014)
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62
 - [feature:] Added new callback registration interface and new callback types.

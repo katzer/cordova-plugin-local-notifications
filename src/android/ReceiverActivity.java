@@ -66,5 +66,9 @@ public class ReceiverActivity extends Activity {
      */
     private void fireClickEvent (Options options) {
         LocalNotification.fireEvent("click", options.getId(), options.getJSON());
+
+        if (options.getAutoCancel()) {
+            LocalNotification.fireEvent("cancel", options.getId(), options.getJSON());
+        }
     }
 }
