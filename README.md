@@ -47,7 +47,9 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Release Notes
 #### Version 0.7.1 (not yet released)
+- [bugfix:] `ongoing` attribute was ignored.
 - [bugfix:] `oncancel` wasnt fired if `autoCancel` was set to true.
+- [bugfix:] App throwed an error at restart if a callback was registered.
 
 #### Version 0.7.0 (22.01.2014)
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62

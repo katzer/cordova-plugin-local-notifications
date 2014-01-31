@@ -275,7 +275,11 @@ public class LocalNotification extends CordovaPlugin {
      * Gibt an, ob die App im Hintergrund läuft.
      */
     private static boolean isInBackground () {
-        return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
+        try {
+            return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     /**
