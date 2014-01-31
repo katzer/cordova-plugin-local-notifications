@@ -215,6 +215,13 @@ public class Options {
     }
 
     /**
+     *
+     */
+    public Boolean getOngoing () {
+        return options.optBoolean("ongoing", false);
+    }
+
+    /**
      * Gibt die zusätzlichen Daten als String an.
      */
     public String getJSON () {

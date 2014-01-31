@@ -51,10 +51,10 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 #### Version 0.7.0 (22.01.2014)
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62
-- [feature:] Added new callback registration interface and new callback types.
+- **[feature:]** Added new callback registration interface and new callback types.
 - [feature:] Added the ability to override notifications default properties.
 - [bugfix:] Fixed build failure if iOS/MacOS/Xcode were to old (#68).
-- [chance] The message and not the title will be used as the ticker text.
+- **[change]** The message and not the title will be used as the ticker text.
 
 #### Version 0.7.0beta1 (17.01.2014)
 - [bugfix:] App throws an error on iOS if `message` is null.
@@ -64,7 +64,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [bugfix:] `cancel` on iOS did not work.
 - [enhancement:] Added 'hourly' as a new repeat time aliase.
 - [enhancement:] Repeat with custom intervals on Android.
-- **[bugfix:]** Callbacks are called with the ID as a number and not as a string.
+- **[change:]** Callbacks are called with the ID as a number and not as a string.
 - [enhancement:] The background callback on Android is called, even the app is not running when the notification is tapped.
 - [enhancement:] Notifications are repeated more precisely.
 - [feature:] Added `json` property to pass custom data through the notification.
