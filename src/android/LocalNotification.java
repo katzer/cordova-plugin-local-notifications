@@ -68,15 +68,14 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute (String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute (String action, final JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equalsIgnoreCase("add")) {
-            JSONObject arguments  = args.optJSONObject(0);
-            final Options options = new Options(context).parse(arguments);
-
-            persist(options.getId(), args);
-
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
+                    JSONObject arguments  = args.optJSONObject(0);
+                    Options options = new Options(context).parse(arguments);
+
+                    persist(options.getId(), args);
                     add(options);
                 }
             });
@@ -85,17 +84,25 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         if (action.equalsIgnoreCase("cancel")) {
-            String id = args.optString(0);
+            cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                    String id = args.optString(0);
 
-            cancel(id);
-            unpersist(id);
+                    cancel(id);
+                    unpersist(id);
+                }
+            });
 
             return true;
         }
 
         if (action.equalsIgnoreCase("cancelAll")) {
-            cancelAll();
-            unpersistAll();
+            cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                    cancelAll();
+                    unpersistAll();
+                }
+            });
 
             return true;
         }
