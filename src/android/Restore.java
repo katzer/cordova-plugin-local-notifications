@@ -59,7 +59,7 @@ public class Restore extends BroadcastReceiver {
                 /*
                  * If the trigger date was in the past, the notification will be displayed immediately.
                  */
-                LocalNotification.add(options);
+                LocalNotification.add(options, false);
 
             } catch (JSONException e) {}
         }

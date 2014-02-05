@@ -72,11 +72,11 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                    JSONObject arguments  = args.optJSONObject(0);
-                    Options options = new Options(context).parse(arguments);
+                    JSONObject arguments = args.optJSONObject(0);
+                    Options options      = new Options(context).parse(arguments);
 
                     persist(options.getId(), args);
-                    add(options);
+                    add(options, true);
                 }
             });
 
@@ -116,8 +116,10 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param options
      *            The options that can be specified per alarm.
+     * @param doFireEvent
+     *            If the onadd callback shall be called.
      */
-    public static void add (Options options) {
+    public static void add (Options options, boolean doFireEvent) {
         long triggerTime = options.getDate();
 
         Intent intent = new Intent(context, Receiver.class)
@@ -127,7 +129,9 @@ public class LocalNotification extends CordovaPlugin {
         AlarmManager am  = getAlarmManager();
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        fireEvent("add", options.getId(), options.getJSON());
+        if (doFireEvent) {
+            fireEvent("add", options.getId(), options.getJSON());
+        }
 
         am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
     }

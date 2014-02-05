@@ -46,11 +46,14 @@ or to use this exact version:
 More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Release Notes
+#### Version 0.7.2 (not yet released)
+- [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
+- [bugfix:] `onadd` was called each time after a repeating message was triggered (Android)
+
 #### Version 0.7.1 (31.01.2014)
 - [bugfix:] `ongoing` attribute was ignored.
 - [bugfix:] `oncancel` wasnt fired if `autoCancel` was set to true.
 - [bugfix:] App throwed an error at restart if a callback was registered.
-- [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
 
 #### Version 0.7.0 (22.01.2014)
 **Note:** The new way of callback registration will be not compatible with previous versions! See #62

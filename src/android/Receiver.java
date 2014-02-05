@@ -79,7 +79,7 @@ public class Receiver extends BroadcastReceiver {
         } else if (isFirstAlarmInFuture()) {
             return;
         } else {
-            LocalNotification.add(options.moveDate());
+            LocalNotification.add(options.moveDate(), false);
         }
 
         Builder notification = buildNotification();
