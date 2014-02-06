@@ -90,6 +90,7 @@ namespace Cordova.Extension.Commands
                 // Empty strings for the text values and URIs will result in the property being cleared.
                 FlipTileData TileData = new FlipTileData
                 {
+                    Count                = 0,
                     BackTitle            = "",
                     BackContent          = "",
                     WideBackContent      = "",

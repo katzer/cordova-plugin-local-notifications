@@ -103,6 +103,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         [[NSUserDefaults standardUserDefaults] synchronize];
 
         [[UIApplication sharedApplication] cancelAllLocalNotifications];
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     }];
 }
 
