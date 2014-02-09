@@ -46,7 +46,7 @@ or to use this exact version:
 More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Release Notes
-#### Version 0.7.2 (not yet released)
+#### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
 - [bugfix:] `onadd` was called each time after a repeating message was triggered (Android)
 - [change:] Reset badge with cancelAll.
