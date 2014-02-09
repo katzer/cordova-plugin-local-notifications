@@ -306,7 +306,7 @@ On Windows
 ren platforms\wp8\cordova\version.bat platforms\wp8\cordova\version
 ```
 
-### App restarts on Android after notification was clicked
+### Black screen (or app restarts) on Android after a notification was clicked
 The launch mode for the main activity has to be set to `singleInstance`
 ```xml
 <activity ... android:launchMode="singleInstance" ... />
