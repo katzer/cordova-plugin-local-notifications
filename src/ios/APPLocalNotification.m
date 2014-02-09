@@ -253,7 +253,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     NSDate* now                       = [NSDate date];
     NSTimeInterval fireDateDistance   = [now timeIntervalSinceDate:notification.fireDate];
-    NSString* event                   = (fireDateDistance < 0.01) ? @"trigger" : @"click";
+    NSString* event                   = (fireDateDistance < 0.05) ? @"trigger" : @"click";
 
     if (autoCancel && !isActive)
     {

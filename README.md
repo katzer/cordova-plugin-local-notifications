@@ -50,6 +50,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
 - [bugfix:] `onadd` was called each time after a repeating message was triggered (Android)
 - [change:] Reset badge with cancelAll.
+- [bugfix:] `onclick` instead of `ontrigger` was called on "slow" iOS devices.
 
 #### Version 0.7.1 (31.01.2014)
 - [bugfix:] `ongoing` attribute was ignored.
