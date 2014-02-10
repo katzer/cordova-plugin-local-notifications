@@ -128,6 +128,20 @@ public class Receiver extends BroadcastReceiver {
         .setSound(options.getSound())
         .setAutoCancel(options.getAutoCancel())
         .setOngoing(options.getOngoing());
+        
+        if(options.getBigView().equals("true")) {
+         /*
+          * Sets the big view "big text" style and supplies the
+          * text that will be displayed
+          * in the detail area of the expanded notification.
+          * These calls are ignored by the support library for
+          * pre-4.1 devices.
+          */
+            if (Build.VERSION.SDK_INT > 16) {
+                notification.setStyle(new Notification.BigTextStyle()
+                .bigText(options.getMessage()));
+            }
+        }
 
         setClickEvent(notification);
 
