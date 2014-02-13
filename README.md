@@ -212,7 +212,7 @@ window.plugin.notification.local.onadd = function (id, state, json) {};
 window.plugin.notification.local.add({
     id:         1,
     message:    'I love BlackBerry!',
-    json:       { test: 123 }
+    json:       JSON.stringify({ test: 123 })
 });
 
 window.plugin.notification.local.onclick = function (id, state, json) {
