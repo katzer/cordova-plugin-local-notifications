@@ -313,7 +313,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
  */
 - (void) onAppTerminate
 {
-    [self cancelAllNotificationsWhichAreOlderThen:10];
+    [self cancelAllNotificationsWhichAreOlderThen:432000];
 }
 
 /**
