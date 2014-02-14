@@ -53,6 +53,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 #### Version 0.7.3 (not yet released)
 - [bugfix:] cancel callbacks have not been fired after all notifications have been canceled on iOS.
 - [change:] The `oncancel` callback will be called at last if `autoCancel` is set to true (iOS).
+- [bugfix:] Callbacks for non-repeating notifications were not called if they were not created in the current app instance on iOS.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.

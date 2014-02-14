@@ -118,8 +118,8 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     if (![self strIsNullOrEmpty:id])
     {
         NSString* key = ([id hasPrefix:kAPP_LOCALNOTIFICATION])
-                        ? id
-                        : [kAPP_LOCALNOTIFICATION stringByAppendingString:id];
+        ? id
+        : [kAPP_LOCALNOTIFICATION stringByAppendingString:id];
 
         NSData* data  = [[NSUserDefaults standardUserDefaults] objectForKey:key];
 
@@ -135,6 +135,37 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
                 NSString* json = [notification.userInfo objectForKey:@"json"];
 
                 [self fireEvent:@"cancel" id:id json:json];
+            }
+        }
+    }
+}
+
+/**
+ * Entfernt alle Meldungen, die älter als x Sekunden sind.
+ *
+ * @param {float} seconds
+ */
+- (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
+{
+    NSDictionary* entries = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSDate* now           = [NSDate date];
+
+    for (NSString* key in [entries allKeys])
+    {
+        if ([key hasPrefix:kAPP_LOCALNOTIFICATION])
+        {
+            NSData* data = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+
+            if (data)
+            {
+                UILocalNotification* notification = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+
+                NSTimeInterval fireDateDistance   = [now timeIntervalSinceDate:notification.fireDate];
+                NSString* id                      = [notification.userInfo objectForKey:@"id"];
+
+                if (notification.repeatInterval == NSEraCalendarUnit && fireDateDistance > seconds) {
+                    [self cancelNotificationWithId:id fireEvent:YES];
+                }
             }
         }
     }
@@ -179,7 +210,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     [repeatDict setObject:[NSNumber numberWithInt:NSYearCalendarUnit]  forKey:@"yearly"];
 #endif
 
-    [repeatDict setObject:[NSNumber numberWithInt:0]                   forKey:@""];
+    [repeatDict setObject:[NSNumber numberWithInt:NSEraCalendarUnit]   forKey:@""];
 
     return repeatDict;
 }
@@ -275,6 +306,14 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 - (void) pluginInitialize
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:) name:CDVLocalNotification object:nil];
+}
+
+/**
+ * Löscht alle single-repeat Notifications, die älter als 5 Tage sind.
+ */
+- (void) onAppTerminate
+{
+    [self cancelAllNotificationsWhichAreOlderThen:10];
 }
 
 /**
