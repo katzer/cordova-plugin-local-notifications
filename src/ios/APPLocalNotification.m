@@ -57,7 +57,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         NSString* id                      = [notification.userInfo objectForKey:@"id"];
         NSString* json                    = [notification.userInfo objectForKey:@"json"];
 
-        [self cancelNotificationWithId:id];
+        [self cancelNotificationWithId:id fireEvent:NO];
         [self archiveNotification:notification];
 
         [self fireEvent:@"add" id:id json:json];
@@ -77,10 +77,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         NSArray* arguments = [command arguments];
         NSString* id       = [arguments objectAtIndex:0];
 
-        UILocalNotification* notification = [self cancelNotificationWithId:id];
-        NSString* json                    = [notification.userInfo objectForKey:@"json"];
-
-        [self fireEvent:@"cancel" id:id json:json];
+        [self cancelNotificationWithId:id fireEvent:YES];
     }];
 }
 
@@ -96,7 +93,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         {
             if ([key hasPrefix:kAPP_LOCALNOTIFICATION])
             {
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+                [self cancelNotificationWithId:key fireEvent:YES];
             }
         }
 
@@ -112,11 +109,14 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
  *
  * @param {NSString} id Die ID der Notification
  */
-- (UILocalNotification*) cancelNotificationWithId:(NSString*)id
+- (void) cancelNotificationWithId:(NSString*)id fireEvent:(BOOL)fireEvent
 {
     if (![self strIsNullOrEmpty:id])
     {
-        NSString* key = [kAPP_LOCALNOTIFICATION stringByAppendingString:id];
+        NSString* key = ([id hasPrefix:kAPP_LOCALNOTIFICATION])
+                        ? id
+                        : [kAPP_LOCALNOTIFICATION stringByAppendingString:id];
+
         NSData* data  = [[NSUserDefaults standardUserDefaults] objectForKey:key];
 
         if (data)
@@ -126,11 +126,14 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
             [[UIApplication sharedApplication] cancelLocalNotification:notification];
 
-            return notification;
+            if (fireEvent)
+            {
+                NSString* json = [notification.userInfo objectForKey:@"json"];
+
+                [self fireEvent:@"cancel" id:id json:json];
+            }
         }
     }
-
-    return NULL;
 }
 
 /**
@@ -197,12 +200,12 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 {
     UILocalNotification* notification = [[UILocalNotification alloc] init];
 
-    double    timestamp = [[options objectForKey:@"date"] doubleValue];
-    NSString* msg       = [options objectForKey:@"message"];
-    NSString* title     = [options objectForKey:@"title"];
-    NSString* sound     = [options objectForKey:@"sound"];
-    NSString* repeat    = [options objectForKey:@"repeat"];
-    NSInteger badge     = [[options objectForKey:@"badge"] intValue];
+    double timestamp = [[options objectForKey:@"date"] doubleValue];
+    NSString* msg    = [options objectForKey:@"message"];
+    NSString* title  = [options objectForKey:@"title"];
+    NSString* sound  = [options objectForKey:@"sound"];
+    NSString* repeat = [options objectForKey:@"repeat"];
+    NSInteger badge  = [[options objectForKey:@"badge"] intValue];
 
     notification.fireDate       = [NSDate dateWithTimeIntervalSince1970:timestamp];
     notification.timeZone       = [NSTimeZone defaultTimeZone];
@@ -210,7 +213,6 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     notification.userInfo       = [self userDict:options];
 
     notification.applicationIconBadgeNumber = badge;
-
 
     if (![self strIsNullOrEmpty:msg])
     {
@@ -257,7 +259,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     if (autoCancel && !isActive)
     {
-        [self cancelNotificationWithId:id];
+        [self cancelNotificationWithId:id fireEvent:YES];
     }
 
     [self fireEvent:event id:id json:json];
