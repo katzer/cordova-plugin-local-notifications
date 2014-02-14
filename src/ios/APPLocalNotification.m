@@ -25,6 +25,8 @@
 
 // Archiviert die Meldungen, sodass sie später abgerufen werden kann
 - (void) archiveNotification:(UILocalNotification*)notification;
+// Entfernt den zur ID passenden Eintrag
+- (void) cancelNotificationWithId:(NSString*)id fireEvent:(BOOL)fireEvent;
 // Nachschlagewerk für Zeitintervallangaben
 - (NSMutableDictionary*) repeatDict;
 // Alle zusätzlichen Metadaten der Notification als Hash
@@ -35,6 +37,8 @@
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification;
 // Hilfsmethode gibt an, ob er String NULL oder Empty ist
 - (BOOL) strIsNullOrEmpty:(NSString*)str;
+// Fires the given event
+- (void) fireEvent:(NSString*) event id:(NSString*) id json:(NSString*) json;
 
 @end
 

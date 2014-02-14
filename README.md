@@ -24,8 +24,12 @@ Cordova will check all dependencies and install them if they are missing.
 
 ## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
-```
+```bash
+# from master:
 cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
+
+# stable version:
+cordova plugin add de.appplant.cordova.plugin.local-notification
 ```
 
 ## Removing the Plugin from your project
@@ -46,6 +50,10 @@ or to use this exact version:
 More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Release Notes
+#### Version 0.7.3 (not yet released)
+- [bugfix:] cancel callbacks have not been fired after all notifications have been canceled on iOS.
+- [change:] The `oncancel` callback will be called at last if `autoCancel` is set to true (iOS).
+
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
 - [bugfix:] `onadd` was called each time after a repeating message was triggered (Android)
