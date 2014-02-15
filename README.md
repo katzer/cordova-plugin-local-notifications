@@ -255,9 +255,19 @@ window.plugin.notification.local.add({ smallIcon: 'ic_dialog_email' });
 The sound must be a absolute or relative Uri pointing to the sound file. The default sound is `RingtoneManager.TYPE_NOTIFICATION`.
 ```javascript
 /**
- * Plays the `beep.mp3` sound if the notification pop's up
+ * Plays the `beep.mp3` which has to be located in the res folder
  */
 window.plugin.notification.local.add({ sound: 'android.resource://' + package_name + '/raw/beep' });
+
+/**
+ * Plays a remote sound
+ */
+window.plugin.notification.local.add({ sound: 'http://remotedomain/beep.mp3' });
+
+/**
+ * Plays a sound file which has to be located in the android_assets folder
+ */
+window.plugin.notification.local.add({ sound: '/www/audio/beep.mp3' });
 
 /**
  * Plays the `RingtoneManager.TYPE_ALARM` sound
@@ -270,9 +280,14 @@ window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
 You can package the audio data in an *aiff*, *wav*, or *caf* file. Then, in Xcode, add the sound file to your project as a nonlocalized resource of the application bundle. You may use the *afconvert* tool to convert sounds.
 ```javascript
 /**
- * Plays the sound if the notification pop's up
+ * Plays the `beep.mp3` which has to be located in the root folder of the project
  */
-window.plugin.notification.local.add({ sound: 'sub.caf' });
+window.plugin.notification.local.add({ sound: 'beep.caf' });
+
+/**
+ * Plays the `beep.mp3` which has to be located in the www folder
+ */
+window.plugin.notification.local.add({ sound: 'www/sounds/beep.caf' });
 ```
 **Note:** The right to play notification sounds in the notification center settings has to be granted.<br>
 **Note:** Custom sounds must be under 30 seconds when played. If a custom sound is over that limit, the default system sound is played instead.
