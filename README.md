@@ -172,6 +172,7 @@ There are 4 different callback types available. For each of them one listener ca
 ```javascript
 window.plugin.notification.local.on_callback_ = function (id, state, json) {};
 ```
+**Note:** The *ontrigger* callback is only invoked in background if the app is not suspended!
 
 ### getDefaults()
 Gives an overview about all available notification properties for the platform and their default values. The function returns an object.
