@@ -312,6 +312,12 @@ To specify a custom interval, the `repeat` property can be assigned with an numb
 window.plugin.notification.local.add({ repeat: 15 });
 ```
 
+### BigView on Android
+
+To specify that the notification should be displayed as a [bigview](http://developer.android.com/training/notify-user/expanded.html) (long message), you can set this option to "true" (string, not boolean). It is only available since Android 4.1. 
+
+    bigview: "true"
+
 
 ## Quirks
 ### No sound is played on iOS 7

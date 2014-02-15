@@ -214,6 +214,13 @@ public class Options {
         return options.optBoolean("autoCancel", false);
     }
 
+    /*
+        If we want to display the android notification as a bigview
+     */
+    public String getBigView () {
+        return options.optString("bigview");
+    }
+
     /**
      *
      */
