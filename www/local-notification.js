@@ -20,7 +20,7 @@
 */
 
 var LocalNotification = function () {
-    this._deafults = {
+    this._defaults = {
         message:    '',
         title:      '',
         autoCancel: false,
@@ -38,7 +38,7 @@ LocalNotification.prototype = {
      * @return {Object}
      */
     getDefaults: function () {
-        return this._deafults;
+        return this._defaults;
     },
 
     /**
@@ -79,7 +79,7 @@ LocalNotification.prototype = {
      * @private
      */
     applyPlatformSpecificOptions: function () {
-        var defaults = this._deafults;
+        var defaults = this._defaults;
 
         switch (device.platform) {
         case 'Android':
