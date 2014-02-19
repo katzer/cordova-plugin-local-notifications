@@ -28,7 +28,8 @@
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
-                <param name="ios-package" value="APPLocalNotification"/>
+                <param name="ios-package" value="APPLocalNotification" onload="true" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
 

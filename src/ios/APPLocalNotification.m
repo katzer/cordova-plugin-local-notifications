@@ -35,6 +35,8 @@
 - (UILocalNotification*) notificationWithProperties:(NSMutableDictionary*)options;
 // Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification;
+// Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist
+- (void) didFinishLaunchingWithOptions:(NSNotification*)notification;
 // Hilfsmethode gibt an, ob er String NULL oder Empty ist
 - (BOOL) strIsNullOrEmpty:(NSString*)str;
 // Fires the given event
@@ -301,11 +303,29 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 }
 
 /**
+ * Ruft die JS-Callbacks auf, nachdem eine Notification eingegangen ist.
+ */
+- (void) didFinishLaunchingWithOptions:(NSNotification*)notification
+{
+    NSDictionary* launchOptions            = [notification userInfo];
+    UILocalNotification *localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+
+    if (localNotification)
+    {
+        [self didReceiveLocalNotification:notification];
+    }
+}
+
+/**
  * Registriert den Observer für LocalNotification Events.
  */
 - (void) pluginInitialize
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:) name:CDVLocalNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:)
+                                                 name:CDVLocalNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishLaunchingWithOptions:)
+                                                 name:UIApplicationDidFinishLaunchingNotification object:nil];
 }
 
 /**
