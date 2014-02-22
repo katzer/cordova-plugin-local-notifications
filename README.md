@@ -54,6 +54,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [bugfix:] cancel callbacks have not been fired after all notifications have been canceled on iOS.
 - [change:] The `oncancel` callback will be called at last if `autoCancel` is set to true (iOS).
 - [bugfix:] Callbacks for non-repeating notifications were not called if they were not created in the current app instance on iOS.
+- [enhancement:] Added 'secondly' and 'minutely' as new repeat time aliases.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
@@ -141,7 +142,7 @@ window.plugin.notification.local.add({
     date:       Date,    // This expects a date object
     message:    String,  // The message that is displayed
     title:      String,  // The title of the message
-    repeat:     String,  // Has the options of 'hourly', 'daily', 'weekly', 'monthly', 'yearly'
+    repeat:     String,  // Has the options of 'secondly', 'minutely', 'hourly', 'daily', 'weekly', 'monthly', 'yearly'
     badge:      Number,  // Displays number badge to notification
     sound:      String,  // A sound to be played
     json:       String,  // Data to be passed through the notification

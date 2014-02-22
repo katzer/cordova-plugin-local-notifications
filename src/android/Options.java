@@ -58,7 +58,11 @@ public class Options {
 
         this.options = options;
 
-        if (repeat.equalsIgnoreCase("hourly")) {
+        if (repeat.equalsIgnoreCase("secondly")) {
+            interval = 1000;
+        } if (repeat.equalsIgnoreCase("minutely")) {
+            interval = AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15;
+        } if (repeat.equalsIgnoreCase("hourly")) {
             interval = AlarmManager.INTERVAL_HOUR;
         } if (repeat.equalsIgnoreCase("daily")) {
             interval = AlarmManager.INTERVAL_DAY;
