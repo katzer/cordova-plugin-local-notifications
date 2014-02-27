@@ -247,7 +247,7 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.putString(alarmId, args.toString());
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -262,7 +262,7 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.remove(alarmId);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -273,7 +273,7 @@ public class LocalNotification extends CordovaPlugin {
         Editor editor = getSharedPreferences().edit();
 
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
 
     /**
