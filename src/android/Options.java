@@ -147,7 +147,7 @@ public class Options {
             }
         }
 
-        return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        return null;
     }
 
     /**

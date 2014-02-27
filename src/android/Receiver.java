@@ -117,17 +117,21 @@ public class Receiver extends BroadcastReceiver {
      */
     private Builder buildNotification () {
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
+        Uri sound   = options.getSound();
 
         Builder notification = new Notification.Builder(context)
-        .setContentTitle(options.getTitle())
-        .setContentText(options.getMessage())
-        .setNumber(options.getBadge())
-        .setTicker(options.getMessage())
-        .setSmallIcon(options.getSmallIcon())
-        .setLargeIcon(icon)
-        .setSound(options.getSound())
-        .setAutoCancel(options.getAutoCancel())
-        .setOngoing(options.getOngoing());
+            .setContentTitle(options.getTitle())
+            .setContentText(options.getMessage())
+            .setNumber(options.getBadge())
+            .setTicker(options.getMessage())
+            .setSmallIcon(options.getSmallIcon())
+            .setLargeIcon(icon)
+            .setAutoCancel(options.getAutoCancel())
+            .setOngoing(options.getOngoing());
+
+        if (sound != null) {
+            notification.setSound(sound);
+        }
 
         setClickEvent(notification);
 

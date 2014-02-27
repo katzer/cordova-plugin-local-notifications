@@ -27,9 +27,11 @@ Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/gui
 ```bash
 # from master:
 cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
+cordova build
 
 # stable version:
 cordova plugin add de.appplant.cordova.plugin.local-notification
+cordova build
 ```
 
 ## Removing the Plugin from your project
@@ -55,6 +57,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [change:] The `oncancel` callback will be called at last if `autoCancel` is set to true (iOS).
 - [bugfix:] Callbacks for non-repeating notifications were not called if they were not created in the current app instance on iOS.
 - [enhancement:] Added 'secondly' and 'minutely' as new repeat time aliases.
+- [bugfix:] `sound:null` didnt work for Android. The default sound was played.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
