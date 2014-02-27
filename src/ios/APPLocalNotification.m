@@ -316,7 +316,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 
     if (localNotification)
     {
-        [self didReceiveLocalNotification:notification];
+        [self didReceiveLocalNotification:[NSNotification notificationWithName:CDVLocalNotification object:localNotification]];
     }
 }
 
@@ -355,7 +355,7 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
  * @param {String} id    The ID of the notification
  * @param {String} json  A custom (JSON) string
  */
-- (void) fireEvent:(NSString*) event id:(NSString*) id json:(NSString*) json
+- (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
 {
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
     bool isActive            = state == UIApplicationStateActive;
