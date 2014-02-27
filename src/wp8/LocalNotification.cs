@@ -41,7 +41,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Sets application live tile
         /// </summary>
-        public void add(string jsonArgs)
+        public void add (string jsonArgs)
         {
             string[] args   = JsonHelper.Deserialize<string[]>(jsonArgs);
             Options options = JsonHelper.Deserialize<Options>(args[0]);
@@ -66,7 +66,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Clears the application live tile
         /// </summary>
-        public void cancel(string jsonArgs)
+        public void cancel (string jsonArgs)
         {
             string[] args         = JsonHelper.Deserialize<string[]>(jsonArgs);
             string notificationID = args[0];
@@ -79,7 +79,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Clears the application live tile
         /// </summary>
-        public void cancelAll(string jsonArgs)
+        public void cancelAll (string jsonArgs)
         {
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile AppTile = ShellTile.ActiveTiles.First();
@@ -107,9 +107,25 @@ namespace Cordova.Extension.Commands
         }
 
         /// <summary>
+        /// Checks wether a notification with an ID is scheduled
+        /// </summary>
+        public void isScheduled (string jsonArgs)
+        {
+            DispatchCommandResult();
+        }
+
+        /// <summary>
+        /// Retrieves a list with all currently pending notifications
+        /// </summary>
+        public void getScheduledIds (string jsonArgs)
+        {
+            DispatchCommandResult();
+        }
+
+        /// <summary>
         /// Creates tile data
         /// </summary>
-        private FlipTileData CreateTileData(Options options)
+        private FlipTileData CreateTileData (Options options)
         {
             FlipTileData tile = new FlipTileData();
 

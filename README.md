@@ -58,6 +58,8 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [bugfix:] Callbacks for non-repeating notifications were not called if they were not created in the current app instance on iOS.
 - [enhancement:] Added 'secondly' and 'minutely' as new repeat time aliases.
 - [bugfix:] `sound:null` didnt work for Android. The default sound was played.
+- [feature:] New interface `isScheduled` to check wether a notification with an ID is pending.
+- [feature:] New interface `getScheduledIds` to retrieve a list with all currently pending notifications.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
@@ -177,6 +179,22 @@ There are 4 different callback types available. For each of them one listener ca
 window.plugin.notification.local.on_callback_ = function (id, state, json) {};
 ```
 **Note:** The *ontrigger* callback is only invoked in background if the app is not suspended!
+
+### isScheduled()
+Checks wether a notification with an ID is scheduled. It takes the ID as an argument and a callback function to be called with the result.
+```javascript
+window.plugin.notification.local.isScheduled(id, function (isScheduled) {
+
+});
+```
+
+### getScheduledIds()
+Checks wether a notification with an ID is scheduled. It takes a callback function to be called with the result as an array.
+```javascript
+window.plugin.notification.local.getScheduledIds(function (pendingIds) {
+
+});
+```
 
 ### getDefaults()
 Gives an overview about all available notification properties for the platform and their default values. The function returns an object.

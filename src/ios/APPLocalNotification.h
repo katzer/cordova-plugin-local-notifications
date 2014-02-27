@@ -35,5 +35,9 @@ extern NSString *const kAPP_LOCALNOTIFICATION;
 - (void) cancel:(CDVInvokedUrlCommand*)command;
 // Entfernt alle registrierten Einträge
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
+// Checks wether a notification with an ID is scheduled
+- (void) isScheduled:(CDVInvokedUrlCommand*)command;
+// Retrieves a list with all currently pending notifications
+- (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
 
 @end

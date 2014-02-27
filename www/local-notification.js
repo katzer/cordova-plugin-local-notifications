@@ -146,6 +146,29 @@ LocalNotification.prototype = {
     },
 
     /**
+     * @async
+     *
+     * Retrieves a list with all currently pending notifications.
+     *
+     * @param {Function} callback
+     */
+    getScheduledIds: function (callback) {
+        cordova.exec(callback, null, 'LocalNotification', 'getScheduledIds', []);
+    },
+
+    /**
+     * @async
+     *
+     * Checks wether a notification with an ID is scheduled.
+     *
+     * @param {String}   id
+     * @param {Function} callback
+     */
+    isScheduled: function (id, callback) {
+        cordova.exec(callback, null, 'LocalNotification', 'isScheduled', [id.toString()]);
+    },
+
+    /**
      * Occurs when a notification was added.
      *
      * @param {String} id    The ID of the notification

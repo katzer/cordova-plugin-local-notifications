@@ -111,6 +111,53 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 }
 
 /**
+ * Checks wether a notification with an ID is scheduled.
+*/
+- (void) isScheduled:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult* result;
+        NSArray* arguments = [command arguments];
+        NSString* id       = [arguments objectAtIndex:0];
+        NSString* key      = [kAPP_LOCALNOTIFICATION stringByAppendingString:id];
+        NSData* data       = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        bool isScheduled   = data != NULL;
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsBool:isScheduled];
+
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * Retrieves a list with all currently pending notifications.
+ */
+- (void) getScheduledIds:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSMutableArray* scheduledIds = [[NSMutableArray alloc] init];
+        NSDictionary* entries        = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+        CDVPluginResult* result;
+
+        for (NSString* key in [entries allKeys])
+        {
+            if ([key hasPrefix:kAPP_LOCALNOTIFICATION])
+            {
+                NSString* id = [key stringByReplacingOccurrencesOfString:kAPP_LOCALNOTIFICATION withString:@""];
+
+                [scheduledIds addObject:id];
+            }
+        }
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:scheduledIds];
+
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    }];
+}
+
+/**
  * Entfernt den zur ID passenden Eintrag.
  *
  * @param {NSString} id Die ID der Notification

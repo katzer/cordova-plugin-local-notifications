@@ -29,6 +29,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,6 +104,20 @@ public class LocalNotification extends CordovaPlugin {
                     unpersistAll();
                 }
             });
+
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("isScheduled")) {
+            String id = args.optString(0);
+
+            isScheduled(id, callbackContext);
+
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("getScheduledIds")) {
+            getScheduledIds(callbackContext);
 
             return true;
         }
@@ -185,6 +200,36 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         nc.cancelAll();
+    }
+
+    /**
+     * Checks wether a notification with an ID is scheduled.
+     *
+     * @param id
+     *          The notification ID to be check.
+     * @param callbackContext
+     */
+    public static void isScheduled (String id, CallbackContext callbackContext) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        boolean isScheduled        = alarms.containsKey(id);
+        PluginResult result        = new PluginResult(PluginResult.Status.OK, isScheduled);
+
+        callbackContext.sendPluginResult(result);
+    }
+
+    /**
+     * Retrieves a list with all currently pending notifications.
+     *
+     * @param callbackContext
+     */
+    public static void getScheduledIds (CallbackContext callbackContext) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
+        JSONArray pendingIds       = new JSONArray(alarmIds);
+
+        callbackContext.success(pendingIds);
     }
 
     /**
