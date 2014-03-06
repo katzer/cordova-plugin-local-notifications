@@ -167,6 +167,34 @@ LocalNotification.prototype = {
     isScheduled: function (id, callback) {
         cordova.exec(callback, null, 'LocalNotification', 'isScheduled', [id.toString()]);
     },
+    /**
+     * @async
+     * 
+     * Clears notification from notification area.
+     * Does not cancel future notifications.
+     * 
+     * @param {String} id
+     * 
+     */
+    
+    clear: function(id, callback){
+    	if(['Android'].indexOf(device.platform)){
+    		cordova.exec(callback, null, 'LocalNotification', 'clear', [id.toString()]);
+    	}
+    },
+    
+    /**
+     * @async
+     * 
+     * Clears all notification from notification area.
+     * Does not cancel future notifications.
+     * 
+     */
+    clearall: function(callback){
+    	if(['Android'].indexOf(device.platform)){
+    		cordova.exec(callback, null, 'LocalNotification', 'clearall', [id.toString()]);
+    	}
+    },
 
     /**
      * Occurs when a notification was added.
