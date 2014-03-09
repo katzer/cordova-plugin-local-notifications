@@ -116,24 +116,30 @@ public class Receiver extends BroadcastReceiver {
     /**
      * Erstellt die Notification.
      */
-    private Builder buildNotification () {
+    @SuppressLint("NewApi")
+	private Builder buildNotification () {
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
         Uri sound   = options.getSound();
 
         Builder notification = new Notification.Builder(context)
-            .setContentTitle(options.getTitle())
-            .setContentText(options.getMessage())
-            .setNumber(options.getBadge())
-            .setTicker(options.getMessage())
-            .setSmallIcon(options.getSmallIcon())
-            .setLargeIcon(icon)
-            .setAutoCancel(options.getAutoCancel())
-            .setOngoing(options.getOngoing());
-
+	        .setContentTitle(options.getTitle())
+	        .setContentText(options.getMessage())
+	        .setNumber(options.getBadge())
+	        .setTicker(options.getMessage())
+	        .setSmallIcon(options.getSmallIcon())
+	        .setLargeIcon(icon)
+	        .setAutoCancel(options.getAutoCancel())
+	        .setOngoing(options.getOngoing());
+        
         if (sound != null) {
-            notification.setSound(sound);
+        	notification.setSound(sound);
         }
 
+        if (Build.VERSION.SDK_INT > 16) {
+        	notification.setStyle(new Notification.BigTextStyle()
+        		.bigText(options.getMessage()));
+        }
+        
         setClickEvent(notification);
 
         return notification;
