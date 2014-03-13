@@ -114,7 +114,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Erstellt die Notification.
+     * Creates the notification.
      */
     @SuppressLint("NewApi")
 	private Builder buildNotification () {
@@ -146,7 +146,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Fügt der Notification einen onclick Handler hinzu.
+     * Adds an onclick handler to the notification
      */
     private Builder setClickEvent (Builder notification) {
         Intent intent = new Intent(context, ReceiverActivity.class)
@@ -161,7 +161,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     /**
-     * Zeigt die Notification an.
+     * Shows the notification
      */
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")

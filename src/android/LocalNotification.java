@@ -328,7 +328,7 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Gibt an, ob die App im Hintergrund läuft.
+     * Specifies whether the App is running in the background
      */
     private static boolean isInBackground () {
         try {
