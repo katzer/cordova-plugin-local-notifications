@@ -54,7 +54,8 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 /**
  * Fügt eine neue Notification-Eintrag hinzu.
  *
- * @param {NSMutableDictionary} options Die Eigenschaften der Notification
+ * @param {NSMutableDictionary} options
+ *      Die Eigenschaften der Notification
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
@@ -62,15 +63,17 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
         NSArray* arguments                = [command arguments];
         NSMutableDictionary* options      = [arguments objectAtIndex:0];
         UILocalNotification* notification = [self notificationWithProperties:options];
-        NSString* id                      = [notification.userInfo objectForKey:@"id"];
-        NSString* json                    = [notification.userInfo objectForKey:@"json"];
+        NSDictionary* userInfo            = notification.userInfo;
+        NSString* id                      = [userInfo objectForKey:@"id"];
+        NSString* json                    = [userInfo objectForKey:@"json"];
 
         [self cancelNotificationWithId:id fireEvent:NO];
         [self archiveNotification:notification];
 
         [self fireEvent:@"add" id:id json:json];
 
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        [[UIApplication sharedApplication]
+         scheduleLocalNotification:notification];
     }];
 }
 
@@ -95,7 +98,8 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSDictionary* entries = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+        NSDictionary* entries = [[NSUserDefaults standardUserDefaults]
+                                 dictionaryRepresentation];
 
         for (NSString* key in [entries allKeys])
         {
