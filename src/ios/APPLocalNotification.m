@@ -39,6 +39,8 @@
 - (void) didFinishLaunchingWithOptions:(NSNotification*)notification;
 // Hilfsmethode gibt an, ob er String NULL oder Empty ist
 - (BOOL) strIsNullOrEmpty:(NSString*)str;
+// Checks wether a notification with an ID is scheduled or not.
+- (BOOL) isNotificationScheduledWithId:(NSString*) id;
 // Fires the given event
 - (void) fireEvent:(NSString*) event id:(NSString*) id json:(NSString*) json;
 
@@ -123,21 +125,8 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
         NSString* id       = [arguments objectAtIndex:0];
-        bool isScheduled   = NO;
+        bool isScheduled   = [self isNotificationScheduledWithId:id];
         CDVPluginResult* result;
-
-        NSArray* notifications = [[UIApplication sharedApplication]
-                                  scheduledLocalNotifications];
-
-        for (UILocalNotification* notification in notifications)
-        {
-            NSString* notId = [notification.userInfo objectForKey:@"id"];
-
-            if ([notId isEqualToString:id]) {
-                isScheduled = YES;
-                break;
-            }
-        }
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:isScheduled];
@@ -416,13 +405,37 @@ NSString *const kAPP_LOCALNOTIFICATION = @"APP_LOCALNOTIFICATION";
 }
 
 /**
+ * Checks wether a notification with an ID is scheduled or not.
+ *
+ * @param id
+ *      The ID of the notification
+ * @return BOOL
+ */
+- (BOOL) isNotificationScheduledWithId:(NSString*) id
+{
+    NSArray* notifications = [[UIApplication sharedApplication]
+                              scheduledLocalNotifications];
+
+    for (UILocalNotification* notification in notifications)
+    {
+        NSString* notId = [notification.userInfo objectForKey:@"id"];
+
+        if ([notId isEqualToString:id]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+/**
  * Fires the given event.
  *
  * @param {String} event The Name of the event
  * @param {String} id    The ID of the notification
  * @param {String} json  A custom (JSON) string
  */
-- (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
+- (void) fireEvent:(NSString*) event id:(NSString*) id json:(NSString*) json
 {
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
     bool isActive            = state == UIApplicationStateActive;
