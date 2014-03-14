@@ -51,7 +51,7 @@ public class Options {
     }
 
     /**
-     * Parst die übergebenen Eigenschaften.
+     * Parses the given properties
      */
     public Options parse (JSONObject options) {
         String repeat = options.optString("repeat");
@@ -82,7 +82,7 @@ public class Options {
     }
 
     /**
-     * Setzt die neue Zeit an Hand des Intervalls.
+     * Set new time according to interval
      */
     public Options moveDate () {
         try {
@@ -93,21 +93,21 @@ public class Options {
     }
 
     /**
-     * Gibt die Eigenschaften als JSONObjekt an.
+     * Returns options as JSON object
      */
     public JSONObject getJSONObject() {
         return options;
     }
 
     /**
-     * Gibt die Zeit in Millisekunden an, wann die Notification aufpoppen soll.
+     * Returns time in milliseconds when notification is scheduled to fire
      */
     public long getDate() {
         return options.optLong("date", 0) * 1000;
     }
 
     /**
-     * Gibt die Zeit als Kalender an.
+     * Returns time as calender
      */
     public Calendar getCalendar () {
         Calendar calendar = Calendar.getInstance();
@@ -118,21 +118,21 @@ public class Options {
     }
 
     /**
-     * Gibt die Nachricht der Notification an.
+     * Returns the notification's message
      */
     public String getMessage () {
         return options.optString("message", "");
     }
 
     /**
-     * Gibt den Titel der Notification an.
+     * Returns the notification's title
      */
     public String getTitle () {
         return options.optString("title", "");
     }
 
     /**
-     * Gibt den Pfad zum Sound der Notification an.
+     * Returns the path of the notification's sound file
      */
     public Uri getSound () {
         String sound = options.optString("sound", null);
@@ -151,7 +151,7 @@ public class Options {
     }
 
     /**
-     * Gibt den ID Code des Bildes an.
+     * Returns the icon's ID
      */
     public int getIcon () {
         int icon        = 0;
@@ -171,7 +171,7 @@ public class Options {
     }
 
     /**
-     * Gibt den ID Code des kleinen Bildes an.
+     * Returns the small icon's ID
      */
     public int getSmallIcon () {
         int resId       = 0;
@@ -191,49 +191,49 @@ public class Options {
     }
 
     /**
-     * Gibt das Intervall an, in dem die Notification aufpoppen soll (daily, weekly, monthly, yearly)
+     * Returns notification repetition interval (daily, weekly, monthly, yearly)
      */
     public long getInterval () {
         return interval;
     }
 
     /**
-     * Gibt die Badge-Nummer der Notification an.
+     * Returns notification badge number
      */
     public int getBadge () {
         return options.optInt("badge", 0);
     }
 
     /**
-     * Gibt die Callback-ID des PluginResults an.
+     * Returns PluginResults' callback ID
      */
     public String getId () {
         return options.optString("id", "0");
     }
 
     /**
-     * Gibt an, ob die Notification automatisch geschlossen werden soll, wenn der Benutzer darauf klickt.
+     * Returns whether notification is cancelled automatically when clicked.
      */
     public Boolean getAutoCancel () {
         return options.optBoolean("autoCancel", false);
     }
 
     /**
-     *
+     * Returns whether the notification is ongoing (uncancellable). Android only.
      */
     public Boolean getOngoing () {
         return options.optBoolean("ongoing", false);
     }
 
     /**
-     * Gibt die zusätzlichen Daten als String an.
+     * Returns additional data as string
      */
     public String getJSON () {
         return options.optString("json", "");
     }
 
     /**
-     * Gibt den Zahlwert des Icons an.
+     * Returns numerical icon Value
      *
      * @param {String} className
      * @param {String} iconName
