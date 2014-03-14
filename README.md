@@ -5,6 +5,7 @@ A bunch of local notification plugins for Cordova 3.x.x
 
 by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
+
 ## Supported Platforms
 - **iOS**<br>
 See [Local and Push Notification Programming Guide](http://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/WhatAreRemoteNotif.html) for detailed informations and screenshots.
@@ -26,19 +27,19 @@ Cordova will check all dependencies and install them if they are missing.
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
 ```bash
 # from master:
-cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
-cordova build
+cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git && cordova prepare
 
 # stable version:
-cordova plugin add de.appplant.cordova.plugin.local-notification
-cordova build
+cordova plugin add de.appplant.cordova.plugin.local-notification && cordova prepare
 ```
+
 
 ## Removing the Plugin from your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
 ```
 cordova plugin rm de.appplant.cordova.plugin.local-notification
 ```
+
 
 ## PhoneGap Build
 Add the following xml to your config.xml to always use the latest version of this plugin:
@@ -50,6 +51,7 @@ or to use this exact version:
 <gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.0" />
 ```
 More informations can be found [here](https://build.phonegap.com/plugins/413).
+
 
 ## Release Notes
 #### Version 0.7.3 (not yet released)
@@ -136,6 +138,13 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 
 ## Using the plugin
 The plugin creates the object ```window.plugin.notification.local``` with the following methods:
+
+**Note:** The object and its methods are not available before the `deviceready` event has been fired.
+```javascript
+document.addEventListener('deviceready', function () {
+    // window.plugin.notification.local is now available
+}, false);
+```
 
 ### add()
 The method allows to add a custom notification. It takes an hash as an argument to specify the notification's properties and returns the ID for the notification.<br>
