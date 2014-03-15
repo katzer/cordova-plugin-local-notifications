@@ -393,7 +393,8 @@ window.plugin.notification.local.add({ repeat: 15 });
 ## Quirks
 
 ### Local Notification limit on iOS
-Each application on a device is limited to 64 scheduled local notifications. The system discards scheduled notifications in excess of this limit, keeping only the 64 notifications that will fire the soonest. Recurring notifications are treated as a single notification.
+Each application on a device is limited to 64 scheduled local notifications.<br>
+The system discards scheduled notifications in excess of this limit, keeping only the 64 notifications that will fire the soonest. Recurring notifications are treated as a single notification.
 
 ### Events aren't fired on iOS
 After deploying/replacing the app on the device via Xcode no callback for previously scheduled local notifications aren't fired.
