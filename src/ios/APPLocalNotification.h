@@ -22,22 +22,17 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 
-@interface APPLocalNotification : CDVPlugin {
+@interface APPLocalNotification : CDVPlugin
 
-}
-
-// Schlüssel-Präfix für alle archivierten Meldungen
-extern NSString *const kAPP_LOCALNOTIFICATION;
-
-// Fügt einen neuen Eintrag hinzu
+// Schedules a new local notification
 - (void) add:(CDVInvokedUrlCommand*)command;
-// Entfernt die zur ID passende Meldung
+// Cancels a given local notification
 - (void) cancel:(CDVInvokedUrlCommand*)command;
-// Entfernt alle registrierten Einträge
+// Cancels all currently scheduled notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
 // Checks wether a notification with an ID is scheduled
 - (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// Retrieves a list with all currently pending notifications
+// Retrieves a list of ids from all currently pending notifications
 - (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
 
 @end
