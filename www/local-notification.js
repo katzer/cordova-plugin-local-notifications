@@ -33,7 +33,7 @@ var LocalNotification = function () {
 
 LocalNotification.prototype = {
     /**
-     * Gibt alle Standardeinstellungen an.
+     * Returns the default settings
      *
      * @return {Object}
      */
@@ -42,7 +42,7 @@ LocalNotification.prototype = {
     },
 
     /**
-     * Überschreibt die Standardeinstellungen.
+     * Overwrite default settings
      *
      * @param {Object} defaults
      */
@@ -58,7 +58,7 @@ LocalNotification.prototype = {
 
     /**
      * @private
-     * Merged die Eigenschaften mit den Standardwerten.
+     * Merge settings with default values
      *
      * @param {Object} options
      * @retrun {Object}
@@ -97,10 +97,10 @@ LocalNotification.prototype = {
     },
 
     /**
-     * Fügt einen neuen Eintrag zur Registry hinzu.
+     * Add a new entry to the registry
      *
      * @param {Object} options
-     * @return {Number} Die ID der Notification
+     * @return {Number} The notification's ID
      */
     add: function (options) {
         var options    = this.mergeWithDefaults(options),
@@ -130,16 +130,16 @@ LocalNotification.prototype = {
     },
 
     /**
-     * Entfernt die angegebene Notification.
+     * Cancels the specified notification
      *
-     * @param {String} id
+     * @param {String} id of the notification
      */
     cancel: function (id) {
         cordova.exec(null, null, 'LocalNotification', 'cancel', [id.toString()]);
     },
 
     /**
-     * Entfernt alle registrierten Notifications.
+     * Removes all previously registered notifications
      */
     cancelAll: function () {
         cordova.exec(null, null, 'LocalNotification', 'cancelAll', []);
