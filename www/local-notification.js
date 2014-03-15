@@ -83,7 +83,6 @@ LocalNotification.prototype = {
 
         switch (device.platform) {
         case 'Android':
-            defaults.id         = 0;
             defaults.icon       = 'icon';
             defaults.smallIcon  = null;
             defaults.ongoing    = false;
