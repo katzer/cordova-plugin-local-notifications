@@ -212,4 +212,8 @@ channel.onCordovaReady.subscribe( function () {
     plugin.applyPlatformSpecificOptions();
 });
 
+channel.deviceready.subscribe( function () {
+    cordova.exec(null, null, 'LocalNotification', 'deviceready', []);
+});
+
 module.exports = plugin;

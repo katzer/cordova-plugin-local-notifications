@@ -24,6 +24,8 @@
 
 @interface APPLocalNotification : CDVPlugin
 
+// Executes all queued events
+- (void) deviceready:(CDVInvokedUrlCommand*)command;
 // Schedules a new local notification
 - (void) add:(CDVInvokedUrlCommand*)command;
 // Cancels a given local notification

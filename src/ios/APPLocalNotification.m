@@ -54,7 +54,32 @@
 
 @end
 
+@interface APPLocalNotification ()
+
+// All events will be queued until deviceready has been fired
+@property (readwrite, assign) BOOL deviceready;
+// Event queue
+@property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
+
+@end
+
 @implementation APPLocalNotification
+
+@synthesize deviceready, eventQueue;
+
+/**
+ * Executes all queued events.
+ */
+- (void) deviceready:(CDVInvokedUrlCommand*)command
+{
+    deviceready = YES;
+
+    for (NSString* js in eventQueue) {
+        [self.commandDelegate evalJs:js];
+    }
+
+    [eventQueue removeAllObjects];
+}
 
 /**
  * Schedules a new local notification.
@@ -109,8 +134,7 @@
         NSArray* notifications = [[UIApplication sharedApplication]
                                   scheduledLocalNotifications];
 
-        for (UILocalNotification* notification in notifications)
-        {
+        for (UILocalNotification* notification in notifications) {
             [self cancelNotification:notification fireEvent:YES];
         }
 
@@ -214,8 +238,7 @@
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
 
-    if (fireEvent)
-    {
+    if (fireEvent) {
         [self fireEvent:@"cancel" id:id json:json];
     }
 }
@@ -339,13 +362,10 @@
 
     if (![self stringIsNullOrEmpty:msg])
     {
-        if (![self stringIsNullOrEmpty:title])
-        {
+        if (![self stringIsNullOrEmpty:title]) {
             notification.alertBody = [NSString stringWithFormat:
                                       @"%@\n%@", title, msg];
-        }
-        else
-        {
+        } else {
             notification.alertBody = msg;
         }
     }
@@ -354,9 +374,7 @@
     {
         if ([sound isEqualToString:@""]) {
             notification.soundName = UILocalNotificationDefaultSoundName;
-        }
-        else
-        {
+        } else {
             notification.soundName = sound;
         }
     }
@@ -382,8 +400,7 @@
     NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:fireDate];
     NSString* event = (fireDateDistance < 1) ? @"trigger" : @"click";
 
-    if (autoCancel && [event isEqualToString:@"click"])
-    {
+    if (autoCancel && [event isEqualToString:@"click"]) {
         [self cancelNotification:notification fireEvent:YES];
     }
 
@@ -400,8 +417,7 @@
     UILocalNotification* localNotification = [launchOptions objectForKey:
                                               UIApplicationLaunchOptionsLocalNotificationKey];
 
-    if (localNotification)
-    {
+    if (localNotification) {
         [self didReceiveLocalNotification:
          [NSNotification notificationWithName:CDVLocalNotification
                                        object:localNotification]];
@@ -418,6 +434,8 @@
     NSNotificationCenter* notificationCenter = [NSNotificationCenter
                                                 defaultCenter];
 
+    eventQueue = [[NSMutableArray alloc] init];
+
     [notificationCenter addObserver:self
                            selector:@selector(didReceiveLocalNotification:)
                                name:CDVLocalNotification
@@ -425,7 +443,7 @@
 
     [notificationCenter addObserver:self
                            selector:@selector(didFinishLaunchingWithOptions:)
-                               name:CDVLocalNotification
+                               name:UIApplicationDidFinishLaunchingNotification
                              object:nil];
 }
 
@@ -446,13 +464,11 @@
  */
 - (BOOL) stringIsNullOrEmpty:(NSString*)str
 {
-    if (str == (NSString*)[NSNull null])
-    {
+    if (str == (NSString*)[NSNull null]) {
         return YES;
     }
 
-    if ([str isEqualToString:@""])
-    {
+    if ([str isEqualToString:@""]) {
         return YES;
     }
 
@@ -523,7 +539,11 @@
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
                     event, params];
 
-    [self.commandDelegate evalJs:js];
+    if (deviceready) {
+        [self.commandDelegate evalJs:js];
+    } else {
+        [self.eventQueue addObject:js];
+    }
 }
 
 @end

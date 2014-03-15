@@ -64,6 +64,7 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [feature:] New interface `getScheduledIds` to retrieve a list with all currently pending notifications.
 - [enhancement:] Support for bigview style notifications for Android devices.
 - [bugfix:] Sound didnt play properly on iOS/Android.
+- [bugfix:] click event on iOS wasn't fired if app was not running.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
