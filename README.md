@@ -62,6 +62,8 @@ More informations can be found [here](https://build.phonegap.com/plugins/413).
 - [bugfix:] `sound:null` didnt work for Android. The default sound was played.
 - [feature:] New interface `isScheduled` to check wether a notification with an ID is pending.
 - [feature:] New interface `getScheduledIds` to retrieve a list with all currently pending notifications.
+- [enhancement:] Support for bigview style notifications for Android devices.
+- [bugfix:] Sound didnt play properly on iOS/Android.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.
