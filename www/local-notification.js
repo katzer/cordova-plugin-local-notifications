@@ -205,10 +205,11 @@ LocalNotification.prototype = {
     oncancel: function (id, state, json) {}
 };
 
-var plugin = new LocalNotification();
+var plugin  = new LocalNotification(),
+    channel = require('cordova/channel');
 
-document.addEventListener('deviceready', function () {
+channel.onCordovaReady.subscribe( function () {
     plugin.applyPlatformSpecificOptions();
-}, false);
+});
 
 module.exports = plugin;
