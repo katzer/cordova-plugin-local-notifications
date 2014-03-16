@@ -39,6 +39,11 @@ namespace Cordova.Extension.Commands
     public class LocalNotification : BaseCommand
     {
         /// <summary>
+        /// Informs either the app is running in background or foreground
+        /// </summary>
+        private bool isInBackground = true;
+
+        /// <summary>
         /// Sets application live tile
         /// </summary>
         public void add (string jsonArgs)
@@ -123,6 +128,22 @@ namespace Cordova.Extension.Commands
         }
 
         /// <summary>
+        /// Called when the application has been switched to background
+        /// </summary>
+        public void pause (string jsonArgs)
+        {
+            isInBackground = true;
+        }
+
+        /// <summary>
+        /// Called when the application has been switched to foreground
+        /// </summary>
+        public void resume (string jsonArgs)
+        {
+            isInBackground = false;
+        }
+
+        /// <summary>
         /// Creates tile data
         /// </summary>
         private FlipTileData CreateTileData (Options options)
@@ -162,7 +183,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         private void FireEvent (string Event, string Id, string JSON = "")
         {
-            string state = "foreground";
+            string state = ApplicationState();
             string args  = String.Format("\'{0}\',\'{1}\',\'{2}\'", Id, state, JSON);
             string js    = String.Format("window.plugin.notification.local.on{0}({1})", Event, args);
 
@@ -171,6 +192,15 @@ namespace Cordova.Extension.Commands
             pluginResult.KeepCallback = true;
 
             DispatchCommandResult(pluginResult);
+        }
+
+        /// <summary>
+        /// Retrieves the application state
+        /// Either "background" or "foreground"
+        /// </summary>
+        private String ApplicationState ()
+        {
+            return isInBackground ? "background" : "foreground";
         }
     }
 }
