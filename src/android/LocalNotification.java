@@ -51,12 +51,13 @@ import android.content.SharedPreferences.Editor;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    protected final static String PLUGIN_NAME      = "LocalNotification";
+    protected final static String PLUGIN_NAME = "LocalNotification";
 
-    private   static CordovaWebView webView        = null;
-    protected static Context context               = null;
+    private   static CordovaWebView webView = null;
+    private   static Boolean deviceready = false;
+    protected static Context context = null;
 
-    private   static ArrayList<String> callbackQueue = new ArrayList<String>();
+    private   static ArrayList<String> eventQueue = new ArrayList<String>();
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -64,8 +65,6 @@ public class LocalNotification extends CordovaPlugin {
 
         LocalNotification.webView = super.webView;
         LocalNotification.context = super.cordova.getActivity().getApplicationContext();
-
-        execPendingCallbacks();
     }
 
     @Override
@@ -122,8 +121,31 @@ public class LocalNotification extends CordovaPlugin {
             return true;
         }
 
+        if (action.equalsIgnoreCase("deviceready")) {
+            cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                    deviceready();
+                }
+            });
+
+            return true;
+        }
+
         // Returning false results in a "MethodNotFound" error.
         return false;
+    }
+
+    /**
+     * Calls all pending callbacks after the deviceready event has been fired.
+     */
+    private static void deviceready () {
+        deviceready = true;
+
+        for (String js : eventQueue) {
+            webView.sendJavascript(js);
+        }
+
+        eventQueue.clear();
     }
 
     /**
@@ -288,10 +310,8 @@ public class LocalNotification extends CordovaPlugin {
         String params = "\"" + id + "\",\"" + state + "\",\\'" + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
         String js     = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
 
-        // after reboot, LocalNotification.webView is always be null
-        // call background callback later
-        if (webView == null) {
-            callbackQueue.add(js);
+        if (deviceready == false) {
+            eventQueue.add(js);
         } else {
             webView.sendJavascript(js);
         }
@@ -336,16 +356,5 @@ public class LocalNotification extends CordovaPlugin {
         } catch (Exception e) {
             return true;
         }
-    }
-
-    /**
-     * Calls all pending callbacks after the webview was created.
-     */
-    private void execPendingCallbacks () {
-        for (String js : callbackQueue) {
-            webView.sendJavascript(js);
-        }
-
-        callbackQueue.clear();
     }
 }
