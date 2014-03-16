@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.7.3 (not yet released)
+#### Version 0.7.3 (16.03.2014)
 - [bugfix:] cancel callbacks have not been fired after all notifications have been canceled on iOS.
 - [change:] The `oncancel` callback will be called at last if `autoCancel` is set to true (iOS).
 - [bugfix:] Callbacks for non-repeating notifications were not called if they were not created in the current app instance on iOS.
