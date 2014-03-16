@@ -17,6 +17,7 @@ For example, applications that depend on servers for messages or data can poll t
 ### Plugin's Purpose
 The purpose of the plugin is to create an platform independent javascript interface for [Cordova][cordova] based mobile applications to access the specific API on each platform.
 
+
 ## Supported Platforms
 - **iOS**<br>
 See [Local and Push Notification Programming Guide][ios_notification_guide] for detailed informations and screenshots.
@@ -43,16 +44,15 @@ Through the [Command-line Interface][CLI]:
 # ~~ from master ~~
 cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git && cordova prepare
 ```
-
+or to use the last stable version:
 ```bash
 # ~~ stable version ~~
 cordova plugin add de.appplant.cordova.plugin.local-notification && cordova prepare
 ```
 
-
 ### Removing the Plugin from your project
 Through the [Command-line Interface][CLI]:
-```
+```bash
 cordova plugin rm de.appplant.cordova.plugin.local-notification
 ```
 
