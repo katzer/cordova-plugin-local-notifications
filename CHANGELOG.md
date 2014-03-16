@@ -10,6 +10,7 @@
 - [enhancement:] Support for bigview style notifications for Android devices.
 - [bugfix:] Sound didnt play properly on iOS/Android.
 - [bugfix:] click event on iOS wasn't fired if app was not running.
+- [enhancement:] GET_TASK permission not needed anymore for Android.
 
 #### Version 0.7.2 (09.02.2014)
 - [enhancement:] Avoid blocking the main thread (on Android) **(dpogue)**.

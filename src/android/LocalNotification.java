@@ -34,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -56,7 +55,7 @@ public class LocalNotification extends CordovaPlugin {
     private   static CordovaWebView webView = null;
     private   static Boolean deviceready = false;
     protected static Context context = null;
-
+    protected static Boolean isInBackground = true;
     private   static ArrayList<String> eventQueue = new ArrayList<String>();
 
     @Override
@@ -127,6 +126,18 @@ public class LocalNotification extends CordovaPlugin {
                     deviceready();
                 }
             });
+
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("pause")) {
+            isInBackground = true;
+
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("resume")) {
+            isInBackground = false;
 
             return true;
         }
@@ -306,10 +317,12 @@ public class LocalNotification extends CordovaPlugin {
      * @param {String} json  A custom (JSON) string
      */
     public static void fireEvent (String event, String id, String json) {
-        String state  = isInBackground() ? "background" : "foreground";
+        String state  = isInBackground ? "background" : "foreground";
         String params = "\"" + id + "\",\"" + state + "\",\\'" + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
         String js     = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
 
+        // webview may available, but callbacks needs to be executed
+        // after deviceready
         if (deviceready == false) {
             eventQueue.add(js);
         } else {
@@ -345,16 +358,5 @@ public class LocalNotification extends CordovaPlugin {
      */
     protected static NotificationManager getNotificationManager () {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
-    /**
-     * Specifies whether the App is running in the background
-     */
-    private static boolean isInBackground () {
-        try {
-            return !context.getPackageName().equalsIgnoreCase(((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningTasks(1).get(0).topActivity.getPackageName());
-        } catch (Exception e) {
-            return true;
-        }
     }
 }

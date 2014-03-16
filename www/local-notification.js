@@ -216,4 +216,18 @@ channel.deviceready.subscribe( function () {
     cordova.exec(null, null, 'LocalNotification', 'deviceready', []);
 });
 
+channel.onCordovaReady.subscribe( function () {
+    if (device.platform != 'iOS') {
+        channel.onPause.subscribe( function () {
+            cordova.exec(null, null, 'LocalNotification', 'pause', []);
+        });
+
+        channel.onResume.subscribe( function () {
+            cordova.exec(null, null, 'LocalNotification', 'resume', []);
+        });
+
+        cordova.exec(null, null, 'LocalNotification', 'resume', []);
+    }
+});
+
 module.exports = plugin;
