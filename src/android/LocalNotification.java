@@ -317,7 +317,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param {String} json  A custom (JSON) string
      */
     public static void fireEvent (String event, String id, String json) {
-        String state  = isInBackground ? "background" : "foreground";
+        String state  = getApplicationState();
         String params = "\"" + id + "\",\"" + state + "\",\\'" + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
         String js     = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
 
@@ -328,6 +328,16 @@ public class LocalNotification extends CordovaPlugin {
         } else {
             webView.sendJavascript(js);
         }
+    }
+
+    /**
+     * Retrieves the application state
+     *
+     * @return {String}
+     *      Either "background" or "foreground"
+     */
+    protected static String getApplicationState () {
+        return isInBackground ? "background" : "foreground";
     }
 
     /**

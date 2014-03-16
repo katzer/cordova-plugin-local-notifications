@@ -49,6 +49,8 @@
 - (BOOL) isNotificationScheduledWithId:(NSString*)id;
 // Retrieves the local notification by its ID
 - (UILocalNotification*) notificationWithId:(NSString*)id;
+// Retrieves the application state
+- (NSString*) applicationState;
 // Fires the given event
 - (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json;
 
@@ -514,6 +516,22 @@
 }
 
 /**
+ * Retrieves the application state
+ *
+ * @return {NSString}
+ *      Either "background" or "foreground"
+ */
+- (NSString*) applicationState
+{
+    UIApplicationState state = [[UIApplication sharedApplication]
+                                applicationState];
+
+    bool isActive = state == UIApplicationStateActive;
+
+    return isActive ? @"foreground" : @"background";
+}
+
+/**
  * Fires the given event.
  *
  * @param {NSString} event
@@ -525,15 +543,11 @@
  */
 - (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
 {
-    UIApplicationState state = [[UIApplication sharedApplication]
-                                applicationState];
-
-    bool isActive = state == UIApplicationStateActive;
-    NSString* stateName = isActive ? @"foreground" : @"background";
+    NSString* appState = [self applicationState];
 
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\",\"%@\",\\'%@\\'",
-                        id, stateName, json];
+                        id, appState, json];
 
     NSString* js = [NSString stringWithFormat:
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
