@@ -208,26 +208,26 @@ LocalNotification.prototype = {
 var plugin  = new LocalNotification(),
     channel = require('cordova/channel');
 
-channel.onCordovaReady.subscribe( function () {
-    plugin.applyPlatformSpecificOptions();
-});
-
 channel.deviceready.subscribe( function () {
     cordova.exec(null, null, 'LocalNotification', 'deviceready', []);
 });
 
 channel.onCordovaReady.subscribe( function () {
-    if (device.platform != 'iOS') {
-        channel.onPause.subscribe( function () {
-            cordova.exec(null, null, 'LocalNotification', 'pause', []);
-        });
+    channel.onCordovaInfoReady.subscribe( function () {
+        if (device.platform != 'iOS') {
+            channel.onPause.subscribe( function () {
+                cordova.exec(null, null, 'LocalNotification', 'pause', []);
+            });
 
-        channel.onResume.subscribe( function () {
+            channel.onResume.subscribe( function () {
+                cordova.exec(null, null, 'LocalNotification', 'resume', []);
+            });
+
             cordova.exec(null, null, 'LocalNotification', 'resume', []);
-        });
+        }
 
-        cordova.exec(null, null, 'LocalNotification', 'resume', []);
-    }
+        plugin.applyPlatformSpecificOptions();
+    });
 });
 
 module.exports = plugin;
