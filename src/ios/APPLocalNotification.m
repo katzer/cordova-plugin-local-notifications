@@ -106,7 +106,10 @@
         if ([self isNotificationScheduledWithId:id]) {
             UILocalNotification* notification = [self notificationWithId:id];
 
-            [self cancelNotification:notification fireEvent:NO];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
+                           dispatch_get_main_queue(), ^{
+                [self cancelNotification:notification fireEvent:NO];
+            });
         }
 
         [self scheduleNotificationWithProperties:properties];
