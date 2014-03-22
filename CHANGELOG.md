@@ -1,8 +1,9 @@
 ## ChangeLog
 #### Version 0.7.4 (not yet released)
 - [bugfix:] Platform specific properties were ignored.
-- [bugfix:] cancel may throw an error if the OS returns NIL values (iOS).
+- [bugfix:] `cancel` may throw an error if the OS returns NIL values (iOS).
 - [bugfix:] Replacing a notification with the same ID may result into canceling both (iOS).
+- [bugfix:] Missing `deviceready` method (WP8).
 
 #### Version 0.7.3 (16.03.2014)
 - [bugfix:] cancel callbacks have not been fired after all notifications have been canceled on iOS.

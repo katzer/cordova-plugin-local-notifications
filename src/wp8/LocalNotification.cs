@@ -39,9 +39,14 @@ namespace Cordova.Extension.Commands
     public class LocalNotification : BaseCommand
     {
         /// <summary>
+        /// Informs if the device is ready and the deviceready event has been fired
+        /// </summary>
+        private bool DeviceReady = false;
+
+        /// <summary>
         /// Informs either the app is running in background or foreground
         /// </summary>
-        private bool isInBackground = true;
+        private bool RunsInBackground = true;
 
         /// <summary>
         /// Sets application live tile
@@ -128,11 +133,19 @@ namespace Cordova.Extension.Commands
         }
 
         /// <summary>
+        /// Informs that the device is ready and the deviceready event has been fired
+        /// </summary>
+        public void deviceready (string jsonArgs)
+        {
+            DeviceReady = true;
+        }
+
+        /// <summary>
         /// Called when the application has been switched to background
         /// </summary>
         public void pause (string jsonArgs)
         {
-            isInBackground = true;
+            RunsInBackground = true;
         }
 
         /// <summary>
@@ -140,7 +153,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public void resume (string jsonArgs)
         {
-            isInBackground = false;
+            RunsInBackground = false;
         }
 
         /// <summary>
@@ -200,7 +213,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         private String ApplicationState ()
         {
-            return isInBackground ? "background" : "foreground";
+            return RunsInBackground ? "background" : "foreground";
         }
     }
 }
