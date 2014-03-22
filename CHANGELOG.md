@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.7.4 (not yet released)
+#### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.
 - [bugfix:] `cancel` may throw an error if the OS returns NIL values (iOS).
 - [bugfix:] Replacing a notification with the same ID may result into canceling both (iOS).
