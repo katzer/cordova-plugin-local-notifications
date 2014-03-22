@@ -214,7 +214,7 @@ channel.deviceready.subscribe( function () {
 
 channel.onCordovaReady.subscribe( function () {
     channel.onCordovaInfoReady.subscribe( function () {
-        if (device.platform != 'iOS') {
+        if (device.platform == 'Android') {
             channel.onPause.subscribe( function () {
                 cordova.exec(null, null, 'LocalNotification', 'pause', []);
             });

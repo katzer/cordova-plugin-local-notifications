@@ -46,7 +46,7 @@ namespace Cordova.Extension.Commands
         /// <summary>
         /// Informs either the app is running in background or foreground
         /// </summary>
-        private bool RunsInBackground = true;
+        private bool RunsInBackground = false;
 
         /// <summary>
         /// Sets application live tile
@@ -141,22 +141,6 @@ namespace Cordova.Extension.Commands
         }
 
         /// <summary>
-        /// Called when the application has been switched to background
-        /// </summary>
-        public void pause (string jsonArgs)
-        {
-            RunsInBackground = true;
-        }
-
-        /// <summary>
-        /// Called when the application has been switched to foreground
-        /// </summary>
-        public void resume (string jsonArgs)
-        {
-            RunsInBackground = false;
-        }
-
-        /// <summary>
         /// Creates tile data
         /// </summary>
         private FlipTileData CreateTileData (Options options)
@@ -214,6 +198,23 @@ namespace Cordova.Extension.Commands
         private String ApplicationState ()
         {
             return RunsInBackground ? "background" : "foreground";
+        }
+
+        /// <summary>
+        /// Occurs when the application is being deactivated.
+        /// </summary>
+        public override void OnPause (object sender, DeactivatedEventArgs e)
+        {
+            RunsInBackground = true;
+        }
+
+        /// <summary>
+        /// Occurs when the application is being made active after previously being put
+        /// into a dormant state or tombstoned.
+        /// </summary>
+        public override void OnResume (object sender, Microsoft.Phone.Shell.ActivatedEventArgs e)
+        {
+            RunsInBackground = false;
         }
     }
 }
