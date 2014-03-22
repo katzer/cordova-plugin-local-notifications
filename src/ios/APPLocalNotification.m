@@ -51,6 +51,8 @@
 - (UILocalNotification*) notificationWithId:(NSString*)id;
 // Retrieves the application state
 - (NSString*) applicationState;
+// Retrieves all scheduled notifications
+- (NSArray*) scheduledNotifications;
 // Fires the given event
 - (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json;
 
@@ -58,6 +60,10 @@
 
 @interface APPLocalNotification ()
 
+// Retrieves all scheduled notifications
+@property (readonly, getter=scheduledNotifications) NSArray* scheduledNotifications;
+// Retrieves the application state
+@property (readonly, getter=applicationState) NSString* applicationState;
 // All events will be queued until deviceready has been fired
 @property (readwrite, assign) BOOL deviceready;
 // Event queue
@@ -67,7 +73,7 @@
 
 @implementation APPLocalNotification
 
-@synthesize deviceready, eventQueue;
+@synthesize deviceready, eventQueue, applicationState, scheduledNotifications;
 
 /**
  * Executes all queued events.
@@ -133,8 +139,7 @@
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSArray* notifications = [[UIApplication sharedApplication]
-                                  scheduledLocalNotifications];
+        NSArray* notifications = self.scheduledNotifications;
 
         for (UILocalNotification* notification in notifications) {
             [self cancelNotification:notification fireEvent:YES];
@@ -181,8 +186,7 @@
 - (void) getScheduledIds:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSArray* notifications = [[UIApplication sharedApplication]
-                                  scheduledLocalNotifications];
+        NSArray* notifications = self.scheduledNotifications;
 
         NSMutableArray* scheduledIds = [[NSMutableArray alloc] init];
         CDVPluginResult* result;
@@ -256,8 +260,7 @@
 {
     NSDate* now = [NSDate date];
 
-    NSArray* notifications = [[UIApplication sharedApplication]
-                              scheduledLocalNotifications];
+    NSArray* notifications = self.scheduledNotifications;
 
     for (UILocalNotification* notification in notifications)
     {
@@ -500,8 +503,7 @@
  */
 - (UILocalNotification*) notificationWithId:(NSString*)id
 {
-    NSArray* notifications = [[UIApplication sharedApplication]
-                              scheduledLocalNotifications];
+    NSArray* notifications = self.scheduledNotifications;
 
     for (UILocalNotification* notification in notifications)
     {
@@ -532,6 +534,30 @@
 }
 
 /**
+ * Retrieves all scheduled notifications.
+ *
+ * @return {NSArray}
+ *      A list of all scheduled local notifications
+ */
+- (NSArray*) scheduledNotifications
+{
+    NSMutableArray* notificationsWithoutNIL = [[NSMutableArray alloc]
+                                               init];
+
+    NSArray* notifications = [[UIApplication sharedApplication]
+                              scheduledLocalNotifications];
+
+    for (UILocalNotification* notification in notifications)
+    {
+        if (notification) {
+            [notificationsWithoutNIL addObject:notification];
+        }
+    }
+
+    return notificationsWithoutNIL;
+}
+
+/**
  * Fires the given event.
  *
  * @param {NSString} event
@@ -543,7 +569,7 @@
  */
 - (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
 {
-    NSString* appState = [self applicationState];
+    NSString* appState = self.applicationState;
 
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\",\"%@\",\\'%@\\'",
