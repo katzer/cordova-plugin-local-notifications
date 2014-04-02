@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-//import android.app.Notification.Builder;
 import android.support.v4.app.*;
 import android.support.v4.app.NotificationCompat.*;
 import android.app.NotificationManager;
