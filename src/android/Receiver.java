@@ -29,7 +29,9 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.Notification.Builder;
+//import android.app.Notification.Builder;
+import android.support.v4.app.*;
+import android.support.v4.app.NotificationCompat.*;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -121,7 +123,7 @@ public class Receiver extends BroadcastReceiver {
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
         Uri sound   = options.getSound();
 
-        Builder notification = new Notification.Builder(context)
+        Builder notification = new NotificationCompat.Builder(context)
 	        .setContentTitle(options.getTitle())
 	        .setContentText(options.getMessage())
 	        .setNumber(options.getBadge())
@@ -136,7 +138,7 @@ public class Receiver extends BroadcastReceiver {
         }
 
         if (Build.VERSION.SDK_INT > 16) {
-        	notification.setStyle(new Notification.BigTextStyle()
+        	notification.setStyle(new NotificationCompat.BigTextStyle()
         		.bigText(options.getMessage()));
         }
         
