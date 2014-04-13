@@ -1,4 +1,7 @@
 ## ChangeLog
+#### Version 0.8.0 (not yet released)
+- [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.
 - [bugfix:] `cancel` may throw an error if the OS returns NIL values (iOS).

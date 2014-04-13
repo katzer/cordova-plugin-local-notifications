@@ -7,7 +7,7 @@
 
     <name>LocalNotification</name>
 
-    <description>A bunch of local-notification plugins for Cordova 3.x.x</description>
+    <description>The purpose of the plugin is to create an platform independent javascript interface for Cordova based mobile applications to access the specific Notification API on each platform.</description>
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
     <keywords>notification, local notification, alarm, scheduler, tile, live tiles, ios, android, windows phone 8, wp8</keywords>
     <license>Apache 2.0</license>
@@ -76,8 +76,9 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
         </config-file>
-<!--libs/android/android-support-v4.jar-->
-<lib-file  src="libs/android/android-support-v4.jar" />
+
+        <lib-file src="libs/android/android-support-v4.jar" />
+
         <source-file src="src/android/LocalNotification.java" target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/Receiver.java"          target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/Options.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />

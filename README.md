@@ -22,7 +22,7 @@ The purpose of the plugin is to create an platform independent javascript interf
 - **iOS**<br>
 See [Local and Push Notification Programming Guide][ios_notification_guide] for detailed informations and screenshots.
 
-- **Android** *(SDK >=11)*<br>
+- **Android** *(SDK >=7)*<br>
 See [Notification Guide][android_notification_guide] for detailed informations and screenshots.
 
 - **WP8**<br>
@@ -35,7 +35,7 @@ See [Local notifications for Windows Phone][wp8_notification_guide] for detailed
 - [org.apache.cordova.device][apache_device_plugin] *(since v0.6.0)*
 
 
-# Installation
+## Installation
 The plugin can either be installed into the local development environment or cloud based through [PhoneGap Build][PGB].
 
 ### Adding the Plugin to your project
@@ -66,6 +66,15 @@ or to use an specific version:
 <gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.2" />
 ```
 More informations can be found [here][PGB_plugin].
+
+
+## ChangeLog
+#### Version 0.8.0 (not yet released)
+- [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+
+#### Further informations
+- See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
+- See the [v0.8.x TODO List][todo_list] for upcomming changes and other things.
 
 
 ## Using the plugin
@@ -435,7 +444,7 @@ The launch mode for the main activity has to be set to `singleInstance`
 
 ## License
 
-This software is released under the [Apache 2.0 License](http://opensource.org/licenses/Apache-2.0).
+This software is released under the [Apache 2.0 License][apache2_license].
 
 © 2013-2014 appPlant UG, Inc. All rights reserved
 
@@ -448,6 +457,8 @@ This software is released under the [Apache 2.0 License](http://opensource.org/l
 [CLI]: http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface
 [PGB]: http://docs.build.phonegap.com/en_US/3.3.0/index.html
 [PGB_plugin]: https://build.phonegap.com/plugins/413
+[changelog]: CHANGELOG.md
+[todo_list]: issues/164
 [onadd]: #get-notified-when-a-local-notification-has-been-scheduled
 [onclick]: #get-notified-when-the-user-has-been-clicked-on-a-local-notification
 [oncancel]: #get-notified-when-a-local-notification-has-been-canceled
@@ -462,3 +473,4 @@ This software is released under the [Apache 2.0 License](http://opensource.org/l
 [isscheduled]: #check-wether-a-notification-with-an-id-is-scheduled
 [examples]: #examples
 [setdefaults-example]: #change-the-default-value-of-local-notification-properties
+[apache2_license]: http://opensource.org/licenses/Apache-2.0
