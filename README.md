@@ -458,7 +458,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [PGB]: http://docs.build.phonegap.com/en_US/3.3.0/index.html
 [PGB_plugin]: https://build.phonegap.com/plugins/413
 [changelog]: CHANGELOG.md
-[todo_list]: issues/164
+[todo_list]: ../../issues/164
 [onadd]: #get-notified-when-a-local-notification-has-been-scheduled
 [onclick]: #get-notified-when-the-user-has-been-clicked-on-a-local-notification
 [oncancel]: #get-notified-when-a-local-notification-has-been-canceled
