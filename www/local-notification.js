@@ -108,6 +108,25 @@ LocalNotification.prototype = {
     },
 
     /**
+     * @private
+     *
+     * Creates a callback, which will be executed within a specific scope.
+     *
+     * @param {Function} callbackFn
+     *      The callback function
+     * @param {Object} scope
+     *      The scope for the function
+     *
+     * @return {Function}
+     *      The new callback function
+     */
+    createCallbackFn: function (callbackFn, scope) {
+        return function () {
+            callbackFn.apply(arguments, scope || this);
+        }
+    },
+
+    /**
      * Add a new entry to the registry
      *
      * @param {Object} options
@@ -167,9 +186,13 @@ LocalNotification.prototype = {
      *
      * @param {Function} callback
      *      A callback function to be called with the list
+     * @param {Object} scope
+     *      The scope for the callback function
      */
-    getScheduledIds: function (callback) {
-        cordova.exec(callback, null, 'LocalNotification', 'getScheduledIds', []);
+    getScheduledIds: function (callback, scope) {
+        var callbackFn = this.createCallbackFn(callback, scope);
+
+        cordova.exec(callbackFn, null, 'LocalNotification', 'getScheduledIds', []);
     },
 
     /**
@@ -179,11 +202,14 @@ LocalNotification.prototype = {
      *      The ID of the notification
      * @param {Function} callback
      *      A callback function to be called with the list
+     * @param {Object} scope
+     *      The scope for the callback function
      */
-    isScheduled: function (id, callback) {
-        var id = id.toString();
+    isScheduled: function (id, callback, scope) {
+        var id         = id.toString(),
+            callbackFn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callback, null, 'LocalNotification', 'isScheduled', [id]);
+        cordova.exec(callbackFn, null, 'LocalNotification', 'isScheduled', [id]);
     },
 
     /**

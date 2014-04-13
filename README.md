@@ -146,7 +146,7 @@ window.plugin.notification.local.cancelAll();
 
 ### Check wether a notification with an ID is scheduled
 To check if a notification with an ID is scheduled, the `notification.local.isScheduled` interface can be used.<br>
-The method takes the ID of the local notification as an argument and a callback function to be called with the result.
+The method takes the ID of the local notification as an argument and a callback function to be called with the result. Optional the scope of the callback can be assigned too.
 
 #### Further informations
 - See [getScheduledIds][getscheduledids] of how to retrieve a list of IDs of all scheduled local notifications.
@@ -154,17 +154,17 @@ The method takes the ID of the local notification as an argument and a callback 
 ```javascript
 window.plugin.notification.local.isScheduled(id, function (isScheduled) {
     // console.log('Notification with ID ' + id + ' is scheduled: ' + isScheduled);
-});
+}, scope);
 ```
 
 ### Retrieve the IDs from all currently scheduled local notifications
 To retrieve the IDs from all currently scheduled local notifications, the `notification.local.isScheduled` interface can be used.<br>
-The method takes a callback function to be called with the result as an array of IDs.
+The method takes a callback function to be called with the result as an array of IDs. Optional the scope of the callback can be assigned too.
 
 ```javascript
-window.plugin.notification.local.getScheduledIds( function (scheduledIds) {
+window.plugin.notification.local.getScheduledIds(function (scheduledIds) {
     // alert('Scheduled IDs: ' + scheduledIds.join(' ,'));
-});
+}, scope);
 ```
 
 ### Get the default values of the local notification properties
