@@ -1,6 +1,7 @@
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
 - [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+- [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.

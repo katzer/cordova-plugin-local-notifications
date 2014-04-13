@@ -71,6 +71,7 @@ More informations can be found [here][PGB_plugin].
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
 - [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+- [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
