@@ -164,7 +164,6 @@ public class Receiver extends BroadcastReceiver {
      * Shows the notification
      */
     @SuppressWarnings("deprecation")
-    @SuppressLint("NewApi")
     private void showNotification (Builder notification) {
         NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         int id                  = 0;
