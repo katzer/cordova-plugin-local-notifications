@@ -67,7 +67,7 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute (String action, final JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute (String action, final JSONArray args, final CallbackContext command) throws JSONException {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
@@ -78,8 +78,6 @@ public class LocalNotification extends CordovaPlugin {
                     add(options, true);
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("cancel")) {
@@ -89,10 +87,9 @@ public class LocalNotification extends CordovaPlugin {
 
                     cancel(id);
                     unpersist(id);
+                    execCallback(command);
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("cancelAll")) {
@@ -100,24 +97,19 @@ public class LocalNotification extends CordovaPlugin {
                 public void run() {
                     cancelAll();
                     unpersistAll();
+                    execCallback(command);
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("isScheduled")) {
             String id = args.optString(0);
 
-            isScheduled(id, callbackContext);
-
-            return true;
+            isScheduled(id, command);
         }
 
         if (action.equalsIgnoreCase("getScheduledIds")) {
-            getScheduledIds(callbackContext);
-
-            return true;
+            getScheduledIds(command);
         }
 
         if (action.equalsIgnoreCase("deviceready")) {
@@ -126,24 +118,17 @@ public class LocalNotification extends CordovaPlugin {
                     deviceready();
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("pause")) {
             isInBackground = true;
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("resume")) {
             isInBackground = false;
-
-            return true;
         }
 
-        // Returning false results in a "MethodNotFound" error.
-        return false;
+        return true;
     }
 
     /**
@@ -307,6 +292,13 @@ public class LocalNotification extends CordovaPlugin {
 
         editor.clear();
         editor.apply();
+    }
+
+    /**
+     * Simply invokes the callback without any parameter.
+     */
+    private static void execCallback (CallbackContext command) {
+        command.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     }
 
     /**

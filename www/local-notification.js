@@ -167,18 +167,30 @@ LocalNotification.prototype = {
      *
      * @param {String} id
      *      The ID of the notification
+     * @param {Function} callback
+     *      A function to be called after the notification has been canceled
+     * @param {Object} scope
+     *      The scope for the callback function
      */
-    cancel: function (id) {
-        var id = id.toString();
+    cancel: function (id, callback, scope) {
+        var id         = id.toString(),
+            callbackFn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(null, null, 'LocalNotification', 'cancel', [id]);
+        cordova.exec(callbackFn, null, 'LocalNotification', 'cancel', [id]);
     },
 
     /**
      * Removes all previously registered notifications.
+     *
+     * @param {Function} callback
+     *      A function to be called after all notifications have been canceled
+     * @param {Object} scope
+     *      The scope for the callback function
      */
-    cancelAll: function () {
-        cordova.exec(null, null, 'LocalNotification', 'cancelAll', []);
+    cancelAll: function (callback, scope) {
+        var callbackFn = this.createCallbackFn(callback, scope);
+
+        cordova.exec(callbackFn, null, 'LocalNotification', 'cancelAll', []);
     },
 
     /**

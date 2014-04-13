@@ -1,7 +1,8 @@
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
-- [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+- [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
+- [enhancement:] Callbacks for `cancel` & `cancelAll`
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.

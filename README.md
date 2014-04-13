@@ -70,8 +70,9 @@ More informations can be found [here][PGB_plugin].
 
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
-- [enhancement:] android 2.1 support added (Thanks to **khizarsonu**)
+- [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
+- [enhancement:] Callbacks for `cancel` & `cancelAll`
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -131,7 +132,9 @@ Note that only local notifications with an ID can be canceled.
 - See [getScheduledIds][getscheduledids] of how to retrieve a list of IDs of all scheduled local notifications.
 
 ```javascript
-window.plugin.notification.local.cancel(ID);
+window.plugin.notification.local.cancel(ID, function () {
+    // The notification has been canceled
+}, scope);
 ```
 
 ### Cancel all scheduled local notifications
@@ -142,7 +145,9 @@ The method cancels all local notifications even if they have no ID.
 - See the [oncancel][oncancel] event of how a listener can be registered to be notified when a local notification has been canceled.
 
 ```javascript
-window.plugin.notification.local.cancelAll();
+window.plugin.notification.local.cancelAll(function () {
+    // All notifications have been canceled
+}, scope);
 ```
 
 ### Check wether a notification with an ID is scheduled
