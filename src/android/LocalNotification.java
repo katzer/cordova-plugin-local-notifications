@@ -87,7 +87,7 @@ public class LocalNotification extends CordovaPlugin {
 
                     cancel(id);
                     unpersist(id);
-                    execCallback(command);
+                    command.success();
                 }
             });
         }
@@ -97,7 +97,7 @@ public class LocalNotification extends CordovaPlugin {
                 public void run() {
                     cancelAll();
                     unpersistAll();
-                    execCallback(command);
+                    command.success();
                 }
             });
         }
@@ -227,13 +227,13 @@ public class LocalNotification extends CordovaPlugin {
      *          The notification ID to be check.
      * @param callbackContext
      */
-    public static void isScheduled (String id, CallbackContext callbackContext) {
+    public static void isScheduled (String id, CallbackContext command) {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         boolean isScheduled        = alarms.containsKey(id);
         PluginResult result        = new PluginResult(PluginResult.Status.OK, isScheduled);
 
-        callbackContext.sendPluginResult(result);
+        command.sendPluginResult(result);
     }
 
     /**
@@ -241,13 +241,13 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param callbackContext
      */
-    public static void getScheduledIds (CallbackContext callbackContext) {
+    public static void getScheduledIds (CallbackContext command) {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
         JSONArray pendingIds       = new JSONArray(alarmIds);
 
-        callbackContext.success(pendingIds);
+        command.success(pendingIds);
     }
 
     /**
@@ -292,13 +292,6 @@ public class LocalNotification extends CordovaPlugin {
 
         editor.clear();
         editor.apply();
-    }
-
-    /**
-     * Simply invokes the callback without any parameter.
-     */
-    private static void execCallback (CallbackContext command) {
-        command.sendPluginResult(new PluginResult(PluginResult.Status.OK));
     }
 
     /**
