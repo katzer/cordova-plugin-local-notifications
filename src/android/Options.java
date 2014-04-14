@@ -21,6 +21,10 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,8 +34,14 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.StrictMode;
+import android.os.StrictMode.ThreadPolicy;
 
 /**
  * Class that helps to store the options that can be specified per alarm.
@@ -153,21 +163,23 @@ public class Options {
     /**
      * Returns the icon's ID
      */
-    public int getIcon () {
-        int icon        = 0;
-        String iconName = options.optString("icon", "icon");
+    public Bitmap getIcon () {
+        String icon = options.optString("icon", "icon");
+        Bitmap bmp = null;
 
-        icon = getIconValue(packageName, iconName);
+        icon = "https://lh3.ggpht.com/r4Qq0soacA8Lz1gwo81cC5NlsOJE60HCmXOrN7I-pr9dG7ucae83nFY3uBvnFn4G1e5XzcmPRmNUrMIZi-wpSq9e30G9HwQWka8coPc";
 
-        if (icon == 0) {
-            icon = getIconValue("android", iconName);
+        if (icon.startsWith("http")) {
+            bmp = getIconFromURL(icon);
+        } else if (icon.startsWith("file://")) {
+            bmp = getIconFromURI(icon);
         }
 
-        if (icon == 0) {
-            icon = android.R.drawable.ic_menu_info_details;
+        if (bmp == null) {
+            bmp = getIconFromRes(icon);
         }
 
-        return options.optInt("icon", icon);
+        return bmp;
     }
 
     /**
@@ -184,7 +196,7 @@ public class Options {
         }
 
         if (resId == 0) {
-            resId = getIcon();
+            resId = getIconValue(packageName, "icon");
         }
 
         return options.optInt("smallIcon", resId);
@@ -248,5 +260,92 @@ public class Options {
         } catch (Exception e) {}
 
         return icon;
+    }
+
+    /**
+     * Converts an resource to Bitmap.
+     *
+     * @param icon
+     *      The resource name
+     * @return
+     *      The corresponding bitmap
+     */
+    private Bitmap getIconFromRes (String icon) {
+        Resources res = LocalNotification.context.getResources();
+        int iconId = 0;
+
+        iconId = getIconValue(packageName, icon);
+
+        if (iconId == 0) {
+            iconId = getIconValue("android", icon);
+        }
+
+        if (iconId == 0) {
+            iconId = android.R.drawable.ic_menu_info_details;
+        }
+
+        Bitmap bmp = BitmapFactory.decodeResource(res, iconId);
+
+        return bmp;
+    }
+
+    /**
+     * Converts an Image URL to Bitmap.
+     *
+     * @param src
+     *      The external image URL
+     * @return
+     *      The corresponding bitmap
+     */
+    private Bitmap getIconFromURL (String src) {
+        Bitmap bmp = null;
+        ThreadPolicy origMode = StrictMode.getThreadPolicy();
+
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            StrictMode.ThreadPolicy policy =
+                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+            StrictMode.setThreadPolicy(policy);
+
+            connection.setDoInput(true);
+            connection.connect();
+
+            InputStream input = connection.getInputStream();
+
+            bmp = BitmapFactory.decodeStream(input);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        StrictMode.setThreadPolicy(origMode);
+
+        return bmp;
+    }
+
+    /**
+     * Converts an Image URI to Bitmap.
+     *
+     * @param src
+     *      The internal image URI
+     * @return
+     *      The corresponding bitmap
+     */
+    private Bitmap getIconFromURI (String src) {
+        AssetManager assets = LocalNotification.context.getAssets();
+        Bitmap bmp = null;
+
+        try {
+            String path = src.replace("file:/", "www");
+            InputStream input = assets.open(path);
+
+            bmp = BitmapFactory.decodeStream(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bmp;
     }
 }

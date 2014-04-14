@@ -73,6 +73,7 @@ More informations can be found [here][PGB_plugin].
 - [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `cancel` & `cancelAll`
+- [enhancement:] `image:` accepts remote URLs and local URIs (Android)
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -325,16 +326,31 @@ window.plugin.notification.local.setDefaults({ autoCancel: true });
 ### Small and large icons on Android
 By default all notifications will display the app icon. But an specific icon can be defined through the `icon` and `smallIcon` properties.
 
-```javascript
-/**
- * Displays the <package.name>.R.drawable.ic_launcher icon
- */
-window.plugin.notification.local.add({ icon: 'ic_launcher' });
+#### Resource icons
+The following example shows how to display the `<package.name>.R.drawable.ic_launcher`icon as the notifications icon.
 
-/**
- * Displays the android.R.drawable.ic_dialog_email icon
- */
+```javascript
+window.plugin.notification.local.add({ icon: 'ic_launcher' });
+```
+
+See below how to use the `android.R.drawable.ic_dialog_email` icon as the notifications small icon.
+
+```javascript
 window.plugin.notification.local.add({ smallIcon: 'ic_dialog_email' });
+```
+
+#### Local icons
+The `icon` property also accepts local file URIs. The URI points to a relative path within the www folder.
+
+```javascript
+window.plugin.notification.local.add({ icon: 'file://img/logo.png' }); //=> /assets/www/img/logo.png
+```
+
+#### Remote icons
+The `icon` property also accepts remote URLs. If the device cannot download the image, it will fallback to the app icon.
+
+```javascript
+window.plugin.notification.local.add({ icon: 'https://cordova.apache.org/images/cordova_bot.png' });
 ```
 
 ### Notification sound on Android
