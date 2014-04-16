@@ -122,7 +122,9 @@ LocalNotification.prototype = {
      */
     createCallbackFn: function (callbackFn, scope) {
         return function () {
-            callbackFn.apply(arguments, scope || this);
+            if (typeof callbackFn == 'function') {
+                callbackFn.apply(scope || this, arguments);
+            }
         }
     },
 
