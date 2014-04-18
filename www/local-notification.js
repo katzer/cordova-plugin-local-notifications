@@ -95,6 +95,7 @@ LocalNotification.prototype = {
             defaults.icon       = 'icon';
             defaults.smallIcon  = null;
             defaults.ongoing    = false;
+            defaults.led        = 'FFFFFF'; /*RRGGBB*/
             defaults.sound      = 'TYPE_NOTIFICATION'; break;
         case 'iOS':
             defaults.sound      = ''; break;

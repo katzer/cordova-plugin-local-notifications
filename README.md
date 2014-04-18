@@ -74,6 +74,7 @@ More informations can be found [here][PGB_plugin].
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
+- [feature:] New Android specific `led:` flag
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -418,6 +419,13 @@ To specify a custom interval, the `repeat` property can be assigned with an numb
  * Schedules the notification quarterly every 15 mins
  */
 window.plugin.notification.local.add({ repeat: 15 });
+```
+
+### Change the LED color on Android devices
+The LED color can be specified through the `led` property. By default the color value is white (FFFFFF). Its possible to change that value by setting another hex code.
+
+```javascript
+window.plugin.notification.local.add({ led: 'A0FF05' });
 ```
 
 

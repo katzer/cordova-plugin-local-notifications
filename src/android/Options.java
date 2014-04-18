@@ -245,6 +245,19 @@ public class Options {
     }
 
     /**
+     * @return
+     *      The notification color for LED
+     */
+   public int getColor () {
+        String hexColor = options.optString("led", "000000");
+        int aRGB        = Integer.parseInt(hexColor,16);
+
+        aRGB += 0xFF000000;
+
+        return aRGB;
+    }
+
+    /**
      * Returns numerical icon Value
      *
      * @param {String} className

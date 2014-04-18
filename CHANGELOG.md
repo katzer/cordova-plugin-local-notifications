@@ -4,6 +4,7 @@
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
+- [feature:] New Android specific `led:` flag.
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.
