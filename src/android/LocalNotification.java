@@ -186,7 +186,7 @@ public class LocalNotification extends CordovaPlugin {
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + notificationId);
 
-        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager am        = getAlarmManager();
         NotificationManager nc = getNotificationManager();
 
