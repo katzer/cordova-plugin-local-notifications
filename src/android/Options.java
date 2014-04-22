@@ -167,8 +167,6 @@ public class Options {
         String icon = options.optString("icon", "icon");
         Bitmap bmp = null;
 
-        icon = "https://lh3.ggpht.com/r4Qq0soacA8Lz1gwo81cC5NlsOJE60HCmXOrN7I-pr9dG7ucae83nFY3uBvnFn4G1e5XzcmPRmNUrMIZi-wpSq9e30G9HwQWka8coPc";
-
         if (icon.startsWith("http")) {
             bmp = getIconFromURL(icon);
         } else if (icon.startsWith("file://")) {
