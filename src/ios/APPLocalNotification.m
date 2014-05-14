@@ -46,17 +46,15 @@
 // Checks weather the given string is empty or not
 - (BOOL) stringIsNullOrEmpty:(NSString*)str;
 // Checks wether a notification with an ID is scheduled or not
-- (BOOL) isNotificationScheduledWithId:(NSString*)id;
+- (BOOL) isNotificationScheduledWithId:(NSString*)identification;
 // Retrieves the local notification by its ID
-- (UILocalNotification*) notificationWithId:(NSString*)id;
+- (UILocalNotification*) notificationWithId:(NSString*)identification;
 // Retrieves the application state
 - (NSString*) applicationState;
 // Retrieves all scheduled notifications
 - (NSArray*) scheduledNotifications;
-// Simply invokes the callback without any parameter
-- (void) execCallback:(CDVInvokedUrlCommand*)command;
 // Fires the given event
-- (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json;
+- (void) fireEvent:(NSString*)event id:(NSString*)identification json:(NSString*)json;
 
 @end
 
@@ -102,11 +100,11 @@
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
         NSMutableDictionary* properties = [arguments objectAtIndex:0];
+        NSLog(@"%@", [properties objectForKey:@"id"]);
+        NSString* identification = [properties objectForKey:@"id"];
 
-        NSString* id = [properties objectForKey:@"id"];
-
-        if ([self isNotificationScheduledWithId:id]) {
-            UILocalNotification* notification = [self notificationWithId:id];
+        if ([self isNotificationScheduledWithId:identification]) {
+            UILocalNotification* notification = [self notificationWithId:identification];
 
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
@@ -128,15 +126,13 @@
 {
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
-        NSString* id       = [arguments objectAtIndex:0];
+        NSString* identification       = [arguments objectAtIndex:0];
 
-        UILocalNotification* notification = [self notificationWithId:id];
+        UILocalNotification* notification = [self notificationWithId:identification];
 
         if (notification) {
             [self cancelNotification:notification fireEvent:YES];
         }
-
-        [self execCallback:command];
     }];
 }
 
@@ -157,8 +153,6 @@
 
         [[UIApplication sharedApplication]
          setApplicationIconBadgeNumber:0];
-
-        [self execCallback:command];
     }];
 }
 
@@ -174,8 +168,8 @@
 {
     [self.commandDelegate runInBackground:^{
         NSArray* arguments = [command arguments];
-        NSString* id       = [arguments objectAtIndex:0];
-        bool isScheduled   = [self isNotificationScheduledWithId:id];
+        NSString* identification       = [arguments objectAtIndex:0];
+        bool isScheduled   = [self isNotificationScheduledWithId:identification];
         CDVPluginResult* result;
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
@@ -196,22 +190,32 @@
 {
     [self.commandDelegate runInBackground:^{
         NSArray* notifications = self.scheduledNotifications;
+        
+//        NSLog(@" 1 %@", [notifications description]);
 
         NSMutableArray* scheduledIds = [[NSMutableArray alloc] init];
         CDVPluginResult* result;
 
+//        NSLog(@" 2 %@", [notifications description]);
+        
         for (UILocalNotification* notification in notifications)
         {
-            NSString* id = [notification.userInfo objectForKey:@"id"];
+            NSString* identification = [notification.userInfo objectForKey:@"id"];
 
-            [scheduledIds addObject:id];
+            [scheduledIds addObject:identification];
         }
+        
+//        NSLog(@" 3 %@", [notifications description]);
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:scheduledIds];
 
+//        NSLog(@" 4 %@", [notifications description]);
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
+        
+//        NSLog(@" 5 %@", [notifications description]);
     }];
 }
 
@@ -227,10 +231,10 @@
                                          properties];
 
     NSDictionary* userInfo = notification.userInfo;
-    NSString* id = [userInfo objectForKey:@"id"];
+    NSString* identification = [userInfo objectForKey:@"id"];
     NSString* json = [userInfo objectForKey:@"json"];
 
-    [self fireEvent:@"add" id:id json:json];
+    [self fireEvent:@"add" id:identification json:json];
 
     [[UIApplication sharedApplication]
      scheduleLocalNotification:notification];
@@ -247,14 +251,14 @@
                   fireEvent:(BOOL)fireEvent
 {
     NSDictionary* userInfo = notification.userInfo;
-    NSString* id           = [userInfo objectForKey:@"id"];
+    NSString* identification           = [userInfo objectForKey:@"id"];
     NSString* json         = [userInfo objectForKey:@"json"];
 
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
 
     if (fireEvent) {
-        [self fireEvent:@"cancel" id:id json:json];
+        [self fireEvent:@"cancel" id:identification json:json];
     }
 }
 
@@ -340,12 +344,12 @@
  */
 - (NSDictionary*) userDict:(NSMutableDictionary*)options
 {
-    NSString* id = [options objectForKey:@"id"];
+    NSString* identification = [options objectForKey:@"id"];
     NSString* ac = [options objectForKey:@"autoCancel"];
     NSString* js = [options objectForKey:@"json"];
 
     return [NSDictionary dictionaryWithObjectsAndKeys:
-            id, @"id", ac, @"autoCancel", js, @"json", nil];
+            identification, @"id", ac, @"autoCancel", js, @"json", nil];
 }
 
 /**
@@ -405,7 +409,7 @@
     UILocalNotification* notification = [localNotification object];
 
     NSDictionary* userInfo = notification.userInfo;
-    NSString* id = [userInfo objectForKey:@"id"];
+    NSString* identification = [userInfo objectForKey:@"id"];
     NSString* json = [userInfo objectForKey:@"json"];
     BOOL autoCancel = [[userInfo objectForKey:@"autoCancel"] boolValue];
 
@@ -418,7 +422,7 @@
         [self cancelNotification:notification fireEvent:YES];
     }
 
-    [self fireEvent:event id:id json:json];
+    [self fireEvent:event id:identification json:json];
 }
 
 /**
@@ -496,9 +500,9 @@
  *      The ID of the notification
  * @return BOOL
  */
-- (BOOL) isNotificationScheduledWithId:(NSString*)id
+- (BOOL) isNotificationScheduledWithId:(NSString*)identification
 {
-    UILocalNotification* notification = [self notificationWithId:id];
+    UILocalNotification* notification = [self notificationWithId:identification];
 
     return notification != NULL;
 }
@@ -510,7 +514,7 @@
  *      The ID of the notification
  * @return UILocalNotification*
  */
-- (UILocalNotification*) notificationWithId:(NSString*)id
+- (UILocalNotification*) notificationWithId:(NSString*)identification
 {
     NSArray* notifications = self.scheduledNotifications;
 
@@ -518,7 +522,7 @@
     {
         NSString* notId = [notification.userInfo objectForKey:@"id"];
 
-        if ([notId isEqualToString:id]) {
+        if ([notId isEqualToString:identification]) {
             return notification;
         }
     }
@@ -567,18 +571,6 @@
 }
 
 /**
- * Simply invokes the callback without any parameter.
- */
-- (void) execCallback:(CDVInvokedUrlCommand*)command
-{
-    CDVPluginResult *result = [CDVPluginResult
-                               resultWithStatus:CDVCommandStatus_OK];
-
-    [self.commandDelegate sendPluginResult:result
-                                callbackId:command.callbackId];
-}
-
-/**
  * Fires the given event.
  *
  * @param {NSString} event
@@ -588,13 +580,13 @@
  * @param {NSString} json
  *      A custom (JSON) string
  */
-- (void) fireEvent:(NSString*)event id:(NSString*)id json:(NSString*)json
+- (void) fireEvent:(NSString*)event id:(NSString*)identification json:(NSString*)json
 {
     NSString* appState = self.applicationState;
 
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\",\"%@\",\\'%@\\'",
-                        id, appState, json];
+                        identification, appState, json];
 
     NSString* js = [NSString stringWithFormat:
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
