@@ -103,10 +103,10 @@
         NSArray* arguments = [command arguments];
         NSMutableDictionary* properties = [arguments objectAtIndex:0];
 
-        NSString* id = [properties objectForKey:@"id"];
+        NSString* identification = [properties objectForKey:@"id"];
 
-        if ([self isNotificationScheduledWithId:id]) {
-            UILocalNotification* notification = [self notificationWithId:id];
+        if ([self isNotificationScheduledWithId:identification]) {
+            UILocalNotification* notification = [self notificationWithId:identification];
 
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
