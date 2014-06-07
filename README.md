@@ -85,6 +85,19 @@ More informations can be found [here][PGB_plugin].
 ## Using the plugin
 The plugin creates the object ```window.plugin.notification.local``` with the following methods:
 
+1. [notification.local.add][add]
+2. [notification.local.cancel][cancel]
+3. [notification.local.cancelAll][cancelall]
+4. [notification.local.isScheduled][isscheduled]
+5. [notification.local.getScheduledIds][getscheduledids]
+6. [notification.local.isTriggered][istriggered]
+7. [notification.local.getDefaults][getdefaults]
+8. [notification.local.setDefaults][setDefaults]
+9. [notification.local.onadd][onadd]
+10. [notification.local.ontrigger][ontrigger]
+11. [notification.local.onclick][onclick]
+12. [notification.local.oncancel][oncancel]
+
 ### Plugin initialization
 The plugin and its methods are not available before the *deviceready* event has been fired.
 
@@ -526,6 +539,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [getscheduledids]: #retrieve-the-ids-from-all-currently-scheduled-local-notifications
 [gettriggeredids]: #retrieve-the-ids-from-all-currently-triggered-local-notifications
 [isscheduled]: #check-wether-a-notification-with-an-id-is-scheduled
+[istriggered]: #check-wether-a-notification-with-an-id-was-triggered
 [examples]: #examples
 [setdefaults-example]: #change-the-default-value-of-local-notification-properties
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
