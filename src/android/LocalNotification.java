@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,6 +114,16 @@ public class LocalNotification extends CordovaPlugin {
             getScheduledIds(command);
         }
 
+        if (action.equalsIgnoreCase("isTriggered")) {
+            String id = args.optString(0);
+
+            isTriggered(id, command);
+        }
+
+        if (action.equalsIgnoreCase("getTriggeredIds")) {
+            getTriggeredIds(command);
+        }
+
         if (action.equalsIgnoreCase("deviceready")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
@@ -187,7 +198,7 @@ public class LocalNotification extends CordovaPlugin {
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + notificationId);
 
-        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager am        = getAlarmManager();
         NotificationManager nc = getNotificationManager();
 
@@ -222,7 +233,7 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Checks wether a notification with an ID is scheduled.
+     * Checks if a notification with an ID is scheduled.
      *
      * @param id
      *          The notification ID to be check.
@@ -246,9 +257,61 @@ public class LocalNotification extends CordovaPlugin {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
-        JSONArray pendingIds       = new JSONArray(alarmIds);
+        JSONArray scheduledIds     = new JSONArray(alarmIds);
 
-        command.success(pendingIds);
+        command.success(scheduledIds);
+    }
+
+    /**
+     * Checks if a notification with an ID was triggered.
+     *
+     * @param id
+     *          The notification ID to be check.
+     * @param callbackContext
+     */
+    public static void isTriggered (String id, CallbackContext command) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        boolean isScheduled        = alarms.containsKey(id);
+        boolean isTriggered        = isScheduled;
+
+        if (isScheduled) {
+            JSONObject arguments = (JSONObject) alarms.get(id);
+            Options options      = new Options(context).parse(arguments);
+            Date fireDate        = new Date(options.getDate());
+
+            isTriggered = new Date().after(fireDate);
+        }
+
+        PluginResult result = new PluginResult(PluginResult.Status.OK, isTriggered);
+
+        command.sendPluginResult(result);
+    }
+
+    /**
+     * Retrieves a list with all currently triggered notifications.
+     *
+     * @param callbackContext
+     */
+    public static void getTriggeredIds (CallbackContext command) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
+        JSONArray scheduledIds     = new JSONArray();
+        Date now                   = new Date();
+
+        for (String id : alarmIds) {
+            JSONObject arguments = (JSONObject) alarms.get(id);
+            Options options      = new Options(context).parse(arguments);
+            Date fireDate        = new Date(options.getDate());
+            boolean isTriggered  = now.after(fireDate);
+
+            if (isTriggered == true) {
+                scheduledIds.put(id);
+            }
+        }
+
+        command.success(scheduledIds);
     }
 
     /**

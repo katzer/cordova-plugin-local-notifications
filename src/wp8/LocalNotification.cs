@@ -134,6 +134,22 @@ namespace Cordova.Extension.Commands
         }
 
         /// <summary>
+        /// Checks wether a notification with an ID was triggered
+        /// </summary>
+        public void isTriggered (string jsonArgs)
+        {
+            DispatchCommandResult();
+        }
+
+        /// <summary>
+        /// Retrieves a list with all currently triggered notifications
+        /// </summary>
+        public void getTriggeredIds (string jsonArgs)
+        {
+            DispatchCommandResult();
+        }
+
+        /// <summary>
         /// Informs that the device is ready and the deviceready event has been fired
         /// </summary>
         public void deviceready (string jsonArgs)

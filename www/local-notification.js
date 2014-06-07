@@ -241,6 +241,37 @@ LocalNotification.prototype = {
     },
 
     /**
+     * Retrieves a list with all triggered notifications.
+     *
+     * @param {Function} callback
+     *      A callback function to be called with the list
+     * @param {Object} scope
+     *      The scope for the callback function
+     */
+    getTriggeredIds: function (callback, scope) {
+        var callbackFn = this.createCallbackFn(callback, scope);
+
+        cordova.exec(callbackFn, null, 'LocalNotification', 'getTriggeredIds', []);
+    },
+
+    /**
+     * Checks wether a notification with an ID was triggered.
+     *
+     * @param {String} id
+     *      The ID of the notification
+     * @param {Function} callback
+     *      A callback function to be called with the list
+     * @param {Object} scope
+     *      The scope for the callback function
+     */
+    isTriggered: function (id, callback, scope) {
+        var id         = id.toString(),
+            callbackFn = this.createCallbackFn(callback, scope);
+
+        cordova.exec(callbackFn, null, 'LocalNotification', 'isTriggered', [id]);
+    },
+
+    /**
      * Occurs when a notification was added.
      *
      * @param {String} id

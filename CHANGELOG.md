@@ -5,6 +5,7 @@
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
 - [feature:] New Android specific `led:` flag.
+- [feature:] Add `isTriggered` & `getTriggeredIds` methods.
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.

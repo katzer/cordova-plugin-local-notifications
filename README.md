@@ -75,6 +75,7 @@ More informations can be found [here][PGB_plugin].
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
 - [feature:] New Android specific `led:` flag
+- [feature:] Add `isTriggered` & `getTriggeredIds` methods.
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -166,12 +167,35 @@ window.plugin.notification.local.isScheduled(id, function (isScheduled) {
 ```
 
 ### Retrieve the IDs from all currently scheduled local notifications
-To retrieve the IDs from all currently scheduled local notifications, the `notification.local.isScheduled` interface can be used.<br>
+To retrieve the IDs from all currently scheduled local notifications, the `notification.local.getScheduledIds` interface can be used.<br>
 The method takes a callback function to be called with the result as an array of IDs. Optional the scope of the callback can be assigned too.
 
 ```javascript
 window.plugin.notification.local.getScheduledIds(function (scheduledIds) {
     // alert('Scheduled IDs: ' + scheduledIds.join(' ,'));
+}, scope);
+```
+
+### Check wether a notification with an ID was triggered
+To check if a notification with an ID was triggered, the `notification.local.isTriggered` interface can be used.<br>
+The method takes the ID of the local notification as an argument and a callback function to be called with the result. Optional the scope of the callback can be assigned too.
+
+#### Further informations
+- See [getTriggeredIds][gettriggeredIds] of how to retrieve a list of IDs of all scheduled local notifications.
+
+```javascript
+window.plugin.notification.local.isTriggered(id, function (isTriggered) {
+    // console.log('Notification with ID ' + id + ' is triggered: ' + isTriggered);
+}, scope);
+```
+
+### Retrieve the IDs from all currently triggered local notifications
+To retrieve the IDs from all currently triggered local notifications, the `notification.local.getTriggeredIds` interface can be used.<br>
+The method takes a callback function to be called with the result as an array of IDs. Optional the scope of the callback can be assigned too.
+
+```javascript
+window.plugin.notification.local.getTriggeredIds(function (triggeredIds) {
+    // alert('Triggered IDs: ' + triggeredIds.join(' ,'));
 }, scope);
 ```
 
@@ -500,6 +524,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [getdefaults]: #get-the-default-values-of-the-local-notification-properties
 [setdefaults]: #set-the-default-values-of-the-local-notification-properties
 [getscheduledids]: #retrieve-the-ids-from-all-currently-scheduled-local-notifications
+[gettriggeredids]: #retrieve-the-ids-from-all-currently-triggered-local-notifications
 [isscheduled]: #check-wether-a-notification-with-an-id-is-scheduled
 [examples]: #examples
 [setdefaults-example]: #change-the-default-value-of-local-notification-properties
