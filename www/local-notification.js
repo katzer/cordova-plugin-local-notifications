@@ -167,7 +167,7 @@ LocalNotification.prototype = {
             options.date = Math.round(options.date.getTime()/1000);
         }
 
-        if (['WinCE', 'Win32NT'].indexOf(device.platform)) {
+        if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
             callbackFn = function (cmd) {
                 eval(cmd);
             };
