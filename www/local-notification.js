@@ -103,7 +103,7 @@ LocalNotification.prototype = {
             defaults.smallImage = null;
             defaults.image      = null;
             defaults.wideImage  = null;
-        };
+        }
 
         return defaults;
     },
@@ -122,11 +122,12 @@ LocalNotification.prototype = {
      *      The new callback function
      */
     createCallbackFn: function (callbackFn, scope) {
+        if (typeof callbackFn != 'function')
+            return;
+
         return function () {
-            if (typeof callbackFn == 'function') {
-                callbackFn.apply(scope || this, arguments);
-            }
-        }
+            callbackFn.apply(scope || this, arguments);
+        };
     },
 
     /**
@@ -134,13 +135,17 @@ LocalNotification.prototype = {
      *
      * @param {Object} options
      *      The notification properties
+     * @param {Function} callback
+     *      A function to be called after the notification has been canceled
+     * @param {Object} scope
+     *      The scope for the callback function
      *
      * @return {Number}
      *      The notification's ID
      */
-    add: function (options) {
+    add: function (options, callback, scope) {
         var options    = this.mergeWithDefaults(options),
-            callbackFn = null;
+            callbackFn = this.createCallbackFn(callback, scope);
 
         if (options.id) {
             options.id = options.id.toString();

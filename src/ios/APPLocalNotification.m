@@ -115,6 +115,7 @@
         }
 
         [self scheduleNotificationWithProperties:properties];
+        [self execCallback:command];
     }];
 }
 
@@ -277,7 +278,7 @@
         NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:
                                            fireDate];
 
-        if (notification.repeatInterval == NSEraCalendarUnit
+        if (notification.repeatInterval == NSCalendarUnitEra
             && fireDateDistance > seconds) {
             [self cancelNotification:notification fireEvent:YES];
         }
