@@ -76,6 +76,7 @@ public class LocalNotification extends CordovaPlugin {
 
                     persist(options.getId(), args);
                     add(options, true);
+                    command.success();
                 }
             });
         }
