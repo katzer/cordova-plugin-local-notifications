@@ -155,6 +155,14 @@ LocalNotification.prototype = {
             options.date = new Date();
         }
 
+        if (options.title) {
+            options.title = options.title.toString();
+        }
+
+        if (options.message) {
+            options.message = options.message.toString();
+        }
+
         if (typeof options.date == 'object') {
             options.date = Math.round(options.date.getTime()/1000);
         }
