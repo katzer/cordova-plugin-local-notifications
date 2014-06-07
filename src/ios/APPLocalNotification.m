@@ -77,6 +77,9 @@
 
 @synthesize deviceready, eventQueue, applicationState, scheduledNotifications;
 
+#pragma mark -
+#pragma mark Plugin interface methods
+
 /**
  * Executes all queued events.
  */
@@ -110,8 +113,8 @@
 
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
-                [self cancelNotification:notification fireEvent:NO];
-            });
+                               [self cancelNotification:notification fireEvent:NO];
+                           });
         }
 
         [self scheduleNotificationWithProperties:properties];
@@ -216,6 +219,9 @@
     }];
 }
 
+#pragma mark -
+#pragma mark Plugin core methods
+
 /**
  * Schedules a new local notification and fies the coresponding event.
  *
@@ -286,52 +292,6 @@
 }
 
 /**
- * Retrurns a key-value dictionary for repeat intervals.
- *
- * @return {NSMutableDictionary}
- */
-- (NSMutableDictionary*) repeatDict
-{
-    NSMutableDictionary* repeatDict = [[NSMutableDictionary alloc] init];
-
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitSecond] forKey:@"secondly"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitMinute] forKey:@"minutely"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitHour] forKey:@"hourly"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitDay] forKey:@"daily"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSWeekCalendarUnit] forKey:@"weekly"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitMonth] forKey:@"monthly"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitYear] forKey:@"yearly"];
-    [repeatDict setObject:
-     [NSNumber numberWithInt:NSCalendarUnitEra] forKey:@""];
-
-    return repeatDict;
-}
-
-/**
- * Returns the userDict for a local notification.
- *
- * @param {NSMutableDictionary} options
- *      The properties for the local notification
- * @return {NSDictionary}
- */
-- (NSDictionary*) userDict:(NSMutableDictionary*)options
-{
-    NSString* id = [options objectForKey:@"id"];
-    NSString* ac = [options objectForKey:@"autoCancel"];
-    NSString* js = [options objectForKey:@"json"];
-
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-            id, @"id", ac, @"autoCancel", js, @"json", nil];
-}
-
-/**
  * Creates an notification object based on the given properties.
  *
  * @param {NSMutableDictionary} properties
@@ -378,6 +338,9 @@
 
     return notification;
 }
+
+#pragma mark -
+#pragma mark Plugin delegate and life cycle methods
 
 /**
  * Calls the cancel or trigger event after a local notification was received.
@@ -455,6 +418,55 @@
 - (void) onAppTerminate
 {
     [self cancelAllNotificationsWhichAreOlderThen:432000];
+}
+
+#pragma mark -
+#pragma mark Plugin helper methods
+
+/**
+ * Retrurns a key-value dictionary for repeat intervals.
+ *
+ * @return {NSMutableDictionary}
+ */
+- (NSMutableDictionary*) repeatDict
+{
+    NSMutableDictionary* repeatDict = [[NSMutableDictionary alloc] init];
+
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitSecond] forKey:@"secondly"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitMinute] forKey:@"minutely"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitHour] forKey:@"hourly"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitDay] forKey:@"daily"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSWeekCalendarUnit] forKey:@"weekly"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitMonth] forKey:@"monthly"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitYear] forKey:@"yearly"];
+    [repeatDict setObject:
+     [NSNumber numberWithInt:NSCalendarUnitEra] forKey:@""];
+
+    return repeatDict;
+}
+
+/**
+ * Returns the userDict for a local notification.
+ *
+ * @param {NSMutableDictionary} options
+ *      The properties for the local notification
+ * @return {NSDictionary}
+ */
+- (NSDictionary*) userDict:(NSMutableDictionary*)options
+{
+    NSString* id = [options objectForKey:@"id"];
+    NSString* ac = [options objectForKey:@"autoCancel"];
+    NSString* js = [options objectForKey:@"json"];
+
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            id, @"id", ac, @"autoCancel", js, @"json", nil];
 }
 
 /**
@@ -552,6 +564,9 @@
 
     return notificationsWithoutNIL;
 }
+
+#pragma mark -
+#pragma mark Plugin callback methods
 
 /**
  * Simply invokes the callback without any parameter.
