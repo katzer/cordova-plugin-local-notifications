@@ -396,6 +396,10 @@
     NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:fireDate];
     NSString* event = (fireDateDistance < 1) ? @"trigger" : @"click";
 
+    if ([[self applicationState] isEqualToString:@"foreground"]) {
+        event = @"trigger";
+    }
+
     if (autoCancel && [event isEqualToString:@"click"]) {
         [self cancelNotification:notification fireEvent:YES];
     }
