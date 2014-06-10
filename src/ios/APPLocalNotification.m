@@ -275,8 +275,12 @@
     NSString* id           = [userInfo objectForKey:@"id"];
     NSString* json         = [userInfo objectForKey:@"json"];
 
-    [[UIApplication sharedApplication]
-     cancelLocalNotification:notification];
+    if (notification==nil) {
+        NSLog(@"cancelNotification: Notification equals nil");
+    }else{
+        [[UIApplication sharedApplication]
+         cancelLocalNotification:notification];
+    }
 
     if (fireEvent) {
         [self fireEvent:@"cancel" id:id json:json];
