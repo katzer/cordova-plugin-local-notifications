@@ -647,9 +647,19 @@
 {
     NSString* appState = self.applicationState;
 
+    NSError *error;
+    NSString *jsonString;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:json options:0 error:&error];
+    
+    if (!jsonData) {
+        NSLog(@"Got an error: %@", error);
+    } else {
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\",\"%@\",\\'%@\\'",
-                        id, appState, json];
+                        id, appState, jsonString];
 
     NSString* js = [NSString stringWithFormat:
                     @"setTimeout('plugin.notification.local.on%@(%@)',0)",
