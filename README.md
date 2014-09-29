@@ -92,7 +92,7 @@ document.addEventListener('deviceready', function () {
 ```
 
 ### Determine if the app does have the permission to show local notifications
-If the permission has been granted through the user can be retrieved through the `notification.badge.hasPermission` interface.<br/>
+If the permission has been granted through the user can be retrieved through the `notification.local.hasPermission` interface.<br/>
 The method takes a callback function as its argument which will be called with a boolean value. Optional the scope of the callback function ca be defined through a second argument.
 
 #### Further informations
@@ -105,7 +105,7 @@ window.plugin.notification.local.hasPermission(function (granted) {
 ```
 
 ### Prompt the user to grant permission for local notifications
-The user can be prompted to grant the required permission through the `notification.badge.promptForPermission` interface.
+The user can be prompted to grant the required permission through the `notification.local.promptForPermission` interface.
 
 #### Further informations
 - The method is supported on each platform, however its only relevant for iOS8 and above.
