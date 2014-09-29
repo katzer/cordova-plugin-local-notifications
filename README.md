@@ -70,7 +70,7 @@ More informations can be found [here][PGB_plugin].
 
 ## ChangeLog
 
-#### Version 0.7.5 (29.10.2014)
+#### Version 0.7.5 (29.09.2014)
 - [enhancement:] __iOS8 Support__
 - [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.
 - [feature:] New method `promptForPermission` to promt the user to grant permission to display local notifications.
@@ -125,7 +125,7 @@ All properties are optional. If no date object is given, the notification pops-u
 If the ID has an invalid format, it will be ignored, but canceling the notification will fail.
 
 #### Further informations
-- The notification can only be sheduled if the user has previously granted the [required permission][prompt_permission].
+- The notification can only be scheduled if the user has previously granted the [required permission][prompt_permission].
 - See the [onadd][onadd] event of how a listener can be registered to be notified when a local notification has been scheduled.
 - See the [ontrigger][ontrigger] event of how a listener can be registered to be notified when a local notification has been triggered.
 - See the [onclick][onclick] event of how a listener can be registered to be notified when the user has been clicked on a local notification.
@@ -304,7 +304,7 @@ window.plugin.notification.local.add({
 });
 ```
 
-__Note:__ The notification can only be sheduled if the user has granted the [required permission][prompt_permission].
+__Note:__ The notification can only be scheduled if the user has granted the [required permission][prompt_permission].
 
 ### Scheduling an immediately triggered local notification
 The example below shows how to schedule a local notification which will be triggered immediatly.
