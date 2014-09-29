@@ -132,6 +132,26 @@ namespace Cordova.Extension.Commands
             DispatchCommandResult();
         }
 
+        /// <summery>
+        /// Informs if the app has the permission to show notifications.
+        /// </summery>
+        public void hasPermission(string args)
+        {
+            PluginResult result;
+
+            result = new PluginResult(PluginResult.Status.OK, true);
+
+            DispatchCommandResult(result);
+        }
+
+        /// <summery>
+        /// Ask for permission to show notifications.
+        /// </summery>
+        public void promptForPermission(string args)
+        {
+            DispatchCommandResult();
+        }
+
         /// <summary>
         /// Informs that the device is ready and the deviceready event has been fired
         /// </summary>

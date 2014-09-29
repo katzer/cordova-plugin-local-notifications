@@ -210,6 +210,67 @@
 }
 
 /**
+ * Informs if the app has the permission to show
+ * badges and local notifications.
+ *
+ * @param callback
+ *      The function to be exec as the callback
+ */
+- (void) hasPermission:(CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult* result;
+        BOOL hasPermission = [self hasPermissionToSheduleNotifications];
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsBool:hasPermission];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * Ask for permission to show badges.
+ *
+ * @param callback
+ *      The function to be exec as the callback
+ */
+- (void) promptForPermission:(CDVInvokedUrlCommand *)command
+{
+#ifdef __IPHONE_8_0
+    UIUserNotificationType types =
+    UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types
+                                                                             categories:nil];
+
+    [self.commandDelegate runInBackground:^{
+        [[UIApplication sharedApplication]
+         registerUserNotificationSettings:settings];
+    }];
+#endif
+}
+
+/**
+ * If the app has the permission to show badges.
+ */
+- (BOOL) hasPermissionToSheduleNotifications
+{
+#ifdef __IPHONE_8_0
+    UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
+                                                currentUserNotificationSettings];
+
+    UIUserNotificationType requiredTypes =
+    UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+    return (settings.types & requiredTypes);
+#else
+    return YES;
+#endif
+}
+
+/**
  * Schedules a new local notification and fies the coresponding event.
  *
  * @param {NSMutableDictionary} properties

@@ -19,7 +19,7 @@ The purpose of the plugin is to create an platform independent javascript interf
 
 
 ## Supported Platforms
-- **iOS**<br>
+- **iOS** *(including iOS8)*<br>
 See [Local and Push Notification Programming Guide][ios_notification_guide] for detailed informations and screenshots.
 
 - **Android** *(SDK >=11)*<br>
@@ -42,12 +42,12 @@ The plugin can either be installed into the local development environment or clo
 Through the [Command-line Interface][CLI]:
 ```bash
 # ~~ from master ~~
-cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git && cordova prepare
+cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
 ```
 or to use the last stable version:
 ```bash
 # ~~ stable version ~~
-cordova plugin add de.appplant.cordova.plugin.local-notification && cordova prepare
+cordova plugin add de.appplant.cordova.plugin.local-notification@0.7.5
 ```
 
 ### Removing the Plugin from your project
@@ -63,9 +63,20 @@ Add the following xml to your config.xml to always use the latest version of thi
 ```
 or to use an specific version:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.2" />
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.5" />
 ```
 More informations can be found [here][PGB_plugin].
+
+
+## ChangeLog
+
+#### Version 0.7.5 (29.10.2014)
+- [enhancement:] __iOS8 Support__
+- [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.
+- [feature:] New method `promptForPermission` to promt the user to grant permission to display local notifications.
+
+#### Further informations
+- See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
 
 
 ## Using the plugin
@@ -80,6 +91,30 @@ document.addEventListener('deviceready', function () {
 }, false);
 ```
 
+### Determine if the app does have the permission to show local notifications
+If the permission has been granted through the user can be retrieved through the `notification.badge.hasPermission` interface.<br/>
+The method takes a callback function as its argument which will be called with a boolean value. Optional the scope of the callback function ca be defined through a second argument.
+
+#### Further informations
+- The method is supported on each platform, however its only relevant for iOS8 and above.
+
+```javascript
+window.plugin.notification.local.hasPermission(function (granted) {
+    // console.log('Permission has been granted: ' + granted);
+});
+```
+
+### Prompt the user to grant permission for local notifications
+The user can be prompted to grant the required permission through the `notification.badge.promptForPermission` interface.
+
+#### Further informations
+- The method is supported on each platform, however its only relevant for iOS8 and above.
+- The user will only get a prompt dialog for the first time. Later its only possible to change the setting via the notification center.
+
+```javascript
+window.plugin.notification.local.promptForPermission();
+```
+
 ### Schedule local notifications
 Local notifications can be scheduled through the `notification.local.add` interface.<br>
 The method takes a hash as an argument to specify the notification's properties and returns the ID for the notification.<br>
@@ -90,6 +125,7 @@ All properties are optional. If no date object is given, the notification pops-u
 If the ID has an invalid format, it will be ignored, but canceling the notification will fail.
 
 #### Further informations
+- The notification can only be sheduled if the user has previously granted the [required permission][prompt_permission].
 - See the [onadd][onadd] event of how a listener can be registered to be notified when a local notification has been scheduled.
 - See the [ontrigger][ontrigger] event of how a listener can be registered to be notified when a local notification has been triggered.
 - See the [onclick][onclick] event of how a listener can be registered to be notified when the user has been clicked on a local notification.
@@ -267,6 +303,8 @@ window.plugin.notification.local.add({
     date:    _60_seconds_from_now
 });
 ```
+
+__Note:__ The notification can only be sheduled if the user has granted the [required permission][prompt_permission].
 
 ### Scheduling an immediately triggered local notification
 The example below shows how to schedule a local notification which will be triggered immediatly.
@@ -448,6 +486,9 @@ This software is released under the [Apache 2.0 License](http://opensource.org/l
 [CLI]: http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface
 [PGB]: http://docs.build.phonegap.com/en_US/3.3.0/index.html
 [PGB_plugin]: https://build.phonegap.com/plugins/413
+[changelog]: CHANGELOG.md
+[has_permission]: #determine-if-the-app-does-have-the-permission-to-show-local-notifications
+[prompt_permission]: #prompt-the-user-to-grant-permission-for-local-notifications
 [onadd]: #get-notified-when-a-local-notification-has-been-scheduled
 [onclick]: #get-notified-when-the-user-has-been-clicked-on-a-local-notification
 [oncancel]: #get-notified-when-a-local-notification-has-been-canceled
