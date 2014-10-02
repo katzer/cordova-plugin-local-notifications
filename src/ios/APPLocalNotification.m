@@ -247,7 +247,7 @@
  */
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command
 {
-    if isNotiOS8() return;
+    if ([self isNotiOS8]) return;
 
     UIUserNotificationType types =
     UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
@@ -266,7 +266,7 @@
  */
 - (BOOL) hasPermissionToSheduleNotifications
 {
-    if isNotiOS8() return YES;
+    if ([self isNotiOS8]) return YES;
 
     UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
                                                 currentUserNotificationSettings];
