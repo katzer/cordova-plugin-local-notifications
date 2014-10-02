@@ -231,6 +231,15 @@
 }
 
 /**
+ * Check if the device is running iOS 8.
+ */
+- (BOOL) isNotiOS8
+{
+    float sysVer = [[[UIDevice currentDevice] systemVersion] floatValue];
+    return sysVer < 8;
+}
+
+/**
  * Ask for permission to show badges.
  *
  * @param callback
@@ -238,7 +247,8 @@
  */
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command
 {
-#ifdef __IPHONE_8_0
+    if ([self isNotiOS8]) return;
+
     UIUserNotificationType types =
     UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
@@ -249,7 +259,6 @@
         [[UIApplication sharedApplication]
          registerUserNotificationSettings:settings];
     }];
-#endif
 }
 
 /**
@@ -257,7 +266,8 @@
  */
 - (BOOL) hasPermissionToSheduleNotifications
 {
-#ifdef __IPHONE_8_0
+    if ([self isNotiOS8]) return YES;
+
     UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
                                                 currentUserNotificationSettings];
 
@@ -265,9 +275,6 @@
     UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
     return (settings.types & requiredTypes);
-#else
-    return YES;
-#endif
 }
 
 /**
