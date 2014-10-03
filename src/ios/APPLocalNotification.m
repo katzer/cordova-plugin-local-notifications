@@ -257,8 +257,19 @@
 
     [self fireEvent:@"add" id:id json:json];
 
-    [[UIApplication sharedApplication]
-     scheduleLocalNotification:notification];
+    NSDate* now = [NSDate date];
+    NSDate* fireDate = notification.fireDate;
+    NSTimeInterval fireDateDistance = [now timeIntervalSinceDate:fireDate];
+    
+    // If the fire Date is now, or or in the past, scheduleLocalNotification seems unreliable.
+    if(fireDateDistance < 1) {
+      [[UIApplication sharedApplication]
+         scheduleLocalNotification:notification];
+    }
+    else {
+      [[UIApplication sharedApplication]
+        presentLocalNotificationNow:notification];
+    }
 }
 
 /**
