@@ -20,6 +20,7 @@
  */
 
 #import "APPLocalNotification.h"
+#import <Cordova/CDVAvailability.h>
 
 @interface APPLocalNotification (Private)
 
@@ -108,8 +109,8 @@
 
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
-                [self cancelNotification:notification fireEvent:NO];
-            });
+                               [self cancelNotification:notification fireEvent:NO];
+                           });
         }
 
         [self scheduleNotificationWithProperties:properties];
@@ -238,12 +239,14 @@
  */
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command
 {
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
-        UIUserNotificationType types =
-        UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+    if (IsAtLeastiOSVersion(@"8.0")) {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
 
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types
-                                                                                 categories:nil];
+        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+        settings = [UIUserNotificationSettings settingsForTypes:types
+                                                     categories:nil];
 
         [self.commandDelegate runInBackground:^{
             [[UIApplication sharedApplication]
@@ -257,14 +260,16 @@
  */
 - (BOOL) hasPermissionToSheduleNotifications
 {
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
-        UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
-                                                    currentUserNotificationSettings];
+    if (IsAtLeastiOSVersion(@"8.0")) {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
 
-        UIUserNotificationType requiredTypes =
-        UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+        settings = [[UIApplication sharedApplication]
+                    currentUserNotificationSettings];
 
-        return (settings.types & requiredTypes);
+        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+        return (settings.types & types);
     } else {
         return YES;
     }
