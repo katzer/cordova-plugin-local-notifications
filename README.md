@@ -47,7 +47,7 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.
 or to use the last stable version:
 ```bash
 # ~~ stable version ~~
-cordova plugin add de.appplant.cordova.plugin.local-notification@0.7.5
+cordova plugin add de.appplant.cordova.plugin.local-notification@0.7.6
 ```
 
 ### Removing the Plugin from your project
@@ -63,7 +63,7 @@ Add the following xml to your config.xml to always use the latest version of thi
 ```
 or to use an specific version:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.5" />
+<gap:plugin name="de.appplant.cordova.plugin.local-notification" version="0.7.6" />
 ```
 More informations can be found [here][PGB_plugin].
 
@@ -491,7 +491,7 @@ This software is released under the [Apache 2.0 License](http://opensource.org/l
 [apache_device_plugin]: https://github.com/apache/cordova-plugin-device
 [CLI]: http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface
 [PGB]: http://docs.build.phonegap.com/en_US/3.3.0/index.html
-[PGB_plugin]: https://build.phonegap.com/plugins/1124
+[PGB_plugin]: https://build.phonegap.com/plugins/1196
 [changelog]: CHANGELOG.md
 [has_permission]: #determine-if-the-app-does-have-the-permission-to-show-local-notifications
 [prompt_permission]: #prompt-the-user-to-grant-permission-for-local-notifications
