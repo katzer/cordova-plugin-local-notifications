@@ -238,18 +238,18 @@
  */
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command
 {
-#ifdef __IPHONE_8_0
-    UIUserNotificationType types =
-    UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
+        UIUserNotificationType types =
+        UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types
-                                                                             categories:nil];
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types
+                                                                                 categories:nil];
 
-    [self.commandDelegate runInBackground:^{
-        [[UIApplication sharedApplication]
-         registerUserNotificationSettings:settings];
-    }];
-#endif
+        [self.commandDelegate runInBackground:^{
+            [[UIApplication sharedApplication]
+             registerUserNotificationSettings:settings];
+        }];
+    }
 }
 
 /**
@@ -257,17 +257,17 @@
  */
 - (BOOL) hasPermissionToSheduleNotifications
 {
-#ifdef __IPHONE_8_0
-    UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
-                                                currentUserNotificationSettings];
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
+        UIUserNotificationSettings *settings = [[UIApplication sharedApplication]
+                                                    currentUserNotificationSettings];
 
-    UIUserNotificationType requiredTypes =
-    UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+        UIUserNotificationType requiredTypes =
+        UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
-    return (settings.types & requiredTypes);
-#else
-    return YES;
-#endif
+        return (settings.types & requiredTypes);
+    } else {
+        return YES;
+    }
 }
 
 /**
