@@ -1,5 +1,11 @@
 ## ChangeLog
 
+#### Version 0.7.6 (03.10.2014)
+- [bugfix:] `hasPermission` and `promptForPermission` let the app crash on iOS7 and older.
+- [bugfix:] Convert the id value to a String before comparison.
+- [bugfix:] Prevent possible crash when calling `cancelAll`.
+- [enhancement:] Do not inherit any notification defaults.
+
 #### Version 0.7.5 (29.09.2014)
 - [enhancement:] __iOS8 Support__
 - [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.

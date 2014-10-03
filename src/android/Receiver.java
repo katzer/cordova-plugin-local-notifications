@@ -122,6 +122,7 @@ public class Receiver extends BroadcastReceiver {
         Uri sound   = options.getSound();
 
         Builder notification = new Notification.Builder(context)
+            .setDefaults(0) // Do not inherit any defaults
 	        .setContentTitle(options.getTitle())
 	        .setContentText(options.getMessage())
 	        .setNumber(options.getBadge())
@@ -130,7 +131,7 @@ public class Receiver extends BroadcastReceiver {
 	        .setLargeIcon(icon)
 	        .setAutoCancel(options.getAutoCancel())
 	        .setOngoing(options.getOngoing());
-        
+
         if (sound != null) {
         	notification.setSound(sound);
         }
@@ -139,7 +140,7 @@ public class Receiver extends BroadcastReceiver {
         	notification.setStyle(new Notification.BigTextStyle()
         		.bigText(options.getMessage()));
         }
-        
+
         setClickEvent(notification);
 
         return notification;

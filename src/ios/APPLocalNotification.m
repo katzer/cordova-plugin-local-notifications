@@ -102,11 +102,14 @@
         NSArray* arguments = [command arguments];
         NSMutableDictionary* properties = [arguments objectAtIndex:0];
 
+        UILocalNotification* notification;
         NSString* id = [properties objectForKey:@"id"];
 
         if ([self isNotificationScheduledWithId:id]) {
-            UILocalNotification* notification = [self notificationWithId:id];
+            notification = [self notificationWithId:id];
+        }
 
+        if (notification) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
                                [self cancelNotification:notification fireEvent:NO];
@@ -576,7 +579,8 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        NSString* notId = [notification.userInfo objectForKey:@"id"];
+        NSString* notId = [[notification.userInfo objectForKey:@"id"]
+                           stringValue];
 
         if ([notId isEqualToString:id]) {
             return notification;
