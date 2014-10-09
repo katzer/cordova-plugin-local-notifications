@@ -40,11 +40,12 @@ public class ReceiverActivity extends Activity {
         Bundle bundle = intent.getExtras();
 
         try {
-            JSONObject args = new JSONObject(bundle.getString(Receiver.OPTIONS));
+            String [] sa = bundle.getStringArray(Receiver.OPTIONS);
+            JSONObject args = new JSONObject(sa[0]);
             Options options = new Options(getApplicationContext()).parse(args);
 
             launchMainIntent();
-            fireClickEvent(options);
+            fireClickEvent(options, sa[1]);
         } catch (JSONException e) {}
     }
 
@@ -64,8 +65,8 @@ public class ReceiverActivity extends Activity {
     /**
      * Fires the onclick event.
      */
-    private void fireClickEvent (Options options) {
-        LocalNotification.fireEvent("click", options.getId(), options.getJSON());
+    private void fireClickEvent (Options options, String action) {
+        LocalNotification.fireEvent("click", options.getId(), options.getJSON(), action);
 
         if (options.getAutoCancel()) {
             LocalNotification.fireEvent("cancel", options.getId(), options.getJSON());

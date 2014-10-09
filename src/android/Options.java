@@ -261,7 +261,7 @@ public class Options {
      * @param {String} className
      * @param {String} iconName
      */
-    private int getIconValue (String className, String iconName) {
+    int getIconValue (String className, String iconName) {
         int icon = 0;
 
         try {

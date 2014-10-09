@@ -417,6 +417,17 @@ window.plugin.notification.local.add({ sound: '/www/audio/beep.mp3' });
  */
 window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
 ```
+### Action buttons on Android
+Add actions to the notification.  Actions are usually displayed as buttons in the notification content.
+Only Resource Icons are supported, the icon string should be the name of an icon file under app's res drawable folders.
+
+```javascript
+window.plugin.notification.local.add({ message: 'Great app!', actions: [{title: 'Action 1', icon: 'icon1' }, {title: 'Action 2', icon: 'icon2' }]});
+window.plugin.notification.local.onclick = function(id, state, action, json) {
+    alert("clicked on button: " + action);
+}
+```
+**Note:** To view the buttons the user might have to swipe down on the notification
 
 ### Notification sound on iOS
 You can package the audio data in an *aiff*, *wav*, or *caf* file. Then, in Xcode, add the sound file to your project as a nonlocalized resource of the application bundle. You may use the *afconvert* tool to convert sounds.

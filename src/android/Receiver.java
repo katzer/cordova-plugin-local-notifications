@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.localnotification;
 import java.util.Calendar;
 import java.util.Random;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -148,13 +149,34 @@ public class Receiver extends BroadcastReceiver {
      * Adds an onclick handler to the notification
      */
     private Builder setClickEvent (Builder notification) {
+        String [] sa = {options.getJSONObject().toString(), "defaultAction"};
         Intent intent = new Intent(context, ReceiverActivity.class)
-            .putExtra(OPTIONS, options.getJSONObject().toString())
-            .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                //.putExtra(OPTIONS, options.getJSONObject().toString())
+                .putExtra(OPTIONS, sa)
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int requestCode = new Random().nextInt();
-
         PendingIntent contentIntent = PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        try {
+            JSONArray actions = options.getJSONObject().getJSONArray("actions");
+            for(int i =0; i< actions.length(); i++) {
+                JSONObject action = actions.getJSONObject(i);
+                String title = action.getString("title");
+                String icon = action.getString("icon");
+
+                sa[1] = title;
+                Intent intent2 = new Intent(context, ReceiverActivity.class)
+                        .putExtra(OPTIONS, sa)
+                        .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+                requestCode = new Random().nextInt();
+                PendingIntent contentIntent2 = PendingIntent.getActivity(context, requestCode, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
+                notification.addAction(options.getIconValue(context.getPackageName(), icon), title, contentIntent2);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return notification.setContentIntent(contentIntent);
     }
