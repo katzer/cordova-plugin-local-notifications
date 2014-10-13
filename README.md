@@ -417,17 +417,28 @@ window.plugin.notification.local.add({ sound: '/www/audio/beep.mp3' });
  */
 window.plugin.notification.local.add({ sound: 'TYPE_ALARM' });
 ```
-### Action buttons on Android
-Add actions to the notification.  Actions are usually displayed as buttons in the notification content.
-Only Resource Icons are supported, the icon string should be the name of an icon file under app's res drawable folders.
+### Action buttons on Android and Android Wear
+Add actions to the notification.  On the handheld (phone or tablet), actions are usually displayed as buttons in the notification content.
+On a wearable, a notification appears as a new card, the action appears as a large button when the user swipes the notification to the left.  When the user taps the button, the callback is called with the title of the button pressed. 
+
 
 ```javascript
-window.plugin.notification.local.add({ message: 'Great app!', actions: [{title: 'Action 1', icon: 'icon1' }, {title: 'Action 2', icon: 'icon2' }]});
+window.plugin.notification.local.add({
+    message: 'Great app!',
+    actions: [
+        {title: 'Action 1', icon: 'icon1', type:'handheld'},
+        {title: 'Action 2', icon: 'icon2', type:'wearable'}
+    ]
+});
 window.plugin.notification.local.onclick = function(id, state, action, json) {
     alert("clicked on button: " + action);
 }
 ```
-**Note:** To view the buttons the user might have to swipe down on the notification
+**Notes:** 
+- To view the notification buttons on the handheld the user might have to swipe down on the notification in the notification drawer.
+- Only Resource Icons are supported, the icon string should be the name of an icon file under app's res drawable folders.
+- If action type is omitted or set to 'all', the action button is shown on both the wearable and the handheld
+- If no action is defined with the type 'wearable', all acation buttons are shown on both the wearable and the handheld
 
 ### Notification sound on iOS
 You can package the audio data in an *aiff*, *wav*, or *caf* file. Then, in Xcode, add the sound file to your project as a nonlocalized resource of the application bundle. You may use the *afconvert* tool to convert sounds.

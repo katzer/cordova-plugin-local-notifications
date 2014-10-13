@@ -160,20 +160,33 @@ public class Receiver extends BroadcastReceiver {
 
         try {
             JSONArray actions = options.getJSONObject().getJSONArray("actions");
+            Intent intentA;
+            PendingIntent contentIntentA;
+            NotificationCompat.Action actionA;
+            WearableExtender wearableExtender = new WearableExtender();
+
             for(int i =0; i< actions.length(); i++) {
                 JSONObject action = actions.getJSONObject(i);
                 String title = action.getString("title");
                 String icon = action.getString("icon");
-
+                String type = action.optString("type");
                 sa[1] = title;
-                Intent intent2 = new Intent(context, ReceiverActivity.class)
+                intentA = new Intent(context, ReceiverActivity.class)
                         .putExtra(OPTIONS, sa)
                         .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
                 requestCode = new Random().nextInt();
-                PendingIntent contentIntent2 = PendingIntent.getActivity(context, requestCode, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
-                notification.addAction(options.getIconValue(context.getPackageName(), icon), title, contentIntent2);
+                contentIntentA = PendingIntent.getActivity(context, requestCode, intentA, PendingIntent.FLAG_CANCEL_CURRENT);
+                if(type.equals("") || type.equalsIgnoreCase("handheld") || type.equalsIgnoreCase("all")) { // add the action button for the handheld
+                    notification.addAction(options.getIconValue(context.getPackageName(), icon), title, contentIntentA);
+                    // Note: If there's not at least one wearable action, all action buttons will be shown on both handheld and wearable
+                }
+                if(type.equals("") || type.equalsIgnoreCase("wearable") || type.equalsIgnoreCase("all")) {  // add the action button for wearable
+                    actionA = new NotificationCompat.Action(options.getIconValue(context.getPackageName(), icon), title, contentIntentA);
+                    wearableExtender.addAction(actionA);
+                }
             }
+            notification.extend(wearableExtender);
         } catch (JSONException e) {
             e.printStackTrace();
         }
