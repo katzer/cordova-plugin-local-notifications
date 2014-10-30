@@ -572,7 +572,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        NSString* notId = [[notification.userInfo objectForKey:@"id"] stringValue];
+        NSString* notId = [notification.userInfo objectForKey:@"id"];
 
         if ([notId isEqualToString:id]) {
             return notification;
