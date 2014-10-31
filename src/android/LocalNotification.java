@@ -366,13 +366,11 @@ public class LocalNotification extends CordovaPlugin {
      * @param {String} json  A custom (JSON) string
      * @param {String} action The title of the action button that was clicked
      */
-    public static void fireEvent (String event, String id, String json, String action) {
+    public static void fireEvent (String event, String id, String json, String action, String input) {
         String state  = getApplicationState();
-        String params;
-        if(action != null)
-            params = "\"" + id + "\",\"" + state+ "\",\"" + action + "\",\\'" + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
-        else
-            params = "\"" + id + "\",\"" + state + "\",\\'" + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
+        String params = "\"" + id + "\",\"" + state + "\",\""
+                      + action + "\",\"" + input + "\",\\'"
+                      + JSONObject.quote(json) + "\\'.replace(/(^\"|\"$)/g, \\'\\')";
         String js     = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
 
         // webview may available, but callbacks needs to be executed
@@ -392,7 +390,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param {String} json  A custom (JSON) string
      */
     public static void fireEvent (String event, String id, String json) {
-        fireEvent(event, id, json, null);
+        fireEvent(event, id, json, null, null);
     }
     /**
      * Retrieves the application state

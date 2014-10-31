@@ -426,12 +426,41 @@ On a wearable, a notification appears as a new card, the action appears as a lar
 window.plugin.notification.local.add({
     message: 'Great app!',
     actions: [
-        {title: 'Action 1', icon: 'icon1', type:'handheld'},
-        {title: 'Action 2', icon: 'icon2', type:'wearable'}
+        {title: 'Phone Action', icon: 'icon', type:'handheld'},
+        {title: 'Common Action', icon: 'icon'},
+        {title: 'Voice it!',
+            icon: 'voice_icon',
+            type:'wearable',
+            voice:{            // get voice input on wearable
+                label:"How are you?",
+                choices:['Fine', 'OK'], // optional for freefrom
+                freeform:true
+            }
+        },
+        {title: 'Select a reply',
+            icon: 'voice_icon',
+            type:'wearable',
+            voice:{            // use this to ask user for input
+                label:"Got Milk",
+                choices:['yes', 'no', 'never!'],
+                freeform:false // shows choices on wearable, not taking voice input
+            }
+        }
     ]
 });
+
 window.plugin.notification.local.onclick = function(id, state, action, json) {
-    alert("clicked on button: " + action);
+    if(arguments.length<4) {
+        // check for compatibility to older version of plugin that does not have
+        // the action and input arguments
+        alert("Notification was clicked on");
+        return;
+    }
+    if(input && input.length>0) {
+        alert("Response to " + action + "is: " + input);
+    } else {
+        alert("Clicked on notification: " + action);
+    }
 }
 ```
 **Notes:** 

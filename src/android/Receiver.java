@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.*;
+import android.support.v4.app.RemoteInput;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -49,6 +51,7 @@ import android.os.Bundle;
 public class Receiver extends BroadcastReceiver {
 
     public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
+    public static final String VOICE_REPLY = "voice_reply";
 
     private Context context;
     private Options options;
@@ -162,7 +165,6 @@ public class Receiver extends BroadcastReceiver {
             JSONArray actions = options.getJSONObject().getJSONArray("actions");
             Intent intentA;
             PendingIntent contentIntentA;
-            NotificationCompat.Action actionA;
             WearableExtender wearableExtender = new WearableExtender();
 
             for(int i =0; i< actions.length(); i++) {
@@ -182,8 +184,24 @@ public class Receiver extends BroadcastReceiver {
                     // Note: If there's not at least one wearable action, all action buttons will be shown on both handheld and wearable
                 }
                 if(type.equals("") || type.equalsIgnoreCase("wearable") || type.equalsIgnoreCase("all")) {  // add the action button for wearable
-                    actionA = new NotificationCompat.Action(options.getIconValue(context.getPackageName(), icon), title, contentIntentA);
-                    wearableExtender.addAction(actionA);
+                    NotificationCompat.Action.Builder actionBuilder = new Action.Builder(options.getIconValue(context.getPackageName(), icon), title, contentIntentA);
+                    JSONObject voice = action.optJSONObject("voice");
+                    if(voice != null) {
+                        String replyLabel = voice.optString("label");
+                        RemoteInput.Builder remoteInputBuilder = new RemoteInput.Builder(VOICE_REPLY).setLabel(replyLabel); // set label
+                        JSONArray choices = voice.optJSONArray("choices");
+                        if(choices.length()>0) {
+                            ArrayList<String> aList = new ArrayList<String>();
+                            for(int j=0; j<choices.length(); j++)
+                                aList.add(choices.optString(j));
+                            String[] stArray = aList.toArray(new String[choices.length()]);
+                            remoteInputBuilder.setChoices(stArray);  // set choices
+                            boolean freeForm = voice.optBoolean("freeform", true);
+                            remoteInputBuilder.setAllowFreeFormInput(freeForm);
+                        }
+                        actionBuilder.addRemoteInput(remoteInputBuilder.build());
+                    }
+                    wearableExtender.addAction(actionBuilder.build());
                 }
             }
             notification.extend(wearableExtender);
