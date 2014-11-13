@@ -42,6 +42,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
@@ -329,7 +330,11 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.putString(alarmId, args.toString());
-            editor.apply();
+            if (Build.VERSION.SDK_INT<9) {
+                editor.commit();
+            } else {
+                editor.apply();
+            }
         }
     }
 
@@ -344,7 +349,11 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.remove(alarmId);
-            editor.apply();
+            if (Build.VERSION.SDK_INT<9) {
+                editor.commit();
+            } else {
+                editor.apply();
+            }
         }
     }
 
@@ -355,7 +364,11 @@ public class LocalNotification extends CordovaPlugin {
         Editor editor = getSharedPreferences().edit();
 
         editor.clear();
-        editor.apply();
+        if (Build.VERSION.SDK_INT<9) {
+            editor.commit();
+        } else {
+            editor.apply();
+        }
     }
 
     /**
