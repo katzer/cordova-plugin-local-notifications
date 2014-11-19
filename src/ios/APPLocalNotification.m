@@ -463,7 +463,7 @@
     [repeatDict setObject:
      [NSNumber numberWithInt:NSCalendarUnitDay] forKey:@"daily"];
     [repeatDict setObject:
-     [NSNumber numberWithInt:NSWeekCalendarUnit] forKey:@"weekly"];
+     [NSNumber numberWithInt:NSCalendarUnitWeekOfYear] forKey:@"weekly"];
     [repeatDict setObject:
      [NSNumber numberWithInt:NSCalendarUnitMonth] forKey:@"monthly"];
     [repeatDict setObject:
