@@ -35,6 +35,8 @@
 
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />
+        <header-file src="src/ios/AppDelegate+localnotification.h" />
+        <source-file src="src/ios/AppDelegate+localnotification.m" />
     </platform>
 
     <!-- android -->
