@@ -69,6 +69,8 @@
 @property (readwrite, assign) BOOL deviceready;
 // Event queue
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
+// Used for iOS8 only for async callback handling
+@property (readwrite, nonatomic, strong) NSString* permissionCallbackId;
 
 @end
 
@@ -250,11 +252,15 @@
 
         settings = [UIUserNotificationSettings settingsForTypes:types
                                                      categories:nil];
+        self.permissionCallbackId = command.callbackId;
 
         [self.commandDelegate runInBackground:^{
             [[UIApplication sharedApplication]
              registerUserNotificationSettings:settings];
         }];
+    } else {
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:TRUE];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     }
 }
 
@@ -524,6 +530,13 @@
                              object:nil];
 }
 
+#ifdef __IPHONE_8_0
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:notificationSettings.types != UIUserNotificationTypeNone];
+    [self.commandDelegate sendPluginResult:result callbackId:self.permissionCallbackId];
+}
+#endif
+
 /**
  * Clears all single repeating notifications which are older then 5 days
  * before the app terminates.
@@ -579,8 +592,12 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        NSString* notId = [[notification.userInfo objectForKey:@"id"]
-                           stringValue];
+        NSString* notId = NULL;
+        if ([[notification.userInfo objectForKey:@"id"] isKindOfClass:[NSString class]] ) {
+            notId = [notification.userInfo objectForKey:@"id"];
+        } else {
+            notId = [[notification.userInfo objectForKey:@"id"] stringValue];
+        }
 
         if ([notId isEqualToString:id]) {
             return notification;

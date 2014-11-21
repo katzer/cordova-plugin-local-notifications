@@ -186,9 +186,11 @@ LocalNotification.prototype = {
 
     /**
      * Ask for permission to show badges if not already granted.
+     * @param {Function} callback
+     *      The function to be exec as the callback
      */
-    promptForPermission: function () {
-        cordova.exec(null, null, 'LocalNotification', 'promptForPermission', []);
+    promptForPermission: function(callback) {
+        cordova.exec(callback, null, 'LocalNotification', 'promptForPermission', []);
     },
 
     /**

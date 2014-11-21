@@ -40,5 +40,7 @@
 - (void) hasPermission:(CDVInvokedUrlCommand *)command;
 // Ask for permission to show notifications
 - (void) promptForPermission:(CDVInvokedUrlCommand *)command;
+// Informs which permissions the user has granted
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 
 @end

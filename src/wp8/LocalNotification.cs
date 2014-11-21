@@ -149,7 +149,11 @@ namespace Cordova.Extension.Commands
         /// </summery>
         public void promptForPermission(string args)
         {
-            DispatchCommandResult();
+            PluginResult result;
+
+            result = new PluginResult(PluginResult.Status.OK, true);
+
+            DispatchCommandResult(result);
         }
 
         /// <summary>
