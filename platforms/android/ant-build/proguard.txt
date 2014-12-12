@@ -1,0 +1,12 @@
+# view AndroidManifest.xml #generated:6
+-keep class de.appplant.cordova.plugin.local_notification.example.CordovaApp { <init>(...); }
+
+# view AndroidManifest.xml #generated:12
+-keep class de.appplant.cordova.plugin.localnotification.Receiver { <init>(...); }
+
+# view AndroidManifest.xml #generated:18
+-keep class de.appplant.cordova.plugin.localnotification.ReceiverActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:13
+-keep class de.appplant.cordova.plugin.localnotification.Restore { <init>(...); }
+

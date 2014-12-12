@@ -1,0 +1,20 @@
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes.dex : \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification$1.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification$2.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification$3.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification$4.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification$5.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\LocalNotification.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\Options.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\Receiver.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\ReceiverActivity.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\localnotification\Restore.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\BuildConfig.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\CordovaApp.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\R$attr.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\R$drawable.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\R$string.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\R$xml.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\de\appplant\cordova\plugin\local_notification\example\R.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\classes\org\apache\cordova\device\Device.class \
+C:\Users\Philipp\Documents\workspaces\app-Plant\notificationexample\platforms\android\ant-build\dexedLibs\classes-cc4094edc9cda7bbacab42773ec0b6f6.jar \
