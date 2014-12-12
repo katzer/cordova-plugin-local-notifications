@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
@@ -67,7 +69,7 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute (String action, final JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute (String action, final JSONArray args, final CallbackContext command) throws JSONException {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
@@ -76,10 +78,9 @@ public class LocalNotification extends CordovaPlugin {
 
                     persist(options.getId(), args);
                     add(options, true);
+                    command.success();
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("cancel")) {
@@ -89,10 +90,9 @@ public class LocalNotification extends CordovaPlugin {
 
                     cancel(id);
                     unpersist(id);
+                    command.success();
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("cancelAll")) {
@@ -100,33 +100,29 @@ public class LocalNotification extends CordovaPlugin {
                 public void run() {
                     cancelAll();
                     unpersistAll();
+                    command.success();
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("isScheduled")) {
             String id = args.optString(0);
 
-            isScheduled(id, callbackContext);
-
-            return true;
+            isScheduled(id, command);
         }
 
         if (action.equalsIgnoreCase("getScheduledIds")) {
-            getScheduledIds(callbackContext);
-
-            return true;
+            getScheduledIds(command);
         }
 
-        if (action.equalsIgnoreCase("hasPermission")) {
-            hasPermission(callbackContext);
-            return true;
+        if (action.equalsIgnoreCase("isTriggered")) {
+            String id = args.optString(0);
+
+            isTriggered(id, command);
         }
 
-        if (action.equalsIgnoreCase("promptForPermission")) {
-            return true;
+        if (action.equalsIgnoreCase("getTriggeredIds")) {
+            getTriggeredIds(command);
         }
 
         if (action.equalsIgnoreCase("deviceready")) {
@@ -135,24 +131,17 @@ public class LocalNotification extends CordovaPlugin {
                     deviceready();
                 }
             });
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("pause")) {
             isInBackground = true;
-
-            return true;
         }
 
         if (action.equalsIgnoreCase("resume")) {
             isInBackground = false;
-
-            return true;
         }
 
-        // Returning false results in a "MethodNotFound" error.
-        return false;
+        return true;
     }
 
     /**
@@ -210,7 +199,7 @@ public class LocalNotification extends CordovaPlugin {
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + notificationId);
 
-        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager am        = getAlarmManager();
         NotificationManager nc = getNotificationManager();
 
@@ -245,19 +234,19 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Checks wether a notification with an ID is scheduled.
+     * Checks if a notification with an ID is scheduled.
      *
      * @param id
      *          The notification ID to be check.
      * @param callbackContext
      */
-    public static void isScheduled (String id, CallbackContext callbackContext) {
+    public static void isScheduled (String id, CallbackContext command) {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         boolean isScheduled        = alarms.containsKey(id);
         PluginResult result        = new PluginResult(PluginResult.Status.OK, isScheduled);
 
-        callbackContext.sendPluginResult(result);
+        command.sendPluginResult(result);
     }
 
     /**
@@ -265,32 +254,65 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param callbackContext
      */
-    public static void getScheduledIds (CallbackContext callbackContext) {
+    public static void getScheduledIds (CallbackContext command) {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
-        JSONArray pendingIds       = new JSONArray(alarmIds);
+        JSONArray scheduledIds     = new JSONArray(alarmIds);
 
-        callbackContext.success(pendingIds);
+        command.success(scheduledIds);
     }
 
     /**
-     * Informs if the app has the permission to show notifications.
+     * Checks if a notification with an ID was triggered.
      *
-     * @param callback
-     *      The function to be exec as the callback
+     * @param id
+     *          The notification ID to be check.
+     * @param callbackContext
      */
-    private void hasPermission (final CallbackContext callback) {
-        cordova.getThreadPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                PluginResult result;
+    public static void isTriggered (String id, CallbackContext command) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        boolean isScheduled        = alarms.containsKey(id);
+        boolean isTriggered        = isScheduled;
 
-                result = new PluginResult(PluginResult.Status.OK, true);
+        if (isScheduled) {
+            JSONObject arguments = (JSONObject) alarms.get(id);
+            Options options      = new Options(context).parse(arguments);
+            Date fireDate        = new Date(options.getDate());
 
-                callback.sendPluginResult(result);
+            isTriggered = new Date().after(fireDate);
+        }
+
+        PluginResult result = new PluginResult(PluginResult.Status.OK, isTriggered);
+
+        command.sendPluginResult(result);
+    }
+
+    /**
+     * Retrieves a list with all currently triggered notifications.
+     *
+     * @param callbackContext
+     */
+    public static void getTriggeredIds (CallbackContext command) {
+        SharedPreferences settings = getSharedPreferences();
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
+        JSONArray scheduledIds     = new JSONArray();
+        Date now                   = new Date();
+
+        for (String id : alarmIds) {
+            JSONObject arguments = (JSONObject) alarms.get(id);
+            Options options      = new Options(context).parse(arguments);
+            Date fireDate        = new Date(options.getDate());
+            boolean isTriggered  = now.after(fireDate);
+
+            if (isTriggered == true) {
+                scheduledIds.put(id);
             }
-        });
+        }
+
+        command.success(scheduledIds);
     }
 
     /**
@@ -308,7 +330,11 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.putString(alarmId, args.toString());
-            editor.apply();
+            if (Build.VERSION.SDK_INT<9) {
+                editor.commit();
+            } else {
+                editor.apply();
+            }
         }
     }
 
@@ -323,7 +349,11 @@ public class LocalNotification extends CordovaPlugin {
 
         if (alarmId != null) {
             editor.remove(alarmId);
-            editor.apply();
+            if (Build.VERSION.SDK_INT<9) {
+                editor.commit();
+            } else {
+                editor.apply();
+            }
         }
     }
 
@@ -334,7 +364,11 @@ public class LocalNotification extends CordovaPlugin {
         Editor editor = getSharedPreferences().edit();
 
         editor.clear();
-        editor.apply();
+        if (Build.VERSION.SDK_INT<9) {
+            editor.commit();
+        } else {
+            editor.apply();
+        }
     }
 
     /**
