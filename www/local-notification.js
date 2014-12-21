@@ -109,7 +109,7 @@ exports.setDefaults = function (newDefaults) {
  *      The notification's ID
  */
 exports.add = function (props, callback, scope) {
-    var options = this.mergeWithDefaults(options),
+    var options = this.mergeWithDefaults(props),
         fn      = this.createCallbackFn(callback, scope);
 
     if (options.id) {
