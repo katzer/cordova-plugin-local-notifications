@@ -70,12 +70,15 @@ More informations can be found [here][PGB_plugin].
 
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
+- [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.
+- [feature:] New method `promptForPermission` to promt the user to grant permission to display local notifications.
+- [feature:] New Android specific `led:` flag.
+- [feature:] Add `isTriggered` & `getTriggeredIds` methods.
 - [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
-- [feature:] New Android specific `led:` flag
-- [feature:] Add `isTriggered` & `getTriggeredIds` methods.
+- [enhancement:] __iOS8 Support__
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -85,18 +88,20 @@ More informations can be found [here][PGB_plugin].
 ## Using the plugin
 The plugin creates the object ```window.plugin.notification.local``` with the following methods:
 
-1. [notification.local.add][add]
-2. [notification.local.cancel][cancel]
-3. [notification.local.cancelAll][cancelall]
-4. [notification.local.isScheduled][isscheduled]
-5. [notification.local.getScheduledIds][getscheduledids]
-6. [notification.local.isTriggered][istriggered]
-7. [notification.local.getDefaults][getdefaults]
-8. [notification.local.setDefaults][setDefaults]
-9. [notification.local.onadd][onadd]
-10. [notification.local.ontrigger][ontrigger]
-11. [notification.local.onclick][onclick]
-12. [notification.local.oncancel][oncancel]
+1. [notification.local.hasPermission][has_permission]
+2. [notification.local.promptForPermission][prompt_for_permission]
+3. [notification.local.add][add]
+4. [notification.local.cancel][cancel]
+5. [notification.local.cancelAll][cancelall]
+6. [notification.local.isScheduled][isscheduled]
+7. [notification.local.getScheduledIds][getscheduledids]
+8. [notification.local.isTriggered][istriggered]
+9. [notification.local.getDefaults][getdefaults]
+10. [notification.local.setDefaults][setdefaults]
+11. [notification.local.onadd][onadd]
+12. [notification.local.ontrigger][ontrigger]
+13. [notification.local.onclick][onclick]
+14. [notification.local.oncancel][oncancel]
 
 ### Plugin initialization
 The plugin and its methods are not available before the *deviceready* event has been fired.
@@ -105,6 +110,30 @@ The plugin and its methods are not available before the *deviceready* event has 
 document.addEventListener('deviceready', function () {
     // window.plugin.notification.local is now available
 }, false);
+```
+
+### Determine if the app does have the permission to show local notifications
+If the permission has been granted through the user can be retrieved through the `notification.local.hasPermission` interface.<br/>
+The method takes a callback function as its argument which will be called with a boolean value. Optional the scope of the callback function ca be defined through a second argument.
+
+#### Further informations
+- The method is supported on each platform, however its only relevant for iOS8 and above.
+
+```javascript
+window.plugin.notification.local.hasPermission(function (granted) {
+    // console.log('Permission has been granted: ' + granted);
+});
+```
+
+### Prompt the user to grant permission for local notifications
+The user can be prompted to grant the required permission through the `notification.local.promptForPermission` interface.
+
+#### Further informations
+- The method is supported on each platform, however its only relevant for iOS8 and above.
+- The user will only get a prompt dialog for the first time. Later its only possible to change the setting via the notification center.
+
+```javascript
+window.plugin.notification.local.promptForPermission();
 ```
 
 ### Schedule local notifications
@@ -533,6 +562,8 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [oncancel]: #get-notified-when-a-local-notification-has-been-canceled
 [ontrigger]: #get-notified-when-a-local-notification-has-been-triggered
 [platform-specific-properties]: #platform-specifics
+[has_permission]: #determine-if-the-app-does-have-the-permission-to-show-local-notifications
+[prompt_for_permission]: #prompt-the-user-to-grant-permission-for-local-notifications
 [add]: #schedule-local-notifications
 [cancel]: #cancel-scheduled-local-notifications
 [cancelall]: #cancel-all-scheduled-local-notifications

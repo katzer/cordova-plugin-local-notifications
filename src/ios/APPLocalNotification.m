@@ -20,6 +20,7 @@
  */
 
 #import "APPLocalNotification.h"
+#import <Availability.h>
 
 @interface APPLocalNotification ()
 
@@ -237,6 +238,51 @@
     }];
 }
 
+/**
+ * Informs if the app has the permission to show
+ * badges and local notifications.
+ *
+ * @param callback
+ *      The function to be exec as the callback
+ */
+- (void) hasPermission:(CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult* result;
+        BOOL hasPermission = [self hasPermissionToSheduleNotifications];
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsBool:hasPermission];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * Ask for permission to show badges.
+ *
+ * @param callback
+ *      The function to be exec as the callback
+ */
+- (void) promptForPermission:(CDVInvokedUrlCommand *)command
+{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+    UIUserNotificationType types;
+    UIUserNotificationSettings *settings;
+
+    types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+    settings = [UIUserNotificationSettings settingsForTypes:types
+                                                 categories:nil];
+
+    [self.commandDelegate runInBackground:^{
+        [[UIApplication sharedApplication]
+         registerUserNotificationSettings:settings];
+    }];
+#endif
+}
+
 #pragma mark -
 #pragma mark Plugin core methods
 
@@ -359,6 +405,26 @@
     }
 
     return notification;
+}
+
+/**
+ * If the app has the permission to show badges.
+ */
+- (BOOL) hasPermissionToSheduleNotifications
+{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+    UIUserNotificationType types;
+    UIUserNotificationSettings *settings;
+
+    settings = [[UIApplication sharedApplication]
+                currentUserNotificationSettings];
+
+    types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+
+    return (settings.types & types);
+#else
+    return YES;
+#endif
 }
 
 #pragma mark -

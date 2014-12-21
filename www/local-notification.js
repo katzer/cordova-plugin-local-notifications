@@ -144,8 +144,8 @@ LocalNotification.prototype = {
      *      The notification's ID
      */
     add: function (options, callback, scope) {
-        var options    = this.mergeWithDefaults(options),
-            callbackFn = this.createCallbackFn(callback, scope);
+        var options = this.mergeWithDefaults(options),
+            fn      = this.createCallbackFn(callback, scope);
 
         if (options.id) {
             options.id = options.id.toString();
@@ -168,12 +168,12 @@ LocalNotification.prototype = {
         }
 
         if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
-            callbackFn = function (cmd) {
+            fn = function (cmd) {
                 eval(cmd);
             };
         }
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'add', [options]);
+        cordova.exec(fn, null, 'LocalNotification', 'add', [options]);
 
         return options.id;
     },
@@ -189,10 +189,10 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     cancel: function (id, callback, scope) {
-        var id         = id.toString(),
-            callbackFn = this.createCallbackFn(callback, scope);
+        var id = id.toString(),
+            fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'cancel', [id]);
+        cordova.exec(fn, null, 'LocalNotification', 'cancel', [id]);
     },
 
     /**
@@ -204,9 +204,9 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     cancelAll: function (callback, scope) {
-        var callbackFn = this.createCallbackFn(callback, scope);
+        var fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'cancelAll', []);
+        cordova.exec(fn, null, 'LocalNotification', 'cancelAll', []);
     },
 
     /**
@@ -218,9 +218,9 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     getScheduledIds: function (callback, scope) {
-        var callbackFn = this.createCallbackFn(callback, scope);
+        var fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'getScheduledIds', []);
+        cordova.exec(fn, null, 'LocalNotification', 'getScheduledIds', []);
     },
 
     /**
@@ -234,10 +234,10 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     isScheduled: function (id, callback, scope) {
-        var id         = id.toString(),
-            callbackFn = this.createCallbackFn(callback, scope);
+        var id = id.toString(),
+            fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'isScheduled', [id]);
+        cordova.exec(fn, null, 'LocalNotification', 'isScheduled', [id]);
     },
 
     /**
@@ -249,9 +249,9 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     getTriggeredIds: function (callback, scope) {
-        var callbackFn = this.createCallbackFn(callback, scope);
+        var fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'getTriggeredIds', []);
+        cordova.exec(fn, null, 'LocalNotification', 'getTriggeredIds', []);
     },
 
     /**
@@ -265,10 +265,37 @@ LocalNotification.prototype = {
      *      The scope for the callback function
      */
     isTriggered: function (id, callback, scope) {
-        var id         = id.toString(),
-            callbackFn = this.createCallbackFn(callback, scope);
+        var id = id.toString(),
+            fn = this.createCallbackFn(callback, scope);
 
-        cordova.exec(callbackFn, null, 'LocalNotification', 'isTriggered', [id]);
+        cordova.exec(fn, null, 'LocalNotification', 'isTriggered', [id]);
+    },
+
+    /**
+     * Informs if the app has the permission to show badges.
+     *
+     * @param {Function} callback
+     *      The function to be exec as the callback
+     * @param {Object?} scope
+     *      The callback function's scope
+     */
+    hasPermission: function (callback, scope) {
+        var fn = this.createCallbackFn(callback, scope);
+
+        if (device.platform == 'iOS') {
+            cordova.exec(fn, null, 'LocalNotification', 'hasPermission', []);
+        } else if (fn) {
+            fn(true);
+        }
+    },
+
+    /**
+     * Ask for permission to show badges if not already granted.
+     */
+    promptForPermission: function () {
+        if (device.platform == 'iOS') {
+            cordova.exec(null, null, 'LocalNotification', 'promptForPermission', []);
+        }
     },
 
     /**
