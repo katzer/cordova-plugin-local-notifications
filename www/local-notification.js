@@ -271,6 +271,11 @@ exports.registerPermission = function (callback, scope) {
     exec(null, null, 'LocalNotification', 'registerPermission', []);
 };
 
+exports.promptForPermission = function (callback, scope) {
+    console.warn('Depreated: Please use `notification.local.registerPermission` instead.');
+    exports.registerPermission.apply(this, arguments);
+};
+
 /**
  * Occurs when a notification was added.
  *
