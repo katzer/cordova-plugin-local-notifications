@@ -132,6 +132,10 @@ exports.add = function (props, callback, scope) {
         options.date = Math.round(options.date.getTime()/1000);
     }
 
+    if (typeof options.json == 'object') {
+        options.json = JSON.stringify(options.json);
+    }
+
     if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
         fn = function (cmd) {
             eval(cmd);
@@ -156,7 +160,7 @@ exports.add = function (props, callback, scope) {
 exports.cancel = function (id, callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
 
-    exec(fn, null, 'LocalNotification', 'cancel', [id.toString()]);
+    exec(fn, null, 'LocalNotification', 'cancel', [(id || '0').toString()]);
 };
 
 /**
@@ -253,18 +257,18 @@ exports.hasPermission = function (callback, scope) {
 };
 
 /**
- * Ask for permission to show notifications if not already granted.
+ * Register permission to show notifications if not already granted.
  *
  * @param {Function} callback
  *      The function to be exec as the callback
  * @param {Object?} scope
  *      The callback function's scope
  */
-exports.promptForPermission = function (callback, scope) {
+exports.registerPermission = function (callback, scope) {
     if (device.platform != 'iOS')
         return;
 
-    exec(null, null, 'LocalNotification', 'promptForPermission', []);
+    exec(null, null, 'LocalNotification', 'registerPermission', []);
 };
 
 /**
@@ -389,4 +393,3 @@ exports.createCallbackFn = function (callbackFn, scope) {
         callbackFn.apply(scope || this, arguments);
     };
 };
-
