@@ -1,14 +1,14 @@
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
 - [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.
-- [feature:] New method `promptForPermission` to promt the user to grant permission to display local notifications.
+- [feature:] New method `registerPermission` to register permission to display local notifications.
 - [feature:] New Android specific `led:` flag.
 - [feature:] Add `isTriggered` & `getTriggeredIds` methods.
+- [enhancement:] iOS8 support.
 - [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
-- [enhancement:] __iOS8 Support__
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.

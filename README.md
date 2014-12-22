@@ -19,7 +19,7 @@ The purpose of the plugin is to create an platform independent javascript interf
 
 
 ## Supported Platforms
-- **iOS**<br>
+- **iOS** _(up to iOS8)_<br>
 See [Local and Push Notification Programming Guide][ios_notification_guide] for detailed informations and screenshots.
 
 - **Android** *(SDK >=7)*<br>
@@ -71,14 +71,14 @@ More informations can be found [here][PGB_plugin].
 ## ChangeLog
 #### Version 0.8.0 (not yet released)
 - [feature:] New method `hasPermission` to ask if the user has granted to display local notifications.
-- [feature:] New method `promptForPermission` to promt the user to grant permission to display local notifications.
+- [feature:] New method `registerPermission` to register permission to display local notifications.
 - [feature:] New Android specific `led:` flag.
 - [feature:] Add `isTriggered` & `getTriggeredIds` methods.
+- [enhancement:] iOS8 support.
 - [enhancement:] Android 2.x (SDK >= 7) support (Thanks to **khizarsonu**)
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
-- [enhancement:] __iOS8 Support__
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
@@ -89,7 +89,7 @@ More informations can be found [here][PGB_plugin].
 The plugin creates the object ```window.plugin.notification.local``` with the following methods:
 
 1. [notification.local.hasPermission][has_permission]
-2. [notification.local.promptForPermission][prompt_for_permission]
+2. [notification.local.registerPermission][register_permission]
 3. [notification.local.add][add]
 4. [notification.local.cancel][cancel]
 5. [notification.local.cancelAll][cancelall]
@@ -125,15 +125,15 @@ window.plugin.notification.local.hasPermission(function (granted) {
 });
 ```
 
-### Prompt the user to grant permission for local notifications
-The user can be prompted to grant the required permission through the `notification.local.promptForPermission` interface.
+### Register permission for local notifications
+Required permissions can be registered through the `notification.local.registerPermission` interface.
 
 #### Further informations
 - The method is supported on each platform, however its only relevant for iOS8 and above.
 - The user will only get a prompt dialog for the first time. Later its only possible to change the setting via the notification center.
 
 ```javascript
-window.plugin.notification.local.promptForPermission();
+window.plugin.notification.local.registerPermission();
 ```
 
 ### Schedule local notifications
@@ -563,7 +563,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [ontrigger]: #get-notified-when-a-local-notification-has-been-triggered
 [platform-specific-properties]: #platform-specifics
 [has_permission]: #determine-if-the-app-does-have-the-permission-to-show-local-notifications
-[prompt_for_permission]: #prompt-the-user-to-grant-permission-for-local-notifications
+[register_permission]: #register-permission-for-local-notifications
 [add]: #schedule-local-notifications
 [cancel]: #cancel-scheduled-local-notifications
 [cancelall]: #cancel-all-scheduled-local-notifications
