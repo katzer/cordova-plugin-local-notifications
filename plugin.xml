@@ -70,7 +70,7 @@
              * The activity calls the background callback and brings the launch inten
              * up to foreground.
             -->
-            <activity android:name="de.appplant.cordova.plugin.localnotification.ReceiverActivity" android:launchMode="singleInstance" />
+            <activity android:name="de.appplant.cordova.plugin.localnotification.ReceiverActivity" android:launchMode="singleInstance" android:theme="@android:style/Theme.NoDisplay" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
