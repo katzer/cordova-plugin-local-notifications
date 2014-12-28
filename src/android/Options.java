@@ -101,7 +101,7 @@ public class Options {
 
         return this;
     }
-
+    
     /**
      * Returns options as JSON object
      */

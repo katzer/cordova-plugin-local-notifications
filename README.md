@@ -528,8 +528,6 @@ The launch mode for the main activity has to be set to `singleInstance`
 <activity ... android:launchMode="singleInstance" ... />
 ```
 
-### A notification cleared by the User is still shown as Triggered on Android
-It's not possible on android, to get informed about a User clearing an applications notifications. Currently the only way to prevent that sort of behavior is, to set the "ongoing" parameter to "true" and cancel the notification during the onclick event.
 
 ## Contributing
 

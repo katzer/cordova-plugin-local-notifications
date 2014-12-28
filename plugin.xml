@@ -62,6 +62,12 @@
              * sound and it vibrates the phone.
             -->
             <receiver android:name="de.appplant.cordova.plugin.localnotification.Receiver" />
+			
+			<!--
+             * The delete intent receiver is triggered when the user clears a notification
+			 * manually. It unpersists the cleared notification from the shared preferences.
+            -->
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver" />
 
             <!--
              * This class is triggered upon reboot of the device. It needs to re-register
@@ -73,6 +79,7 @@
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
+			
 
             <!--
              * The receiver activity is triggered when a notification is clicked by a user.
@@ -93,6 +100,7 @@
         <source-file src="src/android/Options.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/Restore.java"           target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/ReceiverActivity.java"  target-dir="src/de/appplant/cordova/plugin/localnotification" />
+		<source-file src="src/android/DeleteIntentReceiver.java"  target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 
     <!-- wp8 -->

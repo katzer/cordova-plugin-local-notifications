@@ -73,7 +73,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {               	
-                    JSONObject arguments = setInitDate(args).optJSONObject(0);
+                    JSONObject arguments = setInitDate(args.optJSONObject(0));
                     Options options      = new Options(context).parse(arguments);
 
                     add(options, true);
@@ -169,6 +169,7 @@ public class LocalNotification extends CordovaPlugin {
         
         persist(options.getId(), options.getJSONObject());
 
+        //Intent is called when the Notification gets fired
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + options.getId())
             .putExtra(Receiver.OPTIONS, options.getJSONObject().toString());
@@ -183,6 +184,58 @@ public class LocalNotification extends CordovaPlugin {
         am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
     }
 
+    /**
+     * Clear a specific notification without canceling repeating alarms
+     * 
+     * @param notificationID
+     *            The original ID of the notification that was used when it was
+     *            registered using add()
+     */
+    public static void clear (String notificationId){
+    	SharedPreferences settings = getSharedPreferences();
+    	Map<String, ?> alarms      = settings.getAll();
+        NotificationManager nc = getNotificationManager();
+
+        try {
+            nc.cancel(Integer.parseInt(notificationId));
+        } catch (Exception e) {}
+        
+        JSONObject arguments;
+		try {
+			arguments = new JSONObject(alarms.get(notificationId).toString());
+			Options options      = new Options(context).parse(arguments);
+			Date now = new Date();
+			if ((options.getInterval()!=0)){
+				persist(notificationId, setInitDate(arguments));
+			}
+			else if((new Date(options.getDate()).before(now))){
+				unpersist(notificationId);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+        fireEvent("clear", notificationId, "");
+    }
+    
+    /**
+     * Clear all notifications without canceling repeating alarms
+     */
+    public static void clearAll (){
+        SharedPreferences settings = getSharedPreferences();
+        NotificationManager nc     = getNotificationManager();
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
+
+        for (String alarmId : alarmIds) {
+            clear(alarmId);
+        }
+
+        nc.cancelAll();
+    }
+
+    
+    
     /**
      * Cancel a specific notification that was previously registered.
      *
@@ -490,14 +543,14 @@ public class LocalNotification extends CordovaPlugin {
      * @param args The given JSONArray
      * @return A new JSONArray with the parameter "initialDate" set.
      */
-    private static JSONArray setInitDate(JSONArray args){
-    	long initialDate = args.optJSONObject(0).optLong("date", 0) * 1000;
+    private static JSONObject setInitDate(JSONObject arguments){
+    	long initialDate = arguments.optLong("date", 0) * 1000;
     	try {
-			args.optJSONObject(0).put("initialDate", initialDate);
+    		arguments.put("initialDate", initialDate);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-    	return args;
+    	return arguments;
     }
     
   
