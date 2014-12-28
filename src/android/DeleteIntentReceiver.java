@@ -21,6 +21,8 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import java.util.Date;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,8 +51,32 @@ public class DeleteIntentReceiver extends BroadcastReceiver {
         // The context may got lost if the app was not running before
         LocalNotification.setContext(context);
         
-        LocalNotification.unpersist(options.getId());
-
+        Date now = new Date();
+		if ((options.getInterval()!=0)){
+			LocalNotification.persist(options.getId(), setInitDate(args));
+		}
+		else if((new Date(options.getDate()).before(now))){
+			LocalNotification.unpersist(options.getId());
+		}
+		
+		fireClearEvent(options);
 	}
+	
+	private JSONObject setInitDate(JSONObject arguments){
+    	long initialDate = arguments.optLong("date", 0) * 1000;
+    	try {
+    		arguments.put("initialDate", initialDate);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+    	return arguments;
+    }
+	
+    /**
+     * Fires onclear event.
+     */
+    private void fireClearEvent (Options options) {
+        LocalNotification.fireEvent("clear", options.getId(), options.getJSON());
+    }
 
 }
