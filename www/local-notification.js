@@ -265,10 +265,14 @@ exports.hasPermission = function (callback, scope) {
  *      The callback function's scope
  */
 exports.registerPermission = function (callback, scope) {
-    if (device.platform != 'iOS')
-        return;
+    var fn = this.createCallbackFn(callback, scope);
 
-    exec(null, null, 'LocalNotification', 'registerPermission', []);
+    if (device.platform != 'iOS') {
+        fn(true);
+        return;
+    }
+
+    exec(fn, null, 'LocalNotification', 'registerPermission', []);
 };
 
 exports.promptForPermission = function (callback, scope) {

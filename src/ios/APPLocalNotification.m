@@ -21,6 +21,7 @@
 
 #import "APPLocalNotification.h"
 #import "APPLocalNotificationOptions.h"
+#import "AppDelegate+APPLocalNotification.h"
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
 
@@ -34,6 +35,8 @@
 @property (readwrite, assign) BOOL deviceready;
 // Event queue
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
+// Needed when calling `registerPermission`
+@property (nonatomic, retain) CDVInvokedUrlCommand* command;
 
 @end
 
@@ -216,7 +219,7 @@
  * Inform if the app has the permission to show
  * badges and local notifications.
  */
-- (void) hasPermission:(CDVInvokedUrlCommand *)command
+- (void) hasPermission:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
@@ -236,12 +239,19 @@
 /**
  * Ask for permission to show badges.
  */
-- (void) registerPermission:(CDVInvokedUrlCommand *)command
+- (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+
+    _command = command;
+
     [self.commandDelegate runInBackground:^{
         [[UIApplication sharedApplication]
          registerPermissionToScheduleLocalNotifications];
     }];
+#else
+    [self hasPermission:command];
+#endif
 }
 
 #pragma mark -
@@ -388,6 +398,18 @@
     }
 }
 
+/**
+ * Called on otification settings registration is completed.
+ */
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
+{
+    if (_command)
+    {
+        [self hasPermission:_command];
+        _command = NULL;
+    }
+}
+
 #pragma mark -
 #pragma mark Life Cycle
 
@@ -398,22 +420,25 @@
  */
 - (void) pluginInitialize
 {
-    NSNotificationCenter* notificationCenter;
-
-    notificationCenter = [NSNotificationCenter
-                          defaultCenter];
+    NSNotificationCenter* center = [NSNotificationCenter
+                                    defaultCenter];
 
     eventQueue = [[NSMutableArray alloc] init];
 
-    [notificationCenter addObserver:self
-                           selector:@selector(didReceiveLocalNotification:)
-                               name:CDVLocalNotification
-                             object:nil];
+    [center addObserver:self
+               selector:@selector(didReceiveLocalNotification:)
+                   name:CDVLocalNotification
+                 object:nil];
 
-    [notificationCenter addObserver:self
-                           selector:@selector(didFinishLaunchingWithOptions:)
-                               name:UIApplicationDidFinishLaunchingNotification
-                             object:nil];
+    [center addObserver:self
+               selector:@selector(didFinishLaunchingWithOptions:)
+                   name:UIApplicationDidFinishLaunchingNotification
+                 object:nil];
+
+    [center addObserver:self
+               selector:@selector(didRegisterUserNotificationSettings:)
+                   name:UIApplicationRegisterUserNotificationSettings
+                 object:nil];
 }
 
 /**

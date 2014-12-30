@@ -39,6 +39,9 @@
         <header-file src="src/ios/APPLocalNotificationOptions.h" />
         <source-file src="src/ios/APPLocalNotificationOptions.m" />
 
+        <header-file src="src/ios/AppDelegate+APPLocalNotification.h" />
+        <header-file src="src/ios/AppDelegate+APPLocalNotification.m" />
+
         <source-file src="src/ios/UIApplication+APPLocalNotification.h" />
         <source-file src="src/ios/UIApplication+APPLocalNotification.m" />
 
