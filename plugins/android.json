@@ -13,6 +13,14 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"BackgroundMode\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.background.BackgroundMode\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"KeepRunning\" value=\"true\" />",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"LocalNotification\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.localnotification.LocalNotification\" /></feature>",
                             "count": 1
                         }
@@ -22,6 +30,10 @@
             "AndroidManifest.xml": {
                 "parents": {
                     "/manifest/application": [
+                        {
+                            "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
+                            "count": 1
+                        },
                         {
                             "xml": "<receiver android:name=\"de.appplant.cordova.plugin.localnotification.Receiver\" />",
                             "count": 1
@@ -46,6 +58,9 @@
         }
     },
     "installed_plugins": {
+        "de.appplant.cordova.plugin.background-mode": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
+        },
         "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
         }

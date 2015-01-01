@@ -28,8 +28,8 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Notification Example</title>
-		
-		<style type="text/css">
+
+        <style type="text/css">
         .button {
             -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
             -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
@@ -83,117 +83,143 @@
     </head>
     <body>
         <div class="app">
-            <h1>Local-Notification Plugin</h1>
+            <h1>Local-Notification Example</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
-			
-			<a href="#" class="button" onclick="add()">Schedule local notification<br/><span class="hint">notification.local.add()</span></a>
-			<a href="#" class="button" onclick="cancelAll()">Cancel all local notifications<br/><span class="hint">notification.local.cancelAll()</span></a>
-			<a href="#" class="button" onclick="addWithId()">Schedule notification with id<br/><span class="hint">notification.local.add()</span></a>
-			<a href="#" class="button" onclick="cancel()">Cancel notification with id<br/><span class="hint">notification.local.cancel()</span></a>
-			<a href="#" class="button" onclick="getScheduledIds()">Get scheduled IDs<br/><span class="hint">notification.local.getScheduledIds()</span></a>
-			<a href="#" class="button" onclick="isScheduled()">Is a notification scheduled?<br/><span class="hint">notification.local.isScheduled()</span></a>
-			<a href="#" class="button" onclick="addWithDefault()">Schedule not. with default values<br/><span class="hint">notification.local.add(defaults)</span></a>
-			<a href="#" class="button" onclick="setDefaults()">Set new default values<br/><span class="hint">notification.local.setDefaults()</span></a>
-			<a href="#" class="button" onclick="getTriggeredIds()">Get triggered IDs<br/><span class="hint">notification.local.getTriggeredIds()</span></a>
-			<a href="#" class="button" onclick="isTriggered()">Is a notification triggered?<br/><span class="hint">notification.local.isTriggered()</span></a>
-		
-			</div>
+
+            <a href="#" class="button" onclick="hasPermission()">Has permission?<br/><span class="hint">notification.local.hasPermission()</span></a>
+            <a href="#" class="button" onclick="registerPermission()">Register permission<br/><span class="hint">notification.local.registerPermission()</span></a>
+            <a href="#" class="button" onclick="schedule()">Schedule now<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="scheduleDelayed()">Schedule in 5 sec<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="scheduleMinutely()">Schedule every min<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="cancel()">Cancel<br/><span class="hint">notification.local.cancel()</span></a>
+            <a href="#" class="button" onclick="cancelAll()">Cancel all<br/><span class="hint">notification.local.cancelAll()</span></a>
+            <a href="#" class="button" onclick="getScheduledIds()">Scheduled IDs<br/><span class="hint">notification.local.getScheduledIds()</span></a>
+            <a href="#" class="button" onclick="isScheduled()">Is scheduled?<br/><span class="hint">notification.local.isScheduled()</span></a>
+            <a href="#" class="button" onclick="getTriggeredIds()">Triggered IDs<br/><span class="hint">notification.local.getTriggeredIds()</span></a>
+            <a href="#" class="button" onclick="isTriggered()">Is triggered?<br/><span class="hint">notification.local.isTriggered()</span></a>
+            <a href="#" class="button" onclick="setDefaultTitle()">Change default title<br/><span class="hint">notification.local.setDefaults()</span></a>
+
+            </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
-		
-		 <script type="text/javascript">
-			app.initialize();
-			
-			var callback = function () {
-				console.log('finished or canceled');
+
+        <script type="text/javascript">
+            var counter = 0, id = 12;
+
+            var callback = function () {
+                alert('finished or canceled');
             };
-			
-			document.addEventListener('deviceready', function () {
-				// window.plugin.notification.local is now available
-				
-				window.plugin.notification.local.onadd = function (id, state, json) {
-					alert('on add');
-				};
-			
-				window.plugin.notification.local.ontrigger = function (id, state, json) {
-					alert('on trigger');			
-				};
-			
-				window.plugin.notification.local.onclick = function (id, state, json) {
-					alert('on Click');			
-				};
-			
-				window.plugin.notification.local.oncancel = function (id, state, json) {
-					alert('on Cancel');			
-				};
-				
-			}, false);
-			
-			add = function () {
-				window.plugin.notification.local.add({message: 'Great app!' });
-			};
-			
-			cancelAll = function () {
-				window.plugin.notification.local.cancelAll(callback,this);
-			};
-			
-			var now                  = new Date().getTime(),
-				_60_seconds_from_now = new Date(now + 60*1000);
-			
-			addWithId = function () {
-				window.plugin.notification.local.add({	id:			12345,
-														message:	'Notification with ID', 
-														date:    	_60_seconds_from_now	});
-			};
-			
-			cancel = function () {
-				window.plugin.notification.local.cancel(12345,callback,this);
-			};
-			
-			getScheduledIds = function () {
-				window.plugin.notification.local.getScheduledIds(function (scheduledIds) {
-					alert('Scheduled IDs: ' + scheduledIds.join(' ,'));
-				},this);
-			};
-			
-			isScheduled = function () {
-				window.plugin.notification.local.isScheduled(12345, function (isScheduled) {
-					alert('Notification with ID 12345 is scheduled: ' + isScheduled);
-				}, this);		
-			};
-			
-			addWithDefault = function ()  {
-				var defaults = window.plugin.notification.local.getDefaults();
-				window.plugin.notification.local.add(defaults);
-			};
-			
-			setDefaults = function () {
-				var newDefaults = {	id:         12344,  // A unique id of the notifiction
-									date:       _60_seconds_from_now,    // This expects a date object
-									message:    'new defaults set',  // The message that is displayed
-    								title:      'Default Notification',  // The title of the message
-    								repeat:     'minutely',  // Either 'secondly', 'minutely', 'hourly', 'daily', 'weekly', 'monthly' or 'yearly'
-									badge:      1,  // Displays number badge to notification
-    								autoCancel: true, // Setting this flag and the notification is automatically canceled when the user clicks it
-    								//ongoing:    true,  // Prevent clearing of notification (Android only) 
-									}	
-				window.plugin.notification.local.setDefaults(newDefaults);
-			};
-			
-			isTriggered = function () {
-				window.plugin.notification.local.isTriggered(12345, function (isTriggered) {
-					alert('Notification with ID 12345 is triggered: ' + isTriggered);
-				}, this);			
-			};
-			
-			getTriggeredIds = function () {
-				window.plugin.notification.local.getTriggeredIds(function (triggeredIds) {
-					alert('Triggered IDs: ' + triggeredIds.join(' ,'));
-				}, this);
-			};
-		 </script>
+
+            hasPermission = function () {
+                plugin.notification.local.hasPermission(function (granted) {
+                    alert(granted);
+                });
+            };
+
+            registerPermission = function () {
+                plugin.notification.local.registerPermission(function (granted) {
+                    alert(granted);
+                });
+            };
+
+            schedule = function () {
+                plugin.notification.local.add({
+                    id:      id,
+                    message: 'Test Message ' + (++counter),
+                    json:    { test: 123 }
+                });
+            };
+
+            scheduleDelayed = function () {
+                var now             = new Date().getTime(),
+                    _5_sec_from_now = new Date(now + 5*1000);
+
+                plugin.notification.local.add({
+                    id:      id,
+                    title:   'Scheduled with delay',
+                    message: 'Test Message ' + (++counter),
+                    date:    _5_sec_from_now,
+                    sound:   'res://beep.caf'
+                });
+            };
+
+            scheduleMinutely = function () {
+                plugin.notification.local.add({
+                    id:      id,
+                    message: 'Scheduled every minute',
+                    repeat:  'minutely',
+                    sound:   'res://beep.caf'
+                });
+            };
+
+            cancel = function () {
+                counter = 0;
+                plugin.notification.local.cancel(id,callback);
+            };
+
+            cancelAll = function () {
+                counter = 0;
+                plugin.notification.local.cancelAll(callback);
+            };
+
+            getScheduledIds = function () {
+                plugin.notification.local.getScheduledIds(function (ids) {
+                    alert('Scheduled IDs:\n[' + ids.join(' ,') + ']');
+                });
+            };
+
+            isScheduled = function () {
+                plugin.notification.local.isScheduled(id, function (isScheduled) {
+                    alert('Notification with ID ' + id + ' is scheduled:\n' + isScheduled);
+                });
+            };
+
+            isTriggered = function () {
+                plugin.notification.local.isTriggered(id, function (isTriggered) {
+                    alert('Notification with ID ' + id + ' is triggered:\n' + isTriggered);
+                });
+            };
+
+            getTriggeredIds = function () {
+                plugin.notification.local.getTriggeredIds(function (ids) {
+                    alert('Triggered IDs:\n[' + ids.join(' ,') + ']');
+                });
+            };
+
+            setDefaultTitle = function () {
+                plugin.notification.local.setDefaults({
+                    title: 'Default Title',
+                });
+            };
+         </script>
+
+        <!-- callbacks -->
+        <script type="text/javascript">
+            document.addEventListener('deviceready', function () {
+                plugin.notification.local.onadd = function (id, state, json) {
+                    alert('on add\n' + Array.apply(null, arguments).join("\n"));
+                };
+
+                plugin.notification.local.ontrigger = function (id, state, json) {
+                    alert('on trigger\n' + Array.apply(null, arguments).join("\n"));
+                };
+
+                plugin.notification.local.onclick = function (id, state, json) {
+                    alert('on click\n' + Array.apply(null, arguments).join("\n"));
+                };
+
+                plugin.notification.local.oncancel = function (id, state, json) {
+                    alert('on cancel\n' + Array.apply(null, arguments).join("\n"));
+                };
+            }, false);
+        </script>
+
+        <!-- initialize -->
+        <script type="text/javascript">
+            app.initialize();
+        </script>
     </body>
 </html>

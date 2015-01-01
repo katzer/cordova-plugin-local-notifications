@@ -115,6 +115,13 @@ public class Options {
     public long getDate() {
         return options.optLong("date", 0) * 1000;
     }
+    
+    /**
+     * Returns time in milliseconds when the notification was scheduled first
+     */
+    public long getInitialDate() {
+    	return options.optLong("initialDate", 0);
+    }
 
     /**
      * Returns time as calender

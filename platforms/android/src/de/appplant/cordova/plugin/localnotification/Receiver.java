@@ -74,7 +74,6 @@ public class Receiver extends BroadcastReceiver {
         fireTriggerEvent();
 
         if (options.getInterval() == 0) {
-            LocalNotification.unpersist(options.getId());
         } else if (isFirstAlarmInFuture()) {
             return;
         } else {

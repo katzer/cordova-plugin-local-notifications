@@ -72,11 +72,10 @@ public class LocalNotification extends CordovaPlugin {
     public boolean execute (String action, final JSONArray args, final CallbackContext command) throws JSONException {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
-                public void run() {
-                    JSONObject arguments = args.optJSONObject(0);
+                public void run() {               	
+                    JSONObject arguments = setInitDate(args).optJSONObject(0);
                     Options options      = new Options(context).parse(arguments);
 
-                    persist(options.getId(), args);
                     add(options, true);
                     command.success();
                 }
@@ -167,6 +166,8 @@ public class LocalNotification extends CordovaPlugin {
      */
     public static void add (Options options, boolean doFireEvent) {
         long triggerTime = options.getDate();
+        
+        persist(options.getId(), options.getJSONObject());
 
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + options.getId())
@@ -244,7 +245,23 @@ public class LocalNotification extends CordovaPlugin {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         boolean isScheduled        = alarms.containsKey(id);
-        PluginResult result        = new PluginResult(PluginResult.Status.OK, isScheduled);
+        boolean isNotTriggered	   = false;
+        
+        if (isScheduled) {
+        	JSONObject arguments;
+			try {
+				arguments = new JSONObject(alarms.get(id).toString());
+	        	Options options      = new Options(context).parse(arguments);
+	        	Date fireDate        = new Date(options.getDate());
+	        	isNotTriggered = new Date().before(fireDate);
+			} catch (JSONException e) {
+				isNotTriggered = false;
+				e.printStackTrace();
+			}
+        	
+        }
+        
+        PluginResult result        = new PluginResult(PluginResult.Status.OK, (isScheduled && isNotTriggered));
 
         command.sendPluginResult(result);
     }
@@ -258,8 +275,27 @@ public class LocalNotification extends CordovaPlugin {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
-        JSONArray scheduledIds     = new JSONArray(alarmIds);
+        JSONArray scheduledIds     = new JSONArray();
+        
+        for (String id : alarmIds) {
+        	boolean isScheduled;
+        	JSONObject arguments;
+ 			try {
+ 				arguments = new JSONObject(alarms.get(id).toString());
+ 	        	Options options      = new Options(context).parse(arguments);
+ 	        	Date fireDate        = new Date(options.getDate());
+ 	        	isScheduled = new Date().before(fireDate);
+ 			} catch (JSONException e) {
+ 				isScheduled = false;
+ 				e.printStackTrace();
+ 			}
+ 			if (isScheduled){
+ 				scheduledIds.put(id);
+ 			}
+        }
 
+        
+        
         command.success(scheduledIds);
     }
 
@@ -277,13 +313,19 @@ public class LocalNotification extends CordovaPlugin {
         boolean isTriggered        = isScheduled;
 
         if (isScheduled) {
-            JSONObject arguments = (JSONObject) alarms.get(id);
-            Options options      = new Options(context).parse(arguments);
-            Date fireDate        = new Date(options.getDate());
-
-            isTriggered = new Date().after(fireDate);
+        	JSONObject arguments;
+			try {
+				arguments = new JSONObject(alarms.get(id).toString());
+	        	Options options      = new Options(context).parse(arguments);
+	        	Date fireDate        = new Date(options.getInitialDate());
+	        	isTriggered = new Date().after(fireDate);
+			} catch (JSONException e) {
+				isTriggered = false;
+				e.printStackTrace();
+			}
+        	
         }
-
+        	
         PluginResult result = new PluginResult(PluginResult.Status.OK, isTriggered);
 
         command.sendPluginResult(result);
@@ -298,21 +340,32 @@ public class LocalNotification extends CordovaPlugin {
         SharedPreferences settings = getSharedPreferences();
         Map<String, ?> alarms      = settings.getAll();
         Set<String> alarmIds       = alarms.keySet();
-        JSONArray scheduledIds     = new JSONArray();
+        JSONArray triggeredIds     = new JSONArray();
         Date now                   = new Date();
 
         for (String id : alarmIds) {
-            JSONObject arguments = (JSONObject) alarms.get(id);
-            Options options      = new Options(context).parse(arguments);
-            Date fireDate        = new Date(options.getDate());
-            boolean isTriggered  = now.after(fireDate);
+        	boolean isTriggered;
+        	JSONObject arguments;
+        	try{
+        		arguments = new JSONObject(alarms.get(id).toString());
+        		Options options      = new Options(context).parse(arguments);
+        		Date fireDate        = new Date(options.getInitialDate());
+        		isTriggered  = now.after(fireDate);
+            } catch(ClassCastException cce) {
+            	cce.printStackTrace();
+            	isTriggered = false;
+            }
+        	catch(JSONException jse) {
+        		jse.printStackTrace();
+            	isTriggered = false;
+            }
 
             if (isTriggered == true) {
-                scheduledIds.put(id);
+                triggeredIds.put(id);
             }
         }
 
-        command.success(scheduledIds);
+        command.success(triggeredIds);
     }
 
     /**
@@ -325,7 +378,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      *            The assumption is that parse has been called already.
      */
-    public static void persist (String alarmId, JSONArray args) {
+    public static void persist (String alarmId, JSONObject args) {
         Editor editor = getSharedPreferences().edit();
 
         if (alarmId != null) {
@@ -431,4 +484,21 @@ public class LocalNotification extends CordovaPlugin {
     protected static NotificationManager getNotificationManager () {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
+    
+    /**
+     * Function to set the value of "initialDate" in the JSONArray
+     * @param args The given JSONArray
+     * @return A new JSONArray with the parameter "initialDate" set.
+     */
+    private static JSONArray setInitDate(JSONArray args){
+    	long initialDate = args.optJSONObject(0).optLong("date", 0) * 1000;
+    	try {
+			args.optJSONObject(0).put("initialDate", initialDate);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+    	return args;
+    }
+    
+  
 }
