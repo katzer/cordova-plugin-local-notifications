@@ -370,8 +370,10 @@
 
     NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
 
-    [UIApplication sharedApplication]
-    .applicationIconBadgeNumber -= 1;
+    if ([event isEqualToString:@"click"]) {
+        [UIApplication sharedApplication]
+        .applicationIconBadgeNumber -= 1;
+    }
 
     [self fireEvent:event localNotification:notification];
 
