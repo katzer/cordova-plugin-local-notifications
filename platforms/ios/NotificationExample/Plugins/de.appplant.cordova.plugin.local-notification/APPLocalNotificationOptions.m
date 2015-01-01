@@ -82,7 +82,7 @@
 - (BOOL) autoCancel
 {
     if (IsAtLeastiOSVersion(@"8.0")){
-        return YES;
+        return self.repeatInterval == NSCalendarUnitEra;
     } else {
         return [[dict objectForKey:@"autoCancel"] boolValue];
     }

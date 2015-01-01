@@ -236,10 +236,10 @@
 				B15E0B313C114B988FFDB3DF /* APPLocalNotificationOptions.m */,
 				49F49C19231D4BBE83DBF480 /* UIApplication+APPLocalNotification.h */,
 				3FAE800EBDCA42B2A38B569B /* UIApplication+APPLocalNotification.m */,
-				DAB48B85CF1041E08D93312D /* UILocalNotification+APPLocalNotification.m */,
 				49A917BFEDB54EBE90626CB7 /* APPLocalNotification.h */,
 				3EEEE9F809E44CCDA96CDFF7 /* APPLocalNotificationOptions.h */,
 				7C2E1A851E1C499084223237 /* UILocalNotification+APPLocalNotification.h */,
+				DAB48B85CF1041E08D93312D /* UILocalNotification+APPLocalNotification.m */,
 			);
 			name = Plugins;
 			path = NotificationExample/Plugins;

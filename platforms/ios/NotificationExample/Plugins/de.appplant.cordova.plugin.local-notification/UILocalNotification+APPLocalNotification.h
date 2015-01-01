@@ -28,7 +28,7 @@
 // The options provided by the plug-in
 - (APPLocalNotificationOptions*) options;
 // Timeinterval since fire date
-- (NSTimeInterval) timeIntervalSinceFireDate;
+- (double) timeIntervalSinceFireDate;
 // If the fire date was in the past
 - (BOOL) wasInThePast;
 // If the notification was already triggered

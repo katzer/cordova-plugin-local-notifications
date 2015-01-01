@@ -96,14 +96,43 @@ static char optionsKey;
 }
 
 /**
+ * The repeating interval in seconds.
+ */
+- (int) repeatIntervalInSeconds
+{
+    switch (self.repeatInterval) {
+        case NSCalendarUnitMinute:
+            return 60;
+            
+        case NSCalendarUnitHour:
+            return 60000;
+            
+        case NSCalendarUnitDay:
+        case NSCalendarUnitWeekOfYear:
+        case NSCalendarUnitMonth:
+        case NSCalendarUnitYear:
+            return 86400;
+            
+        default:
+            return 1;
+    }
+}
+
+/**
  * Timeinterval since fire date.
  */
-- (NSTimeInterval) timeIntervalSinceFireDate
+- (double) timeIntervalSinceFireDate
 {
     NSDate* now      = [NSDate date];
     NSDate* fireDate = self.options.fireDate;
-
-    return [now timeIntervalSinceDate:fireDate];
+    
+    int timespan     = [now timeIntervalSinceDate:fireDate];
+    
+    if (self.repeatInterval != NSCalendarUnitEra) {
+        timespan = timespan % [self repeatIntervalInSeconds];
+    }
+    
+    return timespan;
 }
 
 /**
