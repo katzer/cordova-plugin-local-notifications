@@ -101,7 +101,13 @@
  */
 - (NSInteger) badgeNumber
 {
-    return [[dict objectForKey:@"badge"] intValue];
+    NSInteger number = [[dict objectForKey:@"badge"] intValue];
+
+    if (number == -1) {
+        number = 1 + [UIApplication sharedApplication].applicationIconBadgeNumber;
+    }
+
+    return number;
 }
 
 #pragma mark -

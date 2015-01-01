@@ -360,7 +360,6 @@
  */
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
-    UIApplication* app = [UIApplication sharedApplication];
     UILocalNotification* notification = [localNotification object];
 
     BOOL autoCancel = notification.options.autoCancel;
@@ -368,7 +367,8 @@
 
     NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
 
-    app.applicationIconBadgeNumber -= 1;
+    [UIApplication sharedApplication]
+    .applicationIconBadgeNumber -= 1;
 
     [self fireEvent:event localNotification:notification];
 

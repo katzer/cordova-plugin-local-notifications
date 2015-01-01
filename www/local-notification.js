@@ -64,7 +64,7 @@ exports._defaults = {
     message:    '',
     title:      '',
     autoCancel: false,
-    badge:      0,
+    badge:      -1,
     id:         '0',
     json:       '',
     repeat:     ''
