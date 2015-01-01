@@ -112,29 +112,7 @@ exports.add = function (props, callback, scope) {
     var options = this.mergeWithDefaults(props),
         fn      = this.createCallbackFn(callback, scope);
 
-    if (options.id) {
-        options.id = options.id.toString();
-    }
-
-    if (options.date === undefined) {
-        options.date = new Date();
-    }
-
-    if (options.title) {
-        options.title = options.title.toString();
-    }
-
-    if (options.message) {
-        options.message = options.message.toString();
-    }
-
-    if (typeof options.date == 'object') {
-        options.date = Math.round(options.date.getTime()/1000);
-    }
-
-    if (typeof options.json == 'object') {
-        options.json = JSON.stringify(options.json);
-    }
+    this.convertOptions(options);
 
     if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
         fn = function (cmd) {
@@ -142,7 +120,11 @@ exports.add = function (props, callback, scope) {
         };
     }
 
-    exec(fn, null, 'LocalNotification', 'add', [options]);
+    this.registerPermission(function(granted) {
+        if (granted) {
+            exec(fn, null, 'LocalNotification', 'add', [options]);
+        }
+    });
 
     return options.id;
 };
@@ -232,7 +214,7 @@ exports.clear = function (id, callback, scope) {
 		callbackFn = this.createCallbackFn(callback, scope);
 	cordova.exec(callbackFn, null, 'LocalNotification', 'clear', [id]);
 };
-	
+
 /**
  * Clear the specified notifications (more than one).
  *
@@ -249,12 +231,12 @@ exports.clearMultiple = function (ids, callback, scope) {
 		callbackFn = this.createCallbackFn(callback, scope);
 	for (var i=0;i<length;i++){
 		var id         = ids[i].toString();
-		idArray.push(id);	
+		idArray.push(id);
 	}
 	var callbackFn = this.createCallbackFn(callback, scope);
 	cordova.exec(callbackFn, null, 'LocalNotification', 'clearMultiple', [ids]);
 };
-	
+
 /**
  * Clears all previously sheduled notifications.
  *
@@ -301,7 +283,7 @@ exports.cancelMultiple = function (ids, callback, scope) {
 		callbackFn = this.createCallbackFn(callback, scope);
 	for (var i=0;i<length;i++){
 		var id         = ids[i].toString();
-		idArray.push(id);	
+		idArray.push(id);
 	}
 	var callbackFn = this.createCallbackFn(callback, scope);
 	cordova.exec(callbackFn, null, 'LocalNotification', 'cancelMultiple', [ids]);
@@ -503,6 +485,49 @@ exports.mergeWithDefaults = function (options) {
         if (options[key] === undefined) {
             options[key] = defaults[key];
         }
+    }
+
+    return options;
+};
+
+/**
+ * @private
+ *
+ * Convert the passed values to their required type.
+ *
+ * @param {Object} options
+ *      Set of custom values
+ *
+ * @retrun {Object}
+ *      The converted property list
+ */
+exports.convertOptions = function (options) {
+    if (options.id) {
+        options.id = options.id.toString();
+    }
+
+    if (options.date === undefined) {
+        options.date = new Date();
+    }
+
+    if (options.title) {
+        options.title = options.title.toString();
+    }
+
+    if (options.message) {
+        options.message = options.message.toString();
+    }
+
+    if (options.text) {
+        options.message = options.text.toString();
+    }
+
+    if (typeof options.date == 'object') {
+        options.date = Math.round(options.date.getTime()/1000);
+    }
+
+    if (typeof options.json == 'object') {
+        options.json = JSON.stringify(options.json);
     }
 
     return options;
