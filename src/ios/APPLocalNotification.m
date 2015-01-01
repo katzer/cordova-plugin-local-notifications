@@ -285,6 +285,9 @@
 
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
+
+    [UIApplication sharedApplication]
+    .applicationIconBadgeNumber -= 1;
 }
 
 /**
