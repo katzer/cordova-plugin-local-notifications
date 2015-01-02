@@ -79,10 +79,17 @@ public class Receiver extends BroadcastReceiver {
         } else {
             LocalNotification.add(options.moveDate(), false);
         }
+        if (!LocalNotification.isInBackground && options.getForegroundMode()){
+        	if (options.getInterval() == 0) {
+        		LocalNotification.unpersist(options.getId());
+        	}
+        	LocalNotification.showNotification(options.getTitle(), options.getMessage());
+        	fireTriggerEvent();
+        } else {
+        	Builder notification = buildNotification();
 
-        Builder notification = buildNotification();
-
-        showNotification(notification);
+        	showNotification(notification);
+        }
     }
 
     /*

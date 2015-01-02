@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -43,6 +44,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
+import android.widget.Toast;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
@@ -59,6 +61,7 @@ public class LocalNotification extends CordovaPlugin {
     protected static Context context = null;
     protected static Boolean isInBackground = true;
     private   static ArrayList<String> eventQueue = new ArrayList<String>();
+    static Activity activity;
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -66,6 +69,7 @@ public class LocalNotification extends CordovaPlugin {
 
         LocalNotification.webView = super.webView;
         LocalNotification.context = super.cordova.getActivity().getApplicationContext();
+        LocalNotification.activity = super.cordova.getActivity();
     }
 
     @Override
@@ -321,7 +325,6 @@ public class LocalNotification extends CordovaPlugin {
     
     /**
      * Clear all notifications without canceling repeating alarms
-     * 
      */
     public static void clearAll (){
         SharedPreferences settings = getSharedPreferences();
@@ -678,6 +681,17 @@ public class LocalNotification extends CordovaPlugin {
     	
     	return arguments;
     }
+    
+    public static void showNotification(String title,String notification){
+       	int duration = Toast.LENGTH_LONG;
+       	if(title.equals("")){
+       		title = "Notification";
+       	}
+       	String text = title + " \n " + notification;
+       	
+    	Toast notificationToast = Toast.makeText(context, text, duration);
+    	notificationToast.show();
+   }
     
   
 }
