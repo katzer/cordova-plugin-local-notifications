@@ -9,6 +9,14 @@
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
+- [enhancement:] Schedule multiple notifications at once (Android)
+- [enhancement:] Cancel multiple notifications at once (Android)
+- [enhancement:] Clear multiple notifications at once (Android)
+- [enhancement:] `clear` & `clearAll` methods (Android)
+- [enhancement:] `onclear` event (Android)
+- [enhancement:] Modal dialogs when in foreground (Android)
+- [enhancement:] Ability to change repeating notifications (Android)
+- [enhancement:] `sound:` accepts local URIs for absolute (file:///), relative (file://) and resource path (res:). (Android)
 
 #### Version 0.7.4 (22.03.2014)
 - [bugfix:] Platform specific properties were ignored.
