@@ -93,16 +93,22 @@
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSString* id = [[command arguments]
+        NSArray* ids = [[command arguments]
                         objectAtIndex:0];
 
-        UILocalNotification* notification;
+        for (NSString* id in ids) {
+            UILocalNotification* notification;
 
-        notification = [[UIApplication sharedApplication]
-                        scheduledLocalNotificationWithId:id];
+            notification = [[UIApplication sharedApplication]
+                            scheduledLocalNotificationWithId:id];
 
-        [self cancelLocalNotification:notification];
-        [self fireEvent:@"cancel" localNotification:notification];
+            if (!notification)
+                continue;
+
+            [self cancelLocalNotification:notification];
+            [self fireEvent:@"cancel" localNotification:notification];
+        }
+
         [self execCallback:command];
     }];
 }

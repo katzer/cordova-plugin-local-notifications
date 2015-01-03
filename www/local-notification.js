@@ -172,19 +172,28 @@ exports.clearAll = function (callback, scope) {
 };
 
 /**
- * Cancels the specified notification.
+ * Cancels the specified notifications.
  *
- * @param {String} id
- *      The ID of the notification
+ * @param {String[]} ids
+ *      The IDs of the notifications
  * @param {Function} callback
- *      A function to be called after the notification has been canceled
+ *      A function to be called after the notifications has been canceled
  * @param {Object} scope
  *      The scope for the callback function
  */
-exports.cancel = function (id, callback, scope) {
-    var notId = (id || '0').toString();
+exports.cancel = function (ids, callback, scope) {
 
-    this.exec('cancel', notId, callback, scope);
+    ids = Array.isArray(ids) ? ids : [ids];
+
+    for (var i = 0; i < ids.length; i++) {
+        ids[i] = ids[i].toString();
+    }
+
+    if (device.platform != 'iOS') {
+        ids = ids[0];
+    }
+
+    this.exec('cancel', ids, callback, scope);
 };
 
 /**
@@ -304,11 +313,7 @@ exports.registerPermission = function (callback, scope) {
  *      The callback function's scope
  */
 exports.promptForPermission = function (callback, scope) {
-
-    console.warn(
-        '`notification.local.promptForPermission` is deprecated,',
-        'please use `notification.local.registerPermission`.'
-    );
+    console.warn('Depreated: Please use `notification.local.registerPermission` instead.');
 
     exports.registerPermission.apply(this, arguments);
 };
@@ -613,13 +618,7 @@ exports.createCallbackFn = function (callbackFn, scope) {
  */
 exports.exec = function (action, args, callback, scope) {
     var fn = this.createCallbackFn(callback, scope),
-        params = [];
-
-    if (Array.isArray(args)) {
-        params = args;
-    } else if (args) {
-        params.push(args);
-    }
+        params = args ? [args] : [];
 
     exec(fn, null, 'LocalNotification', action, params);
 };
