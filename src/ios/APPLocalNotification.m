@@ -331,13 +331,9 @@
     [self cancelLocalNotification:forerunner];
 }
 
-
 /**
  * Cancels all local notification with are older then
  * a specific amount of seconds
- *
- * @param {float} seconds
- *      The time interval in seconds
  */
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
 {
@@ -422,9 +418,7 @@
 #pragma mark Life Cycle
 
 /**
- * Registers obervers for the following events after plugin was initialized.
- *      didReceiveLocalNotification:
- *      didFinishLaunchingWithOptions:
+ * Registers obervers after plugin was initialized.
  */
 - (void) pluginInitialize
 {
