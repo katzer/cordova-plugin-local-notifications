@@ -102,11 +102,11 @@
 - (NSInteger) badgeNumber
 {
     NSInteger number = [[dict objectForKey:@"badge"] intValue];
-    
+
     if (number == -1) {
         number = 1 + [UIApplication sharedApplication].applicationIconBadgeNumber;
     }
-    
+
     return number;
 }
 

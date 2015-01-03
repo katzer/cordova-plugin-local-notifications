@@ -103,16 +103,16 @@ static char optionsKey;
     switch (self.repeatInterval) {
         case NSCalendarUnitMinute:
             return 60;
-            
+
         case NSCalendarUnitHour:
             return 60000;
-            
+
         case NSCalendarUnitDay:
         case NSCalendarUnitWeekOfYear:
         case NSCalendarUnitMonth:
         case NSCalendarUnitYear:
             return 86400;
-            
+
         default:
             return 1;
     }
@@ -125,13 +125,13 @@ static char optionsKey;
 {
     NSDate* now      = [NSDate date];
     NSDate* fireDate = self.options.fireDate;
-    
+
     int timespan     = [now timeIntervalSinceDate:fireDate];
-    
+
     if (self.repeatInterval != NSCalendarUnitEra) {
         timespan = timespan % [self repeatIntervalInSeconds];
     }
-    
+
     return timespan;
 }
 

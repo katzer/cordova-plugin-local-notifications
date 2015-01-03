@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -43,6 +44,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
+import android.widget.Toast;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with StatusBar
@@ -59,6 +61,7 @@ public class LocalNotification extends CordovaPlugin {
     protected static Context context = null;
     protected static Boolean isInBackground = true;
     private   static ArrayList<String> eventQueue = new ArrayList<String>();
+    static Activity activity;
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -66,6 +69,7 @@ public class LocalNotification extends CordovaPlugin {
 
         LocalNotification.webView = super.webView;
         LocalNotification.context = super.cordova.getActivity().getApplicationContext();
+        LocalNotification.activity = super.cordova.getActivity();
     }
 
     @Override
@@ -73,10 +77,66 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {               	
-                    JSONObject arguments = setInitDate(args).optJSONObject(0);
+                    JSONObject arguments = setInitDate(args.optJSONObject(0));
                     Options options      = new Options(context).parse(arguments);
-
                     add(options, true);
+                    command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("addMultiple")) {
+            cordova.getThreadPool().execute( new Runnable() {
+                public void run() {    
+                	JSONArray notifications = args.optJSONArray(0);
+                	for (int i =0; i<notifications.length();i++){
+                		JSONObject arguments = setInitDate(notifications.optJSONObject(i));
+                		Options options      = new Options(context).parse(arguments);
+                		add(options, true);
+                	}
+                    command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("update")) {
+        	cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                	JSONObject updates = args.optJSONObject(0);
+                	
+                	update(updates);
+                	command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("clear")) {
+        	cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                	String id = args.optString(0);
+
+                    clear(id);
+                    command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("clearMultiple")) {
+        	cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                	JSONArray ids = args.optJSONArray(0);
+                	for (int i =0; i<ids.length();i++){
+                        clear(ids.optString(i));
+                	}
+                    command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("clearAll")) {
+        	cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                	clearAll();
                     command.success();
                 }
             });
@@ -89,6 +149,18 @@ public class LocalNotification extends CordovaPlugin {
 
                     cancel(id);
                     unpersist(id);
+                    command.success();
+                }
+            });
+        }
+        
+        if (action.equalsIgnoreCase("cancelMultiple")) {
+        	cordova.getThreadPool().execute( new Runnable() {
+                public void run() {
+                	JSONArray ids = args.optJSONArray(0);
+                	for (int i =0; i<ids.length();i++){
+                        cancel(ids.optString(i));
+                	}
                     command.success();
                 }
             });
@@ -169,6 +241,7 @@ public class LocalNotification extends CordovaPlugin {
         
         persist(options.getId(), options.getJSONObject());
 
+        //Intent is called when the Notification gets fired
         Intent intent = new Intent(context, Receiver.class)
             .setAction("" + options.getId())
             .putExtra(Receiver.OPTIONS, options.getJSONObject().toString());
@@ -183,6 +256,91 @@ public class LocalNotification extends CordovaPlugin {
         am.set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
     }
 
+    /** 
+     * Update an existing notification 
+     * 
+     * @param updates JSONObject with update-content
+     */
+    public static void update (JSONObject updates){
+    	String id = updates.optString("id", "0");
+    	
+    	// update shared preferences
+    	SharedPreferences settings = getSharedPreferences();
+    	Map<String, ?> alarms      = settings.getAll();
+    	JSONObject arguments;
+		try {
+			arguments = new JSONObject(alarms.get(id).toString());
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return;
+		}
+		arguments = updateArguments(arguments, updates);
+		    	
+    	// cancel existing alarm
+        Intent intent = new Intent(context, Receiver.class)
+        	.setAction("" + id);
+        PendingIntent pi       = PendingIntent.getBroadcast(context, 0, intent, 0);
+        AlarmManager am        = getAlarmManager();
+        am.cancel(pi);
+        
+        //add new alarm
+        Options options      = new Options(context).parse(arguments);
+        add(options,false);        
+    }
+    
+    /**
+     * Clear a specific notification without canceling repeating alarms
+     * 
+     * @param notificationID
+     *            The original ID of the notification that was used when it was
+     *            registered using add()
+     */
+    public static void clear (String notificationId){
+    	SharedPreferences settings = getSharedPreferences();
+    	Map<String, ?> alarms      = settings.getAll();
+        NotificationManager nc = getNotificationManager();
+
+        try {
+            nc.cancel(Integer.parseInt(notificationId));
+        } catch (Exception e) {}
+        
+        JSONObject arguments;
+		try {
+			arguments = new JSONObject(alarms.get(notificationId).toString());
+			Options options      = new Options(context).parse(arguments);
+			Date now = new Date();
+			if ((options.getInterval()!=0)){
+				persist(notificationId, setInitDate(arguments));
+			}
+			else if((new Date(options.getDate()).before(now))){
+				unpersist(notificationId);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+        fireEvent("clear", notificationId, "");
+    }
+    
+    /**
+     * Clear all notifications without canceling repeating alarms
+     */
+    public static void clearAll (){
+        SharedPreferences settings = getSharedPreferences();
+        NotificationManager nc     = getNotificationManager();
+        Map<String, ?> alarms      = settings.getAll();
+        Set<String> alarmIds       = alarms.keySet();
+
+        for (String alarmId : alarmIds) {
+            clear(alarmId);
+        }
+
+        nc.cancelAll();
+    }
+
+    
+    
     /**
      * Cancel a specific notification that was previously registered.
      *
@@ -490,15 +648,50 @@ public class LocalNotification extends CordovaPlugin {
      * @param args The given JSONArray
      * @return A new JSONArray with the parameter "initialDate" set.
      */
-    private static JSONArray setInitDate(JSONArray args){
-    	long initialDate = args.optJSONObject(0).optLong("date", 0) * 1000;
+    private static JSONObject setInitDate(JSONObject arguments){
+    	long initialDate = arguments.optLong("date", 0) * 1000;
     	try {
-			args.optJSONObject(0).put("initialDate", initialDate);
+    		arguments.put("initialDate", initialDate);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-    	return args;
+    	return arguments;
     }
+    
+    private static JSONObject updateArguments(JSONObject arguments,JSONObject updates){
+    	try	{
+    		if(!updates.isNull("message")){
+    			arguments.put("message", updates.get("message"));
+    		}
+    		if(!updates.isNull("title")){
+    			arguments.put("title", updates.get("title"));
+    		}
+    		if(!updates.isNull("badge")){
+    			arguments.put("badge", updates.get("badge"));
+    		}
+    		if(!updates.isNull("sound")){
+    			arguments.put("sound", updates.get("sound"));
+    		}
+    		if(!updates.isNull("icon")){
+    			arguments.put("icon", updates.get("icon"));
+    		}
+    	} catch (JSONException jse){
+    		jse.printStackTrace();
+    	}
+    	
+    	return arguments;
+    }
+    
+    public static void showNotification(String title,String notification){
+       	int duration = Toast.LENGTH_LONG;
+       	if(title.equals("")){
+       		title = "Notification";
+       	}
+       	String text = title + " \n " + notification;
+       	
+    	Toast notificationToast = Toast.makeText(context, text, duration);
+    	notificationToast.show();
+   }
     
   
 }

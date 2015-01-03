@@ -92,9 +92,11 @@
             <a href="#" class="button" onclick="hasPermission()">Has permission?<br/><span class="hint">notification.local.hasPermission()</span></a>
             <a href="#" class="button" onclick="registerPermission()">Register permission<br/><span class="hint">notification.local.registerPermission()</span></a>
             <a href="#" class="button" onclick="schedule()">Schedule now<br/><span class="hint">notification.local.add()</span></a>
-            <a href="#" class="button" onclick="scheduleDelayed()">Schedule in 5 sec<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="scheduleMultiple()">Schedule multiple<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="scheduleDelayed()">Schedule in 5 sec<br/><span class="hint">notification.local.add([])</span></a>
             <a href="#" class="button" onclick="scheduleMinutely()">Schedule every min<br/><span class="hint">notification.local.add()</span></a>
             <a href="#" class="button" onclick="cancel()">Cancel<br/><span class="hint">notification.local.cancel()</span></a>
+            <a href="#" class="button" onclick="cancelMultiple()">Cancel multiple<br/><span class="hint">notification.local.cancel([])</span></a>
             <a href="#" class="button" onclick="cancelAll()">Cancel all<br/><span class="hint">notification.local.cancelAll()</span></a>
             <a href="#" class="button" onclick="getScheduledIds()">Scheduled IDs<br/><span class="hint">notification.local.getScheduledIds()</span></a>
             <a href="#" class="button" onclick="isScheduled()">Is scheduled?<br/><span class="hint">notification.local.isScheduled()</span></a>
@@ -107,7 +109,7 @@
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript">
-            var counter = 0, id = 12;
+            var counter = 1, id = 12;
 
             var callback = function () {
                 alert('finished or canceled');
@@ -129,8 +131,24 @@
                 plugin.notification.local.add({
                     id:      id,
                     message: 'Test Message ' + (++counter),
-                    json:    { test: 123 }
+                    json:    { test: id }
                 });
+            };
+
+            scheduleMultiple = function () {
+                plugin.notification.local.add([{
+                    id:      id,
+                    message: 'Test Message ' + (++counter),
+                    json:    { test: id }
+                },{
+                    id:      id+1,
+                    message: 'Test Message ' + (++counter),
+                    json:    { test: id+1 }
+                },{
+                    id:      id+2,
+                    message: 'Test Message ' + (++counter),
+                    json:    { test: id+2 }
+                }]);
             };
 
             scheduleDelayed = function () {
@@ -158,6 +176,11 @@
             cancel = function () {
                 counter = 0;
                 plugin.notification.local.cancel(id,callback);
+            };
+
+            cancelMultiple = function () {
+                counter = 0;
+                plugin.notification.local.cancel([id, id+1],callback);
             };
 
             cancelAll = function () {
@@ -198,7 +221,7 @@
 
         <!-- callbacks -->
         <script type="text/javascript">
-            document.addEventListener('deviceready', function () {
+            document.addEventListener('sdeviceready', function () {
                 plugin.notification.local.onadd = function (id, state, json) {
                     alert('on add\n' + Array.apply(null, arguments).join("\n"));
                 };

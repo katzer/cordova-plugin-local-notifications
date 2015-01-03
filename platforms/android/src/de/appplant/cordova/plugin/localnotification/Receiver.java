@@ -79,10 +79,17 @@ public class Receiver extends BroadcastReceiver {
         } else {
             LocalNotification.add(options.moveDate(), false);
         }
+        if (!LocalNotification.isInBackground && options.getForegroundMode()){
+        	if (options.getInterval() == 0) {
+        		LocalNotification.unpersist(options.getId());
+        	}
+        	LocalNotification.showNotification(options.getTitle(), options.getMessage());
+        	fireTriggerEvent();
+        } else {
+        	Builder notification = buildNotification();
 
-        Builder notification = buildNotification();
-
-        showNotification(notification);
+        	showNotification(notification);
+        }
     }
 
     /*
@@ -116,7 +123,13 @@ public class Receiver extends BroadcastReceiver {
     @SuppressLint("NewApi")
     private Builder buildNotification () {
         Uri sound = options.getSound();
-
+        
+        //DeleteIntent is called when the user clears a notification manually
+        Intent deleteIntent = new Intent(context, DeleteIntentReceiver.class)
+        	.setAction("" + options.getId())
+        	.putExtra(Receiver.OPTIONS, options.getJSONObject().toString());
+        PendingIntent dpi = PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        
         Builder notification = new NotificationCompat.Builder(context)
             .setDefaults(0) // Do not inherit any defaults
             .setContentTitle(options.getTitle())
@@ -127,7 +140,8 @@ public class Receiver extends BroadcastReceiver {
             .setLargeIcon(options.getIcon())
             .setAutoCancel(options.getAutoCancel())
             .setOngoing(options.getOngoing())
-            .setLights(options.getColor(), 500, 500);
+            .setLights(options.getColor(), 500, 500)
+            .setDeleteIntent(dpi);
 
         if (sound != null) {
             notification.setSound(sound);

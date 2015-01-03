@@ -37,7 +37,7 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 {
     NSNotificationCenter* center = [NSNotificationCenter
                                     defaultCenter];
-    
+
     // re-post (broadcast)
     [center postNotificationName:UIApplicationRegisterUserNotificationSettings
                           object:settings];

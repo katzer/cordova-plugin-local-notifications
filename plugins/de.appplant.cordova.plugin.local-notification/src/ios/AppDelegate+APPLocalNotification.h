@@ -23,6 +23,8 @@
 
 #import <Availability.h>
 
+extern NSString* const UIApplicationRegisterUserNotificationSettings;
+
 @interface AppDelegate (APPLocalNotification)
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000

@@ -62,47 +62,50 @@
 }
 
 /**
- * Schedule a new local notification.
+ * Schedule a set of notifications.
  *
  * @param properties
- *      A dict of properties
+ *      A dict of properties for each notification
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSDictionary* options = [[command arguments]
-                                 objectAtIndex:0];
+        for (NSDictionary* options in command.arguments) {
+            UILocalNotification* notification;
 
-        UILocalNotification* notification;
+            notification = [[UILocalNotification alloc]
+                            initWithOptions:options];
 
-        notification = [[UILocalNotification alloc]
-                        initWithOptions:options];
+            [self scheduleLocalNotification:notification];
+            [self fireEvent:@"add" localNotification:notification];
+        }
 
-        [self scheduleLocalNotification:notification];
-        [self fireEvent:@"add" localNotification:notification];
         [self execCallback:command];
     }];
 }
 
 /**
- * Cancels a given local notification.
+ * Cancel a set of notifications.
  *
- * @param id
- *      The ID of the local notification
+ * @param ids
+ *      The IDs of the notifications
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSString* id = [[command arguments]
-                        objectAtIndex:0];
+        for (NSString* id in command.arguments) {
+            UILocalNotification* notification;
 
-        UILocalNotification* notification;
+            notification = [[UIApplication sharedApplication]
+                            scheduledLocalNotificationWithId:id];
 
-        notification = [[UIApplication sharedApplication]
-                        scheduledLocalNotificationWithId:id];
+            if (!notification)
+                continue;
 
-        [self cancelLocalNotification:notification];
-        [self fireEvent:@"cancel" localNotification:notification];
+            [self cancelLocalNotification:notification];
+            [self fireEvent:@"cancel" localNotification:notification];
+        }
+
         [self execCallback:command];
     }];
 }
@@ -242,9 +245,9 @@
 - (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-    
+
     _command = command;
-    
+
     [self.commandDelegate runInBackground:^{
         [[UIApplication sharedApplication]
          registerPermissionToScheduleLocalNotifications];
@@ -282,10 +285,10 @@
 {
     if (!notification)
         return;
-    
+
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
-    
+
     [UIApplication sharedApplication]
     .applicationIconBadgeNumber -= 1;
 }
@@ -328,13 +331,9 @@
     [self cancelLocalNotification:forerunner];
 }
 
-
 /**
  * Cancels all local notification with are older then
  * a specific amount of seconds
- *
- * @param {float} seconds
- *      The time interval in seconds
  */
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
 {
@@ -419,9 +418,7 @@
 #pragma mark Life Cycle
 
 /**
- * Registers obervers for the following events after plugin was initialized.
- *      didReceiveLocalNotification:
- *      didFinishLaunchingWithOptions:
+ * Registers obervers after plugin was initialized.
  */
 - (void) pluginInitialize
 {
@@ -439,7 +436,7 @@
                selector:@selector(didFinishLaunchingWithOptions:)
                    name:UIApplicationDidFinishLaunchingNotification
                  object:nil];
-    
+
     [center addObserver:self
                selector:@selector(didRegisterUserNotificationSettings:)
                    name:UIApplicationRegisterUserNotificationSettings

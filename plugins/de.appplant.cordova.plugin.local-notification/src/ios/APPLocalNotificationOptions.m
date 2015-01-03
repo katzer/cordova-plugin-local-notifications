@@ -82,7 +82,7 @@
 - (BOOL) autoCancel
 {
     if (IsAtLeastiOSVersion(@"8.0")){
-        return YES;
+        return self.repeatInterval == NSCalendarUnitEra;
     } else {
         return [[dict objectForKey:@"autoCancel"] boolValue];
     }
@@ -101,7 +101,13 @@
  */
 - (NSInteger) badgeNumber
 {
-    return [[dict objectForKey:@"badge"] intValue];
+    NSInteger number = [[dict objectForKey:@"badge"] intValue];
+
+    if (number == -1) {
+        number = 1 + [UIApplication sharedApplication].applicationIconBadgeNumber;
+    }
+
+    return number;
 }
 
 #pragma mark -

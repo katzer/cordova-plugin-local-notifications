@@ -23,13 +23,9 @@
 
 #import <Availability.h>
 
-@implementation AppDelegate (APPLocalNotification)
+NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
 
-+ (void)load {
-    Methods original =    class_getInstanceMethod(self, @selector(applicationDidFinishLaunching:));
-    Method custom =    class_getInstanceMethod(self, @selector(customApplicationDidFinishLaunching:));
-    method_exchangeImplementations(original, custom);
-}
+@implementation AppDelegate (APPLocalNotification)
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 /**
@@ -39,7 +35,12 @@
 - (void)                    application:(UIApplication*)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
 {
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    NSNotificationCenter* center = [NSNotificationCenter
+                                    defaultCenter];
+
+    // re-post (broadcast)
+    [center postNotificationName:UIApplicationRegisterUserNotificationSettings
+                          object:settings];
 }
 #endif
 

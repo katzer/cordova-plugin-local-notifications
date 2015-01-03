@@ -35,6 +35,8 @@
 @property (readwrite, assign) BOOL deviceready;
 // Event queue
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
+// Needed when calling `registerPermission`
+@property (nonatomic, retain) CDVInvokedUrlCommand* command;
 
 @end
 
@@ -60,47 +62,50 @@
 }
 
 /**
- * Schedule a new local notification.
+ * Schedule a set of notifications.
  *
  * @param properties
- *      A dict of properties
+ *      A dict of properties for each notification
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSDictionary* options = [[command arguments]
-                                 objectAtIndex:0];
+        for (NSDictionary* options in command.arguments) {
+            UILocalNotification* notification;
 
-        UILocalNotification* notification;
+            notification = [[UILocalNotification alloc]
+                            initWithOptions:options];
 
-        notification = [[UILocalNotification alloc]
-                        initWithOptions:options];
+            [self scheduleLocalNotification:notification];
+            [self fireEvent:@"add" localNotification:notification];
+        }
 
-        [self scheduleLocalNotification:notification];
-        [self fireEvent:@"add" localNotification:notification];
         [self execCallback:command];
     }];
 }
 
 /**
- * Cancels a given local notification.
+ * Cancel a set of notifications.
  *
- * @param id
- *      The ID of the local notification
+ * @param ids
+ *      The IDs of the notifications
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSString* id = [[command arguments]
-                        objectAtIndex:0];
+        for (NSString* id in command.arguments) {
+            UILocalNotification* notification;
 
-        UILocalNotification* notification;
+            notification = [[UIApplication sharedApplication]
+                            scheduledLocalNotificationWithId:id];
 
-        notification = [[UIApplication sharedApplication]
-                        scheduledLocalNotificationWithId:id];
+            if (!notification)
+                continue;
 
-        [self cancelLocalNotification:notification];
-        [self fireEvent:@"cancel" localNotification:notification];
+            [self cancelLocalNotification:notification];
+            [self fireEvent:@"cancel" localNotification:notification];
+        }
+
         [self execCallback:command];
     }];
 }
@@ -217,7 +222,7 @@
  * Inform if the app has the permission to show
  * badges and local notifications.
  */
-- (void) hasPermission:(CDVInvokedUrlCommand *)command
+- (void) hasPermission:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
@@ -237,12 +242,19 @@
 /**
  * Ask for permission to show badges.
  */
-- (void) registerPermission:(CDVInvokedUrlCommand *)command
+- (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+
+    _command = command;
+
     [self.commandDelegate runInBackground:^{
         [[UIApplication sharedApplication]
          registerPermissionToScheduleLocalNotifications];
     }];
+#else
+    [self hasPermission:command];
+#endif
 }
 
 #pragma mark -
@@ -276,6 +288,9 @@
 
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
+
+    [UIApplication sharedApplication]
+    .applicationIconBadgeNumber -= 1;
 }
 
 /**
@@ -316,13 +331,9 @@
     [self cancelLocalNotification:forerunner];
 }
 
-
 /**
  * Cancels all local notification with are older then
  * a specific amount of seconds
- *
- * @param {float} seconds
- *      The time interval in seconds
  */
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
 {
@@ -351,7 +362,6 @@
  */
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
-    UIApplication* app = [UIApplication sharedApplication];
     UILocalNotification* notification = [localNotification object];
 
     BOOL autoCancel = notification.options.autoCancel;
@@ -359,7 +369,10 @@
 
     NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
 
-    app.applicationIconBadgeNumber -= 1;
+    if ([event isEqualToString:@"click"]) {
+        [UIApplication sharedApplication]
+        .applicationIconBadgeNumber -= 1;
+    }
 
     [self fireEvent:event localNotification:notification];
 
@@ -389,32 +402,45 @@
     }
 }
 
+/**
+ * Called on otification settings registration is completed.
+ */
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
+{
+    if (_command)
+    {
+        [self hasPermission:_command];
+        _command = NULL;
+    }
+}
+
 #pragma mark -
 #pragma mark Life Cycle
 
 /**
- * Registers obervers for the following events after plugin was initialized.
- *      didReceiveLocalNotification:
- *      didFinishLaunchingWithOptions:
+ * Registers obervers after plugin was initialized.
  */
 - (void) pluginInitialize
 {
-    NSNotificationCenter* notificationCenter;
-
-    notificationCenter = [NSNotificationCenter
-                          defaultCenter];
+    NSNotificationCenter* center = [NSNotificationCenter
+                                    defaultCenter];
 
     eventQueue = [[NSMutableArray alloc] init];
 
-    [notificationCenter addObserver:self
-                           selector:@selector(didReceiveLocalNotification:)
-                               name:CDVLocalNotification
-                             object:nil];
+    [center addObserver:self
+               selector:@selector(didReceiveLocalNotification:)
+                   name:CDVLocalNotification
+                 object:nil];
 
-    [notificationCenter addObserver:self
-                           selector:@selector(didFinishLaunchingWithOptions:)
-                               name:UIApplicationDidFinishLaunchingNotification
-                             object:nil];
+    [center addObserver:self
+               selector:@selector(didFinishLaunchingWithOptions:)
+                   name:UIApplicationDidFinishLaunchingNotification
+                 object:nil];
+
+    [center addObserver:self
+               selector:@selector(didRegisterUserNotificationSettings:)
+                   name:UIApplicationRegisterUserNotificationSettings
+                 object:nil];
 }
 
 /**

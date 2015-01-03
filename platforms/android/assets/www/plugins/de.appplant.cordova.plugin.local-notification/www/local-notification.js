@@ -64,7 +64,7 @@ exports._defaults = {
     message:    '',
     title:      '',
     autoCancel: false,
-    badge:      0,
+    badge:      -1,
     id:         '0',
     json:       '',
     repeat:     ''
@@ -104,63 +104,95 @@ exports.setDefaults = function (newDefaults) {
  *      A function to be called after the notification has been canceled
  * @param {Object} scope
  *      The scope for the callback function
- *
- * @return {Number}
- *      The notification's ID
  */
 exports.add = function (props, callback, scope) {
-    var options = this.mergeWithDefaults(props),
-        fn      = this.createCallbackFn(callback, scope);
+    this.registerPermission(function(granted) {
 
-    if (options.id) {
-        options.id = options.id.toString();
-    }
+        if (!granted)
+            return;
 
-    if (options.date === undefined) {
-        options.date = new Date();
-    }
+        var notifications = Array.isArray(props) ? props : [props];
 
-    if (options.title) {
-        options.title = options.title.toString();
-    }
+        for (var i = 0; i < notifications.length; i++) {
+            var properties = notifications[i];
 
-    if (options.message) {
-        options.message = options.message.toString();
-    }
+            this.mergeWithDefaults(properties);
+            this.convertProperties(properties);
+        }
 
-    if (typeof options.date == 'object') {
-        options.date = Math.round(options.date.getTime()/1000);
-    }
+        if (device.platform != 'iOS') {
+            notifications = notifications[0];
+        }
 
-    if (typeof options.json == 'object') {
-        options.json = JSON.stringify(options.json);
-    }
-
-    if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
-        fn = function (cmd) {
-            eval(cmd);
-        };
-    }
-
-    exec(fn, null, 'LocalNotification', 'add', [options]);
-
-    return options.id;
+        this.exec('add', notifications, callback, scope);
+    }, this);
 };
 
 /**
- * Cancels the specified notification.
+ * Update existing notification specified by ID in options.
+ *
+ * @param {Object} options
+ *      The notification properties to update
+ * @param {Function} callback
+ *      A function to be called after the notification has been updated
+ * @param {Object} scope
+ *      The scope for the callback function
+ */
+exports.update = function (options, callback, scope) {
+    this.exec('update', options, callback, scope);
+};
+
+/**
+ * Clears the specified notification.
  *
  * @param {String} id
  *      The ID of the notification
  * @param {Function} callback
- *      A function to be called after the notification has been canceled
+ *      A function to be called after the notification has been cleared
  * @param {Object} scope
  *      The scope for the callback function
  */
-exports.cancel = function (id, callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
+exports.clear = function (id, callback, scope) {
+    var notId = (id || '0').toString();
 
-    exec(fn, null, 'LocalNotification', 'cancel', [(id || '0').toString()]);
+    this.exec('clear', notId, callback, scope);
+};
+
+/**
+ * Clears all previously sheduled notifications.
+ *
+ * @param {Function} callback
+ *      A function to be called after all notifications have been cleared
+ * @param {Object} scope
+ *      The scope for the callback function
+ */
+exports.clearAll = function (callback, scope) {
+    this.exec('clearAll', null, callback, scope);
+};
+
+/**
+ * Cancels the specified notifications.
+ *
+ * @param {String[]} ids
+ *      The IDs of the notifications
+ * @param {Function} callback
+ *      A function to be called after the notifications has been canceled
+ * @param {Object} scope
+ *      The scope for the callback function
+ */
+exports.cancel = function (ids, callback, scope) {
+
+    ids = Array.isArray(ids) ? ids : [ids];
+
+    for (var i = 0; i < ids.length; i++) {
+        ids[i] = ids[i].toString();
+    }
+
+    if (device.platform != 'iOS') {
+        ids = ids[0];
+    }
+
+    this.exec('cancel', ids, callback, scope);
 };
 
 /**
@@ -172,9 +204,7 @@ exports.cancel = function (id, callback, scope) {
  *      The scope for the callback function
  */
 exports.cancelAll = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    exec(fn, null, 'LocalNotification', 'cancelAll', []);
+    this.exec('cancelAll', null, callback, scope);
 };
 
 /**
@@ -186,9 +216,7 @@ exports.cancelAll = function (callback, scope) {
  *      The scope for the callback function
  */
 exports.getScheduledIds = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    exec(fn, null, 'LocalNotification', 'getScheduledIds', []);
+    this.exec('getScheduledIds', null, callback, scope);
 };
 
 /**
@@ -202,9 +230,9 @@ exports.getScheduledIds = function (callback, scope) {
  *      The scope for the callback function
  */
 exports.isScheduled = function (id, callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
+    var notId = (id || '0').toString();
 
-    exec(fn, null, 'LocalNotification', 'isScheduled', [id.toString()]);
+    this.exec('isScheduled', notId, callback, scope);
 };
 
 /**
@@ -216,9 +244,7 @@ exports.isScheduled = function (id, callback, scope) {
  *      The scope for the callback function
  */
 exports.getTriggeredIds = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    exec(fn, null, 'LocalNotification', 'getTriggeredIds', []);
+    this.exec('getTriggeredIds', null, callback, scope);
 };
 
 /**
@@ -232,9 +258,9 @@ exports.getTriggeredIds = function (callback, scope) {
  *      The scope for the callback function
  */
 exports.isTriggered = function (id, callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
+    var notId = (id || '0').toString();
 
-    exec(fn, null, 'LocalNotification', 'isTriggered', [id.toString()]);
+    this.exec('isTriggered', notId, callback, scope);
 };
 
 /**
@@ -267,15 +293,124 @@ exports.hasPermission = function (callback, scope) {
 exports.registerPermission = function (callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
 
-    if (device.platform != 'iOS')
+    if (device.platform != 'iOS') {
+        fn(true);
         return;
+    }
 
     exec(fn, null, 'LocalNotification', 'registerPermission', []);
 };
 
+/**
+ * @deprecated
+ *
+ * Register permission to show notifications if not already granted.
+ *
+ * @param {Function} callback
+ *      The function to be exec as the callback
+ * @param {Object?} scope
+ *      The callback function's scope
+ */
 exports.promptForPermission = function (callback, scope) {
     console.warn('Depreated: Please use `notification.local.registerPermission` instead.');
+
     exports.registerPermission.apply(this, arguments);
+};
+
+/**
+ * Add new entries to the registry (more than one)
+ *
+ * @param {Object} options
+ *      The notification properties
+ * @param {Function} callback
+ *      A function to be called after the notification has been added
+ * @param {Object} scope
+ *      The scope for the callback function
+ *
+ * @return {Number}
+ *      The notification's ID
+ */
+exports.addMultiple = function (notifications, callback, scope) {
+    var length = notifications.length;
+    var notificationsMerged = new Array(),
+        callbackFn = this.createCallbackFn(callback, scope);
+    for (var i=0;i<length;i++){
+        var options    = this.mergeWithDefaults(notifications[i]);
+        if (options.id) {
+            options.id = options.id.toString();
+        }
+
+        if (options.date === undefined) {
+            options.date = new Date();
+        }
+
+        if (options.title) {
+            options.title = options.title.toString();
+        }
+
+        if (options.message) {
+            options.message = options.message.toString();
+        }
+
+        if (typeof options.date == 'object') {
+            options.date = Math.round(options.date.getTime()/1000);
+        }
+
+        if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
+            callbackFn = function (cmd) {
+                eval(cmd);
+            };
+        }
+        notificationsMerged.push(options);
+    }
+
+    cordova.exec(callbackFn, null, 'LocalNotification', 'addMultiple', notificationsMerged);
+
+    return options.id;
+};
+
+/**
+ * Clear the specified notifications (more than one).
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {Function} callback
+ *      A function to be called after the notifications has been cleared.
+ * @param {Object} scope
+ *      The scope for the callback function
+ */
+exports.clearMultiple = function (ids, callback, scope) {
+    var length = ids.length;
+    var idArray = new Array(),
+        callbackFn = this.createCallbackFn(callback, scope);
+    for (var i=0;i<length;i++){
+        var id         = ids[i].toString();
+        idArray.push(id);
+    }
+    var callbackFn = this.createCallbackFn(callback, scope);
+    cordova.exec(callbackFn, null, 'LocalNotification', 'clearMultiple', [ids]);
+};
+
+/**
+ * Cancel the specified notifications (more than one).
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {Function} callback
+ *      A function to be called after the notifications has been canceled
+ * @param {Object} scope
+ *      The scope for the callback function
+ */
+exports.cancelMultiple = function (ids, callback, scope) {
+    var length = ids.length;
+    var idArray = new Array(),
+        callbackFn = this.createCallbackFn(callback, scope);
+    for (var i=0;i<length;i++){
+        var id         = ids[i].toString();
+        idArray.push(id);
+    }
+    var callbackFn = this.createCallbackFn(callback, scope);
+    cordova.exec(callbackFn, null, 'LocalNotification', 'cancelMultiple', [ids]);
 };
 
 /**
@@ -287,8 +422,10 @@ exports.promptForPermission = function (callback, scope) {
  *      Either "foreground" or "background"
  * @param {String} json
  *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
  */
-exports.onadd = function (id, state, json) {};
+exports.onadd = function (id, state, json, data) {};
 
 /**
  * Occurs when the notification is triggered.
@@ -299,8 +436,10 @@ exports.onadd = function (id, state, json) {};
  *      Either "foreground" or "background"
  * @param {String} json
  *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
  */
-exports.ontrigger = function (id, state, json) {};
+exports.ontrigger = function (id, state, json, data) {};
 
 /**
  * Fires after the notification was clicked.
@@ -311,8 +450,10 @@ exports.ontrigger = function (id, state, json) {};
  *      Either "foreground" or "background"
  * @param {String} json
  *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
  */
-exports.onclick = function (id, state, json) {};
+exports.onclick = function (id, state, json, data) {};
 
 /**
  * Fires if the notification was canceled.
@@ -323,8 +464,24 @@ exports.onclick = function (id, state, json) {};
  *      Either "foreground" or "background"
  * @param {String} json
  *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
  */
-exports.oncancel = function (id, state, json) {};
+exports.oncancel = function (id, state, json, data) {};
+
+/**
+ * Get fired when the notification was cleared.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {String} state
+ *      Either "foreground" or "background"
+ * @param {String} json
+ *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
+ */
+exports.onclear = function (id, state, json, data) {};
 
 
 /**
@@ -345,6 +502,49 @@ exports.mergeWithDefaults = function (options) {
         if (options[key] === undefined) {
             options[key] = defaults[key];
         }
+    }
+
+    return options;
+};
+
+/**
+ * @private
+ *
+ * Convert the passed values to their required type.
+ *
+ * @param {Object} options
+ *      Set of custom values
+ *
+ * @retrun {Object}
+ *      The converted property list
+ */
+exports.convertProperties = function (options) {
+    if (options.id) {
+        options.id = options.id.toString();
+    }
+
+    if (options.date === undefined) {
+        options.date = new Date();
+    }
+
+    if (options.title) {
+        options.title = options.title.toString();
+    }
+
+    if (options.message) {
+        options.message = options.message.toString();
+    }
+
+    if (options.text) {
+        options.message = options.text.toString();
+    }
+
+    if (typeof options.date == 'object') {
+        options.date = Math.round(options.date.getTime()/1000);
+    }
+
+    if (typeof options.json == 'object') {
+        options.json = JSON.stringify(options.json);
     }
 
     return options;
@@ -399,6 +599,33 @@ exports.createCallbackFn = function (callbackFn, scope) {
     return function () {
         callbackFn.apply(scope || this, arguments);
     };
+};
+
+/**
+ * @private
+ *
+ * Executes the native counterpart.
+ *
+ * @param {String} action
+ *      The name of the action
+ * @param args[]
+ *      Array of arguments
+ * @param {Function} callback
+ *      The callback function
+ * @param {Object} scope
+ *      The scope for the function
+ */
+exports.exec = function (action, args, callback, scope) {
+    var fn = this.createCallbackFn(callback, scope),
+        params = [];
+
+    if (Array.isArray(args)) {
+        params = args;
+    } else if (args) {
+        params.push(args);
+    }
+
+    exec(fn, null, 'LocalNotification', action, params);
 };
 
 });
