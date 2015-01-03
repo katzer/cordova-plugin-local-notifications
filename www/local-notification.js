@@ -104,29 +104,28 @@ exports.setDefaults = function (newDefaults) {
  *      A function to be called after the notification has been canceled
  * @param {Object} scope
  *      The scope for the callback function
- *
- * @return {Number}
- *      The notification's ID
  */
 exports.add = function (props, callback, scope) {
-    var options = this.mergeWithDefaults(props),
-        fn      = this.createCallbackFn(callback, scope);
-
-    this.convertOptions(options);
-
-    if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
-        fn = function (cmd) {
-            eval(cmd);
-        };
-    }
-
     this.registerPermission(function(granted) {
-        if (granted) {
-            this.exec('add', options, callback, scope);
-        }
-    }, this);
 
-    return options.id;
+        if (!granted)
+            return;
+
+        var notifications = Array.isArray(props) ? props : [props];
+
+        for (var i = 0; i < notifications.length; i++) {
+            var properties = notifications[i];
+
+            this.mergeWithDefaults(properties);
+            this.convertProperties(properties);
+        }
+
+        if (device.platform != 'iOS') {
+            notifications = notifications[0];
+        }
+
+        this.exec('add', notifications, callback, scope);
+    }, this);
 };
 
 /**
@@ -519,7 +518,7 @@ exports.mergeWithDefaults = function (options) {
  * @retrun {Object}
  *      The converted property list
  */
-exports.convertOptions = function (options) {
+exports.convertProperties = function (options) {
     if (options.id) {
         options.id = options.id.toString();
     }
@@ -618,7 +617,13 @@ exports.createCallbackFn = function (callbackFn, scope) {
  */
 exports.exec = function (action, args, callback, scope) {
     var fn = this.createCallbackFn(callback, scope),
-        params = args ? [args] : [];
+        params = [];
+
+    if (Array.isArray(args)) {
+        params = args;
+    } else if (args) {
+        params.push(args);
+    }
 
     exec(fn, null, 'LocalNotification', action, params);
 };

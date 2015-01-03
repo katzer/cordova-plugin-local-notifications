@@ -9,7 +9,7 @@
 - [enhancement:] Scope parameter for `isScheduled` and `getScheduledIds`
 - [enhancement:] Callbacks for `add`, `cancel` & `cancelAll`
 - [enhancement:] `image:` accepts remote URLs and local URIs (Android)
-- [enhancement:] Schedule multiple notifications at once (Android)
+- [enhancement:] Schedule multiple notifications at once
 - [enhancement:] Cancel multiple notifications at once
 - [enhancement:] Clear multiple notifications at once (Android)
 - [enhancement:] `clear` & `clearAll` methods (Android)

@@ -62,41 +62,38 @@
 }
 
 /**
- * Schedule a new local notification.
+ * Schedule a set of notifications.
  *
  * @param properties
- *      A dict of properties
+ *      A dict of properties for each notification
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSDictionary* options = [[command arguments]
-                                 objectAtIndex:0];
+        for (NSDictionary* options in command.arguments) {
+            UILocalNotification* notification;
 
-        UILocalNotification* notification;
+            notification = [[UILocalNotification alloc]
+                            initWithOptions:options];
 
-        notification = [[UILocalNotification alloc]
-                        initWithOptions:options];
+            [self scheduleLocalNotification:notification];
+            [self fireEvent:@"add" localNotification:notification];
+        }
 
-        [self scheduleLocalNotification:notification];
-        [self fireEvent:@"add" localNotification:notification];
         [self execCallback:command];
     }];
 }
 
 /**
- * Cancels a given local notification.
+ * Cancel a set of notifications.
  *
- * @param id
- *      The ID of the local notification
+ * @param ids
+ *      The IDs of the notifications
  */
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        NSArray* ids = [[command arguments]
-                        objectAtIndex:0];
-
-        for (NSString* id in ids) {
+        for (NSString* id in command.arguments) {
             UILocalNotification* notification;
 
             notification = [[UIApplication sharedApplication]
