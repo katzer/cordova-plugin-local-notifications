@@ -1,4 +1,6 @@
 ## ChangeLog
+#### Version 0.7.7 (03.01.2015)
+- [bugfix:] NSInvalidArgumentException caused on iOS.
 
 #### Version 0.7.6 (03.10.2014)
 - [bugfix:] `hasPermission` and `promptForPermission` let the app crash on iOS7 and older.
