@@ -33,5 +33,7 @@
 - (BOOL) wasInThePast;
 // If the notification was already triggered
 - (BOOL) wasTriggered;
+// If it's a repeating notification
+- (BOOL) isRepeating;
 
 @end

@@ -61,6 +61,9 @@ static char optionsKey;
     self.soundName = options.soundName;
 }
 
+#pragma mark -
+#pragma mark Methods
+
 /**
  * The options provided by the plug-in.
  */
@@ -128,7 +131,7 @@ static char optionsKey;
 
     int timespan     = [now timeIntervalSinceDate:fireDate];
 
-    if (self.repeatInterval != NSCalendarUnitEra) {
+    if ([self isRepeating]) {
         timespan = timespan % [self repeatIntervalInSeconds];
     }
 
@@ -154,6 +157,14 @@ static char optionsKey;
     bool isLaterThanOrEqualTo = !([now compare:fireDate] == NSOrderedAscending);
 
     return isLaterThanOrEqualTo;
+}
+
+/**
+ * If it's a repeating notification.
+ */
+- (BOOL) isRepeating
+{
+    return [self.options isRepeating];
 }
 
 @end

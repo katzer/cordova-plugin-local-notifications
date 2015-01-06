@@ -82,7 +82,7 @@
 - (BOOL) autoCancel
 {
     if (IsAtLeastiOSVersion(@"8.0")){
-        return self.repeatInterval == NSCalendarUnitEra;
+        return ![self isRepeating];
     } else {
         return [[dict objectForKey:@"autoCancel"] boolValue];
     }
@@ -201,6 +201,9 @@
     return NSCalendarUnitEra;
 }
 
+#pragma mark -
+#pragma mark Methods
+
 /**
  * The notification's user info dict.
  */
@@ -229,6 +232,16 @@
 
     return [json stringByReplacingOccurrencesOfString:@"\n"
                                            withString:@""];
+}
+
+/**
+ * If it's a repeating notification.
+ */
+- (BOOL) isRepeating
+{
+    NSCalendarUnit interval = self.repeatInterval;
+    
+    return !(interval == NSCalendarUnitEra || interval == 0);
 }
 
 #pragma mark -
