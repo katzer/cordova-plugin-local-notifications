@@ -69,15 +69,21 @@
  */
 - (void) add:(CDVInvokedUrlCommand*)command
 {
+    NSArray* notifications = command.arguments;
+
     [self.commandDelegate runInBackground:^{
-        for (NSDictionary* options in command.arguments) {
+        for (NSMutableDictionary* options in notifications) {
             UILocalNotification* notification;
 
             notification = [[UILocalNotification alloc]
                             initWithOptions:options];
 
-            [self scheduleLocalNotification:notification];
+            [self scheduleLocalNotification:[notification copy]];
             [self fireEvent:@"add" localNotification:notification];
+
+            if (notifications.count > 1) {
+                [NSThread sleepForTimeInterval:0.01];
+            }
         }
 
         [self execCallback:command];
@@ -266,13 +272,6 @@
 - (void) scheduleLocalNotification:(UILocalNotification*)notification
 {
     [self cancelForerunnerLocalNotification:notification];
-
-    NSString* state = self.applicationState;
-
-    if ([state isEqualToString:@"background"]) {
-        [[UIApplication sharedApplication]
-         presentLocalNotificationNow:notification];
-    }
 
     [[UIApplication sharedApplication]
      scheduleLocalNotification:notification];
