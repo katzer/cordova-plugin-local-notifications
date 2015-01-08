@@ -97,15 +97,15 @@
  */
 - (NSArray*) triggeredLocalNotificationIds
 {
-    NSArray* triggeredNotifications = self.triggeredLocalNotifications;
-    NSMutableArray* triggeredNotificationIds = [[NSMutableArray alloc] init];
+    NSArray* notifications = self.triggeredLocalNotifications;
+    NSMutableArray* ids = [[NSMutableArray alloc] init];
 
-    for (UILocalNotification* notification in triggeredNotifications)
+    for (UILocalNotification* notification in notifications)
     {
-        [triggeredNotificationIds addObject:notification.options.id];
+        [ids addObject:notification.options.id];
     }
 
-    return triggeredNotificationIds;
+    return ids;
 }
 
 /**
@@ -113,22 +113,24 @@
  */
 - (NSArray*) scheduledLocalNotificationIds
 {
-    NSArray* scheduledNotifications = self.scheduledLocalNotifications;
-    NSMutableArray* scheduledNotificationIds = [[NSMutableArray alloc] init];
+    NSArray* notifications = self.scheduledLocalNotifications;
+    NSMutableArray* ids = [[NSMutableArray alloc] init];
 
-    for (UILocalNotification* notification in scheduledNotifications)
+    for (UILocalNotification* notification in notifications)
     {
-        if (notification)
-        {
-            [scheduledNotificationIds addObject:notification.options.id];
+        if (notification) {
+            [ids addObject:notification.options.id];
         }
     }
 
-    return scheduledNotificationIds;
+    return ids;
 }
 
 /**
  * Get the scheduled local notification by ID.
+ *
+ * @param id
+ *      Notification ID
  */
 - (UILocalNotification*) scheduledLocalNotificationWithId:(NSString*)id
 {
@@ -136,8 +138,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        if (notification && [notification.options.id isEqualToString:id])
-        {
+        if (notification && [notification.options.id isEqualToString:id]) {
             return notification;
         }
     }
@@ -147,6 +148,9 @@
 
 /**
  * Get the triggered local notification by ID.
+ *
+ * @param id
+ *      Notification ID
  */
 - (UILocalNotification*) triggeredLocalNotificationWithId:(NSString*)id
 {
@@ -157,6 +161,86 @@
     }
 
     return NULL;
+}
+
+/**
+ * List of properties from all scheduled notifications.
+ */
+- (NSArray*) scheduledLocalNotificationOptions
+{
+    NSArray* notifications = self.scheduledLocalNotifications;
+    NSMutableArray* options = [[NSMutableArray alloc] init];
+
+    for (UILocalNotification* notification in notifications)
+    {
+        if (notification) {
+            [options addObject:notification.userInfo];
+        }
+    }
+
+    return options;
+}
+
+/**
+ * List of properties from given scheduled notifications.
+ *
+ * @param ids
+ *      Notification IDs
+ */
+- (NSArray*) scheduledLocalNotificationOptions:(NSArray*)ids
+{
+    UILocalNotification* notification;
+    NSMutableArray* options = [[NSMutableArray alloc] init];
+
+    for (NSString* id in ids)
+    {
+        notification = [self scheduledLocalNotificationWithId:id];
+
+        if (notification) {
+            [options addObject:notification.userInfo];
+        }
+    }
+
+    return options;
+}
+
+/**
+ * List of properties from all triggered notifications.
+ */
+- (NSArray*) triggeredLocalNotificationOptions
+{
+    NSArray* notifications = self.triggeredLocalNotifications;
+    NSMutableArray* options = [[NSMutableArray alloc] init];
+
+    for (UILocalNotification* notification in notifications)
+    {
+        [options addObject:notification.userInfo];
+    }
+
+    return options;
+}
+
+/**
+ * List of properties from given triggered notifications.
+ *
+ * @param ids
+ *      Notification IDs
+ */
+- (NSArray*) triggeredLocalNotificationOptions:(NSArray*)ids
+{
+    UILocalNotification* notification;
+    NSMutableArray* options = [[NSMutableArray alloc] init];
+
+    for (NSString* id in ids)
+    {
+        notification = [self triggeredLocalNotificationWithId:id];
+
+        if (notification) {
+            [options addObject:notification.userInfo];
+        }
+    }
+
+    return options;
 }
 
 @end

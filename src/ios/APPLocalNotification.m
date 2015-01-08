@@ -117,7 +117,7 @@
 }
 
 /**
- * Cancels all currently scheduled notifications.
+ * Cancel all currently scheduled notifications.
  */
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
@@ -157,27 +157,7 @@
 }
 
 /**
- * List of ids from all currently pending notifications.
- */
-- (void) getScheduledIds:(CDVInvokedUrlCommand*)command
-{
-    [self.commandDelegate runInBackground:^{
-        CDVPluginResult* result;
-        NSArray* scheduledIds;
-
-        scheduledIds = [[UIApplication sharedApplication]
-                        scheduledLocalNotificationIds];
-
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                    messageAsArray:scheduledIds];
-
-        [self.commandDelegate sendPluginResult:result
-                                    callbackId:command.callbackId];
-    }];
-}
-
-/**
- * Checks wether a notification with an ID was triggered.
+ * Check if a notification with an ID was triggered.
  *
  * @param id
  *      The ID of the notification
@@ -205,7 +185,27 @@
 }
 
 /**
- * Retrieves a list of ids from all currently triggered notifications.
+ * List all ids from all pending notifications.
+ */
+- (void) getScheduledIds:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult* result;
+        NSArray* scheduledIds;
+
+        scheduledIds = [[UIApplication sharedApplication]
+                        scheduledLocalNotificationIds];
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:scheduledIds];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * List all ids from all triggered notifications.
  */
 - (void) getTriggeredIds:(CDVInvokedUrlCommand*)command
 {
@@ -218,6 +218,64 @@
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:triggeredIds];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * List all properties for given scheduled notifications.
+ *
+ * @param ids
+ *      The IDs of the notifications
+ */
+- (void) getScheduled:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+        NSArray* notifications;
+        CDVPluginResult* result;
+
+        if (ids.count == 0) {
+            notifications = [[UIApplication sharedApplication]
+                             scheduledLocalNotificationOptions];
+        } else {
+            notifications = [[UIApplication sharedApplication]
+                             scheduledLocalNotificationOptions:ids];
+        }
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:notifications];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * List all properties for given triggered notifications.
+ *
+ * @param ids
+ *      The IDs of the notifications
+ */
+- (void) getTriggered:(CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+        NSArray* notifications;
+        CDVPluginResult* result;
+
+        if (ids.count == 0) {
+            notifications = [[UIApplication sharedApplication]
+                             triggeredLocalNotificationOptions];
+        } else {
+            notifications = [[UIApplication sharedApplication]
+                             triggeredLocalNotificationOptions:ids];
+        }
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:notifications];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];

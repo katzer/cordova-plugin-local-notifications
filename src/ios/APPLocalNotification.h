@@ -36,10 +36,14 @@
 - (void) isScheduled:(CDVInvokedUrlCommand*)command;
 // Check if a notification with an ID was triggered
 - (void) isTriggered:(CDVInvokedUrlCommand*)command;
-// Retrieve a list of ids from all pending notifications
+// List all ids from all pending notifications
 - (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
-// Retrieve a list of ids from all triggered notifications
+// List all ids from all triggered notifications
 - (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
+// List all properties for given scheduled notifications
+- (void) getScheduled:(CDVInvokedUrlCommand*)command;
+// List all properties for given triggered notifications
+- (void) getTriggered:(CDVInvokedUrlCommand*)command;
 // Inform if the app has the permission to show notifications
 - (void) hasPermission:(CDVInvokedUrlCommand*)command;
 // Register permission to show notifications
