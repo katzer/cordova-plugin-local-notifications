@@ -23,11 +23,14 @@ package de.appplant.cordova.plugin.localnotification;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import de.appplant.cordova.plugin.notification.*;
 
 public class ReceiverActivity extends Activity {
 
@@ -65,10 +68,11 @@ public class ReceiverActivity extends Activity {
      * Fires the onclick event.
      */
     private void fireClickEvent (Options options) {
-        LocalNotification.fireEvent("click", options.getId(), options.getJSON());
+    	JSONArray data = new JSONArray().put(options.getJSONObject());
+        LocalNotification.fireEvent("click", options.getId(), options.getJSON(),data);
 
         if (options.getAutoCancel()) {
-            LocalNotification.fireEvent("cancel", options.getId(), options.getJSON());
+            LocalNotification.fireEvent("cancel", options.getId(), options.getJSON(),data);
         }
     }
 }

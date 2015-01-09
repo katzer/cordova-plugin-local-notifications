@@ -19,51 +19,40 @@
     under the License.
 */
 
-package de.appplant.cordova.plugin.localnotification;
+package de.appplant.cordova.plugin.notification;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.os.StrictMode.ThreadPolicy;
-import android.util.Log;
 
 /**
  * Class that helps to store the options that can be specified per alarm.
  */
 public class Options {
-	static protected final String STORAGE_FOLDER = "/localnotification";
     private JSONObject options = new JSONObject();
     private String packageName = null;
     private long interval      = 0;
+    private Context context;
 
-    Options (Activity activity) {
-        packageName = activity.getPackageName();
+
+
+    public Options(Context context){
+    	this.context= context;
+    	this.packageName = context.getPackageName();
     }
-
-    Options (Context context) {
-        packageName = context.getPackageName();
-    }
-
+    
+    
     /**
      * Parses the given properties
      */
@@ -156,18 +145,13 @@ public class Options {
      * Returns the path of the notification's sound file
      */
     public Uri getSound () {
-        String sound = options.optString("sound", null);
-
-        if (sound != null) {
-            try {
-                int soundId = (Integer) RingtoneManager.class.getDeclaredField(sound).get(Integer.class);
-
-                return RingtoneManager.getDefaultUri(soundId);
-            } catch (Exception e) {
-            	return getURIfromPath(sound);
-            }
+        Uri soundUri = null;
+        try{
+        	soundUri = Uri.parse(options.optString("soundUri"));
+        	return soundUri;
+        } catch (Exception e){
+        	e.printStackTrace();
         }
-
         return null;
     }
 
@@ -177,11 +161,15 @@ public class Options {
     public Bitmap getIcon () {
         String icon = options.optString("icon", "icon");
         Bitmap bmp = null;
-
-        if (icon.startsWith("http")) {
-            bmp = getIconFromURL(icon);
-        } else if (icon.startsWith("file://") || (icon.startsWith("res"))) {
-            bmp = getIconFromURI(icon);
+        Uri iconUri = null;
+        try{
+        	iconUri = Uri.parse(options.optString("iconUri"));
+        } catch (Exception e){
+        	e.printStackTrace();
+        }
+        
+        if (iconUri != null) {
+            bmp = getIconFromUri(iconUri);
         }
 
         if (bmp == null) {
@@ -265,6 +253,14 @@ public class Options {
 
         return aRGB;
     }
+   
+	/**
+	 * Shows the behavior of notifications when the application is in foreground 
+	 * 
+	 */
+	public boolean getForegroundMode(){
+		return options.optBoolean("foregroundMode",false);	
+	}
 
     /**
      * Returns numerical icon Value
@@ -293,7 +289,7 @@ public class Options {
      *      The corresponding bitmap
      */
     private Bitmap getIconFromRes (String icon) {
-        Resources res = LocalNotification.context.getResources();
+        Resources res = context.getResources();
         int iconId = 0;
 
         iconId = getIconValue(packageName, icon);
@@ -311,41 +307,7 @@ public class Options {
         return bmp;
     }
 
-    /**
-     * Converts an Image URL to Bitmap.
-     *
-     * @param src
-     *      The external image URL
-     * @return
-     *      The corresponding bitmap
-     */
-    private Bitmap getIconFromURL (String src) {
-        Bitmap bmp = null;
-        ThreadPolicy origMode = StrictMode.getThreadPolicy();
 
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            StrictMode.ThreadPolicy policy =
-                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-            StrictMode.setThreadPolicy(policy);
-
-            connection.setDoInput(true);
-            connection.connect();
-
-            InputStream input = connection.getInputStream();
-
-            bmp = BitmapFactory.decodeStream(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        StrictMode.setThreadPolicy(origMode);
-
-        return bmp;
-    }
 
     /**
      * Converts an Image URI to Bitmap.
@@ -355,12 +317,11 @@ public class Options {
      * @return
      *      The corresponding bitmap
      */
-    private Bitmap getIconFromURI (String src) {
+    private Bitmap getIconFromUri (Uri uri) {
         Bitmap bmp = null;
-        Uri uri = getURIfromPath(src);
 
         try {           
-            InputStream input = LocalNotification.activity.getContentResolver().openInputStream(uri);
+            InputStream input = context.getContentResolver().openInputStream(uri);
             bmp = BitmapFactory.decodeStream(input);
         } catch (IOException e) {
             e.printStackTrace();
@@ -369,165 +330,18 @@ public class Options {
         return bmp;
     }
     
-	/**
-	 * The URI for a path.
-	 * 
-	 * @param path The given path
-	 * 
-	 * @return The URI pointing to the given path
-	 */
-    private Uri getURIfromPath(String path){
-		if (path.startsWith("res:")) {
-			return getUriForResourcePath(path);
-		} else if (path.startsWith("file:///")) {
-			return getUriForAbsolutePath(path);
-		} else if (path.startsWith("file://")) {
-			return getUriForAssetPath(path);
-		}
-		return Uri.parse(path);
-	}
-    
-	/**
-	 * The URI for a file.
-	 * 
-	 * @param path
-	 *            The given absolute path
-	 * 
-	 * @return The URI pointing to the given path
-	 */
-	private Uri getUriForAbsolutePath(String path) {
-		String absPath = path.replaceFirst("file://", "");
-		File file = new File(absPath);
-		if (!file.exists()) {
-			Log.e("LocalNotifocation", "File not found: " + file.getAbsolutePath());
-		}
-		return Uri.fromFile(file);
-	}
-
-	/**
-	 * The URI for an asset.
-	 * 
-	 * @param path
-	 *            The given asset path
-	 * 
-	 * @return The URI pointing to the given path
-	 */
-	private Uri getUriForAssetPath(String path) {
-		String resPath = path.replaceFirst("file:/", "www");
-		String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
-		File dir = 		LocalNotification.activity.getExternalCacheDir();
-		if (dir == null) {
-			Log.e("LocalNotifocation", "Missing external cache dir");
-			return Uri.EMPTY;
-		}
-		String storage = dir.toString() + STORAGE_FOLDER;
-		File file = new File(storage, fileName);
-		new File(storage).mkdir();
-		try {
-			AssetManager assets = LocalNotification.activity.getAssets();
-			FileOutputStream outStream = new FileOutputStream(file);
-			InputStream inputStream = assets.open(resPath);
-			copyFile(inputStream, outStream);
-			outStream.flush();
-			outStream.close();
-		} catch (Exception e) {
-			Log.e("LocalNotifocation", "File not found: assets/" + resPath);
+    /**
+     * Function to set the value of "initialDate" in the JSONArray
+     * @param args The given JSONArray
+     * @return A new JSONArray with the parameter "initialDate" set.
+     */
+    public void setInitDate(){
+    	long initialDate = options.optLong("date", 0) * 1000;
+    	try {
+    		options.put("initialDate", initialDate);
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return Uri.fromFile(file);
-	}
-
-	/**
-	 * The URI for a resource.
-	 * 
-	 * @param path
-	 *            The given relative path
-	 * 
-	 * @return The URI pointing to the given path
-	 */
-	private Uri getUriForResourcePath(String path) {
-		String resPath = path.replaceFirst("res://", "");
-		String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
-		String resName = fileName.substring(0, fileName.lastIndexOf('.'));
-		String extension = resPath.substring(resPath.lastIndexOf('.'));
-		File dir = LocalNotification.activity.getExternalCacheDir();
-		if (dir == null) {
-			Log.e("LocalNotifocation", "Missing external cache dir");
-			return Uri.EMPTY;
-		}
-		String storage = dir.toString() + STORAGE_FOLDER;
-		int resId = getResId(resPath);
-		File file = new File(storage, resName + extension);
-		if (resId == 0) {
-			Log.e("LocalNotifocation", "File not found: " + resPath);
-		}
-		new File(storage).mkdir();
-		try {
-			Resources res = LocalNotification.activity.getResources();
-			FileOutputStream outStream = new FileOutputStream(file);
-			InputStream inputStream = res.openRawResource(resId);
-			copyFile(inputStream, outStream);
-			outStream.flush();
-			outStream.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return Uri.fromFile(file);
-	}
-
-	/**
-	 * Writes an InputStream to an OutputStream
-	 * 
-	 * @param in
-	 *            The input stream
-	 * @param out
-	 *            The output stream
-	 */
-	private void copyFile(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int read;
-		while ((read = in.read(buffer)) != -1) {
-			out.write(buffer, 0, read);
-		}
-	}
-
-	/**
-	 * @return The resource ID for the given resource.
-	 */
-	private int getResId(String resPath) {
-		Resources res = LocalNotification.activity.getResources();
-		int resId;
-		String pkgName = getPackageName();
-		String dirName = "drawable";
-		String fileName = resPath;
-		if (resPath.contains("/")) {
-			dirName = resPath.substring(0, resPath.lastIndexOf('/'));
-			fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
-		}
-		String resName = fileName.substring(0, fileName.lastIndexOf('.'));
-		resId = res.getIdentifier(resName, dirName, pkgName);
-		if (resId == 0) {
-			resId = res.getIdentifier(resName, "drawable", pkgName);
-		}
-		return resId;
-	}
-	
-	/**
-	 * The name for the package.
-	 * 
-	 * @return The package name
-	 */
-	private String getPackageName() {
-		return LocalNotification.activity.getPackageName();
-	}
-	
-	/**
-	 * Shows the behavior of notifications when the application is in foreground
-	 * 
-	 * 
-	 */
-	public boolean getForegroundMode(){
-		return options.optBoolean("foregroundMode",false);	
-	}
+    }
 	
 }

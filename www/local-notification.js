@@ -120,7 +120,7 @@ exports.add = function (props, callback, scope) {
             this.convertProperties(properties);
         }
 
-        if (device.platform != 'iOS') {
+        if (device.platform != 'iOS'&&device.platform != 'Android' ) {
             notifications = notifications[0];
         }
 
@@ -152,10 +152,12 @@ exports.update = function (options, callback, scope) {
  * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.clear = function (id, callback, scope) {
-    var notId = (id || '0').toString();
+exports.clear = function (ids, callback, scope) {
+    ids = Array.isArray(ids) ? ids : [ids];
+	
+	ids = this.convertIds(ids);
 
-    this.exec('clear', notId, callback, scope);
+    this.exec('clear', ids, callback, scope);
 };
 
 /**
@@ -186,7 +188,7 @@ exports.cancel = function (ids, callback, scope) {
 
     ids = this.convertIds(ids);
 
-    if (device.platform != 'iOS') {
+    if (device.platform != 'iOS'&&device.platform != 'Android' ) {
         ids = ids[0];
     }
 
