@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.RemoteInput;
 
 public class ReceiverActivity extends Activity {
 
@@ -40,11 +41,19 @@ public class ReceiverActivity extends Activity {
         Bundle bundle = intent.getExtras();
 
         try {
-            JSONObject args = new JSONObject(bundle.getString(Receiver.OPTIONS));
+            String [] sa = bundle.getStringArray(Receiver.OPTIONS);
+            String inputString = new String();
+            JSONObject args = new JSONObject(sa[0]);
             Options options = new Options(getApplicationContext()).parse(args);
 
+            Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+            if (remoteInput != null) {
+                CharSequence input = remoteInput.getCharSequence(Receiver.VOICE_REPLY);
+                inputString = input.toString();
+            }
+
             launchMainIntent();
-            fireClickEvent(options);
+            fireClickEvent(options, sa[1], inputString);
         } catch (JSONException e) {}
     }
 
@@ -64,8 +73,8 @@ public class ReceiverActivity extends Activity {
     /**
      * Fires the onclick event.
      */
-    private void fireClickEvent (Options options) {
-        LocalNotification.fireEvent("click", options.getId(), options.getJSON());
+    private void fireClickEvent (Options options, String action, String input) {
+        LocalNotification.fireEvent("click", options.getId(), options.getJSON(), action, input);
 
         if (options.getAutoCancel()) {
             LocalNotification.fireEvent("cancel", options.getId(), options.getJSON());
