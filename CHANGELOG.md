@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.7.7 (03.01.2015)
+#### Version 0.7.8 (11.01.2015)
 - [bugfix:] NSInvalidArgumentException caused on iOS.
 
 #### Version 0.7.6 (03.10.2014)

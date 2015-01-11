@@ -47,7 +47,7 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.
 or to use the last stable version:
 ```bash
 # ~~ stable version ~~
-cordova plugin add de.appplant.cordova.plugin.local-notification@0.7.7
+cordova plugin add de.appplant.cordova.plugin.local-notification@0.7.8
 ```
 
 ### Removing the Plugin from your project
@@ -69,7 +69,7 @@ More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
-#### Version 0.7.7 (03.01.2015)
+#### Version 0.7.8 (11.01.2015)
 - [bugfix:] NSInvalidArgumentException caused on iOS.
 
 #### Version 0.7.6 (03.10.2014)
