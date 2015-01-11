@@ -103,7 +103,7 @@
         <source-file src="src/android/Restore.java"           		target-dir="src/de/appplant/cordova/plugin/localnotification" />
         <source-file src="src/android/ReceiverActivity.java"  		target-dir="src/de/appplant/cordova/plugin/localnotification" />
 		<source-file src="src/android/DeleteIntentReceiver.java"  	target-dir="src/de/appplant/cordova/plugin/localnotification" />
-		
+
 		<source-file src="src/android/notification/Options.java"           	target-dir="src/de/appplant/cordova/plugin/notification" />
 		<source-file src="src/android/notification/Asset.java"           	target-dir="src/de/appplant/cordova/plugin/notification" />
 		<source-file src="src/android/notification/Manager.java"           	target-dir="src/de/appplant/cordova/plugin/notification" />
@@ -112,7 +112,7 @@
     </platform>
 
     <!-- wp8 -->
-    <platform name="wp8">
+<!--     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="wp-package" value="LocalNotification"/>
@@ -121,6 +121,6 @@
 
         <source-file src="src/wp8/LocalNotification.cs" />
         <source-file src="src/wp8/Options.cs" />
-    </platform>
+    </platform> -->
 
 </plugin>
