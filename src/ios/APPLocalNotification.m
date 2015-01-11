@@ -72,7 +72,7 @@
     NSArray* notifications = command.arguments;
 
     [self.commandDelegate runInBackground:^{
-        for (NSMutableDictionary* options in notifications) {
+        for (NSDictionary* options in notifications) {
             UILocalNotification* notification;
 
             notification = [[UILocalNotification alloc]
@@ -80,6 +80,39 @@
 
             [self scheduleLocalNotification:[notification copy]];
             [self fireEvent:@"add" localNotification:notification];
+
+            if (notifications.count > 1) {
+                [NSThread sleepForTimeInterval:0.01];
+            }
+        }
+
+        [self execCallback:command];
+    }];
+}
+
+/**
+ * Update a set of notifications.
+ *
+ * @param properties
+ *      A dict of properties for each notification
+ */
+- (void) update:(CDVInvokedUrlCommand*)command
+{
+    NSArray* notifications = command.arguments;
+
+    [self.commandDelegate runInBackground:^{
+        for (NSDictionary* options in notifications) {
+            NSString* id = [options objectForKey:@"id"];
+            UILocalNotification* notification;
+
+            notification = [[UIApplication sharedApplication]
+                            scheduledLocalNotificationWithId:id];
+
+            if (!notification)
+                continue;
+
+            [self updateLocalNotification:[notification copy]
+                              withOptions:options];
 
             if (notifications.count > 1) {
                 [NSThread sleepForTimeInterval:0.01];
@@ -336,13 +369,28 @@
 }
 
 /**
+ * Update the local notification.
+ */
+- (void) updateLocalNotification:(UILocalNotification*)notification
+                     withOptions:(NSDictionary*)newOptions
+{
+    NSMutableDictionary* options = [notification.userInfo mutableCopy];
+
+    [options addEntriesFromDictionary:newOptions];
+    [options setObject:[NSDate date] forKey:@"updatedAt"];
+
+    notification = [[UILocalNotification alloc]
+                    initWithOptions:options];
+
+    [self scheduleLocalNotification:notification];
+
+}
+
+/**
  * Cancel the local notification.
  */
 - (void) cancelLocalNotification:(UILocalNotification*)notification
 {
-    if (!notification)
-        return;
-
     [[UIApplication sharedApplication]
      cancelLocalNotification:notification];
 
@@ -392,7 +440,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        if (notification && notification.repeatInterval == NSCalendarUnitEra
+        if (notification && [notification isRepeating]
             && notification.timeIntervalSinceFireDate > seconds)
         {
             [self cancelLocalNotification:notification];
@@ -412,8 +460,11 @@
 {
     UILocalNotification* notification = [localNotification object];
 
+    if ([notification wasUpdated])
+        return;
+
     BOOL autoCancel = notification.options.autoCancel;
-    NSTimeInterval timeInterval = notification.timeIntervalSinceFireDate;
+    NSTimeInterval timeInterval = [notification timeIntervalSinceFireDate];
 
     NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
 
@@ -551,7 +602,7 @@
     if (notification) {
         NSString* id = notification.options.id;
         NSString* json = notification.options.json;
-        NSString* args = [notification.options encodeToJSON];
+        NSString* args = [notification encodeToJSON];
 
         params = [NSString stringWithFormat:
                   @"\"%@\",\"%@\",\\'%@\\',JSON.parse(\\'%@\\')",

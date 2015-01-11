@@ -213,28 +213,6 @@
 }
 
 /**
- * Encode the user info dict to JSON.
- */
-- (NSString*) encodeToJSON
-{
-    NSString* json;
-    NSData* data;
-    NSMutableDictionary* obj = [dict mutableCopy];
-
-    [obj removeObjectForKey:@"json"];
-
-    data = [NSJSONSerialization dataWithJSONObject:obj
-                                           options:NSJSONWritingPrettyPrinted
-                                             error:Nil];
-
-    json = [[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding];
-
-    return [json stringByReplacingOccurrencesOfString:@"\n"
-                                           withString:@""];
-}
-
-/**
  * If it's a repeating notification.
  */
 - (BOOL) isRepeating

@@ -98,20 +98,20 @@ exports.setDefaults = function (newDefaults) {
 /**
  * Add a new entry to the registry
  *
- * @param {Object} props
+ * @param {Object} opts
  *      The notification properties
  * @param {Function} callback
  *      A function to be called after the notification has been canceled
  * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.add = function (props, callback, scope) {
+exports.add = function (opts, callback, scope) {
     this.registerPermission(function(granted) {
 
         if (!granted)
             return;
 
-        var notifications = Array.isArray(props) ? props : [props];
+        var notifications = Array.isArray(opts) ? opts : [opts];
 
         for (var i = 0; i < notifications.length; i++) {
             var properties = notifications[i];
@@ -125,7 +125,7 @@ exports.add = function (props, callback, scope) {
 };
 
 /**
- * Update existing notification specified by ID in options.
+ * Update existing notifications specified by IDs in options.
  *
  * @param {Object} options
  *      The notification properties to update
@@ -134,8 +134,16 @@ exports.add = function (props, callback, scope) {
  * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.update = function (options, callback, scope) {
-    this.exec('update', options, callback, scope);
+exports.update = function (opts, callback, scope) {
+    var notifications = Array.isArray(opts) ? opts : [opts];
+
+    for (var i = 0; i < notifications.length; i++) {
+        var properties = notifications[i];
+
+        this.convertProperties(properties);
+    }
+
+    this.exec('update', notifications, callback, scope);
 };
 
 /**
