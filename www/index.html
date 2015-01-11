@@ -95,6 +95,7 @@
             <a href="#" class="button" onclick="scheduleMultiple()">Schedule multiple<br/><span class="hint">notification.local.add()</span></a>
             <a href="#" class="button" onclick="scheduleDelayed()">Schedule in 5 sec<br/><span class="hint">notification.local.add([])</span></a>
             <a href="#" class="button" onclick="scheduleMinutely()">Schedule every min<br/><span class="hint">notification.local.add()</span></a>
+            <a href="#" class="button" onclick="update()">Update<br/><span class="hint">notification.local.update()</span></a>
             <a href="#" class="button" onclick="cancel()">Cancel<br/><span class="hint">notification.local.cancel()</span></a>
             <a href="#" class="button" onclick="cancelMultiple()">Cancel multiple<br/><span class="hint">notification.local.cancel([])</span></a>
             <a href="#" class="button" onclick="cancelAll()">Cancel all<br/><span class="hint">notification.local.cancelAll()</span></a>
@@ -112,7 +113,7 @@
             var counter = 0, id = 1;
 
             var callback = function () {
-                alert('finished or canceled');
+                getScheduledIds();
             };
 
             hasPermission = function () {
@@ -131,23 +132,20 @@
                 plugin.notification.local.add({
                     id:      id,
                     message: 'Test Message ' + (++counter),
-                    json:    { test: id }
+                    json:    { test:id }
                 });
             };
 
             scheduleMultiple = function () {
                 plugin.notification.local.add([{
                     id:      id,
-                    message: 'Multi Message ' + (++counter),
-                    json:    { test: id }
+                    message: 'Multi Message ' + (++counter)
                 },{
                     id:      id+1,
-                    message: 'Multi Message ' + (++counter),
-                    json:    { test: id+1 }
+                    message: 'Multi Message ' + (++counter)
                 },{
                     id:      id+2,
-                    message: 'Multi Message ' + (++counter),
-                    json:    { test: id+2 }
+                    message: 'Multi Message ' + (++counter)
                 }]);
             };
 
@@ -170,6 +168,14 @@
                     message: 'Scheduled every minute',
                     repeat:  'minutely',
                     sound:   'res://beep.caf'
+                });
+            };
+
+            update = function () {
+                plugin.notification.local.update({
+                    id:      id,
+                    message: 'Updated Message ' + (counter),
+                    json:    { updated:true }
                 });
             };
 

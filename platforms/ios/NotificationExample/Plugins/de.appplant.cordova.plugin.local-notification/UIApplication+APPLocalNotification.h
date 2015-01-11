@@ -33,5 +33,13 @@
 - (UILocalNotification*) scheduledLocalNotificationWithId:(NSString*)id;
 // Get the triggered local notification by ID
 - (UILocalNotification*) triggeredLocalNotificationWithId:(NSString*)id;
+// List of properties from all scheduled notifications
+- (NSArray*) scheduledLocalNotificationOptions;
+// List of properties from given scheduled notifications
+- (NSArray*) scheduledLocalNotificationOptions:(NSArray*)ids;
+// List of properties from all triggered notifications
+- (NSArray*) triggeredLocalNotificationOptions;
+// List of properties from given triggered notifications
+- (NSArray*) triggeredLocalNotificationOptions:(NSArray*)ids;
 
 @end

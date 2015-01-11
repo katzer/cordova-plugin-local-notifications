@@ -33,5 +33,11 @@
 - (BOOL) wasInThePast;
 // If the notification was already triggered
 - (BOOL) wasTriggered;
+// If the notification was updated
+- (BOOL) wasUpdated;
+// If it's a repeating notification
+- (BOOL) isRepeating;
+// Encode the user info dict to JSON
+- (NSString*) encodeToJSON;
 
 @end

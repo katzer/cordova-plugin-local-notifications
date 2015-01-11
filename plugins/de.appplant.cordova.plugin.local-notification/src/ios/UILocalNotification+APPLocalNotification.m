@@ -28,7 +28,7 @@ static char optionsKey;
 @implementation UILocalNotification (APPLocalNotification)
 
 #pragma mark -
-#pragma mark Init methods
+#pragma mark Init
 
 /**
  * Initialize a local notification with the given options when calling on JS side:
@@ -59,7 +59,14 @@ static char optionsKey;
     self.repeatInterval = options.repeatInterval;
     self.alertBody = options.alertBody;
     self.soundName = options.soundName;
+
+    if ([self wasInThePast]) {
+        self.fireDate = [NSDate date];
+    }
 }
+
+#pragma mark -
+#pragma mark Methods
 
 /**
  * The options provided by the plug-in.
@@ -126,9 +133,9 @@ static char optionsKey;
     NSDate* now      = [NSDate date];
     NSDate* fireDate = self.options.fireDate;
 
-    int timespan     = [now timeIntervalSinceDate:fireDate];
+    int timespan = [now timeIntervalSinceDate:fireDate];
 
-    if (self.repeatInterval != NSCalendarUnitEra) {
+    if ([self isRepeating]) {
         timespan = timespan % [self repeatIntervalInSeconds];
     }
 
@@ -140,7 +147,7 @@ static char optionsKey;
  */
 - (BOOL) wasInThePast
 {
-    return [self timeIntervalSinceFireDate] < 0;
+    return [self timeIntervalSinceFireDate] > 0;
 }
 
 /**
@@ -154,6 +161,53 @@ static char optionsKey;
     bool isLaterThanOrEqualTo = !([now compare:fireDate] == NSOrderedAscending);
 
     return isLaterThanOrEqualTo;
+}
+
+/**
+ * If the notification was updated.
+ */
+- (BOOL) wasUpdated
+{
+    NSDate* now       = [NSDate date];
+    NSDate* updatedAt = [self.userInfo objectForKey:@"updatedAt"];
+
+    if (updatedAt == NULL)
+        return NO;
+
+    int timespan = [now timeIntervalSinceDate:updatedAt];
+
+    return timespan < 1;
+}
+
+/**
+ * If it's a repeating notification.
+ */
+- (BOOL) isRepeating
+{
+    return [self.options isRepeating];
+}
+
+/**
+ * Encode the user info dict to JSON.
+ */
+- (NSString*) encodeToJSON
+{
+    NSString* json;
+    NSData* data;
+    NSMutableDictionary* obj = [self.userInfo mutableCopy];
+
+    [obj removeObjectForKey:@"json"];
+    [obj removeObjectForKey:@"updatedAt"];
+
+    data = [NSJSONSerialization dataWithJSONObject:obj
+                                           options:NSJSONWritingPrettyPrinted
+                                             error:Nil];
+
+    json = [[NSString alloc] initWithData:data
+                                 encoding:NSUTF8StringEncoding];
+
+    return [json stringByReplacingOccurrencesOfString:@"\n"
+                                           withString:@""];
 }
 
 @end

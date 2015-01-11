@@ -23,6 +23,7 @@ package de.appplant.cordova.plugin.localnotification;
 
 import java.util.Date;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,10 +32,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import de.appplant.cordova.plugin.notification.Options;
+
 public class DeleteIntentReceiver extends BroadcastReceiver {
 
     public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
 	
+    /**
+     * Is called when a Notification is cleared manualy by the User
+     */
 	@Override
 	public void onReceive(Context context, Intent intent) {
         Options options = null;
@@ -53,7 +59,8 @@ public class DeleteIntentReceiver extends BroadcastReceiver {
         
         Date now = new Date();
 		if ((options.getInterval()!=0)){
-			LocalNotification.persist(options.getId(), setInitDate(args));
+			options.setInitDate();
+			LocalNotification.persist(options.getId(), options.getJSONObject());
 		}
 		else if((new Date(options.getDate()).before(now))){
 			LocalNotification.unpersist(options.getId());
@@ -62,21 +69,12 @@ public class DeleteIntentReceiver extends BroadcastReceiver {
 		fireClearEvent(options);
 	}
 	
-	private JSONObject setInitDate(JSONObject arguments){
-    	long initialDate = arguments.optLong("date", 0) * 1000;
-    	try {
-    		arguments.put("initialDate", initialDate);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-    	return arguments;
-    }
-	
     /**
      * Fires onclear event.
      */
     private void fireClearEvent (Options options) {
-        LocalNotification.fireEvent("clear", options.getId(), options.getJSON());
+    	JSONArray data = new JSONArray().put(options.getJSONObject());
+        LocalNotification.fireEvent("clear", options.getId(), options.getJSON(),data);
     }
 
 }

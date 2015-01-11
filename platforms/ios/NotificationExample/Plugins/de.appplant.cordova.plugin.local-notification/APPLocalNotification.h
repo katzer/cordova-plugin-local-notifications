@@ -24,21 +24,31 @@
 
 @interface APPLocalNotification : CDVPlugin
 
-// Executes all queued events
+// Execute all queued events
 - (void) deviceready:(CDVInvokedUrlCommand*)command;
-// Schedules a new local notification
+// Schedule a new notification
 - (void) add:(CDVInvokedUrlCommand*)command;
-// Cancels a given local notification
+// Update a notification
+- (void) update:(CDVInvokedUrlCommand*)command;
+// Cancel a given notification
 - (void) cancel:(CDVInvokedUrlCommand*)command;
-// Cancels all currently scheduled notifications
+// Cancel all currently scheduled notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
-// Checks wether a notification with an ID is scheduled
+// Check if a notification with an ID is scheduled
 - (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// Retrieves a list of ids from all currently pending notifications
+// Check if a notification with an ID was triggered
+- (void) isTriggered:(CDVInvokedUrlCommand*)command;
+// List all ids from all pending notifications
 - (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
-// Informs if the app has the permission to show notifications
+// List all ids from all triggered notifications
+- (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
+// List all properties for given scheduled notifications
+- (void) getScheduled:(CDVInvokedUrlCommand*)command;
+// List all properties for given triggered notifications
+- (void) getTriggered:(CDVInvokedUrlCommand*)command;
+// Inform if the app has the permission to show notifications
 - (void) hasPermission:(CDVInvokedUrlCommand*)command;
-// Registers permission to show notifications
+// Register permission to show notifications
 - (void) registerPermission:(CDVInvokedUrlCommand*)command;
 
 @end

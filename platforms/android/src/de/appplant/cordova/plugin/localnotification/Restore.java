@@ -31,6 +31,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import de.appplant.cordova.plugin.notification.*;
+
 /**
  * This class is triggered upon reboot of the device. It needs to re-register
  * the alarms with the AlarmManager since these alarms are lost in case of
@@ -42,6 +44,9 @@ public class Restore extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // The application context needs to be set as first
         LocalNotification.setContext(context);
+        //Create NotificationWrapper
+    	NotificationWrapper nWrapper = new NotificationWrapper(context,
+    			Receiver.class,LocalNotification.PLUGIN_NAME,Receiver.OPTIONS);
 
         // Obtain alarm details form Shared Preferences
         SharedPreferences alarms = LocalNotification.getSharedPreferences();
@@ -59,8 +64,8 @@ public class Restore extends BroadcastReceiver {
                 /*
                  * If the trigger date was in the past, the notification will be displayed immediately.
                  */
-                LocalNotification.add(options, false);
-
+                nWrapper.schedule(options);
+                
             } catch (JSONException e) {}
         }
     }

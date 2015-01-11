@@ -82,7 +82,7 @@
 - (BOOL) autoCancel
 {
     if (IsAtLeastiOSVersion(@"8.0")){
-        return self.repeatInterval == NSCalendarUnitEra;
+        return ![self isRepeating];
     } else {
         return [[dict objectForKey:@"autoCancel"] boolValue];
     }
@@ -201,6 +201,9 @@
     return NSCalendarUnitEra;
 }
 
+#pragma mark -
+#pragma mark Methods
+
 /**
  * The notification's user info dict.
  */
@@ -210,25 +213,13 @@
 }
 
 /**
- * Encode the user info dict to JSON.
+ * If it's a repeating notification.
  */
-- (NSString*) encodeToJSON
+- (BOOL) isRepeating
 {
-    NSString* json;
-    NSData* data;
-    NSMutableDictionary* obj = [dict mutableCopy];
+    NSCalendarUnit interval = self.repeatInterval;
 
-    [obj removeObjectForKey:@"json"];
-
-    data = [NSJSONSerialization dataWithJSONObject:obj
-                                           options:NSJSONWritingPrettyPrinted
-                                             error:Nil];
-
-    json = [[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding];
-
-    return [json stringByReplacingOccurrencesOfString:@"\n"
-                                           withString:@""];
+    return !(interval == NSCalendarUnitEra || interval == 0);
 }
 
 #pragma mark -

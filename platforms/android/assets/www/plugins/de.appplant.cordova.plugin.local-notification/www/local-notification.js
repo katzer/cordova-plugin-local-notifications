@@ -98,20 +98,20 @@ exports.setDefaults = function (newDefaults) {
 /**
  * Add a new entry to the registry
  *
- * @param {Object} props
+ * @param {Object} opts
  *      The notification properties
  * @param {Function} callback
  *      A function to be called after the notification has been canceled
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.add = function (props, callback, scope) {
+exports.add = function (opts, callback, scope) {
     this.registerPermission(function(granted) {
 
         if (!granted)
             return;
 
-        var notifications = Array.isArray(props) ? props : [props];
+        var notifications = Array.isArray(opts) ? opts : [opts];
 
         for (var i = 0; i < notifications.length; i++) {
             var properties = notifications[i];
@@ -120,50 +120,56 @@ exports.add = function (props, callback, scope) {
             this.convertProperties(properties);
         }
 
-        if (device.platform != 'iOS') {
-            notifications = notifications[0];
-        }
-
         this.exec('add', notifications, callback, scope);
     }, this);
 };
 
 /**
- * Update existing notification specified by ID in options.
+ * Update existing notifications specified by IDs in options.
  *
  * @param {Object} options
  *      The notification properties to update
  * @param {Function} callback
  *      A function to be called after the notification has been updated
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.update = function (options, callback, scope) {
-    this.exec('update', options, callback, scope);
+exports.update = function (opts, callback, scope) {
+    var notifications = Array.isArray(opts) ? opts : [opts];
+
+    for (var i = 0; i < notifications.length; i++) {
+        var properties = notifications[i];
+
+        this.convertProperties(properties);
+    }
+
+    this.exec('update', notifications, callback, scope);
 };
 
 /**
- * Clears the specified notification.
+ * Clear the specified notification.
  *
  * @param {String} id
  *      The ID of the notification
  * @param {Function} callback
  *      A function to be called after the notification has been cleared
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.clear = function (id, callback, scope) {
-    var notId = (id || '0').toString();
+exports.clear = function (ids, callback, scope) {
+    ids = Array.isArray(ids) ? ids : [ids];
 
-    this.exec('clear', notId, callback, scope);
+	ids = this.convertIds(ids);
+
+    this.exec('clear', ids, callback, scope);
 };
 
 /**
- * Clears all previously sheduled notifications.
+ * Clear all previously sheduled notifications.
  *
  * @param {Function} callback
  *      A function to be called after all notifications have been cleared
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
 exports.clearAll = function (callback, scope) {
@@ -171,36 +177,30 @@ exports.clearAll = function (callback, scope) {
 };
 
 /**
- * Cancels the specified notifications.
+ * Cancel the specified notifications.
  *
  * @param {String[]} ids
  *      The IDs of the notifications
  * @param {Function} callback
  *      A function to be called after the notifications has been canceled
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
 exports.cancel = function (ids, callback, scope) {
 
     ids = Array.isArray(ids) ? ids : [ids];
 
-    for (var i = 0; i < ids.length; i++) {
-        ids[i] = ids[i].toString();
-    }
-
-    if (device.platform != 'iOS') {
-        ids = ids[0];
-    }
+    ids = this.convertIds(ids);
 
     this.exec('cancel', ids, callback, scope);
 };
 
 /**
- * Removes all previously registered notifications.
+ * Remove all previously registered notifications.
  *
  * @param {Function} callback
  *      A function to be called after all notifications have been canceled
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
 exports.cancelAll = function (callback, scope) {
@@ -208,25 +208,13 @@ exports.cancelAll = function (callback, scope) {
 };
 
 /**
- * Retrieves a list with all currently pending notifications.
- *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object} scope
- *      The scope for the callback function
- */
-exports.getScheduledIds = function (callback, scope) {
-    this.exec('getScheduledIds', null, callback, scope);
-};
-
-/**
- * Checks wether a notification with an ID is scheduled.
+ * Check if a notification with an ID is scheduled.
  *
  * @param {String} id
  *      The ID of the notification
  * @param {Function} callback
  *      A callback function to be called with the list
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
 exports.isScheduled = function (id, callback, scope) {
@@ -236,11 +224,39 @@ exports.isScheduled = function (id, callback, scope) {
 };
 
 /**
- * Retrieves a list with all triggered notifications.
+ * Check if a notification with an ID was triggered.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.isTriggered = function (id, callback, scope) {
+    var notId = (id || '0').toString();
+
+    this.exec('isTriggered', notId, callback, scope);
+};
+
+/**
+ * List all currently pending notifications.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
- * @param {Object} scope
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getScheduledIds = function (callback, scope) {
+    this.exec('getScheduledIds', null, callback, scope);
+};
+
+/**
+ * List all triggered notifications.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
  *      The scope for the callback function
  */
 exports.getTriggeredIds = function (callback, scope) {
@@ -248,19 +264,89 @@ exports.getTriggeredIds = function (callback, scope) {
 };
 
 /**
- * Checks wether a notification with an ID was triggered.
+ * List all properties for given scheduled notifications.
+ * If called without IDs, all notification will be returned.
  *
- * @param {String} id
- *      The ID of the notification
+ * @param {Number[]?} ids
+ *      Set of notification IDs
  * @param {Function} callback
  *      A callback function to be called with the list
- * @param {Object} scope
+ * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.isTriggered = function (id, callback, scope) {
-    var notId = (id || '0').toString();
+exports.getScheduled = function () {
+    var args = Array.apply(null, arguments);
 
-    this.exec('isTriggered', notId, callback, scope);
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        ids = [ids];
+    }
+
+    ids = this.convertIds(ids);
+
+    this.exec('getScheduled', ids, callback, scope);
+};
+
+/**
+ * Retrieve the properties for all scheduled notifications.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAllScheduled = function (callback, scope) {
+    this.exec('getScheduled', null, callback, scope);
+};
+
+/**
+ * List all properties for given triggered notifications.
+ * If called without IDs, all notification will be returned.
+ *
+ * @param {Number[]?} ids
+ *      Set of notification IDs
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getTriggered = function () {
+    var args = Array.apply(null, arguments);
+
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        ids = [ids];
+    }
+
+    ids = this.convertIds(ids);
+
+    this.exec('getTriggered', ids, callback, scope);
+};
+
+/**
+ * Retrieve the properties for all triggered notifications.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAllTriggered = function (callback, scope) {
+    this.exec('getTriggered', null, callback, scope);
 };
 
 /**
@@ -315,102 +401,6 @@ exports.promptForPermission = function (callback, scope) {
     console.warn('Depreated: Please use `notification.local.registerPermission` instead.');
 
     exports.registerPermission.apply(this, arguments);
-};
-
-/**
- * Add new entries to the registry (more than one)
- *
- * @param {Object} options
- *      The notification properties
- * @param {Function} callback
- *      A function to be called after the notification has been added
- * @param {Object} scope
- *      The scope for the callback function
- *
- * @return {Number}
- *      The notification's ID
- */
-exports.addMultiple = function (notifications, callback, scope) {
-    var length = notifications.length;
-    var notificationsMerged = new Array(),
-        callbackFn = this.createCallbackFn(callback, scope);
-    for (var i=0;i<length;i++){
-        var options    = this.mergeWithDefaults(notifications[i]);
-        if (options.id) {
-            options.id = options.id.toString();
-        }
-
-        if (options.date === undefined) {
-            options.date = new Date();
-        }
-
-        if (options.title) {
-            options.title = options.title.toString();
-        }
-
-        if (options.message) {
-            options.message = options.message.toString();
-        }
-
-        if (typeof options.date == 'object') {
-            options.date = Math.round(options.date.getTime()/1000);
-        }
-
-        if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
-            callbackFn = function (cmd) {
-                eval(cmd);
-            };
-        }
-        notificationsMerged.push(options);
-    }
-
-    cordova.exec(callbackFn, null, 'LocalNotification', 'addMultiple', notificationsMerged);
-
-    return options.id;
-};
-
-/**
- * Clear the specified notifications (more than one).
- *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A function to be called after the notifications has been cleared.
- * @param {Object} scope
- *      The scope for the callback function
- */
-exports.clearMultiple = function (ids, callback, scope) {
-    var length = ids.length;
-    var idArray = new Array(),
-        callbackFn = this.createCallbackFn(callback, scope);
-    for (var i=0;i<length;i++){
-        var id         = ids[i].toString();
-        idArray.push(id);
-    }
-    var callbackFn = this.createCallbackFn(callback, scope);
-    cordova.exec(callbackFn, null, 'LocalNotification', 'clearMultiple', [ids]);
-};
-
-/**
- * Cancel the specified notifications (more than one).
- *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A function to be called after the notifications has been canceled
- * @param {Object} scope
- *      The scope for the callback function
- */
-exports.cancelMultiple = function (ids, callback, scope) {
-    var length = ids.length;
-    var idArray = new Array(),
-        callbackFn = this.createCallbackFn(callback, scope);
-    for (var i=0;i<length;i++){
-        var id         = ids[i].toString();
-        idArray.push(id);
-    }
-    var callbackFn = this.createCallbackFn(callback, scope);
-    cordova.exec(callbackFn, null, 'LocalNotification', 'cancelMultiple', [ids]);
 };
 
 /**
@@ -599,6 +589,25 @@ exports.createCallbackFn = function (callbackFn, scope) {
     return function () {
         callbackFn.apply(scope || this, arguments);
     };
+};
+
+/**
+ * @private
+ *
+ * Convert the IDs to Strings.
+ *
+ * @param {String/Number[]} ids
+ *
+ * @return Array of Strings
+ */
+exports.convertIds = function (ids) {
+    var convertedIds = [];
+
+    for (var i = 0; i < ids.length; i++) {
+        convertedIds.push(ids[i].toString());
+    }
+
+    return convertedIds;
 };
 
 /**
