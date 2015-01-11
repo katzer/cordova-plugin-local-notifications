@@ -143,7 +143,7 @@ static char optionsKey;
  */
 - (BOOL) wasInThePast
 {
-    return [self timeIntervalSinceFireDate] < 0;
+    return [self timeIntervalSinceFireDate] > 0;
 }
 
 /**
