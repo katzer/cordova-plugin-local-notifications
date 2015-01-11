@@ -355,15 +355,6 @@
  */
 - (void) cancelAllLocalNotifications
 {
-    NSArray* notifications;
-
-    notifications = [[UIApplication sharedApplication]
-                     scheduledLocalNotifications];
-
-    for (UILocalNotification* notification in notifications) {
-        [self cancelLocalNotification:notification];
-    }
-
     [[UIApplication sharedApplication]
      cancelAllLocalNotifications];
 
