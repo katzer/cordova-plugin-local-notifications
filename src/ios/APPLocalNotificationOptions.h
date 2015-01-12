@@ -33,8 +33,6 @@
 @property (readonly, getter=repeatInterval) NSCalendarUnit repeatInterval;
 @property (readonly, getter=userInfo) NSDictionary* userInfo;
 
-// Encode the user info dict to JSON
-- (NSString*) encodeToJSON;
 // If it's a repeating notification
 - (BOOL) isRepeating;
 

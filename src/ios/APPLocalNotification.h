@@ -28,6 +28,8 @@
 - (void) deviceready:(CDVInvokedUrlCommand*)command;
 // Schedule a new notification
 - (void) add:(CDVInvokedUrlCommand*)command;
+// Update a notification
+- (void) update:(CDVInvokedUrlCommand*)command;
 // Cancel a given notification
 - (void) cancel:(CDVInvokedUrlCommand*)command;
 // Cancel all currently scheduled notifications
