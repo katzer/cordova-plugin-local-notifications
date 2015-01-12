@@ -23,7 +23,6 @@ package de.appplant.cordova.plugin.notification;
 import java.util.Random;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +30,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-import android.widget.Toast;
 
 public class NotificationBuilder {
 	private Options options;
@@ -62,7 +60,7 @@ public class NotificationBuilder {
      * Creates the notification.
      */
     @SuppressLint("NewApi")
-    public void buildNotification () {
+    public Builder buildNotification () {
         Uri sound = options.getSound();
         
         //DeleteIntent is called when the user clears a notification manually
@@ -94,6 +92,8 @@ public class NotificationBuilder {
         }
 
         setClickEvent(notification);
+        
+        return notification;
     }
 
     /**
@@ -110,44 +110,5 @@ public class NotificationBuilder {
 
         return notification.setContentIntent(contentIntent);
     }
-
-    /**
-     * Shows the notification
-     */
-    @SuppressWarnings("deprecation")
-    public void showNotification () {
-        NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        int id                  = 0;
-
-        try {
-            id = Integer.parseInt(options.getId());
-        } catch (Exception e) {}
-
-        if (Build.VERSION.SDK_INT<16) {
-            // build notification for HoneyComb to ICS
-            mgr.notify(id, notification.getNotification());
-        } else if (Build.VERSION.SDK_INT>15) {
-            // Notification for Jellybean and above
-            mgr.notify(id, notification.build());
-        }
-    }
-    
-    /**
-     * Show a notification as a Toast when App is runing in foreground
-     * @param title Title of the notification
-     * @param notification Notification to show
-     */
-    public void showNotificationToast(){
-    	String title = options.getTitle();
-    	String message = options.getMessage();
-       	int duration = Toast.LENGTH_LONG;
-       	if(title.equals("")){
-       		title = "Notification";
-       	}
-       	String text = title + " \n " + message;
-       	
-    	Toast notificationToast = Toast.makeText(context, text, duration);
-    	notificationToast.show();
-   }
 	
 }

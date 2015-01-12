@@ -36,6 +36,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat.Builder;
+import android.widget.Toast;
 
 /**
  * Wrapper class to schedule, cancel, clear, and update notifications.
@@ -206,6 +208,45 @@ public class NotificationWrapper {
 
         nc.cancelAll();
     }
+    
+    /**
+     * Shows the notification
+     */
+    @SuppressWarnings("deprecation")
+    public void showNotification (Builder notification, Options options) {
+        NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int id                  = 0;
+
+        try {
+            id = Integer.parseInt(options.getId());
+        } catch (Exception e) {}
+
+        if (Build.VERSION.SDK_INT<16) {
+            // build notification for HoneyComb to ICS
+            mgr.notify(id, notification.getNotification());
+        } else if (Build.VERSION.SDK_INT>15) {
+            // Notification for Jellybean and above
+            mgr.notify(id, notification.build());
+        }
+    }
+    
+    /**
+     * Show a notification as a Toast when App is runing in foreground
+     * @param title Title of the notification
+     * @param notification Notification to show
+     */
+    public void showNotificationToast(Options options){
+    	String title = options.getTitle();
+    	String message = options.getMessage();
+       	int duration = Toast.LENGTH_LONG;
+       	if(title.equals("")){
+       		title = "Notification";
+       	}
+       	String text = title + " \n " + message;
+       	
+    	Toast notificationToast = Toast.makeText(context, text, duration);
+    	notificationToast.show();
+   }
 	
     //---------------Manage Shared Preferences---------------------------------------------------
     

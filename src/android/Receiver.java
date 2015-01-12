@@ -32,6 +32,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.support.v4.app.NotificationCompat.Builder;
+
 import de.appplant.cordova.plugin.notification.*;
 
 /**
@@ -80,12 +82,12 @@ public class Receiver extends BroadcastReceiver {
         	if (options.getInterval() == 0) {
         		LocalNotification.unpersist(options.getId());
         	}
-        	builder.showNotificationToast();
+        	nWrapper.showNotificationToast(options);
         	fireTriggerEvent();
         } else {
-        	builder.buildNotification();
+        	Builder notification = builder.buildNotification();
 
-        	builder.showNotification();
+        	nWrapper.showNotification(notification, options);
         }
     }
 
