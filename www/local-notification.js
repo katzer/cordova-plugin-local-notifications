@@ -489,7 +489,7 @@ exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
 
     for (var key in defaults) {
-        if (options[key] === undefined) {
+        if (options[key] === null || options[key] === undefined) {
             options[key] = defaults[key];
         }
     }
