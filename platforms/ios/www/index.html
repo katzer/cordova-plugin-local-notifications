@@ -129,7 +129,11 @@
             };
 
             schedule = function () {
-                window.plugin.notification.local.add({message: 'Great app!'});
+                plugin.notification.local.add({
+                    id:      id,
+                    message: 'Test Message ' + (++counter),
+                    json:    { test:id }
+                });
             };
 
             scheduleMultiple = function () {
