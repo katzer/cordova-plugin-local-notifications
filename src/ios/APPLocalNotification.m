@@ -613,7 +613,7 @@
     }
 
     js = [NSString stringWithFormat:
-          @"setTimeout('plugin.notification.local.on%@(%@)',0)",
+          @"setTimeout('cordova.plugins.notification.local.on%@(%@)',0)",
           event, params];
 
     if (deviceready) {
