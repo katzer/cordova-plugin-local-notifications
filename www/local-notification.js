@@ -520,17 +520,23 @@ exports.mergeWithDefaults = function (options) {
  */
 exports.convertProperties = function (options) {
 
-    if (options.date === undefined || options.date === null) {
-        options.date = new Date();
-    }
-
     options.id         = options.id.toString();
     options.title      = options.title.toString();
     options.message    = options.message.toString();
     options.autoCancel = options.autoCancel === true;
 
+    if (isNaN(options.id)) {
+        options.id = this.getDefaults().id;
+    }
+
     if (isNaN(options.badge)) {
         options.badge = this.getDefaults().badge;
+    }
+
+    options.badge = Number(options.badge);
+
+    if (options.date === undefined || options.date === null) {
+        options.date = new Date();
     }
 
     if (typeof options.date == 'object') {
