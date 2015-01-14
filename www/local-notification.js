@@ -67,7 +67,8 @@ exports._defaults = {
     badge:      -1,
     id:         '0',
     json:       '',
-    repeat:     ''
+    repeat:     '',
+    date:       undefined
 };
 
 
