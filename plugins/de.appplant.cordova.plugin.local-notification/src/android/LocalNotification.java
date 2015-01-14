@@ -81,18 +81,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("add")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() { 
-                	JSONArray notifications = args.optJSONArray(0);
-                	JSONObject arguments;
-                	for(int i=0;i<notifications.length();i++){
-                		arguments = notifications.optJSONObject(i);
-                    	LOG.d("LocalNotification", arguments.toString());
-                		arguments = asset.parseURIs(arguments);
-                		Options options      = new Options(context).parse(arguments);
-                		options.setInitDate();
-                    	nWrapper.schedule(options);
-                    	JSONArray data = new JSONArray().put(options.getJSONObject());
-                   		fireEvent("add", options.getId(), options.getJSON(), data);
-                	}                    
+                	add(args);
                     command.success();
                 }
             });
@@ -101,13 +90,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("update")) {
         	cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                	JSONArray updates = args.optJSONArray(0);
-                	JSONObject updateContent;
-                	for(int i=0;i<updates.length();i++){
-                		updateContent = args.optJSONObject(i);
-                	
-                		nWrapper.update(updateContent);
-                	}
+                	update(args);
                 	command.success();
                 }
             });
@@ -116,15 +99,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("cancel")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                	JSONArray ids = args.optJSONArray(0);
-                	String id;
-                	for(int i=0;i<ids.length();i++){
-                		id = args.optString(i);
-                		nWrapper.cancel(id);
-                    	JSONArray managerId = new JSONArray().put(id);
-                    	JSONArray data = new JSONArray().put(manager.getAll(managerId));
-                        fireEvent("cancel", id, "",data);
-                	}
+                	cancel(args);
                     command.success();
                     
                 }
@@ -134,16 +109,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("cancelAll")) {
             cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                	JSONArray options = manager.getAll();
-                    nWrapper.cancelAll();
-                	String id;
-                	JSONObject arguments;
-                    for(int i=0;i<options.length();i++){
-                    	arguments= (JSONObject) options.opt(i);
-                      	JSONArray data = new JSONArray().put(arguments);
-                      	id = arguments.optString("id");
-                      	fireEvent("cancel", id, "",data);
-                    }
+                	cancelAll(args);
                     command.success();
                 }
             });
@@ -152,15 +118,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("clear")) {
         	cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                	JSONArray ids = args.optJSONArray(0);
-                	String id;
-                	for(int i=0;i<ids.length();i++){
-                		id = args.optString(i);
-                		nWrapper.clear(id);
-                    	JSONArray managerId = new JSONArray().put(id);
-                    	JSONArray data = new JSONArray().put(manager.getAll(managerId));
-                        fireEvent("clear", id, "",data);
-                	}
+                	clear(args);
                     command.success();
                 }
             });
@@ -169,16 +127,7 @@ public class LocalNotification extends CordovaPlugin {
         if (action.equalsIgnoreCase("clearAll")) {
         	cordova.getThreadPool().execute( new Runnable() {
                 public void run() {
-                	JSONArray options = manager.getAll();
-                	nWrapper.clearAll();
-                	String id;
-                	JSONObject arguments;
-                    for(int i=0;i<options.length();i++){
-                    	arguments= (JSONObject) options.opt(i);
-                      	JSONArray data = new JSONArray().put(arguments);
-                      	id = arguments.optString("id");
-                      	fireEvent("clear", id, "",data);
-                    }
+                	clearAll(args);
                     command.success();
                 }
             });
@@ -274,7 +223,113 @@ public class LocalNotification extends CordovaPlugin {
 
         return true;
     }
+    
+    
+    //------------------------------------------------exec-Functions-----------------------------------------------
+    /**
+     * Schedule notifications contained in the args-Array
+     * @param args
+     */
+    private void add(JSONArray args){
+    	JSONArray notifications = args;
+    	JSONObject arguments;
+    	for(int i=0;i<notifications.length();i++){
+    		arguments = notifications.optJSONObject(i);
+        	LOG.d("LocalNotification", arguments.toString());
+    		arguments = asset.parseURIs(arguments);
+    		Options options      = new Options(context).parse(arguments);
+    		options.setInitDate();
+        	nWrapper.schedule(options);
+        	JSONArray data = new JSONArray().put(options.getJSONObject());
+       		fireEvent("add", options.getId(), options.getJSON(), data);
+    	} 
+    }
+    
+    /**
+     * Update existing notifications
+     * @param args
+     */
+    private void update(JSONArray args){
+    	JSONArray updates = args;
+    	JSONObject updateContent;
+    	for(int i=0;i<updates.length();i++){
+    		updateContent = args.optJSONObject(i);
+    	
+    		nWrapper.update(updateContent);
+    	}
+    }
+    
+    /**
+     * Cancel scheduled Notifications
+     * @param args
+     */
+    private void cancel(JSONArray args){
+    	JSONArray ids = args;
+    	String id;
+    	for(int i=0;i<ids.length();i++){
+    		id = args.optString(i);
+    		nWrapper.cancel(id);
+        	JSONArray managerId = new JSONArray().put(id);
+        	JSONArray data = new JSONArray().put(manager.getAll(managerId));
+            fireEvent("cancel", id, "",data);
+    	}
+    }
+    
+    /**
+     * Cancel all scheduled notifications
+     * @param args
+     */
+    public void cancelAll(JSONArray args){
+    	JSONArray options = manager.getAll();
+        nWrapper.cancelAll();
+    	String id;
+    	JSONObject arguments;
+        for(int i=0;i<options.length();i++){
+        	arguments= (JSONObject) options.opt(i);
+          	JSONArray data = new JSONArray().put(arguments);
+          	id = arguments.optString("id");
+          	fireEvent("cancel", id, "",data);
+        }
+    }
+    
+    /**
+     * Clear triggered notifications without cancel repeating.
+     * @param args
+     */
+    public void clear(JSONArray args){
+    	JSONArray ids = args;
+    	String id;
+    	for(int i=0;i<ids.length();i++){
+    		id = args.optString(i);
+    		nWrapper.clear(id);
+        	JSONArray managerId = new JSONArray().put(id);
+        	JSONArray data = new JSONArray().put(manager.getAll(managerId));
+            fireEvent("clear", id, "",data);
+    	}
+    }
+    
+    /**
+     * Clear all triggered notifications without cancel repeating.
+     * @param args
+     */
+    public void clearAll(JSONArray args){
+    	JSONArray options = manager.getAll();
+    	nWrapper.clearAll();
+    	String id;
+    	JSONObject arguments;
+        for(int i=0;i<options.length();i++){
+        	arguments= (JSONObject) options.opt(i);
+          	JSONArray data = new JSONArray().put(arguments);
+          	id = arguments.optString("id");
+          	fireEvent("clear", id, "",data);
+        }
+    }
+    
 
+    
+    
+    
+    //-------------------------------------------------------------------------------------------------------------
     /**
      * Calls all pending callbacks after the deviceready event has been fired.
      */

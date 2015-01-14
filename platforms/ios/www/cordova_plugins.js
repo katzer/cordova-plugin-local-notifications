@@ -12,6 +12,7 @@ module.exports = [
         "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
         "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
         "clobbers": [
+            "cordova.plugins.notification.local",
             "plugin.notification.local"
         ]
     },

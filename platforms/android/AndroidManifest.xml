@@ -10,8 +10,8 @@
             </intent-filter>
         </activity>
         <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
-        <receiver android:name="de.appplant.cordova.plugin.localnotification.Receiver" />
-        <receiver android:name="de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver" />
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.Receiver" />
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver" />
         <receiver android:name="de.appplant.cordova.plugin.localnotification.Restore">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

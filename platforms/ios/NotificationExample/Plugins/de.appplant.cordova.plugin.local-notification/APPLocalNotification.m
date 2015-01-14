@@ -604,13 +604,16 @@
         NSString* json = notification.options.json;
         NSString* args = [notification encodeToJSON];
 
+        json = [json stringByReplacingOccurrencesOfString:@"'"
+                                               withString:@"\\\\\\'"];
+
         params = [NSString stringWithFormat:
                   @"\"%@\",\"%@\",\\'%@\\',JSON.parse(\\'%@\\')",
                   id, self.applicationState, json, args];
     }
 
     js = [NSString stringWithFormat:
-          @"setTimeout('plugin.notification.local.on%@(%@)',0)",
+          @"setTimeout('cordova.plugins.notification.local.on%@(%@)',0)",
           event, params];
 
     if (deviceready) {

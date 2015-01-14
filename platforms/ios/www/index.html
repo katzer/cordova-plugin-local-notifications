@@ -129,11 +129,7 @@
             };
 
             schedule = function () {
-                plugin.notification.local.add({
-                    id:      id,
-                    message: 'Test Message ' + (++counter),
-                    json:    { test:id }
-                });
+                window.plugin.notification.local.add({message: 'Great app!'});
             };
 
             scheduleMultiple = function () {
@@ -229,18 +225,22 @@
         <script type="text/javascript">
             document.addEventListener('deviceready', function () {
                 plugin.notification.local.onadd = function (id, state, json) {
+                    console.log(arguments);
                     alert('on add\n' + Array.apply(null, arguments).join("\n"));
                 };
 
                 plugin.notification.local.ontrigger = function (id, state, json) {
+                    console.log(arguments);
                     alert('on trigger\n' + Array.apply(null, arguments).join("\n"));
                 };
 
                 plugin.notification.local.onclick = function (id, state, json) {
+                    console.log(arguments);
                     alert('on click\n' + Array.apply(null, arguments).join("\n"));
                 };
 
                 plugin.notification.local.oncancel = function (id, state, json) {
+                    console.log(arguments);
                     alert('on cancel\n' + Array.apply(null, arguments).join("\n"));
                 };
             }, false);

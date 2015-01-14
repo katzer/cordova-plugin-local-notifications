@@ -35,11 +35,11 @@
                             "count": 1
                         },
                         {
-                            "xml": "<receiver android:name=\"de.appplant.cordova.plugin.localnotification.Receiver\" />",
+                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.Receiver\" />",
                             "count": 1
                         },
                         {
-                            "xml": "<receiver android:name=\"de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver\" />",
+                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver\" />",
                             "count": 1
                         },
                         {

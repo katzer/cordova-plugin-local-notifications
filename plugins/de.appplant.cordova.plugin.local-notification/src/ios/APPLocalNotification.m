@@ -604,6 +604,9 @@
         NSString* json = notification.options.json;
         NSString* args = [notification encodeToJSON];
 
+        json = [json stringByReplacingOccurrencesOfString:@"'"
+                                               withString:@"\\\\\\'"];
+
         params = [NSString stringWithFormat:
                   @"\"%@\",\"%@\",\\'%@\\',JSON.parse(\\'%@\\')",
                   id, self.applicationState, json, args];
