@@ -40,7 +40,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
-import android.util.Log;
 import android.annotation.TargetApi;
 
 import de.appplant.cordova.plugin.notification.*;
@@ -232,12 +231,8 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void add(JSONArray args){
-    	JSONArray notifications = args.optJSONArray(0);
+    	JSONArray notifications = args;
     	JSONObject arguments;
-    	if (notifications == null){
-    		Log.e("LocalNotification-Add", "The given arguments does not contain a JSONArray");
-    		return;
-    	}
     	for(int i=0;i<notifications.length();i++){
     		arguments = notifications.optJSONObject(i);
         	LOG.d("LocalNotification", arguments.toString());
@@ -255,11 +250,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void update(JSONArray args){
-    	JSONArray updates = args.optJSONArray(0);
-    	if (updates == null){
-    		Log.e("LocalNotification-Update", "The given arguments does not contain a JSONArray");
-    		return;
-    	}
+    	JSONArray updates = args;
     	JSONObject updateContent;
     	for(int i=0;i<updates.length();i++){
     		updateContent = args.optJSONObject(i);
@@ -273,12 +264,8 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void cancel(JSONArray args){
-    	JSONArray ids = args.optJSONArray(0);
+    	JSONArray ids = args;
     	String id;
-    	if (ids == null){
-    		Log.e("LocalNotification-Cancel", "The given arguments does not contain a JSONArray");
-    		return;
-    	}
     	for(int i=0;i<ids.length();i++){
     		id = args.optString(i);
     		nWrapper.cancel(id);
@@ -310,12 +297,8 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     public void clear(JSONArray args){
-    	JSONArray ids = args.optJSONArray(0);
+    	JSONArray ids = args;
     	String id;
-    	if (ids == null){
-    		Log.e("LocalNotification-Clear", "The given arguments does not contain a JSONArray");
-    		return;
-    	}
     	for(int i=0;i<ids.length();i++){
     		id = args.optString(i);
     		nWrapper.clear(id);
