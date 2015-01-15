@@ -34,7 +34,7 @@
  */
 - (BOOL) hasPermissionToScheduleLocalNotifications
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+if(IS_OS_8_OR_LATER) {
     UIUserNotificationType types;
     UIUserNotificationSettings *settings;
 
@@ -44,9 +44,9 @@
     types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
     return (settings.types & types);
-#else
+} else {
     return YES;
-#endif
+}
 }
 
 /**
@@ -54,7 +54,7 @@
  */
 - (void) registerPermissionToScheduleLocalNotifications
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+if(IS_OS_8_OR_LATER) {
     UIUserNotificationType types;
     UIUserNotificationSettings *settings;
 
@@ -65,7 +65,7 @@
 
     [[UIApplication sharedApplication]
      registerUserNotificationSettings:settings];
-#endif
+}
 }
 
 #pragma mark -
