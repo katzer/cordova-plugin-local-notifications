@@ -21,7 +21,11 @@
 
 @interface UIApplication (APPLocalNotification)
 
+@property (readonly, getter=localNotifications) NSArray* localNotifications;
+@property (readonly, getter=scheduledLocalNotifications2) NSArray* triggeredLocalNotifications2;
 @property (readonly, getter=triggeredLocalNotifications) NSArray* triggeredLocalNotifications;
+
+@property (readonly, getter=localNotificationIds) NSArray* localNotificationIds;
 @property (readonly, getter=triggeredLocalNotificationIds) NSArray* triggeredLocalNotificationIds;
 @property (readonly, getter=scheduledLocalNotificationIds) NSArray* scheduledLocalNotificationIds;
 
@@ -29,17 +33,26 @@
 - (BOOL) hasPermissionToScheduleLocalNotifications;
 // Ask for permission to schedule local notifications
 - (void) registerPermissionToScheduleLocalNotifications;
-// Get the scheduled local notification by ID
+
+// Get local notification by ID
+- (UILocalNotification*) localNotificationWithId:(NSString*)id;
+// Get scheduled local notification by ID
 - (UILocalNotification*) scheduledLocalNotificationWithId:(NSString*)id;
-// Get the triggered local notification by ID
+// Get triggered local notification by ID
 - (UILocalNotification*) triggeredLocalNotificationWithId:(NSString*)id;
-// List of properties from all scheduled notifications
+
+// Property list from all local notifications
+- (NSArray*) localNotificationOptions;
+// Property list from all scheduled notifications
 - (NSArray*) scheduledLocalNotificationOptions;
-// List of properties from given scheduled notifications
-- (NSArray*) scheduledLocalNotificationOptions:(NSArray*)ids;
-// List of properties from all triggered notifications
+// Property list from all triggered notifications
 - (NSArray*) triggeredLocalNotificationOptions;
-// List of properties from given triggered notifications
+
+// Property list from given local notifications
+- (NSArray*) localNotificationOptions:(NSArray*)ids;
+// Property list from given scheduled notifications
+- (NSArray*) scheduledLocalNotificationOptions:(NSArray*)ids;
+// Property list from given triggered notifications
 - (NSArray*) triggeredLocalNotificationOptions:(NSArray*)ids;
 
 @end
