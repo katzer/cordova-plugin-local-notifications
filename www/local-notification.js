@@ -159,7 +159,7 @@ exports.update = function (opts, callback, scope) {
 exports.clear = function (ids, callback, scope) {
     ids = Array.isArray(ids) ? ids : [ids];
 
-	ids = this.convertIds(ids);
+    ids = this.convertIds(ids);
 
     this.exec('clear', ids, callback, scope);
 };
@@ -488,9 +488,19 @@ exports.onclear = function (id, state, json, data) {};
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
 
+    options.date    = this.getValueFor(options, 'date', 'at', 'firstAt');
+    options.repeat  = this.getValueFor(options, 'repeat', 'every');
+    options.message = this.getValueFor(options, 'message', 'text');
+
     for (var key in defaults) {
-        if (options[key] === undefined) {
+        if (options[key] === null || options[key] === undefined) {
             options[key] = defaults[key];
+        }
+    }
+
+    for (key in options) {
+        if (!defaults.hasOwnProperty(key)) {
+            delete options[key];
         }
     }
 
@@ -509,24 +519,24 @@ exports.mergeWithDefaults = function (options) {
  *      The converted property list
  */
 exports.convertProperties = function (options) {
-    if (options.id) {
-        options.id = options.id.toString();
+
+    options.id         = options.id.toString();
+    options.title      = options.title.toString();
+    options.message    = options.message.toString();
+    options.autoCancel = options.autoCancel === true;
+
+    if (isNaN(options.id)) {
+        options.id = this.getDefaults().id;
     }
 
-    if (options.date === undefined) {
+    if (isNaN(options.badge)) {
+        options.badge = this.getDefaults().badge;
+    }
+
+    options.badge = Number(options.badge);
+
+    if (options.date === undefined || options.date === null) {
         options.date = new Date();
-    }
-
-    if (options.title) {
-        options.title = options.title.toString();
-    }
-
-    if (options.message) {
-        options.message = options.message.toString();
-    }
-
-    if (options.text) {
-        options.message = options.text.toString();
     }
 
     if (typeof options.date == 'object') {
@@ -608,6 +618,29 @@ exports.convertIds = function (ids) {
     }
 
     return convertedIds;
+};
+
+/**
+ * @private
+ *
+ * Return the first found value for the given keys.
+ *
+ * @param {Object} options
+ *      Object with key-value properties
+ *
+ * @param {String[]} keys*
+ *      Key list
+ */
+exports.getValueFor = function (options) {
+    var keys = Array.apply(null, arguments).slice(1);
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        if (options.hasOwnProperty(key)) {
+            return options[key];
+        }
+    }
 };
 
 /**

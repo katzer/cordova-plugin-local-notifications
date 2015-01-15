@@ -21,6 +21,7 @@
     <dependency id="org.apache.cordova.device" url="https://github.com/apache/cordova-plugin-device" />
 
     <js-module src="www/local-notification.js" name="LocalNotification">
+        <clobbers target="cordova.plugins.notification.local" />
         <clobbers target="plugin.notification.local" />
     </js-module>
 
@@ -64,13 +65,13 @@
              * Android notification bar. The notification uses the default notification
              * sound and it vibrates the phone.
             -->
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.Receiver" />
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.Receiver" android:exported="false" />
 
 			<!--
              * The delete intent receiver is triggered when the user clears a notification
 			 * manually. It unpersists the cleared notification from the shared preferences.
             -->
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver" />
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.DeleteIntentReceiver" android:exported="false"/>
 
             <!--
              * This class is triggered upon reboot of the device. It needs to re-register

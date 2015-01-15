@@ -231,7 +231,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void add(JSONArray args){
-    	JSONArray notifications = args.optJSONArray(0);
+    	JSONArray notifications = args;
     	JSONObject arguments;
     	for(int i=0;i<notifications.length();i++){
     		arguments = notifications.optJSONObject(i);
@@ -250,7 +250,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void update(JSONArray args){
-    	JSONArray updates = args.optJSONArray(0);
+    	JSONArray updates = args;
     	JSONObject updateContent;
     	for(int i=0;i<updates.length();i++){
     		updateContent = args.optJSONObject(i);
@@ -264,7 +264,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     private void cancel(JSONArray args){
-    	JSONArray ids = args.optJSONArray(0);
+    	JSONArray ids = args;
     	String id;
     	for(int i=0;i<ids.length();i++){
     		id = args.optString(i);
@@ -297,7 +297,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param args
      */
     public void clear(JSONArray args){
-    	JSONArray ids = args.optJSONArray(0);
+    	JSONArray ids = args;
     	String id;
     	for(int i=0;i<ids.length();i++){
     		id = args.optString(i);
