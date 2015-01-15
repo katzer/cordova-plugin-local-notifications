@@ -172,18 +172,18 @@
     [self.commandDelegate runInBackground:^{
         NSString* id = [[command arguments]
                         objectAtIndex:0];
-        
+
         CDVPluginResult* result;
         UILocalNotification* notification;
-        
+
         notification = [[UIApplication sharedApplication]
                         localNotificationWithId:id];
-        
+
         bool exists = notification != NULL;
-        
+
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:exists];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -253,13 +253,13 @@
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
         NSArray* notIds;
-        
+
         notIds = [[UIApplication sharedApplication]
                   localNotificationIds];
-        
+
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:notIds];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -317,7 +317,7 @@
         NSArray* ids = command.arguments;
         NSArray* notifications;
         CDVPluginResult* result;
-        
+
         if (ids.count == 0) {
             notifications = [[UIApplication sharedApplication]
                              localNotificationOptions];
@@ -325,10 +325,10 @@
             notifications = [[UIApplication sharedApplication]
                              localNotificationOptions:ids];
         }
-        
+
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:notifications];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];

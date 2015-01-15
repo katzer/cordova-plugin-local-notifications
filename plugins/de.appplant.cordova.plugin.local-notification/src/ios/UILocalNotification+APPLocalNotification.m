@@ -143,11 +143,43 @@ static char optionsKey;
 }
 
 /**
+ * Encode the user info dict to JSON.
+ */
+- (NSString*) encodeToJSON
+{
+    NSString* json;
+    NSData* data;
+    NSMutableDictionary* obj = [self.userInfo mutableCopy];
+
+    [obj removeObjectForKey:@"json"];
+    [obj removeObjectForKey:@"updatedAt"];
+
+    data = [NSJSONSerialization dataWithJSONObject:obj
+                                           options:NSJSONWritingPrettyPrinted
+                                             error:Nil];
+
+    json = [[NSString alloc] initWithData:data
+                                 encoding:NSUTF8StringEncoding];
+
+    return [json stringByReplacingOccurrencesOfString:@"\n"
+                                           withString:@""];
+}
+
+#pragma mark -
+#pragma mark State
+
+/**
  * If the fire date was in the past.
  */
 - (BOOL) wasInThePast
 {
     return [self timeIntervalSinceFireDate] > 0;
+}
+
+// If the notification was already scheduled
+- (BOOL) wasScheduled
+{
+    return [self isRepeating] || ![self wasInThePast];
 }
 
 /**
@@ -158,9 +190,9 @@ static char optionsKey;
     NSDate* now      = [NSDate date];
     NSDate* fireDate = self.fireDate;
 
-    bool isLaterThanOrEqualTo = !([now compare:fireDate] == NSOrderedAscending);
+    bool isLaterThanFireDate = !([now compare:fireDate] == NSOrderedAscending);
 
-    return isLaterThanOrEqualTo;
+    return isLaterThanFireDate;
 }
 
 /**
@@ -185,29 +217,6 @@ static char optionsKey;
 - (BOOL) isRepeating
 {
     return [self.options isRepeating];
-}
-
-/**
- * Encode the user info dict to JSON.
- */
-- (NSString*) encodeToJSON
-{
-    NSString* json;
-    NSData* data;
-    NSMutableDictionary* obj = [self.userInfo mutableCopy];
-
-    [obj removeObjectForKey:@"json"];
-    [obj removeObjectForKey:@"updatedAt"];
-
-    data = [NSJSONSerialization dataWithJSONObject:obj
-                                           options:NSJSONWritingPrettyPrinted
-                                             error:Nil];
-
-    json = [[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding];
-
-    return [json stringByReplacingOccurrencesOfString:@"\n"
-                                           withString:@""];
 }
 
 @end

@@ -79,14 +79,14 @@
 {
     NSArray* scheduledNotifications = self.scheduledLocalNotifications;
     NSMutableArray* notifications = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in scheduledNotifications)
     {
         if (notification) {
             [notifications addObject:notification];
         }
     }
-    
+
     return notifications;
 }
 
@@ -98,14 +98,14 @@
 {
     NSArray* scheduledNotifications = self.scheduledLocalNotifications;
     NSMutableArray* notifications = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in scheduledNotifications)
     {
         if (notification && [notification wasScheduled]) {
             [notifications addObject:notification];
         }
     }
-    
+
     return notifications;
 }
 
@@ -136,12 +136,12 @@
 {
     NSArray* notifications = self.localNotifications;
     NSMutableArray* ids = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in notifications)
     {
         [ids addObject:notification.options.id];
     }
-    
+
     return ids;
 }
 
@@ -153,12 +153,12 @@
 {
     NSArray* notifications = self.triggeredLocalNotifications;
     NSMutableArray* ids = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in notifications)
     {
         [ids addObject:notification.options.id];
     }
-    
+
     return ids;
 }
 
@@ -187,14 +187,14 @@
 - (UILocalNotification*) localNotificationWithId:(NSString*)id
 {
     NSArray* notifications = self.localNotifications;
-    
+
     for (UILocalNotification* notification in notifications)
     {
         if ([notification.options.id isEqualToString:id]) {
             return notification;
         }
     }
-    
+
     return NULL;
 }
 
@@ -242,12 +242,12 @@
 {
     NSArray* notifications = self.localNotifications;
     NSMutableArray* options = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in notifications)
     {
         [options addObject:notification.userInfo];
     }
-    
+
     return options;
 }
 
@@ -274,12 +274,12 @@
 {
     NSArray* notifications = self.triggeredLocalNotifications;
     NSMutableArray* options = [[NSMutableArray alloc] init];
-    
+
     for (UILocalNotification* notification in notifications)
     {
         [options addObject:notification.userInfo];
     }
-    
+
     return options;
 }
 
@@ -293,16 +293,16 @@
 {
     UILocalNotification* notification;
     NSMutableArray* options = [[NSMutableArray alloc] init];
-    
+
     for (NSString* id in ids)
     {
         notification = [self localNotificationWithId:id];
-        
+
         if (notification) {
             [options addObject:notification.userInfo];
         }
     }
-    
+
     return options;
 }
 

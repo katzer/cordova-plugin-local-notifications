@@ -67,7 +67,8 @@ exports._defaults = {
     badge:      -1,
     id:         '0',
     json:       '',
-    repeat:     ''
+    repeat:     '',
+    date:       undefined
 };
 
 
@@ -208,6 +209,29 @@ exports.cancelAll = function (callback, scope) {
 };
 
 /**
+ * Check if a notification with an ID exists.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.exist = function (id, callback, scope) {
+    var notId = (id || '0').toString();
+
+    this.exec('exist', notId, callback, scope);
+};
+
+/**
+ * Alias for `exist`.
+ */
+exports.exists = function () {
+    this.exist.apply(this, arguments);
+};
+
+/**
  * Check if a notification with an ID is scheduled.
  *
  * @param {String} id
@@ -240,7 +264,26 @@ exports.isTriggered = function (id, callback, scope) {
 };
 
 /**
- * List all currently pending notifications.
+ * List all local notification IDs.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAllIds = function (callback, scope) {
+    this.exec('getAllIds', null, callback, scope);
+};
+
+/**
+ * Alias for `getAllIds`.
+ */
+exports.getIds = function () {
+    this.getAllIds.apply(this, arguments);
+};
+
+/**
+ * List all scheduled notification IDs.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
@@ -252,7 +295,7 @@ exports.getScheduledIds = function (callback, scope) {
 };
 
 /**
- * List all triggered notifications.
+ * List all triggered notification IDs.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
@@ -264,7 +307,50 @@ exports.getTriggeredIds = function (callback, scope) {
 };
 
 /**
- * List all properties for given scheduled notifications.
+ * Property list for given local notifications.
+ * If called without IDs, all notification will be returned.
+ *
+ * @param {Number[]?} ids
+ *      Set of notification IDs
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.get = function () {
+    var args = Array.apply(null, arguments);
+
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        ids = [ids];
+    }
+
+    ids = this.convertIds(ids);
+
+    this.exec('getAll', ids, callback, scope);
+};
+
+/**
+ * Property list for all local notifications.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAll = function (callback, scope) {
+    this.exec('getAll', null, callback, scope);
+};
+
+/**
+ * Property list for given scheduled notifications.
  * If called without IDs, all notification will be returned.
  *
  * @param {Number[]?} ids
@@ -307,7 +393,7 @@ exports.getAllScheduled = function (callback, scope) {
 };
 
 /**
- * List all properties for given triggered notifications.
+ * Property list for given triggered notifications.
  * If called without IDs, all notification will be returned.
  *
  * @param {Number[]?} ids
@@ -634,7 +720,9 @@ exports.convertIds = function (ids) {
 exports.getValueFor = function (options) {
     var keys = Array.apply(null, arguments).slice(1);
 
-    for (var key in keys) {
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
         if (options.hasOwnProperty(key)) {
             return options[key];
         }

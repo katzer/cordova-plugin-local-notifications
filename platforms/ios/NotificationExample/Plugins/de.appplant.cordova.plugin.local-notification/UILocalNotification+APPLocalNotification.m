@@ -150,17 +150,17 @@ static char optionsKey;
     NSString* json;
     NSData* data;
     NSMutableDictionary* obj = [self.userInfo mutableCopy];
-    
+
     [obj removeObjectForKey:@"json"];
     [obj removeObjectForKey:@"updatedAt"];
-    
+
     data = [NSJSONSerialization dataWithJSONObject:obj
                                            options:NSJSONWritingPrettyPrinted
                                              error:Nil];
-    
+
     json = [[NSString alloc] initWithData:data
                                  encoding:NSUTF8StringEncoding];
-    
+
     return [json stringByReplacingOccurrencesOfString:@"\n"
                                            withString:@""];
 }
