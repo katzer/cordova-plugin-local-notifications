@@ -164,18 +164,10 @@ public class Options {
         Uri iconUri = null;
         try{
         	iconUri = Uri.parse(options.optString("iconUri"));
-        } catch (Exception e){
-        	e.printStackTrace();
-        }
-        
-        if (iconUri != null) {
             bmp = getIconFromUri(iconUri);
+        } catch (Exception e){
+        	bmp = getIconFromRes(icon);
         }
-
-        if (bmp == null) {
-            bmp = getIconFromRes(icon);
-        }
-
         return bmp;
     }
 
@@ -317,23 +309,17 @@ public class Options {
      * @return
      *      The corresponding bitmap
      */
-    private Bitmap getIconFromUri (Uri uri) {
+    private Bitmap getIconFromUri (Uri uri) throws IOException {
         Bitmap bmp = null;
-
-        try {           
-            InputStream input = context.getContentResolver().openInputStream(uri);
-            bmp = BitmapFactory.decodeStream(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+          
+        InputStream input = context.getContentResolver().openInputStream(uri);
+        bmp = BitmapFactory.decodeStream(input);
 
         return bmp;
     }
     
     /**
      * Function to set the value of "initialDate" in the JSONArray
-     * @param args The given JSONArray
-     * @return A new JSONArray with the parameter "initialDate" set.
      */
     public void setInitDate(){
     	long initialDate = options.optLong("date", 0) * 1000;
