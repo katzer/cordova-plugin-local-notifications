@@ -141,7 +141,7 @@ exports.update = function (opts, callback, scope) {
     for (var i = 0; i < notifications.length; i++) {
         var properties = notifications[i];
 
-        this.convertProperties(properties);
+        this.convertUpdateProperties(properties);
     }
 
     this.exec('update', notifications, callback, scope);
@@ -559,6 +559,42 @@ exports.oncancel = function (id, state, json, data) {};
  */
 exports.onclear = function (id, state, json, data) {};
 
+/**
+ * Get fired when a repeating notification should be updated.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {String} state
+ *      Either "foreground" or "background"
+ * @param {String} json
+ *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
+ * @return {Object} JSONObject with updatevalues
+ */
+exports.onupdate = function (id, state, json, data) {
+	return null;
+};
+	
+/**
+ * Is called from the native part to receive the onupdate resultarray and send it back to native.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {String} state
+ *      Either "foreground" or "background"
+ * @param {String} json
+ *      A custom (JSON) string
+ * @param {Object} data
+ *      The notification properties
+ */
+exports.onupdateCall = function (id, state, json, data) {
+	var updates = exports.onupdate(id, state, json, data);
+	if (updates != null){
+		updates.id = id;
+		update(updates,null,null);
+	};
+};
 
 /**
  * @private
@@ -624,6 +660,45 @@ exports.convertProperties = function (options) {
     if (options.date === undefined || options.date === null) {
         options.date = new Date();
     }
+
+    if (typeof options.date == 'object') {
+        options.date = Math.round(options.date.getTime()/1000);
+    }
+
+    if (typeof options.json == 'object') {
+        options.json = JSON.stringify(options.json);
+    }
+
+    return options;
+};
+
+/**
+ * @private
+ *
+ * Convert the passed values to their required type only for update function.
+ *
+ * @param {Object} options
+ *      Set of custom values
+ *
+ * @retrun {Object}
+ *      The converted property list
+ */
+exports.convertUpdateProperties = function (options) {
+
+    options.id         = options.id.toString();
+    options.title      = options.title.toString();
+    options.message    = options.message.toString();
+    options.autoCancel = options.autoCancel === true;
+
+    if (isNaN(options.id)) {
+        options.id = this.getDefaults().id;
+    }
+
+    if (isNaN(options.badge)) {
+        options.badge = this.getDefaults().badge;
+    }
+
+    options.badge = Number(options.badge);
 
     if (typeof options.date == 'object') {
         options.date = Math.round(options.date.getTime()/1000);

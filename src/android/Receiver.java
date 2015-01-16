@@ -76,6 +76,8 @@ public class Receiver extends BroadcastReceiver {
         } else if (isFirstAlarmInFuture()) {
             return;
         } else {
+        	JSONArray data = new JSONArray().put(options.getJSONObject());
+        	LocalNotification.fireEvent("updateCall", options.getId(), options.getJSON(),data);
             nWrapper.schedule(options.moveDate());
         }
         if (!LocalNotification.isInBackground && options.getForegroundMode()){

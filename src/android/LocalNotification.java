@@ -27,7 +27,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +39,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
-import android.util.Log;
 import android.annotation.TargetApi;
 
 import de.appplant.cordova.plugin.notification.*;
@@ -236,7 +234,6 @@ public class LocalNotification extends CordovaPlugin {
     	JSONObject arguments;
     	for(int i=0;i<notifications.length();i++){
     		arguments = notifications.optJSONObject(i);
-        	LOG.d("LocalNotification", arguments.toString());
     		arguments = asset.parseURIs(arguments);
     		Options options      = new Options(context).parse(arguments);
     		options.setInitDate();
@@ -415,7 +412,6 @@ public class LocalNotification extends CordovaPlugin {
 
         // webview may available, but callbacks needs to be executed
         // after deviceready
-        Log.e("FireEvent","JS-String: "+ js);
         if (deviceready == false) {
             eventQueue.add(js);
         } else {
@@ -439,7 +435,6 @@ public class LocalNotification extends CordovaPlugin {
     
     	// webview may available, but callbacks needs to be executed
     	// after deviceready
-    	Log.e("FireEvent","JS-String: "+ js);
     	if (deviceready == false) {
     		eventQueue.add(js);
     	} else {
