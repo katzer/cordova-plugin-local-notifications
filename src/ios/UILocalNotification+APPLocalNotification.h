@@ -31,6 +31,8 @@
 - (double) timeIntervalSinceFireDate;
 // If the fire date was in the past
 - (BOOL) wasInThePast;
+// If the notification was already scheduled
+- (BOOL) wasScheduled;
 // If the notification was already triggered
 - (BOOL) wasTriggered;
 // If the notification was updated

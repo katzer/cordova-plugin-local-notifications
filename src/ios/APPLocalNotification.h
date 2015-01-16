@@ -26,6 +26,12 @@
 
 // Execute all queued events
 - (void) deviceready:(CDVInvokedUrlCommand*)command;
+
+// Inform if the app has the permission to show notifications
+- (void) hasPermission:(CDVInvokedUrlCommand*)command;
+// Register permission to show notifications
+- (void) registerPermission:(CDVInvokedUrlCommand*)command;
+
 // Schedule a new notification
 - (void) add:(CDVInvokedUrlCommand*)command;
 // Update a notification
@@ -34,21 +40,26 @@
 - (void) cancel:(CDVInvokedUrlCommand*)command;
 // Cancel all currently scheduled notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
-// Check if a notification with an ID is scheduled
+
+// If a notification with an ID exists
+- (void) exist:(CDVInvokedUrlCommand*)command;
+// If a notification with an ID was scheduled
 - (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// Check if a notification with an ID was triggered
+// If a notification with an ID was triggered
 - (void) isTriggered:(CDVInvokedUrlCommand*)command;
+
+// List all ids from all local notifications
+- (void) getAllIds:(CDVInvokedUrlCommand*)command;
 // List all ids from all pending notifications
 - (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
 // List all ids from all triggered notifications
 - (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
-// List all properties for given scheduled notifications
+
+// Property list for given local notifications
+- (void) getAll:(CDVInvokedUrlCommand*)command;
+// Property list for given scheduled notifications
 - (void) getScheduled:(CDVInvokedUrlCommand*)command;
-// List all properties for given triggered notifications
+// Property list for given triggered notifications
 - (void) getTriggered:(CDVInvokedUrlCommand*)command;
-// Inform if the app has the permission to show notifications
-- (void) hasPermission:(CDVInvokedUrlCommand*)command;
-// Register permission to show notifications
-- (void) registerPermission:(CDVInvokedUrlCommand*)command;
 
 @end

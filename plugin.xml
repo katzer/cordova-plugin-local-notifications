@@ -21,6 +21,7 @@
     <dependency id="org.apache.cordova.device" url="https://github.com/apache/cordova-plugin-device" />
 
     <js-module src="www/local-notification.js" name="LocalNotification">
+        <clobbers target="cordova.plugins.notification.local" />
         <clobbers target="plugin.notification.local" />
     </js-module>
 

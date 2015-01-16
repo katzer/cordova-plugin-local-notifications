@@ -67,7 +67,8 @@ exports._defaults = {
     badge:      -1,
     id:         '0',
     json:       '',
-    repeat:     ''
+    repeat:     '',
+    date:       undefined
 };
 
 
@@ -159,7 +160,7 @@ exports.update = function (opts, callback, scope) {
 exports.clear = function (ids, callback, scope) {
     ids = Array.isArray(ids) ? ids : [ids];
 
-	ids = this.convertIds(ids);
+    ids = this.convertIds(ids);
 
     this.exec('clear', ids, callback, scope);
 };
@@ -208,6 +209,29 @@ exports.cancelAll = function (callback, scope) {
 };
 
 /**
+ * Check if a notification with an ID exists.
+ *
+ * @param {String} id
+ *      The ID of the notification
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.exist = function (id, callback, scope) {
+    var notId = (id || '0').toString();
+
+    this.exec('exist', notId, callback, scope);
+};
+
+/**
+ * Alias for `exist`.
+ */
+exports.exists = function () {
+    this.exist.apply(this, arguments);
+};
+
+/**
  * Check if a notification with an ID is scheduled.
  *
  * @param {String} id
@@ -240,7 +264,26 @@ exports.isTriggered = function (id, callback, scope) {
 };
 
 /**
- * List all currently pending notifications.
+ * List all local notification IDs.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAllIds = function (callback, scope) {
+    this.exec('getAllIds', null, callback, scope);
+};
+
+/**
+ * Alias for `getAllIds`.
+ */
+exports.getIds = function () {
+    this.getAllIds.apply(this, arguments);
+};
+
+/**
+ * List all scheduled notification IDs.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
@@ -252,7 +295,7 @@ exports.getScheduledIds = function (callback, scope) {
 };
 
 /**
- * List all triggered notifications.
+ * List all triggered notification IDs.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
@@ -264,7 +307,50 @@ exports.getTriggeredIds = function (callback, scope) {
 };
 
 /**
- * List all properties for given scheduled notifications.
+ * Property list for given local notifications.
+ * If called without IDs, all notification will be returned.
+ *
+ * @param {Number[]?} ids
+ *      Set of notification IDs
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.get = function () {
+    var args = Array.apply(null, arguments);
+
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        ids = [ids];
+    }
+
+    ids = this.convertIds(ids);
+
+    this.exec('getAll', ids, callback, scope);
+};
+
+/**
+ * Property list for all local notifications.
+ *
+ * @param {Function} callback
+ *      A callback function to be called with the list
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.getAll = function (callback, scope) {
+    this.exec('getAll', null, callback, scope);
+};
+
+/**
+ * Property list for given scheduled notifications.
  * If called without IDs, all notification will be returned.
  *
  * @param {Number[]?} ids
@@ -307,7 +393,7 @@ exports.getAllScheduled = function (callback, scope) {
 };
 
 /**
- * List all properties for given triggered notifications.
+ * Property list for given triggered notifications.
  * If called without IDs, all notification will be returned.
  *
  * @param {Number[]?} ids
@@ -488,9 +574,19 @@ exports.onclear = function (id, state, json, data) {};
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
 
+    options.date    = this.getValueFor(options, 'date', 'at', 'firstAt');
+    options.repeat  = this.getValueFor(options, 'repeat', 'every');
+    options.message = this.getValueFor(options, 'message', 'text');
+
     for (var key in defaults) {
-        if (options[key] === undefined) {
+        if (options[key] === null || options[key] === undefined) {
             options[key] = defaults[key];
+        }
+    }
+
+    for (key in options) {
+        if (!defaults.hasOwnProperty(key)) {
+            delete options[key];
         }
     }
 
@@ -509,24 +605,24 @@ exports.mergeWithDefaults = function (options) {
  *      The converted property list
  */
 exports.convertProperties = function (options) {
-    if (options.id) {
-        options.id = options.id.toString();
+
+    options.id         = options.id.toString();
+    options.title      = options.title.toString();
+    options.message    = options.message.toString();
+    options.autoCancel = options.autoCancel === true;
+
+    if (isNaN(options.id)) {
+        options.id = this.getDefaults().id;
     }
 
-    if (options.date === undefined) {
+    if (isNaN(options.badge)) {
+        options.badge = this.getDefaults().badge;
+    }
+
+    options.badge = Number(options.badge);
+
+    if (options.date === undefined || options.date === null) {
         options.date = new Date();
-    }
-
-    if (options.title) {
-        options.title = options.title.toString();
-    }
-
-    if (options.message) {
-        options.message = options.message.toString();
-    }
-
-    if (options.text) {
-        options.message = options.text.toString();
     }
 
     if (typeof options.date == 'object') {
@@ -608,6 +704,29 @@ exports.convertIds = function (ids) {
     }
 
     return convertedIds;
+};
+
+/**
+ * @private
+ *
+ * Return the first found value for the given keys.
+ *
+ * @param {Object} options
+ *      Object with key-value properties
+ *
+ * @param {String[]} keys*
+ *      Key list
+ */
+exports.getValueFor = function (options) {
+    var keys = Array.apply(null, arguments).slice(1);
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        if (options.hasOwnProperty(key)) {
+            return options[key];
+        }
+    }
 };
 
 /**
