@@ -434,8 +434,11 @@ public class LocalNotification extends CordovaPlugin {
     	String js = "setTimeout(function() {plugin.notification.local.on" + event + "(" + params + ");} ,0)";
     
     	// webview may available, but callbacks needs to be executed
-    	// after deviceready
-    	if (deviceready == false) {
+    	// after deviceready.
+    	//
+    	// Clicks in foreground means sending click event on a dead webview.
+    	// See https://github.com/katzer/cordova-plugin-local-notifications/issues/383
+    	if (deviceready == false || event == "click" && !isInBackground) {
     		eventQueue.add(js);
     	} else {
     		sendJavascript(js);
