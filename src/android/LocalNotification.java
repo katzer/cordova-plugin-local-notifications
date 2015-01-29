@@ -431,7 +431,7 @@ public class LocalNotification extends CordovaPlugin {
     public static void fireEvent (String event, String id, String json, JSONArray data) {
     	String state = getApplicationState();
     	String params = "\"" + id + "\",\"" + state + "\"," + JSONObject.quote(json)+","+ data;
-    	String js = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
+    	String js = "setTimeout(function() {plugin.notification.local.on" + event + "(" + params + ");} ,0)";
     
     	// webview may available, but callbacks needs to be executed
     	// after deviceready
@@ -501,5 +501,10 @@ public class LocalNotification extends CordovaPlugin {
 	   });
    }
     
+    @Override
+    public void onDestroy() {
+        deviceready = false;
+        isInBackground = true;
+    }
   
 }
