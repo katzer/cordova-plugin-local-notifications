@@ -683,7 +683,9 @@
 
         json = [json stringByReplacingOccurrencesOfString:@"'"
                                                withString:@"\\\\\\'"];
-
+        
+        args = [args stringByReplacingOccurrencesOfString:@"'"
+                                               withString:@"\\\'"];
         params = [NSString stringWithFormat:
                   @"\"%@\",\"%@\",\\'%@\\',JSON.parse(\\'%@\\')",
                   id, self.applicationState, json, args];

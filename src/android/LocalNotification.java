@@ -408,6 +408,7 @@ public class LocalNotification extends CordovaPlugin {
     public static void fireEvent (String event, JSONArray ids, JSONArray json) {
         String state  = getApplicationState();
         String params = ids + ",\"" + state + "\"," + json;
+        //amay0048: need modify @params and replace the ' with \'
         String js     = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
 
         // webview may available, but callbacks needs to be executed
@@ -431,6 +432,7 @@ public class LocalNotification extends CordovaPlugin {
     public static void fireEvent (String event, String id, String json, JSONArray data) {
     	String state = getApplicationState();
     	String params = "\"" + id + "\",\"" + state + "\"," + JSONObject.quote(json)+","+ data;
+        //amay0048: need modify @params and replace the ' with \'
     	String js = "setTimeout('plugin.notification.local.on" + event + "(" + params + ")',0)";
     
     	// webview may available, but callbacks needs to be executed
