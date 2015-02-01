@@ -687,12 +687,12 @@
         args = [args stringByReplacingOccurrencesOfString:@"'"
                                                withString:@"\\\'"];
         params = [NSString stringWithFormat:
-                  @"\"%@\",\"%@\",\\'%@\\',JSON.parse(\\'%@\\')",
+                  @"\"%@\",\"%@\",\'%@\',JSON.parse(\'%@\')",
                   id, self.applicationState, json, args];
     }
 
     js = [NSString stringWithFormat:
-          @"setTimeout('cordova.plugins.notification.local.on%@(%@)',0)",
+          @"cordova.plugins.notification.local.on%@(%@)",
           event, params];
 
     if (deviceready) {
