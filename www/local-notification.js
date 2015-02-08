@@ -1,76 +1,33 @@
 /*
-    Copyright 2013-2014 appPlant UG
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-*/
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ *
+ * @APPPLANT_LICENSE_HEADER_START@
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ *
+ * @APPPLANT_LICENSE_HEADER_END@
+ */
 
 var exec    = require('cordova/exec'),
     channel = require('cordova/channel');
 
 
-// Called after 'deviceready' event
-channel.deviceready.subscribe( function () {
-    // Device is ready now, the listeners are registered
-    // and all queued events can be executed.
-    exec(null, null, 'LocalNotification', 'deviceready', []);
-});
-
-// Called before 'deviceready' event
-channel.onCordovaReady.subscribe( function () {
-    // The cordova device plugin is ready now
-    channel.onCordovaInfoReady.subscribe( function () {
-        if (device.platform == 'Android') {
-            channel.onPause.subscribe( function () {
-                // Necessary to set the state to `background`
-                exec(null, null, 'LocalNotification', 'pause', []);
-            });
-
-            channel.onResume.subscribe( function () {
-                // Necessary to set the state to `foreground`
-                exec(null, null, 'LocalNotification', 'resume', []);
-            });
-
-            // Necessary to set the state to `foreground`
-            exec(null, null, 'LocalNotification', 'resume', []);
-        }
-
-        // Merges the platform specific properties into the default properties
-        exports.applyPlatformSpecificOptions();
-    });
-});
-
-
-/**
- * @private
- *
- * Default values.
- */
-exports._defaults = {
-    message:    '',
-    title:      '',
-    autoCancel: false,
-    badge:      -1,
-    id:         '0',
-    json:       '',
-    repeat:     '',
-    date:       undefined
-};
-
+/*************
+ * INTERFACE *
+ *************/
 
 /**
  * Returns the default settings
@@ -90,14 +47,14 @@ exports.setDefaults = function (newDefaults) {
     var defaults = this.getDefaults();
 
     for (var key in defaults) {
-        if (newDefaults[key] !== undefined) {
+        if (newDefaults.hasOwnProperty(key)) {
             defaults[key] = newDefaults[key];
         }
     }
 };
 
 /**
- * Add a new entry to the registry
+ * Schedule a new local notification.
  *
  * @param {Object} opts
  *      The notification properties
@@ -106,7 +63,7 @@ exports.setDefaults = function (newDefaults) {
  * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.add = function (opts, callback, scope) {
+exports.schedule = function (opts, callback, scope) {
     this.registerPermission(function(granted) {
 
         if (!granted)
@@ -121,7 +78,7 @@ exports.add = function (opts, callback, scope) {
             this.convertProperties(properties);
         }
 
-        this.exec('add', notifications, callback, scope);
+        this.exec('schedule', notifications, callback, scope);
     }, this);
 };
 
@@ -141,7 +98,7 @@ exports.update = function (opts, callback, scope) {
     for (var i = 0; i < notifications.length; i++) {
         var properties = notifications[i];
 
-        this.convertUpdateProperties(properties);
+        this.convertProperties(properties);
     }
 
     this.exec('update', notifications, callback, scope);
@@ -209,7 +166,7 @@ exports.cancelAll = function (callback, scope) {
 };
 
 /**
- * Check if a notification with an ID exists.
+ * Check if a notification with an ID is present.
  *
  * @param {String} id
  *      The ID of the notification
@@ -218,17 +175,10 @@ exports.cancelAll = function (callback, scope) {
  * @param {Object?} scope
  *      The scope for the callback function
  */
-exports.exist = function (id, callback, scope) {
+exports.isPresent = function (id, callback, scope) {
     var notId = (id || '0').toString();
 
-    this.exec('exist', notId, callback, scope);
-};
-
-/**
- * Alias for `exist`.
- */
-exports.exists = function () {
-    this.exist.apply(this, arguments);
+    this.exec('isPresent', notId, callback, scope);
 };
 
 /**
@@ -489,117 +439,83 @@ exports.promptForPermission = function (callback, scope) {
     exports.registerPermission.apply(this, arguments);
 };
 
-/**
- * Occurs when a notification was added.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- */
-exports.onadd = function (id, state, json, data) {};
+
+/**********
+ * EVENTS *
+ **********/
 
 /**
- * Occurs when the notification is triggered.
+ * Register callback for given event.
  *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
+ * @param {String} event
+ *      The event's name
+ * @param {Function} callback
+ *      The function to be exec as callback
+ * @param {Object?} scope
+ *      The callback function's scope
  */
-exports.ontrigger = function (id, state, json, data) {};
+exports.on = function (event, callback, scope) {
 
-/**
- * Fires after the notification was clicked.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- */
-exports.onclick = function (id, state, json, data) {};
+    if (!this._listener[event]) {
+        this._listener[event] = [];
+    }
 
-/**
- * Fires if the notification was canceled.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- */
-exports.oncancel = function (id, state, json, data) {};
+    var item = [callback, scope || window];
 
-/**
- * Get fired when the notification was cleared.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- */
-exports.onclear = function (id, state, json, data) {};
-
-/**
- * Get fired when a repeating notification should be updated.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- * @return {Object} JSONObject with updatevalues
- */
-exports.onupdate = function (id, state, json, data) {
-	return null;
-};
-	
-/**
- * Is called from the native part to receive the onupdate resultarray and send it back to native.
- *
- * @param {String} id
- *      The ID of the notification
- * @param {String} state
- *      Either "foreground" or "background"
- * @param {String} json
- *      A custom (JSON) string
- * @param {Object} data
- *      The notification properties
- */
-exports.onupdateCall = function (id, state, json, data) {
-	var updates = exports.onupdate(id, state, json, data);
-	if (updates != null){
-		updates.id = id;
-		update(updates,null,null);
-	};
+    this._listener[event].push(item);
 };
 
 /**
- * @private
+ * Unregister callback for given event.
  *
- * Merges custom properties with the default values.
+ * @param {String} event
+ *      The event's name
+ * @param {Function} callback
+ *      The function to be exec as callback
+ */
+exports.un = function (event, callback) {
+    var listener = this._listener[event];
+
+    if (!listener)
+        return;
+
+    for (var i = 0; i < listener.length; i++) {
+        var fn = listener[i][0];
+
+        if (fn == callback) {
+            listener.splice(i, 1);
+            break;
+        }
+    }
+};
+
+
+/***********
+ * MEMBERS *
+ ***********/
+
+// Default values
+exports._defaults = {
+    text:  '',
+    title: '',
+    sound: 'res://platform_default',
+    badge: 0,
+    id:    0,
+    data:  undefined,
+    every: undefined,
+    at:    undefined
+};
+
+// listener
+exports._listener = {};
+
+
+/***********
+ * PRIVATE *
+ ***********/
+
+/**
+ * Merge custom properties with the default values.
  *
  * @param {Object} options
  *      Set of custom values
@@ -610,13 +526,21 @@ exports.onupdateCall = function (id, state, json, data) {
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
 
-    options.date    = this.getValueFor(options, 'date', 'at', 'firstAt');
-    options.repeat  = this.getValueFor(options, 'repeat', 'every');
-    options.message = this.getValueFor(options, 'message', 'text');
+    options.at   = this.getValueFor(options, 'at', 'firstAt', 'date');
+    options.text = this.getValueFor(options, 'text', 'message');
+    options.data = this.getValueFor(options, 'data', 'json');
+
+    if (options.at === undefined || options.at === null) {
+        options.at = new Date();
+    }
 
     for (var key in defaults) {
         if (options[key] === null || options[key] === undefined) {
-            options[key] = defaults[key];
+            if (options.hasOwnProperty(key) && ['data','sound'].indexOf(key) > -1) {
+                options[key] = undefined;
+            } else {
+                options[key] = defaults[key];
+            }
         }
     }
 
@@ -630,8 +554,6 @@ exports.mergeWithDefaults = function (options) {
 };
 
 /**
- * @private
- *
  * Convert the passed values to their required type.
  *
  * @param {Object} options
@@ -642,79 +564,43 @@ exports.mergeWithDefaults = function (options) {
  */
 exports.convertProperties = function (options) {
 
-    options.id         = options.id.toString();
-    options.title      = options.title.toString();
-    options.message    = options.message.toString();
-    options.autoCancel = options.autoCancel === true;
-
-    if (isNaN(options.id)) {
-        options.id = this.getDefaults().id;
+    if (options.id) {
+        if (isNaN(options.id)) {
+            options.id = this.getDefaults().id;
+        } else {
+            options.id = options.id.toString();
+        }
     }
 
-    if (isNaN(options.badge)) {
-        options.badge = this.getDefaults().badge;
+    if (options.title) {
+        options.title = options.title.toString();
     }
 
-    options.badge = Number(options.badge);
-
-    if (options.date === undefined || options.date === null) {
-        options.date = new Date();
+    if (options.text) {
+        options.text  = options.text.toString();
     }
 
-    if (typeof options.date == 'object') {
-        options.date = Math.round(options.date.getTime()/1000);
+    if (options.badge) {
+        if (isNaN(options.badge)) {
+            options.badge = this.getDefaults().badge;
+        } else {
+            options.badge = Number(options.badge);
+        }
     }
 
-    if (typeof options.json == 'object') {
-        options.json = JSON.stringify(options.json);
+    if (typeof options.at == 'object') {
+        options.at = Math.round(options.at.getTime()/1000);
     }
 
-    return options;
-};
-
-/**
- * @private
- *
- * Convert the passed values to their required type only for update function.
- *
- * @param {Object} options
- *      Set of custom values
- *
- * @retrun {Object}
- *      The converted property list
- */
-exports.convertUpdateProperties = function (options) {
-
-    options.id         = options.id.toString();
-    options.title      = options.title.toString();
-    options.message    = options.message.toString();
-    options.autoCancel = options.autoCancel === true;
-
-    if (isNaN(options.id)) {
-        options.id = this.getDefaults().id;
-    }
-
-    if (isNaN(options.badge)) {
-        options.badge = this.getDefaults().badge;
-    }
-
-    options.badge = Number(options.badge);
-
-    if (typeof options.date == 'object') {
-        options.date = Math.round(options.date.getTime()/1000);
-    }
-
-    if (typeof options.json == 'object') {
-        options.json = JSON.stringify(options.json);
+    if (typeof options.data == 'object') {
+        options.data = JSON.stringify(options.data);
     }
 
     return options;
 };
 
 /**
- * @private
- *
- * Merges the platform specific properties into the default properties.
+ * Merge platform specific properties into the default ones.
  *
  * @return {Object}
  *      The default properties for the platform
@@ -724,26 +610,18 @@ exports.applyPlatformSpecificOptions = function () {
 
     switch (device.platform) {
     case 'Android':
-        defaults.icon       = 'icon';
-        defaults.smallIcon  = null;
-        defaults.ongoing    = false;
-        defaults.led        = 'FFFFFF'; /*RRGGBB*/
-        defaults.sound      = 'TYPE_NOTIFICATION'; break;
-    case 'iOS':
-        defaults.sound      = ''; break;
-    case 'WinCE': case 'Win32NT':
-        defaults.smallImage = null;
-        defaults.image      = null;
-        defaults.wideImage  = null;
+        defaults.icon      = 'res://ic_popup_reminder';
+        defaults.smallIcon = 'res://ic_popup_reminder';
+        defaults.ongoing   = false;
+        defaults.led       = 'FFFFFF';
+        break;
     }
 
     return defaults;
 };
 
 /**
- * @private
- *
- * Creates a callback, which will be executed within a specific scope.
+ * Create callback, which will be executed within a specific scope.
  *
  * @param {Function} callbackFn
  *      The callback function
@@ -763,8 +641,6 @@ exports.createCallbackFn = function (callbackFn, scope) {
 };
 
 /**
- * @private
- *
  * Convert the IDs to Strings.
  *
  * @param {String/Number[]} ids
@@ -782,13 +658,10 @@ exports.convertIds = function (ids) {
 };
 
 /**
- * @private
- *
- * Return the first found value for the given keys.
+ * First found value for the given keys.
  *
  * @param {Object} options
  *      Object with key-value properties
- *
  * @param {String[]} keys*
  *      Key list
  */
@@ -805,9 +678,30 @@ exports.getValueFor = function (options) {
 };
 
 /**
- * @private
+ * Fire event with given arguments.
  *
- * Executes the native counterpart.
+ * @param {String} event
+ *      The event's name
+ * @param {args*}
+ *      The callback's arguments
+ */
+exports.fireEvent = function (event) {
+    var args     = Array.apply(null, arguments).slice(1),
+        listener = this._listener[event];
+
+    if (!listener)
+        return;
+
+    for (var i = 0; i < listener.length; i++) {
+        var fn    = listener[i][0],
+            scope = listener[i][1];
+
+        fn.apply(scope, args);
+    }
+};
+
+/**
+ * Execute the native counterpart.
  *
  * @param {String} action
  *      The name of the action
@@ -830,3 +724,24 @@ exports.exec = function (action, args, callback, scope) {
 
     exec(fn, null, 'LocalNotification', action, params);
 };
+
+
+/*********
+ * HOOKS *
+ *********/
+
+// Called after 'deviceready' event
+channel.deviceready.subscribe(function () {
+    // Device is ready now, the listeners are registered
+    // and all queued events can be executed.
+    exec(null, null, 'LocalNotification', 'deviceready', []);
+});
+
+// Called before 'deviceready' event
+channel.onCordovaReady.subscribe(function () {
+    // Device plugin is ready now
+    channel.onCordovaInfoReady.subscribe(function () {
+        // Merge platform specifics into defaults
+        exports.applyPlatformSpecificOptions();
+    });
+});

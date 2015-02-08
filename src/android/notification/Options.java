@@ -1,29 +1,28 @@
 /*
-    Copyright 2013-2014 appPlant UG
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-*/
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ *
+ * @APPPLANT_LICENSE_HEADER_START@
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ *
+ * @APPPLANT_LICENSE_HEADER_END@
+ */
 
 package de.appplant.cordova.plugin.notification;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONException;
@@ -31,303 +30,268 @@ import org.json.JSONObject;
 
 import android.app.AlarmManager;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 /**
- * Class that helps to store the options that can be specified per alarm.
+ * Wrapper around the JSON object passed through JS which contains all
+ * possible option values. Class provides simple readers and more advanced
+ * methods to convert independent values into platform specific values.
  */
 public class Options {
+
+    // Key name for bundled extras
+    static final String EXTRA = "NOTIFICATION_OPTIONS";
+
+    // The original JSON object
     private JSONObject options = new JSONObject();
-    private String packageName = null;
-    private long interval      = 0;
-    private Context context;
+
+    // Repeat interval
+    private long interval = 0;
+
+    // Application context
+    private final Context context;
+
+    // Asset util instance
+    private final AssetUtil assets;
 
 
-
-    public Options(Context context){
-    	this.context= context;
-    	this.packageName = context.getPackageName();
-    }
-    
-    
     /**
-     * Parses the given properties
+     * Constructor
+     *
+     * @param context
+     *      Application context
+     */
+    public Options(Context context){
+    	this.context = context;
+        this.assets  = AssetUtil.getInstance(context);
+    }
+
+    /**
+     * Parse given JSON properties.
+     *
+     * @param options
+     *      JSON properties
      */
     public Options parse (JSONObject options) {
-        String repeat = options.optString("repeat");
-
         this.options = options;
 
-        if (repeat.equalsIgnoreCase("secondly")) {
+        parseInterval();
+        parseAssets();
+
+        return this;
+    }
+
+    /**
+     * Parse repeat interval.
+     */
+    private void parseInterval() {
+        String every = options.optString("every").toLowerCase();
+
+        if (every.isEmpty()) {
+            interval = 0;
+        } else
+        if (every.equals("second")) {
             interval = 1000;
-        } if (repeat.equalsIgnoreCase("minutely")) {
+        } else
+        if (every.equals("minute")) {
             interval = AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15;
-        } if (repeat.equalsIgnoreCase("hourly")) {
+        } else
+        if (every.equals("hour")) {
             interval = AlarmManager.INTERVAL_HOUR;
-        } if (repeat.equalsIgnoreCase("daily")) {
+        } else
+        if (every.equals("day")) {
             interval = AlarmManager.INTERVAL_DAY;
-        } else if (repeat.equalsIgnoreCase("weekly")) {
-            interval = AlarmManager.INTERVAL_DAY*7;
-        } else if (repeat.equalsIgnoreCase("monthly")) {
-            interval = AlarmManager.INTERVAL_DAY*31; // 31 days
-        } else if (repeat.equalsIgnoreCase("yearly")) {
-            interval = AlarmManager.INTERVAL_DAY*365;
+        } else
+        if (every.equals("week")) {
+            interval = AlarmManager.INTERVAL_DAY * 7;
+        } else
+        if (every.equals("month")) {
+            interval = AlarmManager.INTERVAL_DAY * 31;
+        } else
+        if (every.equals("year")) {
+            interval = AlarmManager.INTERVAL_DAY * 365;
         } else {
             try {
-                interval = Integer.parseInt(repeat) * 60000;
-            } catch (Exception e) {};
+                interval = Integer.parseInt(every) * 60000;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
-        return this;
     }
 
     /**
-     * Set new time according to interval
+     * Parse asset URIs.
      */
-    public Options moveDate () {
+    private void parseAssets() {
+
+        if (options.has("iconUri"))
+            return;
+
+        Uri iconUri = assets.parse(options.optString("icon", "icon"));
+        Uri soundUri = assets.parseSound(options.optString("sound", null));
+
         try {
-            options.put("date", (getDate() + interval) / 1000);
-        } catch (JSONException e) {}
-
-        return this;
+            options.put("iconUri", iconUri.toString());
+            options.put("soundUri", soundUri.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-    
+
     /**
-     * Returns options as JSON object
+     * Application context.
      */
-    public JSONObject getJSONObject() {
+    public Context getContext () {
+        return context;
+    }
+
+    /**
+     * Wrapped JSON object.
+     */
+    JSONObject getDict () {
         return options;
     }
 
     /**
-     * Returns time in milliseconds when notification is scheduled to fire
+     * Text for the local notification.
      */
-    public long getDate() {
-        return options.optLong("date", 0) * 1000;
-    }
-    
-    /**
-     * Returns time in milliseconds when the notification was scheduled first
-     */
-    public long getInitialDate() {
-    	return options.optLong("initialDate", 0);
+    public String getText() {
+        return options.optString("text", "");
     }
 
     /**
-     * Returns time as calender
+     * Repeat interval (day, week, month, year, aso.)
      */
-    public Calendar getCalendar () {
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date(getDate()));
-
-        return calendar;
-    }
-
-    /**
-     * Returns the notification's message
-     */
-    public String getMessage () {
-        return options.optString("message", "");
-    }
-
-    /**
-     * Returns the notification's title
-     */
-    public String getTitle () {
-        return options.optString("title", "");
-    }
-
-    /**
-     * Returns the path of the notification's sound file
-     */
-    public Uri getSound () {
-        Uri soundUri = null;
-        try{
-        	soundUri = Uri.parse(options.optString("soundUri"));
-        	return soundUri;
-        } catch (Exception e){
-        	e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Returns the icon's ID
-     */
-    public Bitmap getIcon () {
-        String icon = options.optString("icon", "icon");
-        Bitmap bmp = null;
-        Uri iconUri = null;
-        try{
-        	iconUri = Uri.parse(options.optString("iconUri"));
-            bmp = getIconFromUri(iconUri);
-        } catch (Exception e){
-        	bmp = getIconFromRes(icon);
-        }
-        return bmp;
-    }
-
-    /**
-     * Returns the small icon's ID
-     */
-    public int getSmallIcon () {
-        int resId       = 0;
-        String iconName = options.optString("smallIcon", "");
-
-        resId = getIconValue(packageName, iconName);
-
-        if (resId == 0) {
-            resId = getIconValue("android", iconName);
-        }
-
-        if (resId == 0) {
-            resId = getIconValue(packageName, "icon");
-        }
-
-        return options.optInt("smallIcon", resId);
-    }
-
-    /**
-     * Returns notification repetition interval (daily, weekly, monthly, yearly)
-     */
-    public long getInterval () {
+    public long getRepeatInterval() {
         return interval;
     }
 
     /**
-     * Returns notification badge number
+     * Badge number for the local notification.
      */
-    public int getBadge () {
+    public int getBadgeNumber() {
         return options.optInt("badge", 0);
     }
 
     /**
-     * Returns PluginResults' callback ID
+     * Android only ongoing flag for local notifications.
      */
-    public String getId () {
-        return options.optString("id", "0");
-    }
-
-    /**
-     * Returns whether notification is cancelled automatically when clicked.
-     */
-    public Boolean getAutoCancel () {
-        return options.optBoolean("autoCancel", false);
-    }
-
-    /**
-     * Returns whether the notification is ongoing (uncancellable). Android only.
-     */
-    public Boolean getOngoing () {
+    public Boolean isOngoing() {
         return options.optBoolean("ongoing", false);
     }
 
     /**
-     * Returns additional data as string
+     * Trigger date in milliseconds.
      */
-    public String getJSON () {
-        return options.optString("json", "");
+    public long getTriggerTime() {
+        return options.optLong("at", 0) * 1000;
+    }
+
+    /**
+     * Trigger date.
+     */
+    public Date getTriggerDate() {
+        return new Date(getTriggerTime());
+    }
+
+    /**
+     * ID for the local notification.
+     */
+    public String getId() {
+        return options.optString("id", "0");
+    }
+
+    /**
+     * ID for the local notification.
+     */
+    public int getIdAsInt() {
+        try {
+            return Integer.parseInt(getId());
+        } catch (Exception ignore) {
+            return 0;
+        }
+    }
+
+    /**
+     * Title for the local notification.
+     */
+    public String getTitle() {
+        String title = options.optString("title", "");
+
+        if (title.isEmpty()) {
+            title = context.getApplicationInfo().loadLabel(
+                    context.getPackageManager()).toString();
+        }
+
+        return title;
     }
 
     /**
      * @return
      *      The notification color for LED
      */
-   public int getColor () {
-        String hexColor = options.optString("led", "000000");
-        int aRGB        = Integer.parseInt(hexColor,16);
+    public int getLedColor() {
+        String hex = options.optString("led", "000000");
+        int aRGB   = Integer.parseInt(hex,16);
 
         aRGB += 0xFF000000;
 
         return aRGB;
     }
-   
-	/**
-	 * Shows the behavior of notifications when the application is in foreground 
-	 * 
-	 */
-	public boolean getForegroundMode(){
-		return options.optBoolean("foregroundMode",false);	
-	}
 
     /**
-     * Returns numerical icon Value
-     *
-     * @param {String} className
-     * @param {String} iconName
+     * Sound file path for the local notification.
      */
-    private int getIconValue (String className, String iconName) {
-        int icon = 0;
+    public Uri getSoundUri() {
+        Uri uri = null;
 
-        try {
-            Class<?> klass  = Class.forName(className + ".R$drawable");
+        try{
+            uri = Uri.parse(options.optString("soundUri"));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
-            icon = (Integer) klass.getDeclaredField(iconName).get(Integer.class);
-        } catch (Exception e) {}
-
-        return icon;
+        return uri;
     }
 
     /**
-     * Converts an resource to Bitmap.
-     *
-     * @param icon
-     *      The resource name
-     * @return
-     *      The corresponding bitmap
+     * Icon bitmap for the local notification.
      */
-    private Bitmap getIconFromRes (String icon) {
-        Resources res = context.getResources();
-        int iconId = 0;
+    public Bitmap getIconBitmap() {
+        String icon = options.optString("icon", "icon");
+        Bitmap bmp;
 
-        iconId = getIconValue(packageName, icon);
-
-        if (iconId == 0) {
-            iconId = getIconValue("android", icon);
+        try{
+            Uri uri = Uri.parse(options.optString("iconUri"));
+            bmp = assets.getIconFromUri(uri);
+        } catch (Exception e){
+            bmp = assets.getIconFromDrawable(icon);
         }
-
-        if (iconId == 0) {
-            iconId = android.R.drawable.ic_menu_info_details;
-        }
-
-        Bitmap bmp = BitmapFactory.decodeResource(res, iconId);
 
         return bmp;
     }
 
+    /**
+     * Small icon resource ID for the local notification.
+     */
+    public int getSmallIcon () {
+        String icon = options.optString("smallIcon", "");
 
+        int resId = assets.getResIdForDrawable(icon);
+
+        if (resId == 0) {
+            resId = android.R.drawable.screen_background_dark;
+        }
+
+        return resId;
+    }
 
     /**
-     * Converts an Image URI to Bitmap.
-     *
-     * @param src
-     *      The internal image URI
-     * @return
-     *      The corresponding bitmap
+     * JSON object as string.
      */
-    private Bitmap getIconFromUri (Uri uri) throws IOException {
-        Bitmap bmp = null;
-          
-        InputStream input = context.getContentResolver().openInputStream(uri);
-        bmp = BitmapFactory.decodeStream(input);
+    public String toString() {
+        return options.toString();
+    }
 
-        return bmp;
-    }
-    
-    /**
-     * Function to set the value of "initialDate" in the JSONArray
-     */
-    public void setInitDate(){
-    	long initialDate = options.optLong("date", 0) * 1000;
-    	try {
-    		options.put("initialDate", initialDate);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-    }
-	
 }

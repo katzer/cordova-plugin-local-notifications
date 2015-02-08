@@ -21,29 +21,28 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "AppDelegate+APPLocalNotification.h"
+package de.appplant.cordova.plugin.localnotification;
 
-#import <Availability.h>
+import de.appplant.cordova.plugin.notification.Notification;
 
-NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
 
-@implementation AppDelegate (APPLocalNotification)
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 /**
- * Tells the delegate what types of notifications may be used
- * to get the user’s attention.
+ * The clear intent receiver is triggered when the user clears a
+ * notification manually. It un-persists the cleared notification from the
+ * shared preferences.
  */
-- (void)                    application:(UIApplication*)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
-{
-    NSNotificationCenter* center = [NSNotificationCenter
-                                    defaultCenter];
+public class ClearReceiver extends de.appplant.cordova.plugin.notification.ClearReceiver {
 
-    // re-post (broadcast)
-    [center postNotificationName:UIApplicationRegisterUserNotificationSettings
-                          object:settings];
+    /**
+     * Called when a local notification was cleared from outside of the app.
+     *
+     * @param notification
+     *      Wrapper around the local notification
+     */
+    @Override
+    public void onClear (Notification notification) {
+        super.onClear(notification);
+        LocalNotification.fireEvent("clear", notification);
+    }
+
 }
-#endif
-
-@end

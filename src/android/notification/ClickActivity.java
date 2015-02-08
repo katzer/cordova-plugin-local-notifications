@@ -21,29 +21,35 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "AppDelegate+APPLocalNotification.h"
+package de.appplant.cordova.plugin.notification;
 
-#import <Availability.h>
-
-NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
-
-@implementation AppDelegate (APPLocalNotification)
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 /**
- * Tells the delegate what types of notifications may be used
- * to get the user’s attention.
+ * The receiver activity is triggered when a notification is clicked by a user.
+ * The activity calls the background callback and brings the launch intent
+ * up to foreground.
  */
-- (void)                    application:(UIApplication*)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
-{
-    NSNotificationCenter* center = [NSNotificationCenter
-                                    defaultCenter];
+public class ClickActivity extends AbstractClickActivity {
 
-    // re-post (broadcast)
-    [center postNotificationName:UIApplicationRegisterUserNotificationSettings
-                          object:settings];
+    /**
+     * Called when local notification was clicked by the user. Will
+     * move the app to foreground.
+     *
+     * @param notification
+     *      Wrapper around the local notification
+     */
+    @Override
+    public void onClick(Notification notification) {
+        launchApp();
+    }
+
+    /**
+     * Build notification specified by options.
+     *
+     * @param builder
+     *      Notification builder
+     */
+    public Notification buildNotification (Builder builder) {
+        return builder.build();
+    }
+
 }
-#endif
-
-@end
