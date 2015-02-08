@@ -35,12 +35,13 @@ namespace WPCordovaClassLib.Cordova.Commands
         public void getDeviceInfo(string notused)
         {
 
-            string res = String.Format("\"name\":\"{0}\",\"platform\":\"{1}\",\"uuid\":\"{2}\",\"version\":\"{3}\",\"model\":\"{4}\"",
+            string res = String.Format("\"name\":\"{0}\",\"platform\":\"{1}\",\"uuid\":\"{2}\",\"version\":\"{3}\",\"model\":\"{4}\",\"manufacturer\":\"{5}\"",
                                         this.name,
                                         this.platform,
                                         this.uuid,
                                         this.version,
-                                        this.model);
+                                        this.model,
+                                        this.manufacturer);
 
             res = "{" + res + "}";
             //Debug.WriteLine("Result::" + res);
@@ -53,6 +54,14 @@ namespace WPCordovaClassLib.Cordova.Commands
             {
                 return DeviceStatus.DeviceName;
                 //return String.Format("{0},{1},{2}", DeviceStatus.DeviceManufacturer, DeviceStatus.DeviceHardwareVersion, DeviceStatus.DeviceFirmwareVersion); 
+            }
+        }
+
+        public string manufacturer
+        {
+            get
+            {
+                return DeviceStatus.DeviceManufacturer;
             }
         }
 
@@ -77,33 +86,36 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             get
             {
-                string returnVal = "";
                 object id;
-                UserExtendedProperties.TryGetValue("ANID", out id);
 
+                UserExtendedProperties.TryGetValue("ANID", out id);
                 if (id != null)
                 {
-                    returnVal = id.ToString().Substring(2, 32);
+                    return id.ToString().Substring(2, 32);
                 }
-                else
+
+                UserExtendedProperties.TryGetValue("ANID2", out id);
+                if (id != null)
                 {
-                    returnVal = "???unknown???";
+                    return id.ToString();
+                }
 
-                    using (IsolatedStorageFile appStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                string returnVal = "???unknown???";
+
+                using (IsolatedStorageFile appStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
                     {
-                        try
-                        {
-                            IsolatedStorageFileStream fileStream = new IsolatedStorageFileStream("DeviceID.txt", FileMode.Open, FileAccess.Read, appStorage);
+                        IsolatedStorageFileStream fileStream = new IsolatedStorageFileStream("DeviceID.txt", FileMode.Open, FileAccess.Read, appStorage);
 
-                            using (StreamReader reader = new StreamReader(fileStream))
-                            {
-                                returnVal = reader.ReadLine();
-                            }
-                        }
-                        catch (Exception /*ex*/)
+                        using (StreamReader reader = new StreamReader(fileStream))
                         {
-
+                            returnVal = reader.ReadLine();
                         }
+                    }
+                    catch (Exception /*ex*/)
+                    {
+
                     }
                 }
 

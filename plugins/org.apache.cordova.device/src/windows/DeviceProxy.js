@@ -19,12 +19,23 @@
  *
 */
 
+var ROOT_CONTAINER = "{00000000-0000-0000-FFFF-FFFFFFFFFFFF}";
+var DEVICE_CLASS_KEY = "{A45C254E-DF1C-4EFD-8020-67D146A850E0},10";
+var DEVICE_CLASS_KEY_NO_SEMICOLON = '{A45C254E-DF1C-4EFD-8020-67D146A850E0}10';
+var ROOT_CONTAINER_QUERY = "System.Devices.ContainerId:=\"" + ROOT_CONTAINER + "\"";
+var HAL_DEVICE_CLASS = "4d36e966-e325-11ce-bfc1-08002be10318";
+var DEVICE_DRIVER_VERSION_KEY = "{A8B865DD-2E3D-4094-AD97-E593A70C75D6},3";
+var MANU_KEY = "System.Devices.Manufacturer";
+
 module.exports = {
 
     getDeviceInfo:function(win, fail, args) {
 
         // deviceId aka uuid, stored in Windows.Storage.ApplicationData.current.localSettings.values.deviceId
         var deviceId;
+        var manufacturer = "unknown";
+
+        // get deviceId, or create and store one
         var localSettings = Windows.Storage.ApplicationData.current.localSettings;
         if (localSettings.values.deviceId) {
             deviceId = localSettings.values.deviceId;
@@ -42,39 +53,56 @@ module.exports = {
             localSettings.values.deviceId = deviceId;
         }
 
-        var userAgent = window.clientInformation.userAgent,
+
+        var userAgent = window.clientInformation.userAgent;
             // this will report "windows" in windows8.1 and windows phone 8.1 apps
             // and "windows8" in windows 8.0 apps similar to cordova.js
             // See https://github.com/apache/cordova-js/blob/master/src/windows/platform.js#L25
-            devicePlatform = userAgent.indexOf("MSAppHost/1.0") == -1 ? "windows" : "windows8",
-            versionString = userAgent.match(/Windows (?:Phone |NT )?([0-9.]+)/)[1];
-        
-        var ROOT_CONTAINER = "{00000000-0000-0000-FFFF-FFFFFFFFFFFF}";
-        var DEVICE_CLASS_KEY = "{A45C254E-DF1C-4EFD-8020-67D146A850E0},10";
-        var DEVICE_CLASS_KEY_NO_SEMICOLON = '{A45C254E-DF1C-4EFD-8020-67D146A850E0}10';
-        var ROOT_CONTAINER_QUERY = "System.Devices.ContainerId:=\"" + ROOT_CONTAINER + "\"";
-        var HAL_DEVICE_CLASS = "4d36e966-e325-11ce-bfc1-08002be10318";
-        var DEVICE_DRIVER_VERSION_KEY = "{A8B865DD-2E3D-4094-AD97-E593A70C75D6},3";
-        var pnpObject = Windows.Devices.Enumeration.Pnp.PnpObject;
-        pnpObject.findAllAsync(Windows.Devices.Enumeration.Pnp.PnpObjectType.device,
-            [DEVICE_DRIVER_VERSION_KEY, DEVICE_CLASS_KEY], ROOT_CONTAINER_QUERY)
-        .then(function(rootDevices) {
-            for (var i = 0; i < rootDevices.length; i++) {
-                var rootDevice = rootDevices[i];
-                if (!rootDevice.properties) continue;
-                if (rootDevice.properties[DEVICE_CLASS_KEY_NO_SEMICOLON] == HAL_DEVICE_CLASS) {
-                    versionString = rootDevice.properties[DEVICE_DRIVER_VERSION_KEY];
-                    break;
+        var devicePlatform = userAgent.indexOf("MSAppHost/1.0") == -1 ? "windows" : "windows8";
+        var versionString = userAgent.match(/Windows (?:Phone |NT )?([0-9.]+)/)[1];
+
+
+
+        var Pnp = Windows.Devices.Enumeration.Pnp;
+
+        Pnp.PnpObject.findAllAsync(Pnp.PnpObjectType.deviceContainer,[MANU_KEY])
+        .then(function (infoList) {
+            var numDevices = infoList.length;
+            if (numDevices) {
+                for (var i = 0; i < numDevices; i++) {
+                    var devContainer = infoList[i];
+                    if (devContainer.id == ROOT_CONTAINER) {
+                        manufacturer = devContainer.properties[MANU_KEY];
+                        break;
+                    }
                 }
             }
+        })
+        .then(function () {
+            Pnp.PnpObject.findAllAsync(Pnp.PnpObjectType.device,
+                                    [DEVICE_DRIVER_VERSION_KEY, DEVICE_CLASS_KEY],
+                                    ROOT_CONTAINER_QUERY)
+            .then(function (rootDevices) {
+                    for (var i = 0; i < rootDevices.length; i++) {
+                        var rootDevice = rootDevices[i];
+                        if (!rootDevice.properties) continue;
+                        if (rootDevice.properties[DEVICE_CLASS_KEY_NO_SEMICOLON] == HAL_DEVICE_CLASS) {
+                            versionString = rootDevice.properties[DEVICE_DRIVER_VERSION_KEY];
+                            break;
+                        }
+                    }
 
-            setTimeout(function () {
-                win({ platform: devicePlatform, version: versionString,
-                    uuid: deviceId, model: window.clientInformation.platform });
-            }, 0);
+                    setTimeout(function () {
+                        win({ platform: devicePlatform,
+                              version: versionString,
+                              uuid: deviceId,
+                              model: window.clientInformation.platform,
+                              manufacturer:manufacturer});
+                    }, 0);
+            });
         });
     }
 
-};
+}; // exports
 
 require("cordova/exec/proxy").add("Device", module.exports);

@@ -17,6 +17,9 @@
         <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode" />
     </feature>
     <preference name="KeepRunning" value="true" />
+    <feature name="Toast">
+        <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
     <feature name="LocalNotification">
         <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
     </feature>

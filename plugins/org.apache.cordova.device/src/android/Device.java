@@ -73,6 +73,7 @@ public class Device extends CordovaPlugin {
             r.put("version", this.getOSVersion());
             r.put("platform", this.getPlatform());
             r.put("model", this.getModel());
+            r.put("manufacturer", this.getManufacturer());
             callbackContext.success(r);
         }
         else {
@@ -120,6 +121,10 @@ public class Device extends CordovaPlugin {
         return productname;
     }
 
+    public String getManufacturer() {
+        String manufacturer = android.os.Build.MANUFACTURER;
+        return manufacturer;
+    }
     /**
      * Get the OS version.
      *

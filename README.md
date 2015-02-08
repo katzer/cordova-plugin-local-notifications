@@ -1,41 +1,69 @@
 
-Cordova Local-Notification Plugin - Example
-==============================
+Cordova Local-Notification - Example
+====================================
 
-[Cordova][cordova] plugin to enable an application to inform its users about something, when the application isn’t running in the foreground. Works on various mobile platforms including iOS, Android and Windows Phone. (The Example App currently only supports android. Other Platforms will be added soon.)
+[Cordova][cordova] plugin to enable an app that isn’t running in the foreground to let its users know it has information for them. The information could be a message, an impending calendar event, or new data on a remote server. They can display an alert message or they can badge the app icon. They can also play a sound when the alert or badge number is shown.
 
 ## Instructions
 [Download][zip] or clone the _example_ branch and run the following command:
 
 ```bash
-cordova run [android]
+cordova run [ios|android]
 ```
 
-These will lunch the simulator or any plugged in device and start the example application as seen below in the screenshots. It's also possible to open the project with [Android Studio][studio] or [Eclipse][eclipse].
+These will lunch the simulator or any plugged in device and start the example application as seen below in the screenshots.<br/>
+Its also possible to open and debug the project with [Xcode][xcode], [Android Studio][studio] or [Eclipse][eclipse].
 
 <p align="center">
-    <img src="images/overview1.png"></img>
+    <img src="images/overview.png"></img>
 </p>
 
-Scroll down to see more Buttons.
+Scroll down to see more buttons!
 
-<p align="center">
-    <img src="images/overview2.png"></img>
-</p>
+The following code snippet will schedule a local notification every day wich will be displayed within the notification center.
 
-Pushing the _"Schedule local notification"_ Button will schedule a local notification wich should be displayed immediately.
+```javascript
+cordova.plugins.notification.local.schedule({
+    id: 1,
+    text: 'My first notification',
+    sound: isAndroid ? 'file://sound.mp3' : 'file://beep.caf',
+    every: 'day',
+    firstAt: next_monday,
+    data: { key:'value' }
+})
+```
 
-This also invokes the declared onAdd (_notification.local.onadd_) and onTrigger (_notification.local.ontrigger_) functions. 
+This also fires various callbacks like _trigger_ or _click_ for which you can listen as follows:
 
-Feel free to use the example and modify it for your own application.
+```javascript
+cordova.plugins.notification.local.on('trigger', function (notification) {
+    showToast('triggered: ' + notification.id);
+}, this);
+
+cordova.plugins.notification.local.on('click', function (notification) {
+    showToast('clicked: ' + notification.id);
+}, this);
+```
 
 Please read the plugin's [README][readme] for further requirements and informations.
 
 
-## Screenshots
+### iOS8 Permission
+Since iOS8 to use of local noficiations the user has to grant the permission before trying to schedule them. When trying to schedule a notification for the first time, a special system dialog will popup.
+
+Note that iOS will only prompt the user only once! Later the user needs to configure the settings manually.
 
 <p align="center">
-    <img width="32.5%" src="images/android.png"></img>
+    <img src="images/permission.png"></img>
+</p>
+
+## Screenshots
+The following screenshots give an overview of how the notification center on each mobile platform does look like when scheduling multiple local notifications at once.
+
+<p align="center">
+    <img width="40%" src="images/ios.png"></img>
+    &nbsp;
+    <img width="40%" src="images/android.png"></img>
 </p>
 
 
@@ -43,7 +71,7 @@ Please read the plugin's [README][readme] for further requirements and informati
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-© 2013-2014 appPlant UG, Inc. All rights reserved
+© 2013-2015 appPlant UG, Inc. All rights reserved
 
 
 [cordova]: https://cordova.apache.org

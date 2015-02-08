@@ -90,3 +90,9 @@
 * CB-5892 - Remove deprecated `window.Settings`
 * CB-7700 cordova-plugin-device documentation translation: cordova-plugin-device
 * CB-7571 Bump version of nested plugin to match parent plugin
+
+### 0.3.0 (Feb 04, 2015)
+* Added device.manufacturer property for Android, iOS, Blackberry, WP8
+* Support for Windows Phone 8 ANID2 ANID is only supported up to Windows Phone 7.5
+* CB-8351 Use a local copy of uniqueAppInstanceIdentifier rather than CordovaLib's version
+* browser: Fixed a bug that caused an "cannot call method of undefined" error if the browser's user agent wasn't recognized

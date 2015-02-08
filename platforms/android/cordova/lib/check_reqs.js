@@ -31,7 +31,7 @@ var isWindows = process.platform == 'win32';
 
 function forgivingWhichSync(cmd) {
     try {
-        return which.sync(cmd);
+        return fs.realpathSync(which.sync(cmd));
     } catch (e) {
         return '';
     }
@@ -48,20 +48,21 @@ function tryCommand(cmd, errMsg) {
 
 // Get valid target from framework/project.properties
 module.exports.get_target = function() {
-    if(fs.existsSync(path.join(ROOT, 'framework', 'project.properties'))) {
-        var target = shelljs.grep(/target=android-[\d+]/, path.join(ROOT, 'framework', 'project.properties'));
-        return target.split('=')[1].replace('\n', '').replace('\r', '').replace(' ', '');
-    } else if (fs.existsSync(path.join(ROOT, 'project.properties'))) {
-        // if no target found, we're probably in a project and project.properties is in ROOT.
-        // this is called on the project itself, and can support Google APIs AND Vanilla Android
-        var target = shelljs.grep(/target=android-[\d+]/, path.join(ROOT, 'project.properties')) ||
-          shelljs.grep(/target=Google Inc.:Google APIs:[\d+]/, path.join(ROOT, 'project.properties'));
-        if(target == "" || !target) {
-          // Try Google Glass APIs
-          target = shelljs.grep(/target=Google Inc.:Glass Development Kit Preview:[\d+]/, path.join(ROOT, 'project.properties'));
+    function extractFromFile(filePath) {
+        var target = shelljs.grep(/\btarget=/, filePath);
+        if (!target) {
+            throw new Error('Could not find android target within: ' + filePath);
         }
-        return target.split('=')[1].replace('\n', '').replace('\r', '');
+        return target.split('=')[1].trim();
     }
+    if (fs.existsSync(path.join(ROOT, 'framework', 'project.properties'))) {
+        return extractFromFile(path.join(ROOT, 'framework', 'project.properties'));
+    }
+    if (fs.existsSync(path.join(ROOT, 'project.properties'))) {
+        // if no target found, we're probably in a project and project.properties is in ROOT.
+        return extractFromFile(path.join(ROOT, 'project.properties'));
+    }
+    throw new Error('Could not find android target. File missing: ' + path.join(ROOT, 'project.properties'));
 }
 
 // Returns a promise. Called only by build and clean commands.
@@ -101,7 +102,7 @@ module.exports.check_java = function() {
                 } else {
                     // See if we can derive it from javac's location.
                     // fs.realpathSync is require on Ubuntu, which symplinks from /usr/bin -> JDK
-                    var maybeJavaHome = path.dirname(path.dirname(fs.realpathSync(javacPath)));
+                    var maybeJavaHome = path.dirname(path.dirname(javacPath));
                     if (fs.existsSync(path.join(maybeJavaHome, 'lib', 'tools.jar'))) {
                         process.env['JAVA_HOME'] = maybeJavaHome;
                     } else {
@@ -110,10 +111,13 @@ module.exports.check_java = function() {
                 }
             } else if (isWindows) {
                 // Try to auto-detect java in the default install paths.
+                var oldSilent = shelljs.config.silent;
+                shelljs.config.silent = true;
                 var firstJdkDir =
                     shelljs.ls(process.env['ProgramFiles'] + '\\java\\jdk*')[0] ||
                     shelljs.ls('C:\\Program Files\\java\\jdk*')[0] ||
                     shelljs.ls('C:\\Program Files (x86)\\java\\jdk*')[0];
+                shelljs.config.silent = oldSilent;
                 if (firstJdkDir) {
                     // shelljs always uses / in paths.
                     firstJdkDir = firstJdkDir.replace(/\//g, path.sep);
@@ -126,13 +130,15 @@ module.exports.check_java = function() {
         }
     }).then(function() {
         var msg =
-            'Failed to run "java -version", make sure your java environment is set up\n' +
-            'including JDK and JRE.\n' +
-            'Your JAVA_HOME variable is: ' + process.env['JAVA_HOME'];
+            'Failed to run "java -version", make sure that you have a JDK installed.\n' +
+            'You can get it from: http://www.oracle.com/technetwork/java/javase/downloads.\n';
+        if (process.env['JAVA_HOME']) {
+            msg += 'Your JAVA_HOME is invalid: ' + process.env['JAVA_HOME'] + '\n';
+        }
         return tryCommand('java -version', msg)
-    }).then(function() {
-        msg = 'Failed to run "javac -version", make sure you have a Java JDK (not just a JRE) installed.';
-        return tryCommand('javac -version', msg)
+        .then(function() {
+            return tryCommand('javac -version', msg);
+        });
     });
 }
 
@@ -142,14 +148,52 @@ module.exports.check_android = function() {
         var androidCmdPath = forgivingWhichSync('android');
         var adbInPath = !!forgivingWhichSync('adb');
         var hasAndroidHome = !!process.env['ANDROID_HOME'] && fs.existsSync(process.env['ANDROID_HOME']);
+        function maybeSetAndroidHome(value) {
+            if (!hasAndroidHome && fs.existsSync(value)) {
+                hasAndroidHome = true;
+                process.env['ANDROID_HOME'] = value;
+            }
+        }
+        if (!hasAndroidHome && !androidCmdPath) {
+            if (isWindows) {
+                // Android Studio 1.0 installer
+                maybeSetAndroidHome(path.join(process.env['LOCALAPPDATA'], 'Android', 'sdk'));
+                maybeSetAndroidHome(path.join(process.env['ProgramFiles'], 'Android', 'sdk'));
+                // Android Studio pre-1.0 installer
+                maybeSetAndroidHome(path.join(process.env['LOCALAPPDATA'], 'Android', 'android-studio', 'sdk'));
+                maybeSetAndroidHome(path.join(process.env['ProgramFiles'], 'Android', 'android-studio', 'sdk'));
+                // Stand-alone installer
+                maybeSetAndroidHome(path.join(process.env['LOCALAPPDATA'], 'Android', 'android-sdk'));
+                maybeSetAndroidHome(path.join(process.env['ProgramFiles'], 'Android', 'android-sdk'));
+            } else if (process.platform == 'darwin') {
+                // Android Studio 1.0 installer
+                maybeSetAndroidHome(path.join(process.env['HOME'], 'Library', 'Android', 'sdk'));
+                // Android Studio pre-1.0 installer
+                maybeSetAndroidHome('/Applications/Android Studio.app/sdk');
+                // Stand-alone zip file that user might think to put under /Applications
+                maybeSetAndroidHome('/Applications/android-sdk-macosx');
+                maybeSetAndroidHome('/Applications/android-sdk');
+            }
+            if (process.env['HOME']) {
+                // Stand-alone zip file that user might think to put under their home directory
+                maybeSetAndroidHome(path.join(process.env['HOME'], 'android-sdk-macosx'));
+                maybeSetAndroidHome(path.join(process.env['HOME'], 'android-sdk'));
+            }
+        }
         if (hasAndroidHome && !androidCmdPath) {
             process.env['PATH'] += path.delimiter + path.join(process.env['ANDROID_HOME'], 'tools');
         }
         if (androidCmdPath && !hasAndroidHome) {
             var parentDir = path.dirname(androidCmdPath);
+            var grandParentDir = path.dirname(parentDir);
             if (path.basename(parentDir) == 'tools') {
                 process.env['ANDROID_HOME'] = path.dirname(parentDir);
                 hasAndroidHome = true;
+            } else if (fs.existsSync(path.join(grandParentDir, 'tools', 'android'))) {
+                process.env['ANDROID_HOME'] = grandParentDir;
+                hasAndroidHome = true;
+            } else {
+                throw new Error('ANDROID_HOME is not set and no "tools" directory found at ' + parentDir);
             }
         }
         if (hasAndroidHome && !adbInPath) {
@@ -166,13 +210,27 @@ module.exports.check_android = function() {
     });
 };
 
+module.exports.getAbsoluteAndroidCmd = function() {
+    return forgivingWhichSync('android').replace(/(\s)/g, '\\$1');
+};
+
 module.exports.check_android_target = function(valid_target) {
-    var msg = 'Failed to run "android". Make sure you have the latest Android SDK installed, and that the "android" command (inside the tools/ folder) is added to your PATH.';
-    return tryCommand('android list targets', msg)
+    // valid_target can look like:
+    //   android-19
+    //   android-L
+    //   Google Inc.:Google APIs:20
+    //   Google Inc.:Glass Development Kit Preview:20
+    var msg = 'Android SDK not found. Make sure that it is installed. If it is not at the default location, set the ANDROID_HOME environment variable.';
+    return tryCommand('android list targets --compact', msg)
     .then(function(output) {
-        if (!output.match(valid_target)) {
-            throw new Error('Please install Android target "' + valid_target + '".\n' +
-                'Hint: Run "android" from your command-line to open the SDK manager.');
+        if (output.split('\n').indexOf(valid_target) == -1) {
+            var androidCmd = module.exports.getAbsoluteAndroidCmd();
+            throw new Error('Please install Android target: "' + valid_target + '".\n\n' +
+                'Hint: Open the SDK manager by running: ' + androidCmd + '\n' +
+                'You will require:\n' +
+                '1. "SDK Platform" for ' + valid_target + '\n' +
+                '2. "Android SDK Platform-tools (latest)\n' +
+                '3. "Android SDK Build-tools" (latest)');
         }
     });
 };

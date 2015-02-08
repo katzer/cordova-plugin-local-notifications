@@ -45,6 +45,28 @@
 
 @implementation CDVDevice
 
+- (NSString*)uniqueAppInstanceIdentifier:(UIDevice*)device
+{
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    static NSString* UUID_KEY = @"CDVUUID";
+
+    NSString* app_uuid = [userDefaults stringForKey:UUID_KEY];
+
+    if (app_uuid == nil) {
+        CFUUIDRef uuidRef = CFUUIDCreate(kCFAllocatorDefault);
+        CFStringRef uuidString = CFUUIDCreateString(kCFAllocatorDefault, uuidRef);
+
+        app_uuid = [NSString stringWithString:(__bridge NSString*)uuidString];
+        [userDefaults setObject:app_uuid forKey:UUID_KEY];
+        [userDefaults synchronize];
+
+        CFRelease(uuidString);
+        CFRelease(uuidRef);
+    }
+
+    return app_uuid;
+}
+
 - (void)getDeviceInfo:(CDVInvokedUrlCommand*)command
 {
     NSDictionary* deviceProperties = [self deviceProperties];
@@ -58,10 +80,11 @@
     UIDevice* device = [UIDevice currentDevice];
     NSMutableDictionary* devProps = [NSMutableDictionary dictionaryWithCapacity:4];
 
+    [devProps setObject:@"Apple" forKey:@"manufacturer"];
     [devProps setObject:[device modelVersion] forKey:@"model"];
     [devProps setObject:@"iOS" forKey:@"platform"];
     [devProps setObject:[device systemVersion] forKey:@"version"];
-    [devProps setObject:[device uniqueAppInstanceIdentifier] forKey:@"uuid"];
+    [devProps setObject:[self uniqueAppInstanceIdentifier:device] forKey:@"uuid"];
     [devProps setObject:[[self class] cordovaVersion] forKey:@"cordova"];
 
     NSDictionary* devReturn = [NSDictionary dictionaryWithDictionary:devProps];

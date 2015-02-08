@@ -18,6 +18,8 @@
 */
 package org.apache.cordova;
 
+import java.security.SecureRandom;
+
 import org.apache.cordova.PluginManager;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,12 +37,14 @@ public class CordovaBridge {
     private NativeToJsMessageQueue jsMessageQueue;
     private volatile int expectedBridgeSecret = -1; // written by UI thread, read by JS thread.
     private String loadedUrl;
+    private String appContentUrlPrefix;
 
-    public CordovaBridge(PluginManager pluginManager, NativeToJsMessageQueue jsMessageQueue) {
+    public CordovaBridge(PluginManager pluginManager, NativeToJsMessageQueue jsMessageQueue, String packageName) {
         this.pluginManager = pluginManager;
         this.jsMessageQueue = jsMessageQueue;
+        this.appContentUrlPrefix = "content://" + packageName + ".";
     }
-    
+
     public String jsExec(int bridgeSecret, String service, String action, String callbackId, String arguments) throws JSONException, IllegalAccessException {
         if (!verifySecret("exec()", bridgeSecret)) {
             return null;
@@ -95,6 +99,8 @@ public class CordovaBridge {
         }
         // Bridge secret wrong and bridge not due to it being from the previous page.
         if (expectedBridgeSecret < 0 || bridgeSecret != expectedBridgeSecret) {
+            Log.e(LOG_TAG, "Bridge access attempt with wrong secret token, possibly from malicious code. Disabling exec() bridge!");
+            clearBridgeSecret();
             throw new IllegalAccessException();
         }
         return true;
@@ -107,7 +113,8 @@ public class CordovaBridge {
 
     /** Called by cordova.js to initialize the bridge. */
     int generateBridgeSecret() {
-        expectedBridgeSecret = (int)(Math.random() * Integer.MAX_VALUE);
+        SecureRandom randGen = new SecureRandom();
+        expectedBridgeSecret = randGen.nextInt(Integer.MAX_VALUE);
         return expectedBridgeSecret;
     }
 
@@ -162,7 +169,9 @@ public class CordovaBridge {
             // Protect against random iframes being able to talk through the bridge.
             // Trust only file URLs and the start URL's domain.
             // The extra origin.startsWith("http") is to protect against iframes with data: having "" as origin.
-            if (origin.startsWith("file:") || (origin.startsWith("http") && loadedUrl.startsWith(origin))) {
+            if (origin.startsWith("file:") ||
+                origin.startsWith(this.appContentUrlPrefix) ||
+                (origin.startsWith("http") && loadedUrl.startsWith(origin))) {
                 // Enable the bridge
                 int bridgeMode = Integer.parseInt(defaultValue.substring(9));
                 jsMessageQueue.setBridgeMode(bridgeMode);

@@ -1,440 +1,450 @@
+/*
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ *
+ * @APPPLANT_LICENSE_HEADER_START@
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ *
+ * @APPPLANT_LICENSE_HEADER_END@
+ */
+
 package de.appplant.cordova.plugin.notification;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
 
-import org.json.JSONArray;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Build;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class Manager {	
-    //---------------Global Parameter------------------------------------------------------------
+/**
+ * Central way to access all or single local notifications set by specific
+ * state like triggered or scheduled. Offers shortcut ways to schedule,
+ * cancel or clear local notifications.
+ */
+public class Manager {
+
+    // Context passed through constructor and used for notification builder.
 	private Context context;
-	private final String PLUGIN_NAME;
-	
-    //---------------Constructor-----------------------------------------------------------------
-	/**
-	 * Constructor of NotificationWrapper-Class
-	 */
-	public Manager(Context context,String PluginName){
+
+    /**
+     * Constructor
+     *
+     * @param context
+     *      Application context
+     */
+	private Manager(Context context){
 		this.context = context;
-		this.PLUGIN_NAME = PluginName;
 	}
-	
-    //---------------Public Functions------------------------------------------------------------
-	/**
-     * Checks if a notification with an ID is scheduled.
+
+    /**
+     * Static method to retrieve class instance.
+     *
+     * @param context
+     *      Application context
+     */
+    public static Manager getInstance(Context context) {
+        return new Manager(context);
+    }
+
+    /**
+     * Schedule local notification specified by JSON object.
+     *
+     * @param options
+     *      JSON object with set of options
+     * @param receiver
+     *      Receiver to handle the trigger event
+     */
+    public Notification schedule (JSONObject options, Class<?> receiver) {
+        return schedule(new Options(context).parse(options), receiver);
+    }
+
+    /**
+     * Schedule local notification specified by options object.
+     *
+     * @param options
+     *      Set of notification options
+     * @param receiver
+     *      Receiver to handle the trigger event
+     */
+    public Notification schedule (Options options, Class<?> receiver) {
+        Notification notification = new Builder(options)
+                .setTriggerReceiver(receiver)
+                .build();
+
+        notification.schedule();
+
+        return notification;
+    }
+
+    /**
+     * Clear local notification specified by ID.
      *
      * @param id
-     *          The notification ID to be check.
-     * @return true if the notification is scheduled
+     *      The notification ID
+     * @param updates
+     *      JSON object with notification options
+     * @param receiver
+     *      Receiver to handle the trigger event
      */
-    public boolean isScheduled (String id) {
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        boolean isScheduled        = alarms.containsKey(id);
-        boolean isNotTriggered	   = false;
-        
-        if (isScheduled) {
-        	JSONObject arguments;
-			try {
-				arguments = new JSONObject(alarms.get(id).toString());
-	        	Options options      = new Options(context).parse(arguments);
-	        	Date fireDate        = new Date(options.getDate());
-	        	isNotTriggered = new Date().before(fireDate);
-			} catch (JSONException e) {
-				isNotTriggered = false;
-				e.printStackTrace();
-			}
-        	
-        }
-        
-        return (isScheduled && isNotTriggered);
+    public Notification update (int id, JSONObject updates, Class<?> receiver) {
+        Notification notification = get(id);
+
+        if (notification == null)
+            return null;
+
+        notification.cancel();
+
+        JSONObject options = mergeJSONObjects(
+                notification.getOptions().getDict(), updates);
+
+        try {
+            options.putOpt("updatedAt", new Date().getTime());
+        } catch (JSONException ignore) {}
+
+        return schedule(options, receiver);
     }
-    
+
     /**
-     * Checks if a notification with an ID was triggered.
+     * Clear local notification specified by ID.
      *
      * @param id
-     *          The notification ID to be check.
-     * @return true if the notification is triggered
+     *      The notification ID
      */
-    public boolean isTriggered (String id) {
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        boolean isScheduled        = alarms.containsKey(id);
-        boolean isTriggered        = isScheduled;
+    public Notification clear (int id) {
+        Notification notification = get(id);
 
-        if (isScheduled) {
-        	JSONObject arguments;
-			try {
-				arguments = new JSONObject(alarms.get(id).toString());
-	        	Options options      = new Options(context).parse(arguments);
-	        	Date fireDate        = new Date(options.getInitialDate());
-	        	isTriggered = new Date().after(fireDate);
-			} catch (JSONException e) {
-				isTriggered = false;
-				e.printStackTrace();
-			}
-        	
+        if (notification != null) {
+            notification.clear();
         }
-        return isTriggered;
+
+        return notification;
     }
+
     /**
-     * Checks whether a notification with an ID exist.
+     * Clear local notification specified by ID.
      *
      * @param id
-     *          The notification ID to check.
-     * @return true if the notification exist
+     *      The notification ID
      */
-    public boolean exist(String id){
-    	boolean exist;
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        exist = alarms.containsKey(id);
-    	return exist;
-    }
+    public Notification cancel (int id) {
+        Notification notification = get(id);
 
-    /**
-     * Retrieves a list with all currently pending notification Ids.
-     *
-     * @return JSONArray with all Id-Strings
-     */
-    public JSONArray getScheduledIds () {
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray scheduledIds     = new JSONArray();
-        
-        for (String id : alarmIds) {
-        	boolean isScheduled;
-        	JSONObject arguments;
- 			try {
- 				arguments = new JSONObject(alarms.get(id).toString());
- 	        	Options options      = new Options(context).parse(arguments);
- 	        	Date fireDate        = new Date(options.getDate());
- 	        	isScheduled = new Date().before(fireDate);
- 			} catch (JSONException e) {
- 				isScheduled = false;
- 				e.printStackTrace();
- 			}
- 			if (isScheduled){
- 				scheduledIds.put(id);
- 			}
+        if (notification != null) {
+            notification.cancel();
         }
 
-        
-        
-        return scheduledIds;
+        return notification;
     }
 
+    /**
+     * Clear all local notifications.
+     */
+    public void clearAll () {
+        List<Notification> notifications = getAll();
 
+        for (Notification notification : notifications) {
+            notification.clear();
+        }
+
+        getNotMgr().cancelAll();
+    }
 
     /**
-     * Retrieves a list with all currently triggered notification Ids.
-     *
-     * @return JSONArray with all Id-Strings
+     * Cancel all local notifications.
      */
-    public JSONArray getTriggeredIds () {
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray triggeredIds     = new JSONArray();
-        Date now                   = new Date();
+    public void cancelAll () {
+        List<Notification> notifications = getAll();
 
-        for (String id : alarmIds) {
-        	boolean isTriggered;
-        	JSONObject arguments;
-        	try{
-        		arguments = new JSONObject(alarms.get(id).toString());
-        		Options options      = new Options(context).parse(arguments);
-        		Date fireDate        = new Date(options.getInitialDate());
-        		isTriggered  = now.after(fireDate);
-            } catch(ClassCastException cce) {
-            	cce.printStackTrace();
-            	isTriggered = false;
-            } catch(JSONException jse) {
-        		jse.printStackTrace();
-            	isTriggered = false;
-            }
+        for (Notification notification : notifications) {
+            notification.cancel();
+        }
 
-            if (isTriggered == true) {
-                triggeredIds.put(id);
+        getNotMgr().cancelAll();
+    }
+
+    /**
+     * All local notifications IDs.
+     */
+    public List<Integer> getIds() {
+        Set<String> keys = getPrefs().getAll().keySet();
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+
+        for (String key : keys) {
+            ids.add(Integer.parseInt(key));
+        }
+
+        return ids;
+    }
+
+    /**
+     * All local notification IDs for given type.
+     *
+     * @param type
+     *      The notification life cycle type
+     */
+    public List<Integer> getIdsByType(Notification.Type type) {
+        List<Notification> notifications = getAll();
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+
+        for (Notification notification : notifications) {
+            if (notification.getType() == type) {
+                ids.add(notification.getId());
             }
         }
 
-        return triggeredIds;
+        return ids;
     }
-    
+
     /**
-     * Retrieves a list with all currently triggered or scheduled notification-Ids.
-     * @return JSONArray with all Id-Strings
-     */
-    public JSONArray getAllIds (){
-        JSONArray allIds     = new JSONArray();
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        for (String id : alarmIds) {
-        	allIds.put(id);
-        }
-        return allIds;
-    }
-    
-    /**
-     * Retrieves a list with all currently pending notification JSONObject.
+     * List of local notifications with matching ID.
      *
-     * @return JSONArray with all notification-JSONObjects
+     * @param ids
+     *      Set of notification IDs
      */
-    public JSONArray getAll(){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray all     = new JSONArray();
+    public List<Notification> getByIds(List<Integer> ids) {
+        ArrayList<Notification> notifications = new ArrayList<Notification>();
 
-        for (String id : alarmIds) {
-        	JSONObject arguments;
-        	try{
-        		arguments = new JSONObject(alarms.get(id).toString());
-        		all.put(arguments);
-        	} catch(JSONException jse) {
-        		jse.printStackTrace();
-            }
-        }
-        return all;
-    }
-    /**
-     * Retrieves a list with all currently scheduled notification-JSONObjects.
-     *
-     * @return JSONArray with all notification-JSONObjects
-     */
-    public JSONArray getScheduled(){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray scheduled     = new JSONArray();
-        
-        for (String id : alarmIds) {
-        	boolean isScheduled;
-        	JSONObject arguments = null;
- 			try {
- 				arguments = new JSONObject(alarms.get(id).toString());
- 	        	Options options      = new Options(context).parse(arguments);
- 	        	Date fireDate        = new Date(options.getDate());
- 	        	isScheduled = new Date().before(fireDate);
- 			} catch (JSONException e) {
- 				isScheduled = false;
- 				e.printStackTrace();
- 			}
- 			if (isScheduled){
- 				scheduled.put(arguments);
- 			}
-        }
+        for (int id : ids) {
+            Notification notification = get(id);
 
-        
-        
-        return scheduled;
-    	
-    }
-    
-    /**
-     * Retrieves a list with all currently triggered notification-JSONObjects.
-     *
-     * @return JSONArray with all notification-JSONObjects
-     */
-    public JSONArray getTriggered(){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray triggered     = new JSONArray();
-        Date now                   = new Date();
-
-        for (String id : alarmIds) {
-        	boolean isTriggered;
-        	JSONObject arguments = null;
-        	try{
-        		arguments = new JSONObject(alarms.get(id).toString());
-        		Options options      = new Options(context).parse(arguments);
-        		Date fireDate        = new Date(options.getInitialDate());
-        		isTriggered  = now.after(fireDate);
-            } catch(ClassCastException cce) {
-            	cce.printStackTrace();
-            	isTriggered = false;
-            } catch(JSONException jse) {
-        		jse.printStackTrace();
-            	isTriggered = false;
-            }
-
-            if (isTriggered == true) {
-                triggered.put(arguments);
+            if (notification != null) {
+                notifications.add(notification);
             }
         }
 
-        return triggered;
+        return notifications;
     }
-    
-    
-    /**
-     * Retrieves a list with all currently pending notification JSONObject.
-     *
-     * @return JSONArray with all notification-JSONObjects
-     */
-    public JSONArray getAll(JSONArray ids){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray all     = new JSONArray();
-        for (String id : alarmIds) {
-        	for(int i=0;i<ids.length();i++){
-        		if(ids.optString(i).equals(id)){
-		        	JSONObject arguments;
-		        	try{
-		        		arguments = new JSONObject(alarms.get(id).toString());
-		        		all.put(arguments);
-		        	} catch(JSONException jse) {
-		        		jse.printStackTrace();
-		            }
-        		}
-        	}
-        }
-        return all;
-    }
-    /**
-     * Retrieves a list with all currently scheduled notification-JSONObjects.
-     *
-     * @return JSONArray with all notification-JSONObjects
-     */
-    public JSONArray getScheduled(JSONArray ids){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray scheduled     = new JSONArray();
-        boolean isScheduled;
-        
-        for (String id : alarmIds) {
-        	for(int i=0;i<ids.length();i++){
-        		if(ids.optString(i).equals(id)){
-		        	JSONObject arguments = null;
-		 			try {
-		 				arguments = new JSONObject(alarms.get(id).toString());
-		 	        	Options options      = new Options(context).parse(arguments);
-		 	        	Date fireDate        = new Date(options.getDate());
-		 	        	isScheduled = new Date().before(fireDate);
-		 			} catch (JSONException e) {
-		 				isScheduled = false;
-		 				e.printStackTrace();
-		 			}
-		 			if (isScheduled){
-		 				scheduled.put(arguments);
-		 			}
-        		}
-        	}
-        }
 
-        
-        
-        return scheduled;
-    	
-    }
-    
     /**
-     * Retrieves a list with all currently triggered notification-JSONObjects.
+     * List of all local notification.
+     */
+    public List<Notification> getAll() {
+        return getByIds(getIds());
+    }
+
+    /**
+     * List of local notifications from given type.
      *
-     * @return JSONArray with all notification-JSONObjects
+     * @param type
+     *      The notification life cycle type
      */
-    public JSONArray getTriggered(JSONArray ids){
-        SharedPreferences settings = getSharedPreferences();
-        Map<String, ?> alarms      = settings.getAll();
-        Set<String> alarmIds       = alarms.keySet();
-        JSONArray triggered     = new JSONArray();
-        Date now                   = new Date();
+    public List<Notification> getByType(Notification.Type type) {
+        List<Notification> notifications = getAll();
+        ArrayList<Notification> list = new ArrayList<Notification>();
 
-        for (String id : alarmIds) {
-        	for(int i=0;i<ids.length();i++){
-        		if(ids.optString(i).equals(id)){
-		        	boolean isTriggered;
-		        	JSONObject arguments = null;
-		        	try{
-		        		arguments = new JSONObject(alarms.get(id).toString());
-		        		Options options      = new Options(context).parse(arguments);
-		        		Date fireDate        = new Date(options.getInitialDate());
-		        		isTriggered  = now.after(fireDate);
-		            } catch(ClassCastException cce) {
-		            	cce.printStackTrace();
-		            	isTriggered = false;
-		            } catch(JSONException jse) {
-		        		jse.printStackTrace();
-		            	isTriggered = false;
-		            }
-		
-		            if (isTriggered == true) {
-		                triggered.put(arguments);
-		            }
-        		}
-        	}
-        }
-
-        return triggered;
-    }
-    
-    
-    
-    //---------------Manage Shared Preferences---------------------------------------------------
-    
-    /**
-     * The Local storage for the application.
-     */
-    private SharedPreferences getSharedPreferences () {
-        return context.getSharedPreferences(PLUGIN_NAME, Context.MODE_PRIVATE);
-    }
-    
-    /**
-     * Persist the information of this alarm to the Android Shared Preferences.
-     * This will allow the application to restore the alarm upon device reboot.
-     * Also this is used by the cancelAll method.
-     *
-     * @param alarmId
-     *            The Id of the notification that must be persisted.
-     * @param args
-     *            The assumption is that parse has been called already.
-     */
-    public void persist (String alarmId, JSONObject args) {
-        Editor editor = getSharedPreferences().edit();
-
-        if (alarmId != null) {
-            editor.putString(alarmId, args.toString());
-            if (Build.VERSION.SDK_INT<9) {
-                editor.commit();
-            } else {
-                editor.apply();
+        for (Notification notification : notifications) {
+            if (notification.getType() == type) {
+                list.add(notification);
             }
         }
-    }
-    
-    /**
-     * Remove a specific alarm from the Android shared Preferences.
-     *
-     * @param alarmId
-     *            The Id of the notification that must be removed.
-     */
-    public void unpersist (String alarmId) {
-        Editor editor = getSharedPreferences().edit();
 
-        if (alarmId != null) {
-            editor.remove(alarmId);
-            if (Build.VERSION.SDK_INT<9) {
-                editor.commit();
-            } else {
-                editor.apply();
+        return list;
+    }
+
+    /**
+     * List of local notifications with matching ID from given type.
+     *
+     * @param type
+     *      The notification life cycle type
+     * @param ids
+     *      Set of notification IDs
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public List<Notification> getBy(Notification.Type type, List<Integer> ids) {
+        ArrayList<Notification> notifications = new ArrayList<Notification>();
+
+        for (int id : ids) {
+            Notification notification = get(id);
+
+            if (notification != null && notification.isScheduled()) {
+                notifications.add(notification);
             }
         }
+
+        return notifications;
     }
 
+    /**
+     * If a notification with an ID exists.
+     *
+     * @param id
+     *      Notification ID
+     */
+    public boolean exist (int id) {
+        return get(id) != null;
+    }
+
+    /**
+     * If a notification with an ID and type exists.
+     *
+     * @param id
+     *      Notification ID
+     * @param type
+     *      Notification type
+     */
+    public boolean exist (int id, Notification.Type type) {
+        Notification notification = get(id);
+
+        return notification != null && notification.getType() == type;
+    }
+
+    /**
+     * List of properties from all local notifications.
+     */
+    public List<JSONObject> getOptions() {
+        return getOptionsById(getIds());
+    }
+
+    /**
+     * List of properties from local notifications with matching ID.
+     *
+     * @param ids
+     *      Set of notification IDs
+     */
+    public List<JSONObject> getOptionsById(List<Integer> ids) {
+        ArrayList<JSONObject> options = new ArrayList<JSONObject>();
+
+        for (int id : ids) {
+            Notification notification = get(id);
+
+            if (notification != null) {
+                options.add(notification.getOptions().getDict());
+            }
+        }
+
+        return options;
+    }
+
+    /**
+     * List of properties from all local notifications from given type.
+     *
+     * @param type
+     *      The notification life cycle type
+     */
+    public List<JSONObject> getOptionsByType(Notification.Type type) {
+        ArrayList<JSONObject> options = new ArrayList<JSONObject>();
+        List<Notification> notifications = getByType(type);
+
+        for (Notification notification : notifications) {
+            options.add(notification.getOptions().getDict());
+        }
+
+        return options;
+    }
+
+    /**
+     * List of properties from local notifications with matching ID from
+     * given type.
+     *
+     * @param type
+     *      The notification life cycle type
+     * @param ids
+     *      Set of notification IDs
+     */
+    public List<JSONObject> getOptionsBy(Notification.Type type,
+                                         List<Integer> ids) {
+
+        ArrayList<JSONObject> options = new ArrayList<JSONObject>();
+        List<Notification> notifications = getByIds(ids);
+
+        for (Notification notification : notifications) {
+            if (notification.getType() == type) {
+                options.add(notification.getOptions().getDict());
+            }
+        }
+
+        return options;
+    }
+
+    /**
+     * Get existent local notification.
+     *
+     * @param id
+     *      Notification ID
+     */
+    public Notification get(int id) {
+        Map<String, ?> alarms = getPrefs().getAll();
+        String notId          = Integer.toString(id);
+        JSONObject options;
+
+        if (!alarms.containsKey(notId))
+            return null;
+
+
+        try {
+            String json = alarms.get(notId).toString();
+            options = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        Builder builder = new Builder(context, options);
+
+        return builder.build();
+    }
+
+    /**
+     * Merge two JSON objects.
+     *
+     * @param obj1
+     *      JSON object
+     * @param obj2
+     *      JSON object with new options
+     */
+    private JSONObject mergeJSONObjects (JSONObject obj1, JSONObject obj2) {
+        Iterator it = obj2.keys();
+
+        while (it.hasNext()) {
+            try {
+                String key = (String)it.next();
+
+                obj1.put(key, obj2.opt(key));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return obj1;
+    }
+
+    /**
+     * Shared private preferences for the application.
+     */
+    private SharedPreferences getPrefs () {
+        return context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Notification manager for the application.
+     */
+    private NotificationManager getNotMgr () {
+        return (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+    }
 
 }

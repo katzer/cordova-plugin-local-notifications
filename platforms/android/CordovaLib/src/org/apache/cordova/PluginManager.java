@@ -110,8 +110,12 @@ public class PluginManager {
     @Deprecated // Should not be exposed as public.
     public void startupPlugins() {
         for (PluginEntry entry : entryMap.values()) {
+            // Add a null entry to for each non-startup plugin to avoid ConcurrentModificationException
+            // When iterating plugins.
             if (entry.onload) {
                 getPlugin(entry.service);
+            } else {
+                pluginMap.put(entry.service, null);
             }
         }
     }
@@ -232,8 +236,50 @@ public class PluginManager {
      */
     public void onPause(boolean multitasking) {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            plugin.onPause(multitasking);
+            if (plugin != null) {
+                plugin.onPause(multitasking);
+            }
         }
+    }
+
+    /**
+     * Called when the system received an HTTP authentication request. Plugins can use
+     * the supplied HttpAuthHandler to process this auth challenge.
+     *
+     * @param view              The WebView that is initiating the callback
+     * @param handler           The HttpAuthHandler used to set the WebView's response
+     * @param host              The host requiring authentication
+     * @param realm             The realm for which authentication is required
+     * 
+     * @return                  Returns True if there is a plugin which will resolve this auth challenge, otherwise False
+     * 
+     */
+    public boolean onReceivedHttpAuthRequest(CordovaWebView view, ICordovaHttpAuthHandler handler, String host, String realm) {
+        for (CordovaPlugin plugin : this.pluginMap.values()) {
+            if (plugin != null && plugin.onReceivedHttpAuthRequest(view, handler, host, realm)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Called when he system received an SSL client certificate request.  Plugin can use
+     * the supplied ClientCertRequest to process this certificate challenge.
+     *
+     * @param view              The WebView that is initiating the callback
+     * @param request           The client certificate request
+     *
+     * @return                  Returns True if plugin will resolve this auth challenge, otherwise False
+     *
+     */
+    public boolean onReceivedClientCertRequest(CordovaWebView view, ICordovaClientCertRequest request) {
+        for (CordovaPlugin plugin : this.pluginMap.values()) {
+            if (plugin != null && plugin.onReceivedClientCertRequest(view, request)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -243,7 +289,9 @@ public class PluginManager {
      */
     public void onResume(boolean multitasking) {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            plugin.onResume(multitasking);
+            if (plugin != null) {
+                plugin.onResume(multitasking);
+            }
         }
     }
 
@@ -252,7 +300,9 @@ public class PluginManager {
      */
     public void onDestroy() {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            plugin.onDestroy();
+            if (plugin != null) {
+                plugin.onDestroy();
+            }
         }
     }
 
@@ -269,9 +319,11 @@ public class PluginManager {
             return obj;
         }
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            obj = plugin.onMessage(id, data);
-            if (obj != null) {
-                return obj;
+            if (plugin != null) {
+                obj = plugin.onMessage(id, data);
+                if (obj != null) {
+                    return obj;
+                }
             }
         }
         return null;
@@ -282,7 +334,9 @@ public class PluginManager {
      */
     public void onNewIntent(Intent intent) {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            plugin.onNewIntent(intent);
+            if (plugin != null) {
+                plugin.onNewIntent(intent);
+            }
         }
     }
 
@@ -320,15 +374,19 @@ public class PluginManager {
      */
     public void onReset() {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            plugin.onReset();
+            if (plugin != null) {
+                plugin.onReset();
+            }
         }
     }
 
     Uri remapUri(Uri uri) {
         for (CordovaPlugin plugin : this.pluginMap.values()) {
-            Uri ret = plugin.remapUri(uri);
-            if (ret != null) {
-                return ret;
+            if (plugin != null) {
+                Uri ret = plugin.remapUri(uri);
+                if (ret != null) {
+                    return ret;
+                }
             }
         }
         return null;

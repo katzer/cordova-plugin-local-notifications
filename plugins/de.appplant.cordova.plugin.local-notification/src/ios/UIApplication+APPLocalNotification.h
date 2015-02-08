@@ -1,58 +1,63 @@
 /*
- Copyright 2013-2014 appPlant UG
-
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
- to you under the Apache License, Version 2.0 (the
- "License"); you may not use this file except in compliance
- with the License.  You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing,
- software distributed under the License is distributed on an
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- KIND, either express or implied.  See the License for the
- specific language governing permissions and limitations
- under the License.
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ *
+ * @APPPLANT_LICENSE_HEADER_START@
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ *
+ * @APPPLANT_LICENSE_HEADER_END@
  */
+
+#import "UILocalNotification+APPLocalNotification.h"
 
 @interface UIApplication (APPLocalNotification)
 
 @property (readonly, getter=localNotifications) NSArray* localNotifications;
-@property (readonly, getter=scheduledLocalNotifications2) NSArray* triggeredLocalNotifications2;
-@property (readonly, getter=triggeredLocalNotifications) NSArray* triggeredLocalNotifications;
-
 @property (readonly, getter=localNotificationIds) NSArray* localNotificationIds;
-@property (readonly, getter=triggeredLocalNotificationIds) NSArray* triggeredLocalNotificationIds;
-@property (readonly, getter=scheduledLocalNotificationIds) NSArray* scheduledLocalNotificationIds;
 
 // If the app has the permission to schedule local notifications
 - (BOOL) hasPermissionToScheduleLocalNotifications;
 // Ask for permission to schedule local notifications
 - (void) registerPermissionToScheduleLocalNotifications;
 
-// Get local notification by ID
+// List of all local notification IDs from given type
+- (NSArray*) localNotificationIdsByType:(APPLocalNotificationType)type;
+
+// If local notification with ID exists
+- (BOOL) localNotificationExist:(NSString*)id;
+// If local notification with ID and type exists
+- (BOOL) localNotificationExist:(NSString*)id type:(APPLocalNotificationType)type;
+
+// Local notification by ID
 - (UILocalNotification*) localNotificationWithId:(NSString*)id;
-// Get scheduled local notification by ID
-- (UILocalNotification*) scheduledLocalNotificationWithId:(NSString*)id;
-// Get triggered local notification by ID
-- (UILocalNotification*) triggeredLocalNotificationWithId:(NSString*)id;
+// Local notification by ID and type
+- (UILocalNotification*) localNotificationWithId:(NSString*)id andType:(APPLocalNotificationType)type;
 
 // Property list from all local notifications
 - (NSArray*) localNotificationOptions;
-// Property list from all scheduled notifications
-- (NSArray*) scheduledLocalNotificationOptions;
-// Property list from all triggered notifications
-- (NSArray*) triggeredLocalNotificationOptions;
-
 // Property list from given local notifications
-- (NSArray*) localNotificationOptions:(NSArray*)ids;
-// Property list from given scheduled notifications
-- (NSArray*) scheduledLocalNotificationOptions:(NSArray*)ids;
-// Property list from given triggered notifications
-- (NSArray*) triggeredLocalNotificationOptions:(NSArray*)ids;
+- (NSArray*) localNotificationOptionsById:(NSArray*)ids;
+// Property list from all local notifications with type constraint
+- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type;
+// Property list from given local notifications with type constraint
+- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type andId:(NSArray*)ids;
+
+// Clear single local notfications
+- (void) clearLocalNotification:(UILocalNotification*)notification;
+// Clear all local notfications
+- (void) clearAllLocalNotifications;
 
 @end

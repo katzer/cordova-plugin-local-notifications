@@ -28,110 +28,130 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Notification Example</title>
-
-        <style type="text/css">
-        .button {
-            -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
-            -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
-            box-shadow:inset 0px 1px 0px 0px #caefab;
-            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
-            background:-moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
-            background-color:#77d42a;
-            -webkit-border-top-left-radius:10px;
-            -moz-border-radius-topleft:10px;
-            border-top-left-radius:10px;
-            -webkit-border-top-right-radius:10px;
-            -moz-border-radius-topright:10px;
-            border-top-right-radius:10px;
-            -webkit-border-bottom-right-radius:10px;
-            -moz-border-radius-bottomright:10px;
-            border-bottom-right-radius:10px;
-            -webkit-border-bottom-left-radius:10px;
-            -moz-border-radius-bottomleft:10px;
-            border-bottom-left-radius:10px;
-            text-indent:0px;
-            border:1px solid #268a16;
-            display:inline-block;
-            color:#306108;
-            font-family:Arial;
-            font-size:15px;
-            font-weight:bold;
-            font-style:normal;
-            min-height:30px;
-            max-height:42px;
-            line-height:30px;
-            width:100%;
-            margin:10px 0 0 0;
-            text-transform:none;
-            text-decoration:none;
-            text-align:center;
-            text-shadow:1px 1px 0px #aade7c;
-        }
-        .button:active {
-            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
-            background:-moz-linear-gradient( center top, #5cb811 5%, #77d42a 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
-            background-color:#5cb811;
-        }
-        .button .hint {
-            font-size:10px;
-            position:relative;
-            top:-15px;
-        }
-        </style>
     </head>
     <body>
-        <div class="app">
-            <h1>Local-Notification Example</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
+        <div>
+            <div class="app">
+                <h1>Local-Notification Example</h1>
+                <div id="deviceready" class="blink">
+                    <p class="event listening">Connecting to Device</p>
+                    <p class="event received">Device is Ready</p>
+                </div>
             </div>
 
-            <a href="#" class="button" onclick="hasPermission()">Has permission?<br/><span class="hint">notification.local.hasPermission()</span></a>
-            <a href="#" class="button" onclick="registerPermission()">Register permission<br/><span class="hint">notification.local.registerPermission()</span></a>
+            <!-- permission -->
+            <h2 class="section" style="padding-top:180px;">Permission (iOS8)</h2>
+            <div class="container">
+                <div onclick="hasPermission()">Granted?<br/><span>hasPermission()</span></div>
+                <div onclick="registerPermission()">Register<br/><span>registerPermission()</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="schedule()">Schedule now<br/><span class="hint">notification.local.add()</span></a>
-            <a href="#" class="button" onclick="scheduleMultiple()">Schedule multiple<br/><span class="hint">notification.local.add()</span></a>
-            <a href="#" class="button" onclick="scheduleDelayed()">Schedule in 5 sec<br/><span class="hint">notification.local.add([])</span></a>
-            <a href="#" class="button" onclick="scheduleMinutely()">Schedule every min<br/><span class="hint">notification.local.add()</span></a>
+            <!-- schedule -->
+            <h2 class="section">Schedule</h2>
+            <div class="container">
+                <div onclick="schedule()">Single<br/><span>schedule(1)</span></div>
+                <div onclick="scheduleMultiple()">Multiple<br/><span>schedule(1, 2, 3)</span></div>
+            </div>
+            <div class="container">
+                <div onclick="scheduleDelayed()">In 5 sec<br/><span>schedule(1, firstAt:later)</span></div>
+                <div onclick="scheduleMinutely()">Every min<br/><span>schedule(1, every:minute)</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="update()">Update<br/><span class="hint">notification.local.update()</span></a>
+            <!-- update -->
+            <h2 class="section">Update</h2>
+            <div class="container">
+                <div onclick="update()">Title<br/><span>update(1)</span></div>
+                <div onclick="updateInterval()">Interval<br/><span>update(1, every:minute)</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="cancel()">Cancel<br/><span class="hint">notification.local.cancel()</span></a>
-            <a href="#" class="button" onclick="cancelMultiple()">Cancel multiple<br/><span class="hint">notification.local.cancel([])</span></a>
-            <a href="#" class="button" onclick="cancelAll()">Cancel all<br/><span class="hint">notification.local.cancelAll()</span></a>
+            <!-- clear -->
+            <h2 class="section">Clear</h2>
+            <div class="container">
+                <div onclick="clearSingle()">Single<br/><span>clear(1)</span></div>
+                <div onclick="clearMultiple()">Multiple<br/><span>clear(2, 3)</span></div>
+            </div>
+            <div class="container">
+                <div onclick="clearAll()">All<br/><span>clearAll()</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="clear()">Cancel<br/><span class="hint">notification.local.clear()</span></a>
-            <a href="#" class="button" onclick="clearMultiple()">Cancel multiple<br/><span class="hint">notification.local.clear([])</span></a>
-            <a href="#" class="button" onclick="clearAll()">Cancel all<br/><span class="hint">notification.local.clearAll()</span></a>
+            <!-- cancel -->
+            <h2 class="section">Cancel</h2>
+            <div class="container">
+                <div onclick="cancel()">Single<br/><span>cancel(1)</span></div>
+                <div onclick="cancelMultiple()">Multiple<br/><span>cancel(2, 3)</span></div>
+            </div>
+            <div class="container">
+                <div onclick="cancelAll()">All<br/><span>cancelAll()</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="getIds()">All IDs<br/><span class="hint">notification.local.getIds()</span></a>
-            <a href="#" class="button" onclick="getScheduledIds()">Scheduled IDs<br/><span class="hint">notification.local.getScheduledIds()</span></a>
-            <a href="#" class="button" onclick="getTriggeredIds()">Triggered IDs<br/><span class="hint">notification.local.getTriggeredIds()</span></a>
+            <!-- presence -->
+            <h2 class="section">Presence</h2>
+            <div class="container">
+                <div onclick="isScheduled()">Scheduled?<br/><span>isScheduled(1)</span></div>
+                <div onclick="isTriggered()">Triggered?<br/><span>isTrigered(1)</span></div>
+            </div>
+            <div class="container">
+                <div onclick="isPresent()">Present?<br/><span>present(1)</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="exists()">Exists?<br/><span class="hint">notification.local.exists()</span></a>
-            <a href="#" class="button" onclick="isScheduled()">Scheduled?<br/><span class="hint">notification.local.isScheduled()</span></a>
-            <a href="#" class="button" onclick="isTriggered()">Triggered?<br/><span class="hint">notification.local.isTriggered()</span></a>
+            <!-- id's -->
+            <h2 class="section">ID's</h2>
+            <div class="container">
+                <div onclick="getScheduledIds()">Scheduled<br/><span>getScheduledIds()</span></div>
+                <div onclick="getTriggeredIds()">Triggered<br/><span>getTriggeredIds()</span></div>
+            </div>
+            <div class="container">
+                <div onclick="getIds()">All<br/><span>getIds()</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="getAll()">All Notifications<br/><span class="hint">notification.local.get()</span></a>
-            <a href="#" class="button" onclick="getScheduled()">Scheduled Notifications<br/><span class="hint">notification.local.getScheduled()</span></a>
-            <a href="#" class="button" onclick="getTriggered()">Triggered Notifications<br/><span class="hint">notification.local.getTriggered()</span></a>
+            <!-- notifications -->
+            <h2 class="section">Notifications</h2>
+            <div class="container">
+                <div onclick="getScheduled()">Scheduled<br/><span>getScheduled()</span></div>
+                <div onclick="getTriggered()">Triggered<br/><span>getTrigered()</span></div>
+            </div>
+            <div class="container">
+                <div onclick="get()">Single<br/><span>get(1)</span></div>
+                <div onclick="getMultiple()">Multiple<br/><span>get(1, 2)</span></div>
+            </div>
+            <div class="container">
+                <div onclick="getAll()">All<br/><span>getAll()</span></div>
+            </div>
 
-            <a href="#" class="button" onclick="setDefaultTitle()">Change default title<br/><span class="hint">notification.local.setDefaults()</span></a>
+            <!-- defaults -->
+            <h2 class="section">Defaults</h2>
+            <div class="container">
+                <div onclick="setDefaultTitle()">Change title<br/><span>setDefaults(title:"...")</span></div>
+            </div>
+
+            <!-- copyright -->
+            <div class="copyright">
+                © 2013-2015 appPlant
+            </div>
         </div>
 
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript">
-            var counter = 0, id = 1;
+            var id = 1;
 
-            var callback = function () {
-                getIds();
+            callback = function () {
+                cordova.plugins.notification.local.getIds(function (ids) {
+                    showToast('IDs: ' + ids.join(' ,'));
+                });
             };
 
+            showToast = function (text) {
+                setTimeout(function () {
+                    window.plugins.toast.showShortBottom(text);
+                }, 100);
+            };
+
+         </script>
+
+        <!-- permission -->
+        <script type="text/javascript">
             hasPermission = function () {
                 cordova.plugins.notification.local.hasPermission(function (granted) {
                     alert(granted);
@@ -143,25 +163,30 @@
                     alert(granted);
                 });
             };
+        </script>
 
+        <!-- schedule -->
+        <script type="text/javascript">
             schedule = function () {
-                cordova.plugins.notification.local.add({
-                    id:      id,
-                    message: 'Test Message ' + (++counter),
-                    json:    { test:id }
+                cordova.plugins.notification.local.schedule({
+                    id:   1,
+                    text: 'Test Message 1',
+                    icon: 'http://www.optimizeordie.de/wp-content/plugins/social-media-widget/images/default/64/googleplus.png',
+                    sound: null,
+                    data: { test:id }
                 });
             };
 
             scheduleMultiple = function () {
-                cordova.plugins.notification.local.add([{
-                    id:      id,
-                    message: 'Multi Message ' + (++counter)
+                cordova.plugins.notification.local.schedule([{
+                    id:   1,
+                    text: 'Multi Message 1'
                 },{
-                    id:      id+1,
-                    message: 'Multi Message ' + (++counter)
+                    id:   2,
+                    text: 'Multi Message 2'
                 },{
-                    id:      id+2,
-                    message: 'Multi Message ' + (++counter)
+                    id:   3,
+                    text: 'Multi Message 3'
                 }]);
             };
 
@@ -169,154 +194,198 @@
                 var now             = new Date().getTime(),
                     _5_sec_from_now = new Date(now + 5*1000);
 
-                cordova.plugins.notification.local.add({
-                    id:      id,
-                    title:   'Scheduled with delay',
-                    message: 'Test Message ' + (++counter),
-                    date:    _5_sec_from_now,
-                    sound:   'file://beep.caf'
+                var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+
+                cordova.plugins.notification.local.schedule({
+                    id:    1,
+                    title: 'Scheduled with delay',
+                    text:  'Test Message 1',
+                    at:    _5_sec_from_now,
+                    sound: sound
                 });
             };
 
             scheduleMinutely = function () {
-                cordova.plugins.notification.local.add({
-                    id:      id,
-                    message: 'Scheduled every minute',
-                    repeat:  'minutely',
-                    sound:   'res://beep.caf'
+                var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+
+                cordova.plugins.notification.local.schedule({
+                    id:    1,
+                    text:  'Scheduled every minute',
+                    every: 'minute',
+                    sound: sound
                 });
             };
+        </script>
 
+        <!-- update -->
+        <script type="text/javascript">
             update = function () {
                 cordova.plugins.notification.local.update({
-                    id:      id,
-                    message: 'Updated Message ' + (counter),
-                    json:    { updated:true }
+                    id:    1,
+                    text:  'Updated Message 1',
+                    json:  { updated:true }
                 });
             };
 
-            cancel = function () {
-                counter = 0;
-                cordova.plugins.notification.local.cancel(id,callback);
+            updateInterval = function () {
+                cordova.plugins.notification.local.update({
+                    id:    1,
+                    text:  'Updated Message 1',
+                    every: 'minute'
+                });
             };
+        </script>
 
-            cancelMultiple = function () {
-                counter = 0;
-                cordova.plugins.notification.local.cancel([id, id+1],callback);
-            };
-
-            cancelAll = function () {
-                counter = 0;
-                cordova.plugins.notification.local.cancelAll(callback);
-            };
-
-            clear = function () {
-                counter = 0;
-                cordova.plugins.notification.local.clear(id,callback);
+        <!-- clear -->
+        <script type="text/javascript">
+            clearSingle = function () {
+                cordova.plugins.notification.local.clear(1,callback);
             };
 
             clearMultiple = function () {
-                counter = 0;
-                cordova.plugins.notification.local.clear([id, id+1],callback);
+                cordova.plugins.notification.local.clear([2, 3],callback);
             };
 
             clearAll = function () {
-                counter = 0;
                 cordova.plugins.notification.local.clearAll(callback);
             };
+        </script>
 
-            setDefaultTitle = function () {
-                cordova.plugins.notification.local.setDefaults({
-                    title: 'New Default Title'
-                });
-            };
-         </script>
-
-        <!-- getters bool -->
+        <!-- cancel -->
         <script type="text/javascript">
-            exists = function () {
-                cordova.plugins.notification.local.exists(id, function (exists) {
-                    alert('Notification with ID ' + id + ' exists:\n' + exists);
+            cancel = function () {
+                cordova.plugins.notification.local.cancel(1,callback);
+            };
+
+            cancelMultiple = function () {
+                cordova.plugins.notification.local.cancel([2, 3],callback);
+            };
+
+            cancelAll = function () {
+                cordova.plugins.notification.local.cancelAll(callback);
+            };
+        </script>
+
+        <!-- presence -->
+        <script type="text/javascript">
+            isPresent = function () {
+                cordova.plugins.notification.local.isPresent(id, function (present) {
+                    showToast(present ? 'Yes' : 'No');
                 });
             };
 
             isScheduled = function () {
-                cordova.plugins.notification.local.isScheduled(id, function (isScheduled) {
-                    alert('Notification with ID ' + id + ' is scheduled:\n' + isScheduled);
+                cordova.plugins.notification.local.isScheduled(id, function (scheduled) {
+                    showToast(scheduled ? 'Yes' : 'No');
                 });
             };
 
             isTriggered = function () {
-                cordova.plugins.notification.local.isTriggered(id, function (isTriggered) {
-                    alert('Notification with ID ' + id + ' is triggered:\n' + isTriggered);
+                cordova.plugins.notification.local.isTriggered(id, function (triggered) {
+                    showToast(triggered ? 'Yes' : 'No');
                 });
             };
         </script>
 
-        <!-- getters ID -->
+        <!-- IDs -->
         <script type="text/javascript">
+            var callback = function (ids) {
+                    showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
+                };
+
             getIds = function () {
-                cordova.plugins.notification.local.getIds(function (ids) {
-                    alert('IDs:\n[' + ids.join(' ,') + ']');
-                });
+                cordova.plugins.notification.local.getIds(callback);
             };
 
             getScheduledIds = function () {
-                cordova.plugins.notification.local.getScheduledIds(function (ids) {
-                    alert('Scheduled IDs:\n[' + ids.join(' ,') + ']');
-                });
+                cordova.plugins.notification.local.getScheduledIds(callback);
             };
 
             getTriggeredIds = function () {
-                cordova.plugins.notification.local.getTriggeredIds(function (ids) {
-                    alert('Triggered IDs:\n[' + ids.join(' ,') + ']');
-                });
+                cordova.plugins.notification.local.getTriggeredIds(callback);
             };
         </script>
 
-        <!-- getters object -->
+        <!-- notifications -->
         <script type="text/javascript">
+            var callback = function (notifications) {
+                    console.log(notifications);
+                    showToast(notifications.length === 0 ? '- none -' : notifications.join(' ,'));
+                };
+
+            get = function () {
+                cordova.plugins.notification.local.get(1, callback);
+            };
+
+            getMultiple = function () {
+                cordova.plugins.notification.local.get([1, 2], callback);
+            };
+
             getAll = function () {
-                cordova.plugins.notification.local.getAll(function (data) {
-                    alert('Notifications:\n[' + data.join(' ,') + ']');
-                });
+                cordova.plugins.notification.local.getAll(callback);
             };
 
             getScheduled = function () {
-                cordova.plugins.notification.local.getScheduled(function (data) {
-                    alert('Scheduled Notifications:\n[' + data.join(' ,') + ']');
-                });
+                cordova.plugins.notification.local.getScheduled(callback);
             };
 
             getTriggered = function () {
-                cordova.plugins.notification.local.getTriggered(function (data) {
-                    alert('Triggered Notifications:\n[' + data.join(' ,') + ']');
+                cordova.plugins.notification.local.getTriggered(callback);
+            };
+        </script>
+
+        <!-- defaults -->
+        <script type="text/javascript">
+            setDefaultTitle = function () {
+                cordova.plugins.notification.local.setDefaults({
+                    title: 'New Default Title'
                 });
             };
         </script>
 
         <!-- callbacks -->
         <script type="text/javascript">
-            document.addEventListener('sdeviceready', function () {
-                cordova.plugins.notification.local.onadd = function (id, state, json) {
-                    console.log(arguments);
-                    alert('on add\n' + Array.apply(null, arguments).join("\n"));
-                };
+            document.addEventListener('deviceready', function () {
 
-                cordova.plugins.notification.local.ontrigger = function (id, state, json) {
-                    console.log(arguments);
-                    alert('on trigger\n' + Array.apply(null, arguments).join("\n"));
-                };
+                cordova.plugins.notification.local.on('schedule', function (notification) {
+                    console.log('onschedule', arguments);
+                    // showToast('scheduled: ' + notification.id);
+                });
 
-                cordova.plugins.notification.local.onclick = function (id, state, json) {
-                    console.log(arguments);
-                    alert('on click\n' + Array.apply(null, arguments).join("\n"));
-                };
+                cordova.plugins.notification.local.on('update', function (notification) {
+                    console.log('onupdate', arguments);
+                    // showToast('updated: ' + notification.id);
+                });
 
-                cordova.plugins.notification.local.oncancel = function (id, state, json) {
-                    console.log(arguments);
-                    alert('on cancel\n' + Array.apply(null, arguments).join("\n"));
-                };
+                cordova.plugins.notification.local.on('trigger', function (notification) {
+                    console.log('ontrigger', arguments);
+                    showToast('triggered: ' + notification.id);
+                });
+
+                cordova.plugins.notification.local.on('click', function (notification) {
+                    console.log('onclick', arguments);
+                    showToast('clicked: ' + notification.id);
+                });
+
+                cordova.plugins.notification.local.on('cancel', function (notification) {
+                    console.log('oncancel', arguments);
+                    // showToast('canceled: ' + notification.id);
+                });
+
+                cordova.plugins.notification.local.on('clear', function (notification) {
+                    console.log('onclear', arguments);
+                    showToast('cleared: ' + notification.id);
+                });
+
+                cordova.plugins.notification.local.on('cancelall', function () {
+                    console.log('oncancelall', arguments);
+                    // showToast('canceled all');
+                });
+
+                cordova.plugins.notification.local.on('clearall', function () {
+                    console.log('onclearall', arguments);
+                    // showToast('cleared all');
+                });
             }, false);
         </script>
 

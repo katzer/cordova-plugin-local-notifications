@@ -21,7 +21,6 @@ package org.apache.cordova;
 import java.util.Hashtable;
 
 import org.apache.cordova.CordovaInterface;
-
 import org.apache.cordova.LOG;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +32,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.view.View;
+import android.webkit.ClientCertRequest;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
@@ -115,15 +115,45 @@ public class CordovaWebViewClient extends WebViewClient {
     @Override
     public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
 
-        // Get the authentication token
+        // Get the authentication token (if specified)
         AuthenticationToken token = this.getAuthenticationToken(host, realm);
         if (token != null) {
             handler.proceed(token.getUserName(), token.getPassword());
+            return;
         }
-        else {
-            // Handle 401 like we'd normally do!
-            super.onReceivedHttpAuthRequest(view, handler, host, realm);
+
+        // Check if there is some plugin which can resolve this auth challenge
+        PluginManager pluginManager = this.appView.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedHttpAuthRequest(this.appView, new CordovaHttpAuthHandler(handler), host, realm)) {
+            this.appView.loadUrlTimeout++;
+            return;
         }
+
+        // By default handle 401 like we'd normally do!
+        super.onReceivedHttpAuthRequest(view, handler, host, realm);
+    }
+    
+    /**
+     * On received client cert request.
+     * The method forwards the request to any running plugins before using the default implementation.
+     *
+     * @param view
+     * @param request
+     */
+    @Override
+    @TargetApi(21)
+    public void onReceivedClientCertRequest (WebView view, ClientCertRequest request)
+    {
+
+        // Check if there is some plugin which can resolve this certificate request
+        PluginManager pluginManager = this.appView.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedClientCertRequest(this.appView, new CordovaClientCertRequest(request))) {
+            this.appView.loadUrlTimeout++;
+            return;
+        }
+
+        // By default pass to WebViewClient
+        super.onReceivedClientCertRequest(view, request);
     }
 
     /**
@@ -163,8 +193,8 @@ public class CordovaWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        // Ignore excessive calls.
-        if (!isCurrentlyLoading) {
+        // Ignore excessive calls, if url is not about:blank (CB-8317).
+        if (!isCurrentlyLoading && !url.startsWith("about:")) {
             return;
         }
         isCurrentlyLoading = false;
