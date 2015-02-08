@@ -1,3 +1,8 @@
+
+<p align="right">
+    <a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example">EXAMPLE :point_right:</a>
+</p>
+
 Cordova Local-Notification Plugin
 ==================================
 
