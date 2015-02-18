@@ -159,7 +159,7 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
     else if ([interval isEqualToString:@"minute"]) {
         return NSCalendarUnitMinute;
     }
-    else if ([interval isEqualToString:@"houre"]) {
+    else if ([interval isEqualToString:@"hour"]) {
         return NSCalendarUnitHour;
     }
     else if ([interval isEqualToString:@"day"]) {
