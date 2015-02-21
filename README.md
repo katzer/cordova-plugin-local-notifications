@@ -150,8 +150,7 @@ The method takes a hash as an argument to specify the notification's properties 
 Scheduling a local notification will override an earlier one with the same ID.
 All properties are optional. If no date object is given, the notification pops-up immediately.
 
-**Note:** On Android the notification id needs to be a string which can be converted to a number.
-If the ID has an invalid format, it will be ignored, but cancelling the notification will fail.
+**Note:** The notification ID must be a string which can be converted to a number (that is, `isNaN()` returns false for). If the ID has an invalid format, it will silently be changed to `0` and will override an earlier one with the same ID.
 
 #### Further information
 - See the [onadd][onadd] event for registering a listener to be notified when a local notification has been scheduled.
