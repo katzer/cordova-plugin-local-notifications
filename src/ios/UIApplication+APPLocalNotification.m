@@ -24,8 +24,6 @@
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
 
-#import <Availability.h>
-
 @implementation UIApplication (APPLocalNotification)
 
 #pragma mark -
@@ -36,19 +34,21 @@
  */
 - (BOOL) hasPermissionToScheduleLocalNotifications
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-    UIUserNotificationType types;
-    UIUserNotificationSettings *settings;
+    if ([[UIApplication sharedApplication]
+         respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
 
-    settings = [[UIApplication sharedApplication]
-                currentUserNotificationSettings];
+        settings = [[UIApplication sharedApplication]
+                    currentUserNotificationSettings];
 
-    types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
-    return (settings.types & types);
-#else
-    return YES;
-#endif
+        return (settings.types & types);
+    } else {
+        return YES;
+    }
 }
 
 /**
@@ -56,18 +56,20 @@
  */
 - (void) registerPermissionToScheduleLocalNotifications
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-    UIUserNotificationType types;
-    UIUserNotificationSettings *settings;
+    if ([[UIApplication sharedApplication]
+         respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        UIUserNotificationType types;
+        UIUserNotificationSettings *settings;
 
-    types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
+        types = UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
-    settings = [UIUserNotificationSettings settingsForTypes:types
-                                                 categories:nil];
+        settings = [UIUserNotificationSettings settingsForTypes:types
+                                                     categories:nil];
 
-    [[UIApplication sharedApplication]
-     registerUserNotificationSettings:settings];
-#endif
+        [[UIApplication sharedApplication]
+         registerUserNotificationSettings:settings];
+    }
 }
 
 #pragma mark -

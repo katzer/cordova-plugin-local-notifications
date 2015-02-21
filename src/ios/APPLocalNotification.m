@@ -27,8 +27,6 @@
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
 
-#import <Availability.h>
-
 @interface APPLocalNotification ()
 
 // Retrieves the application state
@@ -411,16 +409,17 @@
  */
 - (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+    if ([[UIApplication sharedApplication]
+          respondsToSelector:@selector(registerUserNotificationSettings:)])
+    {
+        _command = command;
 
-    _command = command;
-
-    [self.commandDelegate runInBackground:^{
-        [self.app registerPermissionToScheduleLocalNotifications];
-    }];
-#else
-    [self hasPermission:command];
-#endif
+        [self.commandDelegate runInBackground:^{
+            [self.app registerPermissionToScheduleLocalNotifications];
+        }];
+    } else {
+        [self hasPermission:command];
+    }
 }
 
 #pragma mark -
