@@ -508,7 +508,7 @@ exports._defaults = {
     title: '',
     sound: 'res://platform_default',
     badge: 0,
-    id:    0,
+    id:    "0",
     data:  undefined,
     every: undefined,
     at:    undefined
