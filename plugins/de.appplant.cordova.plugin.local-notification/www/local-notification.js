@@ -30,7 +30,7 @@ var exec    = require('cordova/exec'),
  *************/
 
 /**
- * Returns the default settings
+ * Returns the default settings.
  *
  * @return {Object}
  */
@@ -39,7 +39,7 @@ exports.getDefaults = function () {
 };
 
 /**
- * Overwrite default settings
+ * Overwrite default settings.
  *
  * @param {Object} defaults
  */
@@ -423,17 +423,25 @@ exports.registerPermission = function (callback, scope) {
     exec(fn, null, 'LocalNotification', 'registerPermission', []);
 };
 
+
+/****************
+ * DEPRECATIONS *
+ ****************/
+
 /**
- * @deprecated
- *
- * Register permission to show notifications if not already granted.
- *
- * @param {Function} callback
- *      The function to be exec as the callback
- * @param {Object?} scope
- *      The callback function's scope
+ * Schedule a new local notification.
  */
-exports.promptForPermission = function (callback, scope) {
+exports.add = function () {
+    console.warn('Depreated: Please use `notification.local.schedule` instead.');
+
+    exports.schedule.apply(this, arguments);
+};
+
+/**
+ * Register permission to show notifications
+ * if not already granted.
+ */
+exports.promptForPermission = function () {
     console.warn('Depreated: Please use `notification.local.registerPermission` instead.');
 
     exports.registerPermission.apply(this, arguments);
@@ -500,7 +508,7 @@ exports._defaults = {
     title: '',
     sound: 'res://platform_default',
     badge: 0,
-    id:    0,
+    id:    "0",
     data:  undefined,
     every: undefined,
     at:    undefined

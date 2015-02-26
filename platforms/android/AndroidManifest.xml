@@ -10,16 +10,16 @@
             </intent-filter>
         </activity>
         <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
-        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
-        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver" />
-        <activity android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.localnotification.ClickActivity" android:theme="@android:style/Theme.NoDisplay" />
-        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.TriggerReceiver" />
-        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.ClearReceiver" />
         <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver" />
+        <activity android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.localnotification.ClickActivity" android:theme="@android:style/Theme.NoDisplay" />
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.TriggerReceiver" />
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.ClearReceiver" />
         <activity android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.notification.ClickActivity" android:theme="@android:style/Theme.NoDisplay" />
     </application>
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="21" />

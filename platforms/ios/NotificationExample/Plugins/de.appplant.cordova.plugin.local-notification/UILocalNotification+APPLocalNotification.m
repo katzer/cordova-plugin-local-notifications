@@ -166,7 +166,6 @@ NSInteger const APPLocalNotificationTypeTriggered = 2;
     NSData* data;
     NSMutableDictionary* obj = [self.userInfo mutableCopy];
 
-    [obj removeObjectForKey:@"json"];
     [obj removeObjectForKey:@"updatedAt"];
 
     data = [NSJSONSerialization dataWithJSONObject:obj

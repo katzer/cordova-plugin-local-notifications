@@ -14,12 +14,16 @@
 
     <author>Sebastián Katzer</author>
 
+    <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
-    <dependency id="org.apache.cordova.device" url="https://github.com/apache/cordova-plugin-device" />
+    <dependency
+        id="org.apache.cordova.device"
+        url="https://github.com/apache/cordova-plugin-device" />
 
+    <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
         <clobbers target="cordova.plugins.notification.local" />
         <clobbers target="plugin.notification.local" />
@@ -81,7 +85,7 @@
                 android:name="de.appplant.cordova.plugin.notification.ClearReceiver"
                 android:exported="false" />
 
-            <receiver android:name="de.appplant.cordova.plugin.notification.RestoreReceiver" >
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver" >
                 <intent-filter>
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>

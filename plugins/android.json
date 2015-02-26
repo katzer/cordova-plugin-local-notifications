@@ -59,7 +59,7 @@
                             "count": 1
                         },
                         {
-                            "xml": "<receiver android:name=\"de.appplant.cordova.plugin.notification.RestoreReceiver\"><intent-filter><action android:name=\"android.intent.action.BOOT_COMPLETED\" /></intent-filter></receiver>",
+                            "xml": "<receiver android:name=\"de.appplant.cordova.plugin.localnotification.RestoreReceiver\"><intent-filter><action android:name=\"android.intent.action.BOOT_COMPLETED\" /></intent-filter></receiver>",
                             "count": 1
                         },
                         {
