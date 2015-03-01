@@ -293,7 +293,7 @@
  *      The IDs of the notifications
  */
 - (void) getIds:(CDVInvokedUrlCommand*)command
-             byType:(APPLocalNotificationType)type;
+         byType:(APPLocalNotificationType)type;
 {
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
@@ -410,7 +410,7 @@
 - (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
     if ([[UIApplication sharedApplication]
-          respondsToSelector:@selector(registerUserNotificationSettings:)])
+         respondsToSelector:@selector(registerUserNotificationSettings:)])
     {
         _command = command;
 
@@ -493,11 +493,11 @@
 {
     NSArray* notifications;
 
-    notifications = [self.app scheduledLocalNotifications];
+    notifications = [self.app localNotifications];
 
     for (UILocalNotification* notification in notifications)
     {
-        if (notification && ![notification isRepeating]
+        if (![notification isRepeating]
             && notification.timeIntervalSinceFireDate > seconds)
         {
             [self.app cancelLocalNotification:notification];
@@ -636,8 +636,8 @@
 }
 
 /**
-  * Simply invokes the callback without any parameter.
-  */
+ * Simply invokes the callback without any parameter.
+ */
 - (void) execCallback:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult *result = [CDVPluginResult
