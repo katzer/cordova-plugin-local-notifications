@@ -486,7 +486,7 @@
 }
 
 /**
- * Cancels all local notification with are older then
+ * Cancels all non-repeating local notification older then
  * a specific amount of seconds
  */
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
@@ -497,7 +497,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        if (notification && [notification isRepeating]
+        if (notification && ![notification isRepeating]
             && notification.timeIntervalSinceFireDate > seconds)
         {
             [self.app cancelLocalNotification:notification];
