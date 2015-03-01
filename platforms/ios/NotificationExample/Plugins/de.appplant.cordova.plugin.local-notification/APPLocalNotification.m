@@ -53,11 +53,11 @@
 - (void) deviceready:(CDVInvokedUrlCommand*)command
 {
     deviceready = YES;
-
+    
     for (NSString* js in eventQueue) {
         [self.commandDelegate evalJs:js];
     }
-
+    
     [eventQueue removeAllObjects];
 }
 
@@ -70,22 +70,22 @@
 - (void) schedule:(CDVInvokedUrlCommand*)command
 {
     NSArray* notifications = command.arguments;
-
+    
     [self.commandDelegate runInBackground:^{
         for (NSDictionary* options in notifications) {
             UILocalNotification* notification;
-
+            
             notification = [[UILocalNotification alloc]
                             initWithOptions:options];
-
+            
             [self scheduleLocalNotification:[notification copy]];
             [self fireEvent:@"schedule" notification:notification];
-
+            
             if (notifications.count > 1) {
                 [NSThread sleepForTimeInterval:0.01];
             }
         }
-
+        
         [self execCallback:command];
     }];
 }
@@ -99,27 +99,27 @@
 - (void) update:(CDVInvokedUrlCommand*)command
 {
     NSArray* notifications = command.arguments;
-
+    
     [self.commandDelegate runInBackground:^{
         for (NSDictionary* options in notifications) {
             NSString* id = [options objectForKey:@"id"];
             UILocalNotification* notification;
-
+            
             notification = [self.app localNotificationWithId:id];
-
+            
             if (!notification)
                 continue;
-
+            
             [self updateLocalNotification:[notification copy]
                               withOptions:options];
-
+            
             [self fireEvent:@"update" notification:notification];
-
+            
             if (notifications.count > 1) {
                 [NSThread sleepForTimeInterval:0.01];
             }
         }
-
+        
         [self execCallback:command];
     }];
 }
@@ -135,16 +135,16 @@
     [self.commandDelegate runInBackground:^{
         for (NSString* id in command.arguments) {
             UILocalNotification* notification;
-
+            
             notification = [self.app localNotificationWithId:id];
-
+            
             if (!notification)
                 continue;
-
+            
             [self.app cancelLocalNotification:notification];
             [self fireEvent:@"cancel" notification:notification];
         }
-
+        
         [self execCallback:command];
     }];
 }
@@ -172,16 +172,16 @@
     [self.commandDelegate runInBackground:^{
         for (NSString* id in command.arguments) {
             UILocalNotification* notification;
-
+            
             notification = [self.app localNotificationWithId:id];
-
+            
             if (!notification)
                 continue;
-
+            
             [self.app clearLocalNotification:notification];
             [self fireEvent:@"clear" notification:notification];
         }
-
+        
         [self execCallback:command];
     }];
 }
@@ -243,18 +243,18 @@
     [self.commandDelegate runInBackground:^{
         NSString* id = [command argumentAtIndex:0];
         BOOL exist;
-
+        
         CDVPluginResult* result;
-
+        
         if (type == NotifcationTypeAll) {
             exist = [self.app localNotificationExist:id];
         } else {
             exist = [self.app localNotificationExist:id type:type];
         }
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:exist];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -293,21 +293,21 @@
  *      The IDs of the notifications
  */
 - (void) getIds:(CDVInvokedUrlCommand*)command
-             byType:(APPLocalNotificationType)type;
+         byType:(APPLocalNotificationType)type;
 {
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
         NSArray* ids;
-
+        
         if (type == NotifcationTypeAll) {
             ids = [self.app localNotificationIds];
         } else {
             ids = [self.app localNotificationIdsByType:type];
         }
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:ids];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -361,7 +361,7 @@
         NSArray* ids = command.arguments;
         NSArray* notifications;
         CDVPluginResult* result;
-
+        
         if (type == NotifcationTypeAll && ids.count == 0) {
             notifications = [self.app localNotificationOptions];
         }
@@ -375,10 +375,10 @@
             notifications = [self.app localNotificationOptionsByType:type
                                                                andId:ids];
         }
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:notifications];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -393,12 +393,12 @@
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* result;
         BOOL hasPermission;
-
+        
         hasPermission = [self.app hasPermissionToScheduleLocalNotifications];
-
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsBool:hasPermission];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -410,10 +410,10 @@
 - (void) registerPermission:(CDVInvokedUrlCommand*)command
 {
     if ([[UIApplication sharedApplication]
-          respondsToSelector:@selector(registerUserNotificationSettings:)])
+         respondsToSelector:@selector(registerUserNotificationSettings:)])
     {
         _command = command;
-
+        
         [self.commandDelegate runInBackground:^{
             [self.app registerPermissionToScheduleLocalNotifications];
         }];
@@ -441,13 +441,13 @@
                      withOptions:(NSDictionary*)newOptions
 {
     NSMutableDictionary* options = [notification.userInfo mutableCopy];
-
+    
     [options addEntriesFromDictionary:newOptions];
     [options setObject:[NSDate date] forKey:@"updatedAt"];
-
+    
     notification = [[UILocalNotification alloc]
                     initWithOptions:options];
-
+    
     [self scheduleLocalNotification:notification];
 }
 
@@ -476,32 +476,32 @@
 {
     NSString* id = notification.options.id;
     UILocalNotification* forerunner;
-
+    
     forerunner = [self.app localNotificationWithId:id];
-
+    
     if (!forerunner)
         return;
-
+    
     [self.app cancelLocalNotification:forerunner];
 }
 
 /**
- * Cancels all local notification with are older then
+ * Cancels all non-repeating local notification older then
  * a specific amount of seconds
  */
 - (void) cancelAllNotificationsWhichAreOlderThen:(float)seconds
 {
     NSArray* notifications;
-
-    notifications = [self.app scheduledLocalNotifications];
-
+    
+    notifications = [self.app localNotifications];
+    
     for (UILocalNotification* notification in notifications)
     {
-        if (notification && [notification isRepeating]
+        if (![notification isRepeating]
             && notification.timeIntervalSinceFireDate > seconds)
         {
             [self.app cancelLocalNotification:notification];
-
+            
             [self fireEvent:@"cancel" notification:notification];
         }
     }
@@ -517,29 +517,29 @@
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
     UILocalNotification* notification = [localNotification object];
-
+    
     if ([notification wasUpdated])
         return;
-
+    
     NSTimeInterval timeInterval = [notification timeIntervalSinceLastTrigger];
-
+    
     NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
-
+    
     [self fireEvent:event notification:notification];
-
+    
     if ([event isEqualToString:@"click"] && ![notification isRepeating])
     {
         [self.app cancelLocalNotification:notification];
-
+        
         [self fireEvent:@"cancel" notification:notification];
         return;
     }
-
+    
     if ([event isEqualToString:@"click"])
         return;
-
+    
     timeInterval = [notification timeIntervalSinceFireDate];
-
+    
     if (timeInterval > 1 && [notification isRepeating])
     {
         [self fireEvent:@"fireUpdateEvent" notification:notification];
@@ -554,12 +554,12 @@
 - (void) didFinishLaunchingWithOptions:(NSNotification*)notification
 {
     NSDictionary* launchOptions = [notification userInfo];
-
+    
     UILocalNotification* localNotification;
-
+    
     localNotification = [launchOptions objectForKey:
                          UIApplicationLaunchOptionsLocalNotificationKey];
-
+    
     if (localNotification) {
         [self didReceiveLocalNotification:
          [NSNotification notificationWithName:CDVLocalNotification
@@ -589,19 +589,19 @@
 {
     NSNotificationCenter* center = [NSNotificationCenter
                                     defaultCenter];
-
+    
     eventQueue = [[NSMutableArray alloc] init];
-
+    
     [center addObserver:self
                selector:@selector(didReceiveLocalNotification:)
                    name:CDVLocalNotification
                  object:nil];
-
+    
     [center addObserver:self
                selector:@selector(didFinishLaunchingWithOptions:)
                    name:UIApplicationDidFinishLaunchingNotification
                  object:nil];
-
+    
     [center addObserver:self
                selector:@selector(didRegisterUserNotificationSettings:)
                    name:UIApplicationRegisterUserNotificationSettings
@@ -629,20 +629,20 @@
 - (NSString*) applicationState
 {
     UIApplicationState state = [self.app applicationState];
-
+    
     bool isActive = state == UIApplicationStateActive;
-
+    
     return isActive ? @"foreground" : @"background";
 }
 
 /**
-  * Simply invokes the callback without any parameter.
-  */
+ * Simply invokes the callback without any parameter.
+ */
 - (void) execCallback:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult *result = [CDVPluginResult
                                resultWithStatus:CDVCommandStatus_OK];
-
+    
     [self.commandDelegate sendPluginResult:result
                                 callbackId:command.callbackId];
 }
@@ -671,19 +671,19 @@
     NSString* js;
     NSString* params = [NSString stringWithFormat:
                         @"\"%@\"", self.applicationState];
-
+    
     if (notification) {
         NSString* args = [notification encodeToJSON];
-
+        
         params = [NSString stringWithFormat:
                   @"%@,'%@'",
                   args, self.applicationState];
     }
-
+    
     js = [NSString stringWithFormat:
           @"cordova.plugins.notification.local.fireEvent('%@', %@)",
           event, params];
-
+    
     if (deviceready) {
         [self.commandDelegate evalJs:js];
     } else {
