@@ -95,25 +95,6 @@
 }
 
 /**
- * List of all local notifications which have been scheduled
- * and not yet removed from the notification center.
- */
-- (NSArray*) scheduledLocalNotifications2
-{
-    NSArray* scheduledNotifications = self.scheduledLocalNotifications;
-    NSMutableArray* notifications = [[NSMutableArray alloc] init];
-
-    for (UILocalNotification* notification in scheduledNotifications)
-    {
-        if (notification && [notification isScheduled]) {
-            [notifications addObject:notification];
-        }
-    }
-
-    return notifications;
-}
-
-/**
  * List of all triggered local notifications which have been scheduled
  * and not yet removed the notification center.
  */
