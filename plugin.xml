@@ -31,6 +31,7 @@
 
     <!-- ios -->
     <platform name="ios">
+
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="ios-package" value="APPLocalNotification" onload="true" />
@@ -52,10 +53,12 @@
 
         <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
         <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
+
     </platform>
 
     <!-- android -->
     <platform name="android">
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
@@ -75,7 +78,8 @@
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay" />
+                android:theme="@android:style/Theme.NoDisplay"
+                android:exported="false" />
 
             <receiver
                 android:name="de.appplant.cordova.plugin.notification.TriggerReceiver"
@@ -94,7 +98,8 @@
             <activity
                 android:name="de.appplant.cordova.plugin.notification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay" />
+                android:theme="@android:style/Theme.NoDisplay"
+                android:exported="false" />
 
         </config-file>
 
