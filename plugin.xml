@@ -19,9 +19,8 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
-    <dependency
-        id="org.apache.cordova.device"
-        url="https://github.com/apache/cordova-plugin-device" />
+    <!-- dependencies -->
+    <dependency id="org.apache.cordova.device" />
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
