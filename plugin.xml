@@ -8,8 +8,11 @@
     <name>LocalNotification</name>
 
     <description>The purpose of the plugin is to create an platform independent javascript interface for Cordova based mobile applications to access the specific Notification API on each platform.</description>
+
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
-    <keywords>notification, local notification, alarm, scheduler, tile, live tiles, ios, android, windows phone 8, wp8</keywords>
+
+    <keywords>appplant, notification, local notification</keywords>
+
     <license>Apache 2.0</license>
 
     <author>Sebastián Katzer</author>
