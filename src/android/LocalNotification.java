@@ -46,10 +46,17 @@ import de.appplant.cordova.plugin.notification.*;
  */
 public class LocalNotification extends CordovaPlugin {
 
-    private   static CordovaWebView webView = null;
-    private   static Boolean deviceready = false;
+    // Reference to the web view for static access
+    private static CordovaWebView webView = null;
+
+    // Indicates if the device is ready (to receive events)
+    private static Boolean deviceready = false;
+
+    // To inform the user about the state of the app in callbacks
     protected static Boolean isInBackground = true;
-    private   static ArrayList<String> eventQueue = new ArrayList<String>();
+
+    // Queues all events before deviceready
+    private static ArrayList<String> eventQueue = new ArrayList<String>();
 
     /**
      * Called after plugin construction and fields have been initialized.
