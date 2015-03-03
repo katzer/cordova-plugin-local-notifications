@@ -177,14 +177,14 @@ public class LocalNotification extends CordovaPlugin {
      *      Properties for each local notification
      */
     private void schedule (JSONArray notifications) {
-    	for (int i = 0; i < notifications.length(); i++) {
-    		JSONObject options = notifications.optJSONObject(i);
+        for (int i = 0; i < notifications.length(); i++) {
+            JSONObject options = notifications.optJSONObject(i);
 
             Notification notification =
                     getNotificationMgr().schedule(options, TriggerReceiver.class);
-            
+
             fireEvent("schedule", notification);
-    	}
+        }
     }
 
     /**
@@ -251,7 +251,7 @@ public class LocalNotification extends CordovaPlugin {
      * Clear all triggered notifications without canceling them.
      */
     private void clearAll() {
-    	getNotificationMgr().clearAll();
+        getNotificationMgr().clearAll();
         fireEvent("clearall");
     }
 
@@ -441,14 +441,14 @@ public class LocalNotification extends CordovaPlugin {
      *      Optional local notification to pass the id and properties.
      */
     static void fireEvent (String event, Notification notification) {
-    	String state = getApplicationState();
+        String state = getApplicationState();
         String params = "\"" + state + "\"";
 
         if (notification != null) {
             params = notification.toString() + "," + params;
         }
 
-    	String js = "cordova.plugins.notification.local.fireEvent(" +
+        String js = "cordova.plugins.notification.local.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 
         sendJavascript(js);
@@ -460,7 +460,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param js
      *       JS code snippet as string
      */
-    private static void sendJavascript(final String js) {
+    private static synchronized void sendJavascript(final String js) {
 
         if (!deviceready) {
             eventQueue.add(js);
