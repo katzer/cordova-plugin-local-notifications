@@ -91,6 +91,15 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * The final call you receive before your activity is destroyed.
+     */
+    @Override
+    public void onDestroy() {
+        deviceready = false;
+        isInBackground = true;
+    }
+
+    /**
      * Executes the request.
      *
      * This method is called from the WebView thread. To do a non-trivial
