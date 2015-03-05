@@ -289,48 +289,48 @@
 
         <!-- IDs -->
         <script type="text/javascript">
-            var fn = function (ids) {
+            var callback = function (ids) {
                     showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
                 };
 
             getIds = function () {
-                cordova.plugins.notification.local.getIds(fn);
+                cordova.plugins.notification.local.getIds(callback);
             };
 
             getScheduledIds = function () {
-                cordova.plugins.notification.local.getScheduledIds(fn);
+                cordova.plugins.notification.local.getScheduledIds(callback);
             };
 
             getTriggeredIds = function () {
-                cordova.plugins.notification.local.getTriggeredIds(fn);
+                cordova.plugins.notification.local.getTriggeredIds(callback);
             };
         </script>
 
         <!-- notifications -->
         <script type="text/javascript">
-            var fn = function (notifications) {
+            var callback = function (notifications) {
                     console.log(notifications);
                     showToast(notifications.length === 0 ? '- none -' : notifications.join(' ,'));
                 };
 
             get = function () {
-                cordova.plugins.notification.local.get(1, fn);
+                cordova.plugins.notification.local.get(1, callback);
             };
 
             getMultiple = function () {
-                cordova.plugins.notification.local.get([1, 2], fn);
+                cordova.plugins.notification.local.get([1, 2], callback);
             };
 
             getAll = function () {
-                cordova.plugins.notification.local.getAll(fn);
+                cordova.plugins.notification.local.getAll(callback);
             };
 
             getScheduled = function () {
-                cordova.plugins.notification.local.getScheduled(fn);
+                cordova.plugins.notification.local.getScheduled(callback);
             };
 
             getTriggered = function () {
-                cordova.plugins.notification.local.getTriggered(fn);
+                cordova.plugins.notification.local.getTriggered(callback);
             };
         </script>
 

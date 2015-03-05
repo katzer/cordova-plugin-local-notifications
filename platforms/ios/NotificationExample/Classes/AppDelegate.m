@@ -99,8 +99,6 @@
         return NO;
     }
 
-    [self.viewController processOpenUrl:url];
-
     // all plugins will get the notification, and their handlers will be called
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
 
@@ -115,24 +113,27 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:CDVLocalNotification object:notification];
 }
 
-- (void)                                 application:(UIApplication*)application
-    didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
-{
-    // re-post ( broadcast )
-    NSString* token = [[[[deviceToken description]
-        stringByReplacingOccurrencesOfString:@"<" withString:@""]
-        stringByReplacingOccurrencesOfString:@">" withString:@""]
-        stringByReplacingOccurrencesOfString:@" " withString:@""];
+#ifndef DISABLE_PUSH_NOTIFICATIONS
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotification object:token];
-}
+    - (void)                                 application:(UIApplication*)application
+        didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+    {
+        // re-post ( broadcast )
+        NSString* token = [[[[deviceToken description]
+            stringByReplacingOccurrencesOfString:@"<" withString:@""]
+            stringByReplacingOccurrencesOfString:@">" withString:@""]
+            stringByReplacingOccurrencesOfString:@" " withString:@""];
 
-- (void)                                 application:(UIApplication*)application
-    didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
-{
-    // re-post ( broadcast )
-    [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotificationError object:error];
-}
+        [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotification object:token];
+    }
+
+    - (void)                                 application:(UIApplication*)application
+        didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+    {
+        // re-post ( broadcast )
+        [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotificationError object:error];
+    }
+#endif
 
 - (NSUInteger)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
 {

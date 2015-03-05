@@ -29,4 +29,4 @@ CODE_SIGN_IDENTITY = iPhone Developer
 CODE_SIGN_IDENTITY[sdk=iphoneos*] = iPhone Developer
 
 // (CB-7872) Solution for XCode 6.1 signing errors related to resource envelope format deprecation 
-CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist"
+CODE_SIGN_RESOURCE_RULES_PATH = $(SDKROOT)/ResourceRules.plist

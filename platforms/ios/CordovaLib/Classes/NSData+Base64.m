@@ -264,7 +264,7 @@ char *CDVNewBase64Encode(
 //
 // returns the autoreleased NSData representation of the base64 string
 //
-+ (NSData*)dataFromBase64String:(NSString*)aString
++ (NSData*)cdv_dataFromBase64String:(NSString*)aString
 {
     size_t outputLength = 0;
     void* outputBuffer = CDVNewBase64Decode([aString UTF8String], [aString length], &outputLength);
@@ -281,7 +281,7 @@ char *CDVNewBase64Encode(
 // returns an autoreleased NSString being the base 64 representation of the
 //	receiver.
 //
-- (NSString*)base64EncodedString
+- (NSString*)cdv_base64EncodedString
 {
     size_t outputLength = 0;
     char* outputBuffer =
@@ -293,6 +293,16 @@ char *CDVNewBase64Encode(
                                                 freeWhenDone:YES];
 
     return result;
+}
+
++ (NSData*)dataFromBase64String:(NSString*)aString
+{
+    return [self cdv_dataFromBase64String:aString];
+}
+
+- (NSString*)base64EncodedString
+{
+    return [self cdv_base64EncodedString];
 }
 
 @end

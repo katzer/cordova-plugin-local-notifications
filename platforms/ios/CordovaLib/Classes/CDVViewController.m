@@ -24,6 +24,7 @@
 #import "CDVUserAgentUtil.h"
 #import "CDVWebViewDelegate.h"
 #import <AVFoundation/AVFoundation.h>
+#import "CDVHandleOpenURL.h"
 
 #define degreesToRadian(x) (M_PI * (x) / 180.0)
 
@@ -459,7 +460,9 @@
 
         [CDVTimer stop:@"TotalPluginStartup"];
     }
-
+    
+    [self registerPlugin:[[CDVHandleOpenURL alloc] initWithWebView:self.webView] withClassName:NSStringFromClass([CDVHandleOpenURL class])];
+    
     // /////////////////
     NSURL* appURL = [self appUrl];
 

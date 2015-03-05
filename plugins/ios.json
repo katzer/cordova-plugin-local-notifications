@@ -13,26 +13,21 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Toast\"><param name=\"ios-package\" value=\"Toast\" /></feature>",
+                            "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"Toast\"><param name=\"ios-package\" value=\"Toast\" /></feature>",
                             "count": 1
                         }
                     ]
-                }
-            },
-            "*-Info.plist": {
-                "parents": {
-                    "UIBackgroundModes": []
                 }
             },
             "framework": {
                 "parents": {
                     "QuartzCore.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 1
                         }
                     ]
@@ -41,10 +36,10 @@
         }
     },
     "installed_plugins": {
-        "nl.x-services.plugins.toast": {
+        "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
         },
-        "de.appplant.cordova.plugin.local-notification": {
+        "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
         }
     },

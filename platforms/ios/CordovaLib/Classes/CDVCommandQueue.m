@@ -22,6 +22,7 @@
 #import "CDVCommandQueue.h"
 #import "CDVViewController.h"
 #import "CDVCommandDelegateImpl.h"
+#import "CDVJSON_private.h"
 
 // Parse JS on the main thread if it's shorter than this.
 static const NSInteger JSON_SIZE_FOR_MAIN_THREAD = 4 * 1024; // Chosen arbitrarily.
@@ -70,10 +71,10 @@ static const double MAX_EXECUTION_TIME = .008; // Half of a 60fps frame.
         NSMutableArray* commandBatchHolder = [[NSMutableArray alloc] init];
         [_queue addObject:commandBatchHolder];
         if ([batchJSON length] < JSON_SIZE_FOR_MAIN_THREAD) {
-            [commandBatchHolder addObject:[batchJSON JSONObject]];
+            [commandBatchHolder addObject:[batchJSON cdv_JSONObject]];
         } else {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
-                    NSMutableArray* result = [batchJSON JSONObject];
+                    NSMutableArray* result = [batchJSON cdv_JSONObject];
                     @synchronized(commandBatchHolder) {
                         [commandBatchHolder addObject:result];
                     }
@@ -149,7 +150,7 @@ static const double MAX_EXECUTION_TIME = .008; // Half of a 60fps frame.
 
                     if (![self execute:command]) {
 #ifdef DEBUG
-                            NSString* commandJson = [jsonEntry JSONString];
+                            NSString* commandJson = [jsonEntry cdv_JSONString];
                             static NSUInteger maxLogLength = 1024;
                             NSString* commandString = ([commandJson length] > maxLogLength) ?
                                 [NSString stringWithFormat:@"%@[...]", [commandJson substringToIndex:maxLogLength]] :
