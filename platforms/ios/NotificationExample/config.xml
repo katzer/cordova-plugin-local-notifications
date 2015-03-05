@@ -31,9 +31,6 @@
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
     </feature>
-    <feature name="BackgroundMode">
-        <param name="ios-package" value="APPBackgroundMode" />
-    </feature>
     <feature name="Toast">
         <param name="ios-package" value="Toast" />
     </feature>

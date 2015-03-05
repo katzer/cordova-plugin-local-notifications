@@ -13,10 +13,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"BackgroundMode\"><param name=\"ios-package\" value=\"APPBackgroundMode\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Toast\"><param name=\"ios-package\" value=\"Toast\" /></feature>",
                             "count": 1
                         },
@@ -29,12 +25,7 @@
             },
             "*-Info.plist": {
                 "parents": {
-                    "UIBackgroundModes": [
-                        {
-                            "xml": "<array><string>audio</string></array>",
-                            "count": 1
-                        }
-                    ]
+                    "UIBackgroundModes": []
                 }
             },
             "framework": {
@@ -50,9 +41,6 @@
         }
     },
     "installed_plugins": {
-        "de.appplant.cordova.plugin.background-mode": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
-        },
         "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
         },
