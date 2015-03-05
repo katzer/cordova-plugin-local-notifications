@@ -7,7 +7,7 @@
 
     <name>LocalNotification</name>
 
-    <description>The purpose of the plugin is to create an platform independent javascript interface for Cordova based mobile applications to access the specific Notification API on each platform.</description>
+    <description>The plugin supports scheduling local notifications in various ways with a single interface. It also allows you to update, clear or cancel them. There are different interfaces to query for local notifications and a complete set of events to hook into the life cycle of local notifications. To get a deep overview we recommend to read about all the topics in our wiki and try out the Kitchen Sink App</description>
 
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
 
