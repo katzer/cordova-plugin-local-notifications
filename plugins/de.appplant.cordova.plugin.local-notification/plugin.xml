@@ -3,13 +3,16 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.0rc">
+        version="0.8.0rc2">
 
     <name>LocalNotification</name>
 
     <description>The purpose of the plugin is to create an platform independent javascript interface for Cordova based mobile applications to access the specific Notification API on each platform.</description>
+
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
-    <keywords>notification, local notification, alarm, scheduler, tile, live tiles, ios, android, windows phone 8, wp8</keywords>
+
+    <keywords>appplant, notification, local notification</keywords>
+
     <license>Apache 2.0</license>
 
     <author>Sebastián Katzer</author>
@@ -19,9 +22,8 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
-    <dependency
-        id="org.apache.cordova.device"
-        url="https://github.com/apache/cordova-plugin-device" />
+    <!-- dependencies -->
+    <dependency id="org.apache.cordova.device" />
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -31,6 +33,7 @@
 
     <!-- ios -->
     <platform name="ios">
+
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="ios-package" value="APPLocalNotification" onload="true" />
@@ -52,10 +55,12 @@
 
         <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
         <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
+
     </platform>
 
     <!-- android -->
     <platform name="android">
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
@@ -75,7 +80,8 @@
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay" />
+                android:theme="@android:style/Theme.NoDisplay"
+                android:exported="false" />
 
             <receiver
                 android:name="de.appplant.cordova.plugin.notification.TriggerReceiver"
@@ -94,7 +100,8 @@
             <activity
                 android:name="de.appplant.cordova.plugin.notification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay" />
+                android:theme="@android:style/Theme.NoDisplay"
+                android:exported="false" />
 
         </config-file>
 

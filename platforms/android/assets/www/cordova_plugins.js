@@ -40,7 +40,7 @@ module.exports.metadata =
 {
     "de.appplant.cordova.plugin.background-mode": "0.6.2",
     "nl.x-services.plugins.toast": "2.0.3",
-    "de.appplant.cordova.plugin.local-notification": "0.8.0rc",
+    "de.appplant.cordova.plugin.local-notification": "0.8.0rc2",
     "org.apache.cordova.device": "0.3.1-dev"
 }
 // BOTTOM OF METADATA

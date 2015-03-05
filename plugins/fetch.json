@@ -1,0 +1,8 @@
+{
+    "de.appplant.cordova.plugin.local-notification": {
+        "source": {
+            "type": "local",
+            "path": "/Users/sebastian/Documents/github/cordova-plugin-local-notifications"
+        }
+    }
+}
