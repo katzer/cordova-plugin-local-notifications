@@ -6,6 +6,7 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 #### Version 0.8.1 (not yet released)
 
 - Fire `clear` instead of `cancel` event when clicked on repeating notifications
+- Do not fire `clear` or `cancel` event when clicked on persistent notifications
 
 ### Version 0.8.0 (05.03.2015)
 
