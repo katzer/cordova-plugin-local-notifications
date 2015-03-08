@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
@@ -60,9 +61,13 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Called after plugin construction and fields have been initialized.
+     * Prefer to use pluginInitialize instead since there is no value in
+     * having parameters on the initialize() function.
+     *
+     * pluginInitialize is not available for cordova 3.0-3.5 !
      */
     @Override
-    protected void pluginInitialize() {
+    public void initialize (CordovaInterface cordova, CordovaWebView webView) {
         LocalNotification.webView = super.webView;
     }
 

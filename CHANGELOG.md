@@ -5,6 +5,7 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 
 #### Version 0.8.1 (not yet released)
 
+- Fix incompatibility with cordova version 3.5-3.0
 - Fire `clear` instead of `cancel` event when clicked on repeating notifications
 - Do not fire `clear` or `cancel` event when clicked on persistent notifications
 
