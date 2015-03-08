@@ -25,6 +25,14 @@
     <!-- dependencies -->
     <dependency id="org.apache.cordova.device" />
 
+    <!-- info -->
+    <info>
+        Your support is needed. If you use the plugin please support us in order to ensure further development.
+        https://github.com/katzer/cordova-plugin-local-notifications/tree/example#how-can-i-support-the-further-development
+
+        Thank you!
+    </info>
+
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
         <clobbers target="cordova.plugins.notification.local" />
