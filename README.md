@@ -1,4 +1,6 @@
 
+[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal")
+
 Cordova Local-Notification - Example
 ====================================
 
@@ -65,6 +67,14 @@ The following screenshots give an overview of how the notification center on eac
     &nbsp;
     <img width="40%" src="images/android.png"></img>
 </p>
+
+
+## How can I support the further development?
+Your support is needed. If you use the plugin please send us a drop through the donation button.
+
+Thank you!
+
+[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal")
 
 
 ## License
