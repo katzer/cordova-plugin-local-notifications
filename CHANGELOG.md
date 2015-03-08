@@ -3,6 +3,10 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.8.1 (not yet released)
+
+- Fire `clear` instead of `cancel` event when clicked on repeating notifications
+
 ### Version 0.8.0 (05.03.2015)
 
 - Support for iOS 8, Android 2 (SDK >= 7) and Android 5

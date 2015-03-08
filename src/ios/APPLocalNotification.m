@@ -501,7 +501,6 @@
             && notification.timeIntervalSinceFireDate > seconds)
         {
             [self.app cancelLocalNotification:notification];
-
             [self fireEvent:@"cancel" notification:notification];
         }
     }
@@ -527,8 +526,12 @@
 
     [self fireEvent:event notification:notification];
 
-    if ([event isEqualToString:@"click"] && ![notification isRepeating])
-    {
+    if (![event isEqualToString:@"click"])
+        return;
+
+    if ([notification isRepeating]) {
+        [self fireEvent:@"clear" notification:notification];
+    } else {
         [self.app cancelLocalNotification:notification];
         [self fireEvent:@"cancel" notification:notification];
     }
