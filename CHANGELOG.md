@@ -3,7 +3,7 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
-#### Version 0.8.1 (not yet released)
+#### Version 0.8.1 (08.03.2015)
 
 - Fix incompatibility with cordova version 3.5-3.0
 - Fire `clear` instead of `cancel` event when clicked on repeating notifications
