@@ -3,11 +3,11 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.0rc2">
+        version="0.8.1">
 
     <name>LocalNotification</name>
 
-    <description>The purpose of the plugin is to create an platform independent javascript interface for Cordova based mobile applications to access the specific Notification API on each platform.</description>
+    <description>The plugin supports scheduling local notifications in various ways with a single interface. It also allows you to update, clear or cancel them. There are different interfaces to query for local notifications and a complete set of events to hook into the life cycle of local notifications. To get a deep overview we recommend to read about all the topics in our wiki and try out the Kitchen Sink App</description>
 
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
 
@@ -24,6 +24,14 @@
 
     <!-- dependencies -->
     <dependency id="org.apache.cordova.device" />
+
+    <!-- info -->
+    <info>
+        Your support is needed. If you use the plugin please support us in order to ensure further development.
+        https://github.com/katzer/cordova-plugin-local-notifications/tree/example#how-can-i-support-the-further-development
+
+        Thank you!
+    </info>
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -91,7 +99,7 @@
                 android:name="de.appplant.cordova.plugin.notification.ClearReceiver"
                 android:exported="false" />
 
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver" >
+            <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver" android:exported="false" >
                 <intent-filter>
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>

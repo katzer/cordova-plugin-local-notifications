@@ -14,7 +14,7 @@
         <activity android:exported="false" android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.localnotification.ClickActivity" android:theme="@android:style/Theme.NoDisplay" />
         <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.TriggerReceiver" />
         <receiver android:exported="false" android:name="de.appplant.cordova.plugin.notification.ClearReceiver" />
-        <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
+        <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

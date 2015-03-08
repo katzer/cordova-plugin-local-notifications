@@ -4,5 +4,11 @@
             "type": "local",
             "path": "/Users/sebastian/Documents/github/cordova-plugin-local-notifications"
         }
+    },
+    "org.apache.cordova.device": {
+        "source": {
+            "type": "registry",
+            "id": "org.apache.cordova.device"
+        }
     }
 }
