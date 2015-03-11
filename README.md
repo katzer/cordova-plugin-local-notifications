@@ -87,7 +87,12 @@ cordova.plugins.notification.local.on("click", function (notification) {
 Find out more informations [here][wiki_samples] in our wiki.
 
 
-## How can I support the further development?
+## I would like to propose new features
+We appricate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
+
+Find out more informations [here][wiki_next] in our wiki.
+
+## Supporting
 Your support is needed. If you use the plugin please send us a drop through the donation button.
 
 Thank you!
@@ -120,4 +125,6 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [wiki_events]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/09.-Events
 [wiki_samples]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/11.-Samples
 [wiki_changelog]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide
+[wiki_next]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Feature-Requests
+[feature_proposal_issue]: https://github.com/katzer/cordova-plugin-local-notifications/issues/451
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
