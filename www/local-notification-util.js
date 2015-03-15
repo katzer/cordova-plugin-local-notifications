@@ -103,6 +103,7 @@ exports.mergeWithDefaults = function (options) {
     for (key in options) {
         if (!defaults.hasOwnProperty(key)) {
             delete options[key];
+            console.warn('Unknown property: ' + key);
         }
     }
 
