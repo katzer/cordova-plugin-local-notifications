@@ -194,7 +194,9 @@ public class Manager {
         ArrayList<Integer> ids = new ArrayList<Integer>();
 
         for (String key : keys) {
-            ids.add(Integer.parseInt(key));
+            try {
+                ids.add(Integer.parseInt(key));
+            } catch (NumberFormatException ignore) {}
         }
 
         return ids;
