@@ -63,6 +63,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.icon      = 'res://icon';
         defaults.smallIcon = 'res://ic_popup_reminder';
         defaults.ongoing   = false;
+        defaults.autoClear = true;
         defaults.led       = 'FFFFFF';
         break;
     }
@@ -85,6 +86,12 @@ exports.mergeWithDefaults = function (options) {
     options.at   = this.getValueFor(options, 'at', 'firstAt', 'date');
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
+
+    options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
+
+    if (options.autoClear !== true && options.ongoing) {
+        options.autoClear = false;
+    }
 
     if (options.at === undefined || options.at === null) {
         options.at = new Date();
