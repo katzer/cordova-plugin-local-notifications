@@ -27,8 +27,23 @@ var Notifications = Windows.UI.Notifications,
 
 exports.core = {
 
-    // Array of unactivated notifications
-    unactivatedIds: [],
+    /**
+     * Executes all queued events.
+     */
+    deviceready: function () {
+        var plugin = cordova.plugins.notification.local,
+            args;
+
+        this.isReady = true;
+
+        for (var i = 0; i < this.eventQueue.length; i++) {
+            args = this.eventQueue[i];
+
+            plugin.fireEvent.apply(plugin, args);
+        }
+
+        this.eventQueue = [];
+    },
 
     /**
      * Schedules new local notifications.
@@ -125,42 +140,6 @@ exports.core = {
     },
 
     /**
-     * Cancels the local notification with the given ID.
-     *
-     * @param {String} id
-     *      Local notification ID
-     */
-    cancelLocalNotification: function (id) {
-        var notifier = this.getToastNotifier(),
-            history = this.getToastHistory(),
-            toasts = this.getScheduledToast();
-
-        history.remove('Toast' + id);
-
-        for (var i = 0; i < toasts.length; i++) {
-            var toast = toasts[i];
-
-            if (toast.id == id || toast.id == id + '-2') {
-                notifier.removeFromSchedule(toast);
-            }
-        }
-    },
-
-    /**
-     * Clears the local notification with the given ID.
-     *
-     * @param {String} id
-     *      Local notification ID
-     */
-    clearLocalNotification: function (id) {
-        this.getToastHistory().remove('Toast' + id);
-
-        if (this.isTriggered(id) && !this.isScheduled(id)) {
-            this.cancelLocalNotification(id);
-        }
-    },
-
-    /**
      * Updates existing notifications specified by IDs in options.
      *
      * @param {Object[]} notifications
@@ -192,6 +171,20 @@ exports.core = {
     },
 
     /**
+     * Clears the local notification with the given ID.
+     *
+     * @param {String} id
+     *      Local notification ID
+     */
+    clearLocalNotification: function (id) {
+        this.getToastHistory().remove('Toast' + id);
+
+        if (this.isTriggered(id) && !this.isScheduled(id)) {
+            this.cancelLocalNotification(id);
+        }
+    },
+
+    /**
      * Clears all notifications.
      */
     clearAll: function () {
@@ -217,6 +210,28 @@ exports.core = {
 
             this.cancelLocalNotification(ids[i]);
             this.fireEvent('cancel', notification);
+        }
+    },
+
+    /**
+     * Cancels the local notification with the given ID.
+     *
+     * @param {String} id
+     *      Local notification ID
+     */
+    cancelLocalNotification: function (id) {
+        var notifier = this.getToastNotifier(),
+            history = this.getToastHistory(),
+            toasts = this.getScheduledToasts();
+
+        history.remove('Toast' + id);
+
+        for (var i = 0; i < toasts.length; i++) {
+            var toast = toasts[i];
+
+            if (toast.id == id || toast.id == id + '-2') {
+                notifier.removeFromSchedule(toast);
+            }
         }
     },
 
@@ -268,7 +283,7 @@ exports.core = {
      * Lists all local notification IDs.
      */
     getAllIds: function () {
-        var toasts = this.getScheduledToast(),
+        var toasts = this.getScheduledToasts(),
             ids = [];
 
         for (var i = 0; i < toasts.length; i++) {
@@ -284,7 +299,7 @@ exports.core = {
      * Lists all scheduled notification IDs.
      */
     getScheduledIds: function () {
-        var toasts = this.getScheduledToast(),
+        var toasts = this.getScheduledToasts(),
             ids = [];
 
         for (var i = 0; i < toasts.length; i++) {
@@ -303,7 +318,7 @@ exports.core = {
      * Lists all scheduled notification IDs.
      */
     getTriggeredIds: function () {
-        var toasts = this.getScheduledToast(),
+        var toasts = this.getScheduledToasts(),
             ids = [];
 
         for (var i = 0; i < toasts.length; i++) {
@@ -328,7 +343,7 @@ exports.core = {
      *      Local notification life cycle type
      */
     getAll: function (ids, type) {
-        var toasts = this.getScheduledToast(),
+        var toasts = this.getScheduledToasts(),
             notifications = [];
 
         if (ids.length === 0) {

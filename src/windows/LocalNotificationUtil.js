@@ -29,6 +29,11 @@ exports = require('de.appplant.cordova.plugin.local-notification.LocalNotificati
 // True if App is running, false if suspended
 exports.isInBackground = true;
 
+// Indicates if the device is ready (to receive events)
+exports.isReady = false;
+
+// Queues all events before deviceready
+exports.eventQueue = [];
 
 /********
  * UTIL *
@@ -158,7 +163,7 @@ exports.getToastNotifier = function () {
  *
  * @return Array
  */
-exports.getScheduledToast = function () {
+exports.getScheduledToasts = function () {
     return this.getToastNotifier().getScheduledToastNotifications();
 };
 
@@ -229,7 +234,7 @@ exports.isToastTriggered = function (toast) {
  * @param Object
  */
 exports.findToastById = function (id) {
-    var toasts = this.getScheduledToastNotifications();
+    var toasts = this.getScheduledToasts();
 
     for (var i = 0; i < toasts.length; i++) {
         var toast = toasts[i];
@@ -284,12 +289,19 @@ exports.getApplicationState = function () {
  */
 exports.fireEvent = function (event, notification) {
     var plugin = cordova.plugins.notification.local.core,
-        state = this.getApplicationState();
+        state = this.getApplicationState(),
+        args;
 
     if (notification) {
-        plugin.fireEvent(event, notification, state);
+        args = [event, notification, state];
     } else {
-        plugin.fireEvent(event, state);
+        args = [event, state];
+    }
+
+    if (this.isReady) {
+        plugin.fireEvent.apply(plugin, args);
+    } else {
+        this.eventQueue.push(args);
     }
 };
 
@@ -311,4 +323,13 @@ document.addEventListener('resume', function () {
 // App is running in foreground
 document.addEventListener('deviceready', function () {
     exports.isInBackground = false;
+}, false);
+
+// Handle onclick event
+WinJS.Application.addEventListener('activated', function (args) {
+    var id = args.detail.arguments,
+        notification = exports.getAll([id])[0];
+
+    exports.clearLocalNotification(id);
+    exports.fireEvent('click', notification);
 }, false);

@@ -23,7 +23,7 @@
  * Executes all queued events.
  */
 exports.deviceready  = function () {
-
+    exports.core.deviceready();
 };
 
 /**
