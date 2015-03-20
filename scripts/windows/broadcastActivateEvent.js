@@ -13,25 +13,24 @@ function replace_string_in_file (filename, to_replace, replace_with) {
     var data = fs.readFileSync(filename, 'utf8'),
         result;
 
-    // if (data.indexOf(replace_with) > -1)
-        // return;
+    if (data.indexOf(replace_with) > -1)
+        return;
 
-    result = data.replace(new RegExp(to_replace, 'g'), replace_with);
-
+    result = data.replace(to_replace, replace_with);
     fs.writeFileSync(filename, result, 'utf8');
 }
 
 var snippet =
     "var activatedHandler = function (args) {" +
         "channel.deviceready.subscribe(function () {" +
-            "WinJS.Application.queueEvent(args);" +
+            "app.queueEvent(args);" +
         "});" +
     "};" +
-    "WinJS.Application.addEventListener('activated', activatedHandler, false);" +
+    "app.addEventListener('activated', activatedHandler, false);" +
     "document.addEventListener('deviceready', function () {" +
-        "WinJS.Application.removeEventListener('activated', activatedHandler);" +
-    "}, false);" +
-    "app.start();";
+        "app.removeEventListener('activated', activatedHandler);" +
+    "}, false);\n" +
+    "            app.start();";
 
 
 var files = [
@@ -39,10 +38,7 @@ var files = [
     'platforms/windows/platform_www/cordova.js'
 ];
 
-setTimeout(function () {
-    for (var i = 0; i < files.length; i++) {
-        replace_string_in_file(files[i], 'app.start();', '123app.start();');
-    }
-}, 1000);
 
-console.log(123);
+for (var i = 0; i < files.length; i++) {
+    replace_string_in_file(files[i], 'app.start();', snippet);
+}
