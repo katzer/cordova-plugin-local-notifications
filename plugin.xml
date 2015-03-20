@@ -218,6 +218,10 @@
         <hook type="after_platform_add" src="scripts/windows/setToastCapable.js" />
         <hook type="after_plugin_install" src="scripts/windows/setToastCapable.js" />
 
+        <!-- <hook type="after_platform_add" src="scripts/windows/broadcastActivateEvent.js" /> -->
+        <!-- <hook type="after_plugin_install" src="scripts/windows/broadcastActivateEvent.js" /> -->
+        <!-- <hook type="after_prepare" src="scripts/windows/broadcastActivateEvent.js" /> -->
+
     </platform>
 
 </plugin>
