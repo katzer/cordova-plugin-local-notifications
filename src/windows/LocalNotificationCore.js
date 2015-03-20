@@ -347,7 +347,7 @@ exports.core = {
             notifications = [];
 
         if (ids.length === 0) {
-            ids = getAllIds();
+            ids = this.getAllIds();
         }
 
         for (var index = 0; index < ids.length; index++) {
