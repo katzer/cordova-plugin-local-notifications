@@ -330,6 +330,9 @@ WinJS.Application.addEventListener('activated', function (args) {
     var id = args.detail.arguments,
         notification = exports.getAll([id])[0];
 
+    if (!notification)
+        return;
+
     exports.clearLocalNotification(id);
     exports.fireEvent('click', notification);
 }, false);
