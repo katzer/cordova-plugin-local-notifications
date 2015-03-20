@@ -252,7 +252,7 @@ exports.getScheduled = function () {
 };
 
 /**
- * Retrieve the properties for all scheduled notifications.
+ * Property list for all scheduled notifications.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
@@ -279,7 +279,7 @@ exports.getTriggered = function () {
 };
 
 /**
- * Retrieve the properties for all triggered notifications.
+ * Property list for all triggered notifications.
  *
  * @param {Function} callback
  *      A callback function to be called with the list
