@@ -175,10 +175,17 @@ public class Options {
     }
 
     /**
-     * Android only ongoing flag for local notifications.
+     * ongoing flag for local notifications.
      */
     public Boolean isOngoing() {
         return options.optBoolean("ongoing", false);
+    }
+
+    /**
+     * autoClear flag for local notifications.
+     */
+    public Boolean isAutoClear() {
+        return options.optBoolean("autoClear", false);
     }
 
     /**

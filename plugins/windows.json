@@ -1,0 +1,22 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "nl.x-services.plugins.toast": {
+            "PACKAGE_NAME": "NotificationExample"
+        }
+    },
+    "dependent_plugins": {
+        "org.apache.cordova.device": {
+            "PACKAGE_NAME": "NotificationExample"
+        }
+    }
+}

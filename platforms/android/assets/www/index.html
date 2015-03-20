@@ -169,7 +169,7 @@
         <script type="text/javascript">
             schedule = function () {
                 cordova.plugins.notification.local.schedule({
-                    // id:   1,
+                    id:   1,
                     text: 'Test Message 1',
                     icon: 'http://www.optimizeordie.de/wp-content/plugins/social-media-widget/images/default/64/googleplus.png',
                     sound: null,
@@ -289,48 +289,48 @@
 
         <!-- IDs -->
         <script type="text/javascript">
-            var callback = function (ids) {
+            var callbackIds = function (ids) {
                     showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
                 };
 
             getIds = function () {
-                cordova.plugins.notification.local.getIds(callback);
+                cordova.plugins.notification.local.getIds(callbackIds);
             };
 
             getScheduledIds = function () {
-                cordova.plugins.notification.local.getScheduledIds(callback);
+                cordova.plugins.notification.local.getScheduledIds(callbackIds);
             };
 
             getTriggeredIds = function () {
-                cordova.plugins.notification.local.getTriggeredIds(callback);
+                cordova.plugins.notification.local.getTriggeredIds(callbackIds);
             };
         </script>
 
         <!-- notifications -->
         <script type="text/javascript">
-            var callback = function (notifications) {
+            var callbackOpts = function (notifications) {
                     console.log(notifications);
                     showToast(notifications.length === 0 ? '- none -' : notifications.join(' ,'));
                 };
 
             get = function () {
-                cordova.plugins.notification.local.get(1, callback);
+                cordova.plugins.notification.local.get(1, callbackOpts);
             };
 
             getMultiple = function () {
-                cordova.plugins.notification.local.get([1, 2], callback);
+                cordova.plugins.notification.local.get([1, 2], callbackOpts);
             };
 
             getAll = function () {
-                cordova.plugins.notification.local.getAll(callback);
+                cordova.plugins.notification.local.getAll(callbackOpts);
             };
 
             getScheduled = function () {
-                cordova.plugins.notification.local.getScheduled(callback);
+                cordova.plugins.notification.local.getScheduled(callbackOpts);
             };
 
             getTriggered = function () {
-                cordova.plugins.notification.local.getTriggered(callback);
+                cordova.plugins.notification.local.getTriggered(callbackOpts);
             };
         </script>
 

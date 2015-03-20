@@ -130,7 +130,7 @@ public class Builder {
                 .setTicker(options.getText())
                 .setSmallIcon(options.getSmallIcon())
                 .setLargeIcon(options.getIconBitmap())
-                .setAutoCancel(true)
+                .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setStyle(style)
                 .setLights(options.getLedColor(), 500, 500);

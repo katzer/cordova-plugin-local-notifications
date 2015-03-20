@@ -1,6 +1,11 @@
 
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal")
 
+#### :bangbang: Please vote for that cordova-windows issue :bangbang:
+https://issues.apache.org/jira/browse/CB-8674
+
+Thanks a lot!
+
 Cordova Local-Notification Plugin
 =================================
 
@@ -87,7 +92,12 @@ cordova.plugins.notification.local.on("click", function (notification) {
 Find out more informations [here][wiki_samples] in our wiki.
 
 
-## How can I support the further development?
+## I would like to propose new features
+We appricate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
+
+Find out more informations [here][wiki_next] in our wiki.
+
+## Supporting
 Your support is needed. If you use the plugin please send us a drop through the donation button.
 
 Thank you!
@@ -120,4 +130,6 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [wiki_events]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/09.-Events
 [wiki_samples]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/11.-Samples
 [wiki_changelog]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide
+[wiki_next]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Feature-Requests
+[feature_proposal_issue]: https://github.com/katzer/cordova-plugin-local-notifications/issues/451
 [apache2_license]: http://opensource.org/licenses/Apache-2.0

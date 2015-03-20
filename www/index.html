@@ -134,7 +134,7 @@
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript">
-            var id = 1;
+            var id = 1, dialog;
 
             callback = function () {
                 cordova.plugins.notification.local.getIds(function (ids) {
@@ -144,8 +144,25 @@
 
             showToast = function (text) {
                 setTimeout(function () {
-                    window.plugins.toast.showShortBottom(text);
+                    if (device.platform != 'windows') {
+                        window.plugins.toast.showShortBottom(text);
+                    } else {
+                        showDialog(text);
+                    }
                 }, 100);
+            };
+
+            showDialog = function (text) {
+                if (dialog) {
+                    dialog.content = text;
+                    return;
+                }
+
+                dialog = new Windows.UI.Popups.MessageDialog(text);
+
+                dialog.showAsync().done(function () {
+                    dialog = null;
+                });
             };
 
          </script>
@@ -154,13 +171,13 @@
         <script type="text/javascript">
             hasPermission = function () {
                 cordova.plugins.notification.local.hasPermission(function (granted) {
-                    alert(granted);
+                    showToast(granted ? 'Yes' : 'No');
                 });
             };
 
             registerPermission = function () {
                 cordova.plugins.notification.local.registerPermission(function (granted) {
-                    alert(granted);
+                    showToast(granted ? 'Yes' : 'No');
                 });
             };
         </script>
@@ -289,48 +306,48 @@
 
         <!-- IDs -->
         <script type="text/javascript">
-            var callback = function (ids) {
+            var callbackIds = function (ids) {
                     showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
                 };
 
             getIds = function () {
-                cordova.plugins.notification.local.getIds(callback);
+                cordova.plugins.notification.local.getIds(callbackIds);
             };
 
             getScheduledIds = function () {
-                cordova.plugins.notification.local.getScheduledIds(callback);
+                cordova.plugins.notification.local.getScheduledIds(callbackIds);
             };
 
             getTriggeredIds = function () {
-                cordova.plugins.notification.local.getTriggeredIds(callback);
+                cordova.plugins.notification.local.getTriggeredIds(callbackIds);
             };
         </script>
 
         <!-- notifications -->
         <script type="text/javascript">
-            var callback = function (notifications) {
+            var callbackOpts = function (notifications) {
                     console.log(notifications);
                     showToast(notifications.length === 0 ? '- none -' : notifications.join(' ,'));
                 };
 
             get = function () {
-                cordova.plugins.notification.local.get(1, callback);
+                cordova.plugins.notification.local.get(1, callbackOpts);
             };
 
             getMultiple = function () {
-                cordova.plugins.notification.local.get([1, 2], callback);
+                cordova.plugins.notification.local.get([1, 2], callbackOpts);
             };
 
             getAll = function () {
-                cordova.plugins.notification.local.getAll(callback);
+                cordova.plugins.notification.local.getAll(callbackOpts);
             };
 
             getScheduled = function () {
-                cordova.plugins.notification.local.getScheduled(callback);
+                cordova.plugins.notification.local.getScheduled(callbackOpts);
             };
 
             getTriggered = function () {
-                cordova.plugins.notification.local.getTriggered(callback);
+                cordova.plugins.notification.local.getTriggered(callbackOpts);
             };
         </script>
 

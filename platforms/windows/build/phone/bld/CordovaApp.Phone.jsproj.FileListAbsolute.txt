@@ -1,0 +1,15 @@
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\Debug\AnyCPU\ReverseMap\resources.pri
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\Debug\AnyCPU\AppxManifest.xml
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\Debug\AnyCPU\CordovaApp.Phone.build.appxrecipe
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\priconfig.xml
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\priconfig.xml.intermediate
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\layout.resfiles
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\layout.resfiles.intermediate
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\resources.resfiles
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\resources.resfiles.intermediate
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\pri.resfiles
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\pri.resfiles.intermediate
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\qualifiers.txt
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\qualifiers.txt.intermediate
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\MultipleQualifiersPerDimensionFound.txt
+Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\ProjectArchitectures.txt

@@ -470,7 +470,7 @@ public class LocalNotification extends CordovaPlugin {
             params = notification.toString() + "," + params;
         }
 
-        String js = "cordova.plugins.notification.local.fireEvent(" +
+        String js = "cordova.plugins.notification.local.core.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 
         sendJavascript(js);

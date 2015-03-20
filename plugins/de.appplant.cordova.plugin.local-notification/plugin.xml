@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.1">
+        version="0.8.2dev">
 
     <name>LocalNotification</name>
 
@@ -37,6 +37,16 @@
     <js-module src="www/local-notification.js" name="LocalNotification">
         <clobbers target="cordova.plugins.notification.local" />
         <clobbers target="plugin.notification.local" />
+    </js-module>
+
+    <js-module src="www/local-notification-core.js" name="LocalNotification.Core">
+        <clobbers target="cordova.plugins.notification.local.core" />
+        <clobbers target="plugin.notification.local.core" />
+    </js-module>
+
+    <js-module src="www/local-notification-util.js" name="LocalNotification.Util">
+        <merges target="cordova.plugins.notification.local.core" />
+        <merges target="plugin.notification.local.core" />
     </js-module>
 
     <!-- ios -->
@@ -186,6 +196,31 @@
         <source-file
             src="src/android/notification/TriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
+
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+
+        <js-module src="src/windows/LocalNotificationProxy.js" name="LocalNotification.Proxy" >
+            <merges target="" />
+        </js-module>
+
+        <js-module src="src/windows/LocalNotificationCore.js" name="LocalNotification.Proxy.Core" >
+            <merges target="" />
+        </js-module>
+
+        <js-module src="src/windows/LocalNotificationUtil.js" name="LocalNotification.Proxy.Util" >
+            <merges target="" />
+        </js-module>
+
+        <!-- Platform Hooks -->
+        <hook type="after_platform_add" src="scripts/windows/setToastCapable.js" />
+        <hook type="after_plugin_install" src="scripts/windows/setToastCapable.js" />
+
+        <hook type="after_platform_add" src="scripts/windows/broadcastActivateEvent.js" />
+        <hook type="after_plugin_install" src="scripts/windows/broadcastActivateEvent.js" />
+        <hook type="after_prepare" src="scripts/windows/broadcastActivateEvent.js" />
 
     </platform>
 
