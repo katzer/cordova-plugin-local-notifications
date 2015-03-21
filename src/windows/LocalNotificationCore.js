@@ -54,8 +54,8 @@ exports.core = {
      *      'schedule' or 'update'
      */
     schedule: function (notifications) {
-
         var triggerFn = function (notification) {
+            this.updateBadge(notification.badge);
             this.fireEvent('trigger', notification);
         };
 
@@ -125,6 +125,25 @@ exports.core = {
         properties.at = options.at + 315360000; // 10 years later
 
         this.scheduleLocalNotification(notification, properties);
+    },
+
+    /**
+     * Updates the badge number of the active tile.
+     *
+     * @param {Number} badge
+     *      The badge number. Zero will clean the badge.
+     */
+    updateBadge: function (badge) {
+        var notifications = Windows.UI.Notifications,
+            type = notifications.BadgeTemplateType.badgeNumber,
+            xml = notifications.BadgeUpdateManager.getTemplateContent(type),
+            attrs = xml.getElementsByTagName('badge'),
+            notification = new notifications.BadgeNotification(xml);
+
+        attrs[0].setAttribute('value', badge);
+
+        notifications.BadgeUpdateManager.createBadgeUpdaterForApplication()
+            .update(notification);
     },
 
     /**
