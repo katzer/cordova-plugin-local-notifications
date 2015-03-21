@@ -87,44 +87,20 @@ exports.parseSound = function (path) {
     return audio;
 };
 
-/**
- * Builds the xml payload for a local notification based on its options.
- *
- * @param {Object} options
- *      Local notification properties
- *
- * @return {String}
- *      Windows.Data.Xml.Dom.XmlDocument
- */
+    /**
+     * Builds the xml payload for a local notification based on its options.
+     *
+     * @param {Object} options
+     *      Local notification properties
+     *
+     * @return Windows.Data.Xml.Dom.XmlDocument
+     */
 exports.build = function (options) {
-    var title = options.title,
-        message = options.text || '',
-        sound = '';
-
-    if (!title || title === '') {
-        title = 'Notification';
-    }
-
-    if (options.sound) {
-        sound = this.parseSound(options.sound);
-    }
-
-    var payload =
-        "<toast> " +
-            "<visual version='2'>" +
-                "<binding template='ToastText02'>" +
-                    "<text id='2'>" + message + "</text>" +
-                    "<text id='1'>" + title + "</text>" +
-                "</binding>" +
-            "</visual>" +
-            sound +
-            "<json>" + JSON.stringify(options) + "</json>" +
-        "</toast>";
-
-    var notification = new Windows.Data.Xml.Dom.XmlDocument();
+    var template = this.buildToastTemplate(options),
+        notification = new Windows.Data.Xml.Dom.XmlDocument();
 
     try {
-        notification.loadXml(payload);
+        notification.loadXml(template);
     } catch (e) {
         console.error(
             'LocalNotification#schedule',
@@ -139,6 +115,48 @@ exports.build = function (options) {
     toastNode.attributes.setNamedItem(launchAttr);
 
     return notification;
+};
+
+    /**
+     * Builds the toast template with the right style depend on the options.
+     *
+     * @param {Object} options
+     *      Local notification properties
+     *
+     * @return String
+     */
+exports.buildToastTemplate = function (options) {
+    var title = options.title,
+        message = options.text || '',
+        json = JSON.stringify(options),
+        sound = '';
+
+    if (options.sound && options.sound !== '') {
+        sound = this.parseSound(options.sound);
+    }
+
+    if (title && title !== '') {
+        return "<toast>" +
+                    "<visual>" +
+                        "<binding template='ToastText02'>" +
+                            "<text id='1'>" + title + "</text>" +
+                            "<text id='2'>" + message + "</text>" +
+                        "</binding>" +
+                    "</visual>" +
+                    sound +
+                    "<json>" + json + "</json>" +
+                "</toast>";
+    } else {
+        return "<toast>" +
+                    "<visual>" +
+                        "<binding template='ToastText01'>" +
+                            "<text id='1'>" + message + "</text>" +
+                        "</binding>" +
+                    "</visual>" +
+                    sound +
+                    "<json>" + json + "</json>" +
+                "</toast>";
+    }
 };
 
 /**

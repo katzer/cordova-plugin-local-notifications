@@ -41,7 +41,7 @@
   </Resources>
   <Applications>
     <Application Id="de.appplant.localnotification.example" StartPage="www/index.html">
-      <m3:VisualElements ToastCapable="true" DisplayName="NotificationExample" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png" Description="CordovaApp" ForegroundText="light" BackgroundColor="transparent">
+      <m3:VisualElements DisplayName="NotificationExample" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png" Description="CordovaApp" ForegroundText="light" BackgroundColor="transparent" ToastCapable="true">
         <m3:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\Square71x71Logo.png">
           <m3:ShowNameOnTiles>
             <m3:ShowOn Tile="square150x150Logo" />
