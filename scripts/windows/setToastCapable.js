@@ -47,7 +47,7 @@ function replace (filename, to_replace, replace_with) {
     var data = fs.readFileSync(filename, 'utf8'),
         result;
 
-    if (data.indexOf(replace_with) > -1)
+    if (data.indexOf('ToastCapable') > -1)
         return;
 
     result = data.replace(new RegExp(to_replace, 'g'), replace_with);
