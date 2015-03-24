@@ -32,14 +32,12 @@ exports.core = {
      */
     deviceready: function () {
         var plugin = cordova.plugins.notification.local,
-            args;
+            events = this.eventQueue;
 
         this.isReady = true;
 
-        for (var i = 0; i < this.eventQueue.length; i++) {
-            args = this.eventQueue[i];
-
-            plugin.fireEvent.apply(plugin, args);
+        for (var i = 0; i < events.length; i++) {
+            plugin.fireEvent.apply(plugin, events[i]);
         }
 
         this.eventQueue = [];
@@ -54,8 +52,8 @@ exports.core = {
      *      'schedule' or 'update'
      */
     schedule: function (notifications) {
-
         var triggerFn = function (notification) {
+            this.updateBadge(notification.badge);
             this.fireEvent('trigger', notification);
         };
 
@@ -64,10 +62,8 @@ exports.core = {
                 notification = this.build(options);
 
             this.cancelLocalNotification(options.id);
-
             this.scheduleLocalNotification(notification, options);
             this.scheduleBackupNotification(notification, options);
-
             this.fireEvent('schedule', options);
             this.callOnTrigger(options, triggerFn);
         }
@@ -128,15 +124,22 @@ exports.core = {
     },
 
     /**
-     * Updates a single local notification.
+     * Updates the badge number of the active tile.
      *
-     * @param {Object} notification
-     *      The local notification
-     * @param {Object} updates
-     *      Updated properties
+     * @param {Number} badge
+     *      The badge number. Zero will clean the badge.
      */
-    updateLocalNotification: function (notification, updates) {
+    updateBadge: function (badge) {
+        var notifications = Windows.UI.Notifications,
+            type = notifications.BadgeTemplateType.badgeNumber,
+            xml = notifications.BadgeUpdateManager.getTemplateContent(type),
+            attrs = xml.getElementsByTagName('badge'),
+            notification = new notifications.BadgeNotification(xml);
 
+        attrs[0].setAttribute('value', badge);
+
+        notifications.BadgeUpdateManager.createBadgeUpdaterForApplication()
+            .update(notification);
     },
 
     /**
@@ -156,6 +159,23 @@ exports.core = {
     },
 
     /**
+     * Updates a single local notification.
+     *
+     * @param {Object} notification
+     *      The local notification
+     * @param {Object} updates
+     *      Updated properties
+     */
+    updateLocalNotification: function (notification, updates) {
+        for (var key in updates) {
+            notification[key] = updates[key];
+        }
+
+        this.cancelLocalNotification(notification.id);
+        this.scheduleLocalNotification(notification);
+    },
+
+    /**
      * Clears the specified notifications.
      *
      * @param {int[]} ids
@@ -163,9 +183,10 @@ exports.core = {
      */
     clear: function (ids) {
         for (var i = 0; i < ids.length; i++) {
-            var notification = this.getAll([id])[0];
+            var id = ids[i],
+                notification = this.getAll([id])[0];
 
-            this.clearLocalNotification(ids[i]);
+            this.clearLocalNotification(id);
             this.fireEvent('clear', notification);
         }
     },
@@ -177,7 +198,12 @@ exports.core = {
      *      Local notification ID
      */
     clearLocalNotification: function (id) {
+        var notification = this.getAll([id])[0];
+
         this.getToastHistory().remove('Toast' + id);
+
+        if (this.isRepeating(notification))
+            return;
 
         if (this.isTriggered(id) && !this.isScheduled(id)) {
             this.cancelLocalNotification(id);
@@ -206,7 +232,8 @@ exports.core = {
      */
     cancel: function (ids) {
         for (var i = 0; i < ids.length; i++) {
-            var notification = this.getAll([id])[0];
+            var id = ids[i],
+                notification = this.getAll([id])[0];
 
             this.cancelLocalNotification(ids[i]);
             this.fireEvent('cancel', notification);
@@ -256,7 +283,7 @@ exports.core = {
      *      Local notification ID
      */
     isPresent: function (id) {
-        return this.getAllIds().indexOf(id) > -1;
+        return !!this.findToastById(id);
     },
 
     /**
@@ -266,7 +293,9 @@ exports.core = {
      *      Local notification ID
      */
     isScheduled: function (id) {
-        return this.getScheduledIds().indexOf(id) > -1;
+        var toast = this.findToastById(id);
+
+        return toast && this.isToastScheduled(toast);
     },
 
     /**
@@ -276,7 +305,9 @@ exports.core = {
      *      Local notification ID
      */
     isTriggered: function (id) {
-        return this.getTriggeredIds().indexOf(id) > -1;
+        var toast = this.findToastById(id);
+
+        return toast && this.isToastTriggered(toast);
     },
 
     /**
@@ -346,8 +377,8 @@ exports.core = {
         var toasts = this.getScheduledToasts(),
             notifications = [];
 
-        if (ids.length === 0) {
-            ids = getAllIds();
+        if (!ids || ids.length === 0) {
+            ids = this.getAllIds();
         }
 
         for (var index = 0; index < ids.length; index++) {
@@ -373,7 +404,7 @@ exports.core = {
      *      List of local notification IDs
      */
     getScheduled: function (ids) {
-        if (ids.length === 0) {
+        if (!ids || ids.length === 0) {
             ids = this.getAllIds();
         }
 
@@ -388,7 +419,7 @@ exports.core = {
      *      List of local notification IDs
      */
     getTriggered: function (ids) {
-        if (ids.length === 0) {
+        if (!ids || ids.length === 0) {
             ids = this.getAllIds();
         }
 

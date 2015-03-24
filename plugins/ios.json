@@ -9,15 +9,15 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Toast\"><param name=\"ios-package\" value=\"Toast\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Toast\"><param name=\"ios-package\" value=\"Toast\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -36,16 +36,16 @@
         }
     },
     "installed_plugins": {
-        "nl.x-services.plugins.toast": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
-        },
         "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
+        "nl.x-services.plugins.toast": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     },
     "dependent_plugins": {
         "org.apache.cordova.device": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local-notification.example"
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     }
 }

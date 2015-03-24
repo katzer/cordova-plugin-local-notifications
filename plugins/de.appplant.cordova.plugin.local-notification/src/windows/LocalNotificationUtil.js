@@ -19,6 +19,9 @@
     under the License.
 */
 
+
+var channel = require('cordova/channel');
+
 exports = require('de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy.Core').core;
 
 
@@ -66,6 +69,18 @@ exports.getRepeatInterval = function (every) {
 };
 
 /**
+ * If the notification is repeating.
+ *
+ * @param {Object} notification
+ *      Local notification object
+ *
+ * @return Boolean
+ */
+exports.isRepeating = function (notification) {
+    return this.getRepeatInterval(notification.every) !== 0;
+};
+
+/**
  * Parses sound file path.
  *
  * @param {String} path
@@ -93,38 +108,14 @@ exports.parseSound = function (path) {
  * @param {Object} options
  *      Local notification properties
  *
- * @return {String}
- *      Windows.Data.Xml.Dom.XmlDocument
+ * @return Windows.Data.Xml.Dom.XmlDocument
  */
 exports.build = function (options) {
-    var title = options.title,
-        message = options.text || '',
-        sound = '';
-
-    if (!title || title === '') {
-        title = 'Notification';
-    }
-
-    if (options.sound) {
-        sound = this.parseSound(options.sound);
-    }
-
-    var payload =
-        "<toast> " +
-            "<visual version='2'>" +
-                "<binding template='ToastText02'>" +
-                    "<text id='2'>" + message + "</text>" +
-                    "<text id='1'>" + title + "</text>" +
-                "</binding>" +
-            "</visual>" +
-            sound +
-            "<json>" + JSON.stringify(options) + "</json>" +
-        "</toast>";
-
-    var notification = new Windows.Data.Xml.Dom.XmlDocument();
+    var template = this.buildToastTemplate(options),
+        notification = new Windows.Data.Xml.Dom.XmlDocument();
 
     try {
-        notification.loadXml(payload);
+        notification.loadXml(template);
     } catch (e) {
         console.error(
             'LocalNotification#schedule',
@@ -139,6 +130,48 @@ exports.build = function (options) {
     toastNode.attributes.setNamedItem(launchAttr);
 
     return notification;
+};
+
+/**
+ * Builds the toast template with the right style depend on the options.
+ *
+ * @param {Object} options
+ *      Local notification properties
+ *
+ * @return String
+ */
+exports.buildToastTemplate = function (options) {
+    var title = options.title,
+        message = options.text || '',
+        json = JSON.stringify(options),
+        sound = '';
+
+    if (options.sound && options.sound !== '') {
+        sound = this.parseSound(options.sound);
+    }
+
+    if (title && title !== '') {
+        return  "<toast>" +
+                    "<visual>" +
+                        "<binding template='ToastText02'>" +
+                            "<text id='1'>" + title + "</text>" +
+                            "<text id='2'>" + message + "</text>" +
+                        "</binding>" +
+                    "</visual>" +
+                    sound +
+                    "<json>" + json + "</json>" +
+                "</toast>";
+    } else {
+        return  "<toast>" +
+                    "<visual>" +
+                        "<binding template='ToastText01'>" +
+                            "<text id='1'>" + message + "</text>" +
+                        "</binding>" +
+                    "</visual>" +
+                    sound +
+                    "<json>" + json + "</json>" +
+                "</toast>";
+    }
 };
 
 /**
@@ -222,6 +255,9 @@ exports.isToastTriggered = function (toast) {
         notification = this.getAll(id)[0];
         fireDate = new Date((notification.at) * 1000);
 
+    if (this.isRepeating(notification))
+        return false;
+
     return fireDate <= new Date();
 };
 
@@ -271,6 +307,20 @@ exports.callOnTrigger = function (notification, callback) {
 };
 
 /**
+ * Sets trigger event for all scheduled local notification.
+ *
+ * @param {Function} callback
+ *      Callback function
+ */
+exports.callOnTriggerForScheduled = function (callback) {
+    var notifications = this.getScheduled();
+
+    for (var i = 0; i < notifications.length; i++) {
+        this.callOnTrigger(notifications[i], callback);
+    }
+};
+
+/**
  * The application state - background or foreground.
  *
  * @return String
@@ -310,6 +360,31 @@ exports.fireEvent = function (event, notification) {
  * LIFE CYCLE *
  **************/
 
+// Called before 'deviceready' event
+channel.onCordovaReady.subscribe(function () {
+    // Register trigger handler for each scheduled notification
+    exports.callOnTriggerForScheduled(function (notification) {
+        this.updateBadge(notification.badge);
+        this.fireEvent('trigger', notification);
+    });
+});
+
+// Handle onclick event
+WinJS.Application.addEventListener('activated', function (args) {
+    var id = args.detail.arguments,
+        notification = exports.getAll([id])[0];
+
+    if (!notification)
+        return;
+
+    exports.clearLocalNotification(id);
+
+    var repeating = exports.isRepeating(notification);
+
+    exports.fireEvent('click', notification);
+    exports.fireEvent(repeating ? 'clear' : 'cancel', notification);
+}, false);
+
 // App is running in background
 document.addEventListener('pause', function () {
     exports.isInBackground = true;
@@ -323,16 +398,4 @@ document.addEventListener('resume', function () {
 // App is running in foreground
 document.addEventListener('deviceready', function () {
     exports.isInBackground = false;
-}, false);
-
-// Handle onclick event
-WinJS.Application.addEventListener('activated', function (args) {
-    var id = args.detail.arguments,
-        notification = exports.getAll([id])[0];
-
-    if (!notification)
-        return;
-
-    exports.clearLocalNotification(id);
-    exports.fireEvent('click', notification);
 }, false);
