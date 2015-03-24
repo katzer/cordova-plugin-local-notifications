@@ -62,10 +62,8 @@ exports.core = {
                 notification = this.build(options);
 
             this.cancelLocalNotification(options.id);
-
             this.scheduleLocalNotification(notification, options);
             this.scheduleBackupNotification(notification, options);
-
             this.fireEvent('schedule', options);
             this.callOnTrigger(options, triggerFn);
         }
@@ -185,9 +183,10 @@ exports.core = {
      */
     clear: function (ids) {
         for (var i = 0; i < ids.length; i++) {
-            var notification = this.getAll([id])[0];
+            var id = ids[i],
+                notification = this.getAll([id])[0];
 
-            this.clearLocalNotification(ids[i]);
+            this.clearLocalNotification(id);
             this.fireEvent('clear', notification);
         }
     },
@@ -199,7 +198,12 @@ exports.core = {
      *      Local notification ID
      */
     clearLocalNotification: function (id) {
+        var notification = this.getAll([id])[0];
+
         this.getToastHistory().remove('Toast' + id);
+
+        if (this.isRepeating(notification))
+            return;
 
         if (this.isTriggered(id) && !this.isScheduled(id)) {
             this.cancelLocalNotification(id);
@@ -228,7 +232,8 @@ exports.core = {
      */
     cancel: function (ids) {
         for (var i = 0; i < ids.length; i++) {
-            var notification = this.getAll([id])[0];
+            var id = ids[i],
+                notification = this.getAll([id])[0];
 
             this.cancelLocalNotification(ids[i]);
             this.fireEvent('cancel', notification);

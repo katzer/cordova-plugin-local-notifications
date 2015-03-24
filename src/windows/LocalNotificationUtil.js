@@ -69,6 +69,18 @@ exports.getRepeatInterval = function (every) {
 };
 
 /**
+ * If the notification is repeating.
+ *
+ * @param {Object} notification
+ *      Local notification object
+ *
+ * @return Boolean
+ */
+exports.isRepeating = function (notification) {
+    return this.getRepeatInterval(notification.every) !== 0;
+};
+
+/**
  * Parses sound file path.
  *
  * @param {String} path
@@ -363,7 +375,11 @@ WinJS.Application.addEventListener('activated', function (args) {
         return;
 
     exports.clearLocalNotification(id);
+
+    var repeating = exports.isRepeating(notification);
+
     exports.fireEvent('click', notification);
+    exports.fireEvent(repeating ? 'clear' : 'cancel', notification);
 }, false);
 
 // App is running in background
