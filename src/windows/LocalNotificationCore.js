@@ -32,14 +32,12 @@ exports.core = {
      */
     deviceready: function () {
         var plugin = cordova.plugins.notification.local,
-            args;
+            events = this.eventQueue;
 
         this.isReady = true;
 
-        for (var i = 0; i < this.eventQueue.length; i++) {
-            args = this.eventQueue[i];
-
-            plugin.fireEvent.apply(plugin, args);
+        for (var i = 0; i < events.length; i++) {
+            plugin.fireEvent.apply(plugin, events[i]);
         }
 
         this.eventQueue = [];
@@ -370,7 +368,7 @@ exports.core = {
         var toasts = this.getScheduledToasts(),
             notifications = [];
 
-        if (ids.length === 0) {
+        if (!ids || ids.length === 0) {
             ids = this.getAllIds();
         }
 
@@ -397,7 +395,7 @@ exports.core = {
      *      List of local notification IDs
      */
     getScheduled: function (ids) {
-        if (ids.length === 0) {
+        if (!ids || ids.length === 0) {
             ids = this.getAllIds();
         }
 
@@ -412,7 +410,7 @@ exports.core = {
      *      List of local notification IDs
      */
     getTriggered: function (ids) {
-        if (ids.length === 0) {
+        if (!ids || ids.length === 0) {
             ids = this.getAllIds();
         }
 

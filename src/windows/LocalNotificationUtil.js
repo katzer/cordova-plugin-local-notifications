@@ -19,6 +19,9 @@
     under the License.
 */
 
+
+var channel = require('cordova/channel');
+
 exports = require('de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy.Core').core;
 
 
@@ -289,6 +292,20 @@ exports.callOnTrigger = function (notification, callback) {
 };
 
 /**
+ * Sets trigger event for all scheduled local notification.
+ *
+ * @param {Function} callback
+ *      Callback function
+ */
+exports.callOnTriggerForScheduled = function (callback) {
+    var notifications = this.getScheduled();
+
+    for (var i = 0; i < notifications.length; i++) {
+        this.callOnTrigger(notifications[i], callback);
+    }
+};
+
+/**
  * The application state - background or foreground.
  *
  * @return String
@@ -328,6 +345,27 @@ exports.fireEvent = function (event, notification) {
  * LIFE CYCLE *
  **************/
 
+// Called before 'deviceready' event
+channel.onCordovaReady.subscribe(function () {
+    // Register trigger handler for each scheduled notification
+    exports.callOnTriggerForScheduled(function (notification) {
+        this.updateBadge(notification.badge);
+        this.fireEvent('trigger', notification);
+    });
+});
+
+// Handle onclick event
+WinJS.Application.addEventListener('activated', function (args) {
+    var id = args.detail.arguments,
+        notification = exports.getAll([id])[0];
+
+    if (!notification)
+        return;
+
+    exports.clearLocalNotification(id);
+    exports.fireEvent('click', notification);
+}, false);
+
 // App is running in background
 document.addEventListener('pause', function () {
     exports.isInBackground = true;
@@ -341,16 +379,4 @@ document.addEventListener('resume', function () {
 // App is running in foreground
 document.addEventListener('deviceready', function () {
     exports.isInBackground = false;
-}, false);
-
-// Handle onclick event
-WinJS.Application.addEventListener('activated', function (args) {
-    var id = args.detail.arguments,
-        notification = exports.getAll([id])[0];
-
-    if (!notification)
-        return;
-
-    exports.clearLocalNotification(id);
-    exports.fireEvent('click', notification);
 }, false);
