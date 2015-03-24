@@ -293,7 +293,9 @@ exports.core = {
      *      Local notification ID
      */
     isScheduled: function (id) {
-        return this.getScheduledIds().indexOf(id) > -1;
+        var toast = this.findToastById(id);
+
+        return toast && this.isToastScheduled(toast);
     },
 
     /**
