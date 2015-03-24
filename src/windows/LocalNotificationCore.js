@@ -147,18 +147,6 @@ exports.core = {
     },
 
     /**
-     * Updates a single local notification.
-     *
-     * @param {Object} notification
-     *      The local notification
-     * @param {Object} updates
-     *      Updated properties
-     */
-    updateLocalNotification: function (notification, updates) {
-
-    },
-
-    /**
      * Updates existing notifications specified by IDs in options.
      *
      * @param {Object[]} notifications
@@ -172,6 +160,23 @@ exports.core = {
             this.updateLocalNotification(options, updates);
             this.fireEvent('update', options);
         }
+    },
+
+    /**
+     * Updates a single local notification.
+     *
+     * @param {Object} notification
+     *      The local notification
+     * @param {Object} updates
+     *      Updated properties
+     */
+    updateLocalNotification: function (notification, updates) {
+        for (var key in updates) {
+            notification[key] = updates[key];
+        }
+
+        this.cancelLocalNotification(notification.id);
+        this.scheduleLocalNotification(notification);
     },
 
     /**
