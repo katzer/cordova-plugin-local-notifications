@@ -305,7 +305,9 @@ exports.core = {
      *      Local notification ID
      */
     isTriggered: function (id) {
-        return this.getTriggeredIds().indexOf(id) > -1;
+        var toast = this.findToastById(id);
+
+        return toast && this.isToastTriggered(toast);
     },
 
     /**
