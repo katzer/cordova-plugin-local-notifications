@@ -283,7 +283,7 @@ exports.core = {
      *      Local notification ID
      */
     isPresent: function (id) {
-        return this.getAllIds().indexOf(id) > -1;
+        return !!this.findToastById(id);
     },
 
     /**
