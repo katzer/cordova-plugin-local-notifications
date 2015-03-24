@@ -255,6 +255,9 @@ exports.isToastTriggered = function (toast) {
         notification = this.getAll(id)[0];
         fireDate = new Date((notification.at) * 1000);
 
+    if (this.isRepeating(notification))
+        return false;
+
     return fireDate <= new Date();
 };
 
