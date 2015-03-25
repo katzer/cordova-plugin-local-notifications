@@ -30,8 +30,8 @@ For example, applications that depend on servers for messages or data can poll t
 The current 0.8 branch supports the following platforms:
 - __iOS__ _(including iOS8)_<br>
 - __Android__ _(SDK >=7)_
-
-The partial support for WP8.0 has been dropped, but the Windows (Phone) 8.1 platform will be fully supported soon.
+- __Windows 8.1__ _(added with v0.8.2)_
+- __Windows Phone 8.1__ _(added with v0.8.2)_
 
 Find out more informations [here][wiki_platforms] in our wiki.
 
