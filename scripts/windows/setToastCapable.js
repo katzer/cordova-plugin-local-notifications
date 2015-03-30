@@ -55,14 +55,9 @@ function replace (filename, to_replace, replace_with) {
     fs.writeFileSync(filename, result, 'utf8');
 }
 
-// Paths to all manifest files where the permission needs to be set
-var manifests = [
-    'platforms/windows/package.phone.appxmanifest',
-    'platforms/windows/package.windows.appxmanifest',
-    'platforms/windows/package.windows80.appxmanifest'
-];
-
-// Includes the permission
-for (var i = 0; i < manifests.length; i++) {
-    replace(manifests[i], '<m3:VisualElements ', '<m3:VisualElements ToastCapable="true" ');
-}
+// Set ToastCapable for Windows Phone
+replace('platforms/windows/package.phone.appxmanifest', '<m3:VisualElements', '<m3:VisualElements ToastCapable="true"');
+// Set ToastCapable for Windows 8.1
+replace('platforms/windows/package.windows.appxmanifest', '<m2:VisualElements', '<m2:VisualElements ToastCapable="true"');
+// Set ToastCapable for Windows 8.0
+replace('platforms/windows/package.windows80.appxmanifest', '<VisualElements', '<VisualElements ToastCapable="true"');
