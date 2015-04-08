@@ -20,6 +20,8 @@
 */
 
 
+var proxy = require('de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy');
+
 var Notifications = Windows.UI.Notifications;
 
 
