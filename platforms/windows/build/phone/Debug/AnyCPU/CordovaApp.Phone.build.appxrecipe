@@ -6,7 +6,7 @@
     <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
     <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
     <PackageArchitecture>neutral</PackageArchitecture>
-    <PackageIdentityName>e8de53c0-cf2d-11e4-8bb0-9369d008f7b1</PackageIdentityName>
+    <PackageIdentityName>c05631e0-de03-11e4-96be-cfbf5b6cb232</PackageIdentityName>
     <IntermediateOutputPath>Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -78,6 +78,12 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\js\index.js">
       <PackagePath>www\js\index.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.email-composer\src\windows\EmailComposerProxy.js">
+      <PackagePath>www\plugins\de.appplant.cordova.plugin.email-composer\src\windows\EmailComposerProxy.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.email-composer\www\email_composer.js">
+      <PackagePath>www\plugins\de.appplant.cordova.plugin.email-composer\www\email_composer.js</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationCore.js">
       <PackagePath>www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationCore.js</PackagePath>

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
  * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
  *

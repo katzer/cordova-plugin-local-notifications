@@ -86,20 +86,52 @@ exports.isRepeating = function (notification) {
  * @param {String} path
  *      Relative path to sound resource
  *
- * @return {String} URI to Sound-File
+ * @return {String} XML Tag for Sound-File
  */
 exports.parseSound = function (path) {
+	if (!path.match(/^file/))
+		return '';
+
+	var uri = this.parseUri(path),
+		audio = "<audio src=" + uri + " loop='false'/>";
+
+	return audio;
+};
+
+/**
+ * Parses image file path.
+ *
+ * @param {String} path
+ *      Relative path to image resource
+ *
+ * @return {String} XML-Tag for Image-File
+ */
+exports.parseImage = function (path) {
+    if (!path.match(/^file/))
+        return '';
+
+    var uri = this.parseUri(path),
+        image = "<image id='1' src=" + uri + " />";
+
+    return image;
+};
+
+/**
+ * Parses file path to URI.
+ *
+ * @param {String} path
+ *      Relative path to a resource
+ *
+ * @return {String} URI to File
+ */
+exports.parseUri = function (path) {
     var pkg = Windows.ApplicationModel.Package.current,
         pkgId = pkg.id,
         pkgName = pkgId.name;
 
-    if (!path.match(/^file/))
-        return;
+	var uri = "'ms-appx://" + pkgName + "/www" + path.slice(6, path.length) + "'";
 
-    var sound = "'ms-appx://" + pkgName + "/www/" + path.slice(6, path.length) + "'",
-        audio = "<audio src=" + sound + " loop='false'/>";
-
-    return audio;
+	return uri;
 };
 
 /**
@@ -141,37 +173,47 @@ exports.build = function (options) {
  * @return String
  */
 exports.buildToastTemplate = function (options) {
-    var title = options.title,
-        message = options.text || '',
-        json = JSON.stringify(options),
-        sound = '';
+	var title = options.title,
+		message = options.text || '',
+		json = JSON.stringify(options),
+		sound = '';
 
-    if (options.sound && options.sound !== '') {
-        sound = this.parseSound(options.sound);
-    }
+	if (options.sound && options.sound !== '') {
+		sound = this.parseSound(options.sound);
+	}
 
-    if (title && title !== '') {
-        return  "<toast>" +
-                    "<visual>" +
-                        "<binding template='ToastText02'>" +
-                            "<text id='1'>" + title + "</text>" +
-                            "<text id='2'>" + message + "</text>" +
-                        "</binding>" +
-                    "</visual>" +
-                    sound +
-                    "<json>" + json + "</json>" +
-                "</toast>";
-    } else {
-        return  "<toast>" +
-                    "<visual>" +
-                        "<binding template='ToastText01'>" +
-                            "<text id='1'>" + message + "</text>" +
-                        "</binding>" +
-                    "</visual>" +
-                    sound +
-                    "<json>" + json + "</json>" +
-                "</toast>";
-    }
+	var templateName = "ToastText",
+		imageNode;
+	if (options.icon && options.icon !== '') {
+		imageNode = this.parseImage(options.icon);
+		// template with Image
+		if (imageNode !== '') {
+			templateName = "ToastImageAndText";
+		};
+	} else {
+		imageNode = "";
+	}
+
+	var bindingNode;
+	if (title && title !== '') {
+		bindingNode = "<binding template='" + templateName + "02'>" +
+							imageNode +
+							"<text id='1'>" + title + "</text>" +
+							"<text id='2'>" + message + "</text>" +
+						"</binding>";
+	} else {
+		bindingNode = "<binding template='" + templateName + "01'>" +
+							imageNode +
+							"<text id='1'>" + message + "</text>" +
+						"</binding>";
+	}
+	return "<toast>" +
+				"<visual>" +
+						bindingNode +
+				"</visual>" +
+				sound +
+				"<json>" + json + "</json>" +
+			"</toast>";
 };
 
 /**

@@ -25,8 +25,8 @@
 
     Weitere Informationen zu Paketmanifestdateien finden Sie unter http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="e8de53c0-cf2d-11e4-8bb0-9369d008f7b1" Version="1.0.0.0" Publisher="CN=$username$" ProcessorArchitecture="neutral" />
-  <mp:PhoneIdentity PhoneProductId="e8de53c0-cf2d-11e4-8bb0-9369d008f7b1" PhonePublisherId="db093ed5-53b1-45f7-af72-751e8f36ab80" />
+  <Identity Name="c05631e0-de03-11e4-96be-cfbf5b6cb232" Version="1.0.0.0" Publisher="CN=$username$" ProcessorArchitecture="neutral" />
+  <mp:PhoneIdentity PhoneProductId="c05631e0-de03-11e4-96be-cfbf5b6cb232" PhonePublisherId="db093ed5-53b1-45f7-af72-751e8f36ab80" />
   <Properties>
     <DisplayName>NotificationExample</DisplayName>
     <PublisherDisplayName>$username$</PublisherDisplayName>

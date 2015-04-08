@@ -17,31 +17,31 @@
        specific language governing permissions and limitations
        under the License.
 -->
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="e8de53c0-cf2d-11e4-8bb0-9369d008f7b1" Version="1.1.0.0" Publisher="CN=$username$" />
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="c05631e0-de03-11e4-96be-cfbf5b6cb232" Version="1.0.0.0" Publisher="CN=$username$" />
   <Properties>
     <DisplayName>NotificationExample</DisplayName>
     <PublisherDisplayName>$username$</PublisherDisplayName>
     <Logo>images\storelogo.png</Logo>
   </Properties>
   <Prerequisites>
-    <OSMinVersion>6.3.0</OSMinVersion>
-    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
   </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
     <Application Id="de.appplant.localnotification.example" StartPage="www/index.html">
-      <m2:VisualElements DisplayName="NotificationExample" Description="CordovaApp" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="images\Square150x150Logo.png" Square30x30Logo="images\Square30x30Logo.png">
-        <m2:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png">
-          <m2:ShowNameOnTiles>
-            <m2:ShowOn Tile="square150x150Logo" />
-            <m2:ShowOn Tile="wide310x150Logo" />
-          </m2:ShowNameOnTiles>
-        </m2:DefaultTile>
-        <m2:SplashScreen Image="images\splashscreen.png" />
-      </m2:VisualElements>
+      <VisualElements ToastCapable="true" DisplayName="NotificationExample" 
+                      Logo="images\Square150x150Logo.png" 
+                      SmallLogo="images\Square30x30Logo.png"
+                      Description="CordovaApp" 
+                      ForegroundText="light" 
+                      BackgroundColor="#464646">
+        <DefaultTile ShowName="allLogos" WideLogo="images\Wide310x150Logo.png"/>
+        <SplashScreen Image="images\splashscreen.png" />
+      </VisualElements>
     </Application>
   </Applications>
   <Capabilities>

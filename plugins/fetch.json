@@ -10,5 +10,11 @@
             "type": "registry",
             "id": "org.apache.cordova.device"
         }
+    },
+    "de.appplant.cordova.plugin.email-composer": {
+        "source": {
+            "type": "local",
+            "path": "../cordova-plugin-email-composer"
+        }
     }
 }

@@ -308,6 +308,7 @@
         <!-- IDs -->
         <script type="text/javascript">
             var callbackIds = function (ids) {
+                console.log(ids);
                 showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
             };
 
@@ -331,8 +332,13 @@
                 showToast(notifications.length === 0 ? '- none -' : notifications.join(' ,'));
             };
 
+            var callbackSingleOpts = function (notification) {
+                console.log(notification);
+                showToast(notification.toString());
+            };
+
             get = function () {
-                cordova.plugins.notification.local.get(1, callbackOpts);
+                cordova.plugins.notification.local.get(1, callbackSingleOpts);
             };
 
             getMultiple = function () {

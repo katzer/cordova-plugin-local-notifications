@@ -46,7 +46,7 @@ public class Notification {
 
     // Used to differ notifications by their life cycle state
     public static enum Type {
-        SCHEDULED, TRIGGERED
+        ALL, SCHEDULED, TRIGGERED
     }
 
     // Default receiver to handle the trigger event

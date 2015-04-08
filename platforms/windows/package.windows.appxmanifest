@@ -18,7 +18,7 @@
        under the License.
 -->
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="e8de53c0-cf2d-11e4-8bb0-9369d008f7b1" Version="1.0.0.0" Publisher="CN=$username$" />
+  <Identity Name="c05631e0-de03-11e4-96be-cfbf5b6cb232" Version="1.0.0.0" Publisher="CN=$username$" />
   <Properties>
     <DisplayName>NotificationExample</DisplayName>
     <PublisherDisplayName>$username$</PublisherDisplayName>
@@ -33,7 +33,7 @@
   </Resources>
   <Applications>
     <Application Id="de.appplant.localnotification.example" StartPage="www/index.html">
-      <m2:VisualElements DisplayName="NotificationExample" 
+      <m2:VisualElements ToastCapable="true" DisplayName="NotificationExample" 
                          Description="CordovaApp"
                          ForegroundText="light"
                          BackgroundColor="#464646"

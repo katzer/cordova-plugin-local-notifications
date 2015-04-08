@@ -200,7 +200,9 @@ exports.core = {
     clearLocalNotification: function (id) {
         var notification = this.getAll([id])[0];
 
-        this.getToastHistory().remove('Toast' + id);
+        try {
+            this.getToastHistory().remove('Toast' + id);
+        } catch (e) {/*Only Phones support the NotificationHistory*/ }
 
         if (this.isRepeating(notification))
             return;
@@ -220,7 +222,9 @@ exports.core = {
             this.clearLocalNotification(ids[i]);
         }
 
-        this.getToastHistory().clear();
+        try {
+            this.getToastHistory().clear();
+        } catch (e) {/*Only Phones support the NotificationHistory*/ }
         this.fireEvent('clearall');
     },
 
@@ -251,7 +255,9 @@ exports.core = {
             history = this.getToastHistory(),
             toasts = this.getScheduledToasts();
 
-        history.remove('Toast' + id);
+        try {
+            history.remove('Toast' + id);
+        } catch (e) {/*Only Phones support the NotificationHistory*/ }
 
         for (var i = 0; i < toasts.length; i++) {
             var toast = toasts[i];
@@ -272,7 +278,9 @@ exports.core = {
             this.cancelLocalNotification(ids[i]);
         }
 
-        this.getToastHistory().clear();
+        try {
+            this.getToastHistory().clear();
+        } catch (e) {/*Only Phones support the NotificationHistory*/ }
         this.fireEvent('cancelall');
     },
 

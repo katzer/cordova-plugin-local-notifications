@@ -1298,7 +1298,7 @@ module.exports = {
                 scriptElem.src = "//Microsoft.WinJS.2.0/js/base.js";
             } else {
                 // windows 8.0 + IE 10
-                scriptElem.src = "//Microsoft.WinJS.2.0/js/base.js";
+                scriptElem.src = "//Microsoft.WinJS.1.0/js/base.js";
             }
             scriptElem.addEventListener("load", onWinJSReady);
             document.head.appendChild(scriptElem);

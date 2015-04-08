@@ -7,10 +7,10 @@
         "files": {}
     },
     "installed_plugins": {
-        "nl.x-services.plugins.toast": {
+        "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "NotificationExample"
         },
-        "de.appplant.cordova.plugin.local-notification": {
+        "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "NotificationExample"
         }
     },

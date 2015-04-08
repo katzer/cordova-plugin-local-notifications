@@ -48,7 +48,7 @@ import java.util.Set;
 public class Manager {
 
     // Context passed through constructor and used for notification builder.
-	private Context context;
+    private Context context;
 
     /**
      * Constructor
@@ -56,9 +56,9 @@ public class Manager {
      * @param context
      *      Application context
      */
-	private Manager(Context context){
-		this.context = context;
-	}
+    private Manager(Context context){
+        this.context = context;
+    }
 
     /**
      * Static method to retrieve class instance.
@@ -256,6 +256,9 @@ public class Manager {
         List<Notification> notifications = getAll();
         ArrayList<Notification> list = new ArrayList<Notification>();
 
+        if (type == Notification.Type.ALL)
+            return notifications;
+
         for (Notification notification : notifications) {
             if (notification.getType() == type) {
                 list.add(notification);
@@ -367,6 +370,9 @@ public class Manager {
      */
     public List<JSONObject> getOptionsBy(Notification.Type type,
                                          List<Integer> ids) {
+
+        if (type == Notification.Type.ALL)
+            return getOptionsById(ids);
 
         ArrayList<JSONObject> options = new ArrayList<JSONObject>();
         List<Notification> notifications = getByIds(ids);

@@ -275,7 +275,8 @@ exports.get = function () {
         scope    = args[2];
 
     if (!Array.isArray(ids)) {
-        ids = [ids];
+        this.exec('getSingle', ids.toString(), callback, scope);
+        return;
     }
 
     ids = this.convertIds(ids);
@@ -321,6 +322,11 @@ exports.getScheduled = function () {
         ids = [ids];
     }
 
+    if (!Array.isArray(ids)) {
+        this.exec('getSingleScheduled', ids.toString(), callback, scope);
+        return;
+    }
+
     ids = this.convertIds(ids);
 
     this.exec('getScheduled', ids, callback, scope);
@@ -362,6 +368,11 @@ exports.getTriggered = function () {
 
     if (!Array.isArray(ids)) {
         ids = [ids];
+    }
+
+    if (!Array.isArray(ids)) {
+        this.exec('getSingleTriggered', ids.toString(), callback, scope);
+        return;
     }
 
     ids = this.convertIds(ids);
