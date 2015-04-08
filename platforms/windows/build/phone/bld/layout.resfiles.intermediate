@@ -19,8 +19,6 @@ www\css\index.css
 www\img\logo.png
 www\index.html
 www\js\index.js
-www\plugins\de.appplant.cordova.plugin.email-composer\src\windows\EmailComposerProxy.js
-www\plugins\de.appplant.cordova.plugin.email-composer\www\email_composer.js
 www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationCore.js
 www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationProxy.js
 www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationUtil.js

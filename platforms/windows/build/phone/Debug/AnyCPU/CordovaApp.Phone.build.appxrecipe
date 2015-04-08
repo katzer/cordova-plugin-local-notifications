@@ -79,12 +79,6 @@
     <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\js\index.js">
       <PackagePath>www\js\index.js</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.email-composer\src\windows\EmailComposerProxy.js">
-      <PackagePath>www\plugins\de.appplant.cordova.plugin.email-composer\src\windows\EmailComposerProxy.js</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.email-composer\www\email_composer.js">
-      <PackagePath>www\plugins\de.appplant.cordova.plugin.email-composer\www\email_composer.js</PackagePath>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="Y:\Documents\github\cordova-example-local-notifications\platforms\windows\www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationCore.js">
       <PackagePath>www\plugins\de.appplant.cordova.plugin.local-notification\src\windows\LocalNotificationCore.js</PackagePath>
     </AppxPackagedFile>

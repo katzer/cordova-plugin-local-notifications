@@ -259,12 +259,6 @@ exports.getTriggered = function (success, error, ids) {
     success(notifications);
 };
 
-/**
- * Required for core module to access the proxy.
- */
-exports.exports = function () {
-    return exports;
-};
 
 cordova.commandProxy.add('LocalNotification', exports);
 
