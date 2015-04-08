@@ -20,9 +20,7 @@
 */
 
 
-var Notifications = Windows.UI.Notifications,
-    applicationData = Windows.Storage.ApplicationData.current,
-    localSettings = applicationData.localSettings;
+var Notifications = Windows.UI.Notifications;
 
 
 exports.core = {
