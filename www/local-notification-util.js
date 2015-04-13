@@ -153,8 +153,10 @@ exports.convertProperties = function (options) {
     }
 
     if (typeof options.at == 'object') {
-        options.at = Math.round(options.at.getTime()/1000);
+        options.at = options.at.getTime();
     }
+
+    options.at = Math.round(options.at/1000);
 
     if (typeof options.data == 'object') {
         options.data = JSON.stringify(options.data);
