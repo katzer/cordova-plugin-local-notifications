@@ -314,6 +314,28 @@
 }
 
 /**
+ * Propertys for given local notification.
+ */
+- (void) getSingle:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeAll];
+}
+
+/**
+ * Propertya for given scheduled notification.
+ */
+- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeScheduled];
+}
+
+// Propertys for given triggered notification
+- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeTriggered];
+}
+
+/**
  * Property list for given local notifications.
  *
  * @param ids
@@ -344,6 +366,38 @@
 - (void) getTriggered:(CDVInvokedUrlCommand *)command
 {
     [self getOptions:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * Propertys for given triggered notification.
+ *
+ * @param type
+ *      Notification life cycle type
+ * @param ids
+ *      The ID of the notification
+ */
+- (void) getOption:(CDVInvokedUrlCommand*)command
+            byType:(APPLocalNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+        NSArray* notifications;
+        CDVPluginResult* result;
+
+        if (type == NotifcationTypeAll) {
+            notifications = [self.app localNotificationOptionsById:ids];
+        }
+        else {
+            notifications = [self.app localNotificationOptionsByType:type
+                                                               andId:ids];
+        }
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsDictionary:notifications[0]];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
 }
 
 /**
