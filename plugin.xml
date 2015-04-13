@@ -24,6 +24,7 @@
 
     <!-- dependencies -->
     <dependency id="org.apache.cordova.device" />
+    <dependency id="android.support.v4" url="https://github.com/MobileChromeApps/cordova-plugin-android-support-v4.git" />
 
     <!-- info -->
     <info>
@@ -48,6 +49,7 @@
         <merges target="cordova.plugins.notification.local.core" />
         <merges target="plugin.notification.local.core" />
     </js-module>
+
 
     <!-- ios -->
     <platform name="ios">
@@ -132,8 +134,6 @@
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
-
-        <lib-file src="libs/android/android-support-v4.jar" />
 
         <source-file
             src="src/android/LocalNotification.java"
