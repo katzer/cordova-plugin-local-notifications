@@ -87,7 +87,9 @@ exports.mergeWithDefaults = function (options) {
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
 
-    options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
+    if (defaults.hasOwnProperty('autoClear')) {
+        options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
+    }
 
     if (options.autoClear !== true && options.ongoing) {
         options.autoClear = false;
