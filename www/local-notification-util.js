@@ -154,11 +154,13 @@ exports.convertProperties = function (options) {
         }
     }
 
-    if (typeof options.at == 'object') {
-        options.at = options.at.getTime();
-    }
+    if (options.at) {
+        if (typeof options.at == 'object') {
+            options.at = options.at.getTime();
+        }
 
-    options.at = Math.round(options.at/1000);
+        options.at = Math.round(options.at/1000);
+    }
 
     if (typeof options.data == 'object') {
         options.data = JSON.stringify(options.data);
