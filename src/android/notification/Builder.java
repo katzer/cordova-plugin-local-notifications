@@ -116,6 +116,7 @@ public class Builder {
      */
     public Notification build() {
         Uri sound = options.getSoundUri();
+        Boolean withLed = options.isWithLed();
         NotificationCompat.BigTextStyle style;
         NotificationCompat.Builder builder;
 
@@ -132,8 +133,11 @@ public class Builder {
                 .setLargeIcon(options.getIconBitmap())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setStyle(style)
-                .setLights(options.getLedColor(), 500, 500);
+                .setStyle(style);
+
+        if (withLed) {
+            builder.setLights(options.getLedColor(), 500, 500);
+        }
 
         if (sound != null) {
             builder.setSound(sound);

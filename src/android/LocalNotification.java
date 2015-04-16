@@ -35,8 +35,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.Bundle;
 import android.os.Build;
 
+import de.appplant.cordova.plugin.localnotification.KillNotificationsService;
 import de.appplant.cordova.plugin.notification.*;
 
 /**
@@ -55,6 +62,11 @@ public class LocalNotification extends CordovaPlugin {
 
     // To inform the user about the state of the app in callbacks
     protected static Boolean isInBackground = true;
+
+    // To clear all notification when application is closed
+    // Useful when we want notification only when our application
+    //  is in background
+    protected static Boolean isAutoClearAll = false;
 
     // Queues all events before deviceready
     private static ArrayList<String> eventQueue = new ArrayList<String>();
@@ -103,6 +115,10 @@ public class LocalNotification extends CordovaPlugin {
     public void onDestroy() {
         deviceready = false;
         isInBackground = true;
+
+        if (isAutoClearAll) {
+            getNotificationMgr().cancelAll();
+        }
     }
 
     /**
@@ -154,6 +170,10 @@ public class LocalNotification extends CordovaPlugin {
                 }
                 else if (action.equals("clearAll")) {
                     clearAll();
+                    command.success();
+                }
+                else if (action.equals("setAutoClearAll")) {
+                    setAutoClearAll();
                     command.success();
                 }
                 else if (action.equals("isPresent")) {
@@ -284,6 +304,30 @@ public class LocalNotification extends CordovaPlugin {
     private void clearAll() {
         getNotificationMgr().clearAll();
         fireEvent("clearall");
+    }
+
+    /**
+     * Clear all triggered notifications without canceling them.
+     */
+    private void setAutoClearAll() {
+        isAutoClearAll = true;
+
+        ServiceConnection mConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className,
+                    IBinder binder) {
+
+
+                ((KillNotificationsService.KillBinder) binder).service.startService(new Intent(
+                    cordova.getActivity(), KillNotificationsService.class));
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+            }
+
+        };
+        cordova.getActivity().bindService(new Intent(cordova.getActivity(),
+                KillNotificationsService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     /**

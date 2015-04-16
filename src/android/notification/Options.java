@@ -189,6 +189,13 @@ public class Options {
     }
 
     /**
+     * with led flag for local notifications.
+     */
+    public Boolean isWithLed() {
+        return options.optBoolean("withLed", true);
+    }
+
+    /**
      * Trigger date in milliseconds.
      */
     public long getTriggerTime() {
