@@ -45,7 +45,7 @@ import java.util.Date;
 public class Notification {
 
     // Used to differ notifications by their life cycle state
-    public static enum Type {
+    public enum Type {
         ALL, SCHEDULED, TRIGGERED
     }
 
@@ -162,7 +162,7 @@ public class Notification {
      * Schedule the local notification.
      */
     public void schedule() {
-        long triggerTime = getNextTriggerTime();
+        long triggerTime = options.getTriggerTime();
 
         persist();
 
@@ -174,15 +174,11 @@ public class Notification {
         PendingIntent pi = PendingIntent.getBroadcast(
                 context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
-    }
-
-    /**
-     * Re-schedule the local notification if repeating.
-     */
-    void reschedule () {
         if (isRepeating()) {
-            schedule();
+            getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
+                    triggerTime, options.getRepeatInterval(), pi);
+        } else {
+            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
         }
     }
 
@@ -251,26 +247,11 @@ public class Notification {
     }
 
     /**
-     * Next trigger time.
-     */
-    public long getNextTriggerTime() {
-        long triggerTime = options.getTriggerTime();
-
-        if (!isRepeating() || !isTriggered())
-            return triggerTime;
-
-        long interval    = options.getRepeatInterval();
-        int triggerCount = getTriggerCountSinceSchedule();
-
-        return triggerTime + (triggerCount + 1) * interval;
-    }
-
-    /**
      * Count of triggers since schedule.
      */
     public int getTriggerCountSinceSchedule() {
         long now = System.currentTimeMillis();
-        long initTriggerTime = options.getTriggerTime();
+        long triggerTime = options.getTriggerTime();
 
         if (!wasInThePast())
             return 0;
@@ -278,7 +259,7 @@ public class Notification {
         if (!isRepeating())
             return 1;
 
-        return (int) ((now - initTriggerTime) / options.getRepeatInterval());
+        return (int) ((now - triggerTime) / options.getRepeatInterval());
     }
 
     /**
@@ -294,6 +275,7 @@ public class Notification {
             e.printStackTrace();
         }
 
+        json.remove("firstAt");
         json.remove("updatedAt");
         json.remove("soundUri");
         json.remove("iconUri");

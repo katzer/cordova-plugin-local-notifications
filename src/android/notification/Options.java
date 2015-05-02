@@ -189,20 +189,6 @@ public class Options {
     }
 
     /**
-     * Trigger date in milliseconds.
-     */
-    public long getTriggerTime() {
-        return options.optLong("at", 0) * 1000;
-    }
-
-    /**
-     * Trigger date.
-     */
-    public Date getTriggerDate() {
-        return new Date(getTriggerTime());
-    }
-
-    /**
      * ID for the local notification as a number.
      */
     public Integer getId() {
@@ -214,6 +200,23 @@ public class Options {
      */
     public String getIdStr() {
         return getId().toString();
+    }
+
+    /**
+     * Trigger date.
+     */
+    public Date getTriggerDate() {
+        return new Date(getTriggerTime());
+    }
+
+    /**
+     * Trigger date in milliseconds.
+     */
+    public long getTriggerTime() {
+        return Math.max(
+                System.currentTimeMillis(),
+                options.optLong("at", 0) * 1000
+        );
     }
 
     /**
