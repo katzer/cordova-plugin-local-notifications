@@ -59,9 +59,11 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
 /**
  * The notification's ID.
  */
-- (NSString*) id
+- (NSNumber*) id
 {
-    return [dict objectForKey:@"id"];
+    NSInteger id = [[dict objectForKey:@"id"] integerValue];
+
+    return [NSNumber numberWithInteger:id];
 }
 
 /**
@@ -186,6 +188,14 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
  */
 - (NSDictionary*) userInfo
 {
+    if ([dict objectForKey:@"updatedAt"]) {
+        NSMutableDictionary* data = [dict mutableCopy];
+
+        [data removeObjectForKey:@"updatedAt"];
+
+        return data;
+    }
+
     return dict;
 }
 

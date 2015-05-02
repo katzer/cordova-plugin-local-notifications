@@ -39,10 +39,16 @@ module.exports = function (context) {
 
     var cordova_util = context.requireCordovaModule('cordova-lib/src/cordova/util'),
         ConfigParser = context.requireCordovaModule('cordova-lib/src/configparser/ConfigParser'),
-        platforms = context.requireCordovaModule('cordova-lib/src/cordova/platforms'),
         projectRoot = cordova_util.isCordova(),
         xml = cordova_util.projectConfig(projectRoot),
         cfg = new ConfigParser(xml);
+    // Cordova moved the platforms stuff; try both locations so we'll work for new and old file layouts.
+    var platforms;
+    try {
+        platforms = context.requireCordovaModule('cordova-lib/src/cordova/platforms');
+    } catch(e) {
+        platforms = context.requireCordovaModule('cordova-lib/src/platforms/platforms');
+    }
 
     /**
      * The absolute path for the file.

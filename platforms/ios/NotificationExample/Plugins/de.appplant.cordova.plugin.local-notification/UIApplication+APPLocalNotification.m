@@ -159,7 +159,7 @@
  * @param id
  *      Notification ID
  */
-- (BOOL) localNotificationExist:(NSString*)id
+- (BOOL) localNotificationExist:(NSNumber*)id
 {
     return [self localNotificationWithId:id] != NULL;
 }
@@ -171,7 +171,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (BOOL) localNotificationExist:(NSString*)id type:(APPLocalNotificationType)type
+- (BOOL) localNotificationExist:(NSNumber*)id type:(APPLocalNotificationType)type
 {
     return [self localNotificationWithId:id andType:type] != NULL;
 }
@@ -182,13 +182,13 @@
  * @param id
  *      Notification ID
  */
-- (UILocalNotification*) localNotificationWithId:(NSString*)id
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id
 {
     NSArray* notifications = self.localNotifications;
 
     for (UILocalNotification* notification in notifications)
     {
-        if ([notification.options.id isEqualToString:id]) {
+        if ([notification.options.id isEqualToNumber:id]) {
             return notification;
         }
     }
@@ -204,7 +204,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (UILocalNotification*) localNotificationWithId:(NSString*)id andType:(APPLocalNotificationType)type
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPLocalNotificationType)type
 {
     UILocalNotification* notification = [self localNotificationWithId:id];
 
@@ -224,7 +224,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        [options addObject:notification.userInfo];
+        [options addObject:notification.options.userInfo];
     }
 
     return options;
@@ -244,7 +244,7 @@
     for (UILocalNotification* notification in notifications)
     {
         if (notification.type == type) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 
@@ -262,12 +262,12 @@
     UILocalNotification* notification;
     NSMutableArray* options = [[NSMutableArray alloc] init];
 
-    for (NSString* id in ids)
+    for (NSNumber* id in ids)
     {
         notification = [self localNotificationWithId:id];
 
         if (notification) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 
@@ -287,12 +287,12 @@
     UILocalNotification* notification;
     NSMutableArray* options = [[NSMutableArray alloc] init];
 
-    for (NSString* id in ids)
+    for (NSNumber* id in ids)
     {
         notification = [self localNotificationWithId:id];
 
         if (notification && notification.type == type) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 

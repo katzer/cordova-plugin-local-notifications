@@ -20,12 +20,12 @@
 */
 
 
-var Notifications = Windows.UI.Notifications,
-    applicationData = Windows.Storage.ApplicationData.current,
-    localSettings = applicationData.localSettings;
+var proxy = require('de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy');
+
+var Notifications = Windows.UI.Notifications;
 
 
-exports.core = {
+proxy.core = {
 
     /**
      * Executes all queued events.

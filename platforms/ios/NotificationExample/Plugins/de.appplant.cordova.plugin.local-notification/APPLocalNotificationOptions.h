@@ -25,7 +25,7 @@
 
 - (id) initWithDict:(NSDictionary*)dict;
 
-@property (readonly, getter=id) NSString* id;
+@property (readonly, getter=id) NSNumber* id;
 @property (readonly, getter=badgeNumber) NSInteger badgeNumber;
 @property (readonly, getter=alertBody) NSString* alertBody;
 @property (readonly, getter=soundName) NSString* soundName;

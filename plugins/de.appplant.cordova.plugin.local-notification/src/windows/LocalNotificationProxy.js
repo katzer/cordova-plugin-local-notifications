@@ -209,6 +209,54 @@ exports.getTriggeredIds = function (success, error) {
 };
 
 /**
+ * Propertys for given notification.
+ *
+ * @param {Function} success
+ *      Success callback
+ * @param {Function} error
+ *      Error callback
+ * @param {int[]} ids
+ *      List of local notification IDs
+ */
+exports.getSingle = function (success, error, ids) {
+    var notification = exports.core.getAll(ids)[0];
+
+    success(notification);
+};
+
+/**
+ * Propertys for given scheduled notification.
+ *
+ * @param {Function} success
+ *      Success callback
+ * @param {Function} error
+ *      Error callback
+ * @param {int[]} ids
+ *      List of local notification IDs
+ */
+exports.getSingleScheduled = function (success, error, ids) {
+    var notification = exports.core.getScheduled(ids)[0];
+
+    success(notification);
+};
+
+/**
+ * Propertys for given triggered notification.
+ *
+ * @param {Function} success
+ *      Success callback
+ * @param {Function} error
+ *      Error callback
+ * @param {int[]} ids
+ *      List of local notification IDs
+ */
+exports.getSingleTriggered = function (success, error, ids) {
+    var notification = exports.core.getTriggered(ids)[0];
+
+    success(notification);
+};
+
+/**
  * Property list for given notifications.
  * If called without IDs, all notification will be returned.
  *
@@ -259,11 +307,5 @@ exports.getTriggered = function (success, error, ids) {
     success(notifications);
 };
 
-/**
- * Required for core module to access the proxy.
- */
-exports.exports = function () {
-    return exports;
-};
 
 cordova.commandProxy.add('LocalNotification', exports);

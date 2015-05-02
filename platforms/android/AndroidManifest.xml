@@ -22,6 +22,6 @@
         <activity android:exported="false" android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.notification.ClickActivity" android:theme="@android:style/Theme.NoDisplay" />
     </application>
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="22" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

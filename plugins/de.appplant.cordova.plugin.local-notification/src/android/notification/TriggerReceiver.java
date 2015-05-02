@@ -42,11 +42,6 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger (Notification notification, boolean updated) {
-
-        if (notification.isRepeating()) {
-            notification.reschedule();
-        }
-
         notification.show();
     }
 

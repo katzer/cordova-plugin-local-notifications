@@ -45,7 +45,7 @@ import java.util.Date;
 public class Notification {
 
     // Used to differ notifications by their life cycle state
-    public static enum Type {
+    public enum Type {
         ALL, SCHEDULED, TRIGGERED
     }
 
@@ -105,7 +105,7 @@ public class Notification {
      * Get notification ID.
      */
     public int getId () {
-        return options.getIdAsInt();
+        return options.getId();
     }
 
     /**
@@ -162,27 +162,23 @@ public class Notification {
      * Schedule the local notification.
      */
     public void schedule() {
-        long triggerTime = getNextTriggerTime();
+        long triggerTime = options.getTriggerTime();
 
         persist();
 
         // Intent gets called when the Notification gets fired
         Intent intent = new Intent(context, receiver)
-                .setAction(options.getId())
+                .setAction(options.getIdStr())
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent pi = PendingIntent.getBroadcast(
                 context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
-    }
-
-    /**
-     * Re-schedule the local notification if repeating.
-     */
-    void reschedule () {
         if (isRepeating()) {
-            schedule();
+            getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
+                    triggerTime, options.getRepeatInterval(), pi);
+        } else {
+            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
         }
     }
 
@@ -208,13 +204,13 @@ public class Notification {
      */
     public void cancel() {
         Intent intent = new Intent(context, receiver)
-                .setAction(options.getId());
+                .setAction(options.getIdStr());
 
         PendingIntent pi = PendingIntent.
                 getBroadcast(context, 0, intent, 0);
 
         getAlarmMgr().cancel(pi);
-        getNotMgr().cancel(options.getIdAsInt());
+        getNotMgr().cancel(options.getId());
 
         unpersist();
     }
@@ -232,7 +228,7 @@ public class Notification {
      */
     @SuppressWarnings("deprecation")
     private void showNotification () {
-        int id = getOptions().getIdAsInt();
+        int id = getOptions().getId();
 
         if (Build.VERSION.SDK_INT <= 15) {
             // Notification for HoneyComb to ICS
@@ -251,26 +247,11 @@ public class Notification {
     }
 
     /**
-     * Next trigger time.
-     */
-    public long getNextTriggerTime() {
-        long triggerTime = options.getTriggerTime();
-
-        if (!isRepeating() || !isTriggered())
-            return triggerTime;
-
-        long interval    = options.getRepeatInterval();
-        int triggerCount = getTriggerCountSinceSchedule();
-
-        return triggerTime + (triggerCount + 1) * interval;
-    }
-
-    /**
      * Count of triggers since schedule.
      */
     public int getTriggerCountSinceSchedule() {
         long now = System.currentTimeMillis();
-        long initTriggerTime = options.getTriggerTime();
+        long triggerTime = options.getTriggerTime();
 
         if (!wasInThePast())
             return 0;
@@ -278,7 +259,7 @@ public class Notification {
         if (!isRepeating())
             return 1;
 
-        return (int) ((now - initTriggerTime) / options.getRepeatInterval());
+        return (int) ((now - triggerTime) / options.getRepeatInterval());
     }
 
     /**
@@ -294,6 +275,7 @@ public class Notification {
             e.printStackTrace();
         }
 
+        json.remove("firstAt");
         json.remove("updatedAt");
         json.remove("soundUri");
         json.remove("iconUri");
@@ -309,7 +291,7 @@ public class Notification {
     private void persist () {
         SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.putString(options.getId(), options.toString());
+        editor.putString(options.getIdStr(), options.toString());
 
         if (Build.VERSION.SDK_INT < 9) {
             editor.commit();
@@ -324,7 +306,7 @@ public class Notification {
     private void unpersist () {
         SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.remove(options.getId());
+        editor.remove(options.getIdStr());
 
         if (Build.VERSION.SDK_INT < 9) {
             editor.commit();

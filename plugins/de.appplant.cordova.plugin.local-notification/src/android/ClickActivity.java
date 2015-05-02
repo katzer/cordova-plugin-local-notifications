@@ -23,7 +23,8 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import de.appplant.cordova.plugin.notification.*;
+import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.TriggerReceiver;
 
 /**

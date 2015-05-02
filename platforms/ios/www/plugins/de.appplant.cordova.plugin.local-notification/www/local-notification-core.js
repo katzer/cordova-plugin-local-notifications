@@ -172,9 +172,7 @@ exports.cancelAll = function (callback, scope) {
  *      The scope for the callback function
  */
 exports.isPresent = function (id, callback, scope) {
-    var notId = (id || '0').toString();
-
-    this.exec('isPresent', notId, callback, scope);
+    this.exec('isPresent', id || 0, callback, scope);
 };
 
 /**
@@ -188,9 +186,7 @@ exports.isPresent = function (id, callback, scope) {
  *      The scope for the callback function
  */
 exports.isScheduled = function (id, callback, scope) {
-    var notId = (id || '0').toString();
-
-    this.exec('isScheduled', notId, callback, scope);
+    this.exec('isScheduled', id || 0, callback, scope);
 };
 
 /**
@@ -204,9 +200,7 @@ exports.isScheduled = function (id, callback, scope) {
  *      The scope for the callback function
  */
 exports.isTriggered = function (id, callback, scope) {
-    var notId = (id || '0').toString();
-
-    this.exec('isTriggered', notId, callback, scope);
+    this.exec('isTriggered', id || 0, callback, scope);
 };
 
 /**
@@ -275,7 +269,7 @@ exports.get = function () {
         scope    = args[2];
 
     if (!Array.isArray(ids)) {
-        this.exec('getSingle', ids.toString(), callback, scope);
+        this.exec('getSingle', Number(ids), callback, scope);
         return;
     }
 
@@ -323,7 +317,7 @@ exports.getScheduled = function () {
     }
 
     if (!Array.isArray(ids)) {
-        this.exec('getSingleScheduled', ids.toString(), callback, scope);
+        this.exec('getSingleScheduled', Number(ids), callback, scope);
         return;
     }
 
@@ -371,7 +365,7 @@ exports.getTriggered = function () {
     }
 
     if (!Array.isArray(ids)) {
-        this.exec('getSingleTriggered', ids.toString(), callback, scope);
+        this.exec('getSingleTriggered', Number(ids), callback, scope);
         return;
     }
 

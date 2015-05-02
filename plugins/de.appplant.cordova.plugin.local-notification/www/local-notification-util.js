@@ -35,7 +35,7 @@ exports._defaults = {
     title: '',
     sound: 'res://platform_default',
     badge: 0,
-    id:    "0",
+    id:    0,
     data:  undefined,
     every: undefined,
     at:    undefined
@@ -87,7 +87,9 @@ exports.mergeWithDefaults = function (options) {
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
 
-    options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
+    if (defaults.hasOwnProperty('autoClear')) {
+        options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
+    }
 
     if (options.autoClear !== true && options.ongoing) {
         options.autoClear = false;
@@ -131,8 +133,9 @@ exports.convertProperties = function (options) {
     if (options.id) {
         if (isNaN(options.id)) {
             options.id = this.getDefaults().id;
+            console.warn('Id is not a number: ' + options.id);
         } else {
-            options.id = options.id.toString();
+            options.id = Number(options.id);
         }
     }
 
@@ -147,13 +150,18 @@ exports.convertProperties = function (options) {
     if (options.badge) {
         if (isNaN(options.badge)) {
             options.badge = this.getDefaults().badge;
+            console.warn('Badge number is not a number: ' + options.id);
         } else {
             options.badge = Number(options.badge);
         }
     }
 
-    if (typeof options.at == 'object') {
-        options.at = Math.round(options.at.getTime()/1000);
+    if (options.at) {
+        if (typeof options.at == 'object') {
+            options.at = options.at.getTime();
+        }
+
+        options.at = Math.round(options.at/1000);
     }
 
     if (typeof options.data == 'object') {
@@ -175,6 +183,7 @@ exports.convertProperties = function (options) {
  *      The new callback function
  */
 exports.createCallbackFn = function (callbackFn, scope) {
+
     if (typeof callbackFn != 'function')
         return;
 
@@ -184,17 +193,17 @@ exports.createCallbackFn = function (callbackFn, scope) {
 };
 
 /**
- * Convert the IDs to Strings.
+ * Convert the IDs to numbers.
  *
  * @param {String/Number[]} ids
  *
- * @return Array of Strings
+ * @return Array of Numbers
  */
 exports.convertIds = function (ids) {
     var convertedIds = [];
 
     for (var i = 0; i < ids.length; i++) {
-        convertedIds.push(ids[i].toString());
+        convertedIds.push(Number(ids[i]));
     }
 
     return convertedIds;
