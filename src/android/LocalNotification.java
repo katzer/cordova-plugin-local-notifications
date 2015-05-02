@@ -250,7 +250,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().cancel(id);
 
-            fireEvent("cancel", notification);
+            if (notification != null) {
+                fireEvent("cancel", notification);
+            }
         }
     }
 
@@ -275,7 +277,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().clear(id);
 
-            fireEvent("clear", notification);
+            if (notification != null) {
+                fireEvent("clear", notification);
+            }
         }
     }
 

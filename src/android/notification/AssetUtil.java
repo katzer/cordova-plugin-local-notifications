@@ -121,8 +121,6 @@ class AssetUtil {
 		return Uri.EMPTY;
 	}
 
-
-
 	/**
 	 * URI for a file.
 	 *
