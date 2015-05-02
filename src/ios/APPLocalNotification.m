@@ -102,7 +102,7 @@
 
     [self.commandDelegate runInBackground:^{
         for (NSDictionary* options in notifications) {
-            NSString* id = [options objectForKey:@"id"];
+            NSNumber* id = [options objectForKey:@"id"];
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -133,7 +133,7 @@
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        for (NSString* id in command.arguments) {
+        for (NSNumber* id in command.arguments) {
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -170,7 +170,7 @@
 - (void) clear:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        for (NSString* id in command.arguments) {
+        for (NSNumber* id in command.arguments) {
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -241,7 +241,7 @@
               type:(APPLocalNotificationType)type;
 {
     [self.commandDelegate runInBackground:^{
-        NSString* id = [command argumentAtIndex:0];
+        NSNumber* id = [command argumentAtIndex:0];
         BOOL exist;
 
         CDVPluginResult* result;
@@ -528,7 +528,7 @@
  */
 - (void) cancelForerunnerLocalNotification:(UILocalNotification*)notification
 {
-    NSString* id = notification.options.id;
+    NSNumber* id = notification.options.id;
     UILocalNotification* forerunner;
 
     forerunner = [self.app localNotificationWithId:id];

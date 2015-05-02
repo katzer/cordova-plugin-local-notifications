@@ -158,7 +158,7 @@ public class Builder {
             return;
 
         Intent deleteIntent = new Intent(context, clearReceiver)
-                .setAction(options.getId())
+                .setAction(options.getIdStr())
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent dpi = PendingIntent.getBroadcast(

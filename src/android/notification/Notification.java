@@ -105,7 +105,7 @@ public class Notification {
      * Get notification ID.
      */
     public int getId () {
-        return options.getIdAsInt();
+        return options.getId();
     }
 
     /**
@@ -168,7 +168,7 @@ public class Notification {
 
         // Intent gets called when the Notification gets fired
         Intent intent = new Intent(context, receiver)
-                .setAction(options.getId())
+                .setAction(options.getIdStr())
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent pi = PendingIntent.getBroadcast(
@@ -208,13 +208,13 @@ public class Notification {
      */
     public void cancel() {
         Intent intent = new Intent(context, receiver)
-                .setAction(options.getId());
+                .setAction(options.getIdStr());
 
         PendingIntent pi = PendingIntent.
                 getBroadcast(context, 0, intent, 0);
 
         getAlarmMgr().cancel(pi);
-        getNotMgr().cancel(options.getIdAsInt());
+        getNotMgr().cancel(options.getId());
 
         unpersist();
     }
@@ -232,7 +232,7 @@ public class Notification {
      */
     @SuppressWarnings("deprecation")
     private void showNotification () {
-        int id = getOptions().getIdAsInt();
+        int id = getOptions().getId();
 
         if (Build.VERSION.SDK_INT <= 15) {
             // Notification for HoneyComb to ICS
@@ -309,7 +309,7 @@ public class Notification {
     private void persist () {
         SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.putString(options.getId(), options.toString());
+        editor.putString(options.getIdStr(), options.toString());
 
         if (Build.VERSION.SDK_INT < 9) {
             editor.commit();
@@ -324,7 +324,7 @@ public class Notification {
     private void unpersist () {
         SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.remove(options.getId());
+        editor.remove(options.getIdStr());
 
         if (Build.VERSION.SDK_INT < 9) {
             editor.commit();

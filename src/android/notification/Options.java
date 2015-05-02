@@ -203,21 +203,17 @@ public class Options {
     }
 
     /**
-     * ID for the local notification.
+     * ID for the local notification as a number.
      */
-    public String getId() {
-        return options.optString("id", "0");
+    public Integer getId() {
+        return options.optInt("id", 0);
     }
 
     /**
-     * ID for the local notification.
+     * ID for the local notification as a string.
      */
-    public int getIdAsInt() {
-        try {
-            return Integer.parseInt(getId());
-        } catch (Exception ignore) {
-            return 0;
-        }
+    public String getIdStr() {
+        return getId().toString();
     }
 
     /**
