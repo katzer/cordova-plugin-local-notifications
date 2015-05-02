@@ -23,8 +23,6 @@
 
 package de.appplant.cordova.plugin.notification;
 
-import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
-
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -34,11 +32,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
 
 /**
  * Central way to access all or single local notifications set by specific

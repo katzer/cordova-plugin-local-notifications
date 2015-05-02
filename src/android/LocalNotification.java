@@ -23,8 +23,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.os.Build;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -35,9 +34,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Build;
+import java.util.ArrayList;
+import java.util.List;
 
-import de.appplant.cordova.plugin.notification.*;
+import de.appplant.cordova.plugin.notification.Manager;
+import de.appplant.cordova.plugin.notification.Notification;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local

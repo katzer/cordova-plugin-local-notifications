@@ -23,7 +23,8 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import de.appplant.cordova.plugin.notification.*;
+import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Notification;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
