@@ -186,6 +186,14 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
  */
 - (NSDictionary*) userInfo
 {
+    if ([dict objectForKey:@"updatedAt"]) {
+        NSMutableDictionary* data = [dict mutableCopy];
+
+        [data removeObjectForKey:@"updatedAt"];
+
+        return data;
+    }
+
     return dict;
 }
 

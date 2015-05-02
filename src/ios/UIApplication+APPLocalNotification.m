@@ -224,7 +224,7 @@
 
     for (UILocalNotification* notification in notifications)
     {
-        [options addObject:notification.userInfo];
+        [options addObject:notification.options.userInfo];
     }
 
     return options;
@@ -244,7 +244,7 @@
     for (UILocalNotification* notification in notifications)
     {
         if (notification.type == type) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 
@@ -267,7 +267,7 @@
         notification = [self localNotificationWithId:id];
 
         if (notification) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 
@@ -292,7 +292,7 @@
         notification = [self localNotificationWithId:id];
 
         if (notification && notification.type == type) {
-            [options addObject:notification.userInfo];
+            [options addObject:notification.options.userInfo];
         }
     }
 
