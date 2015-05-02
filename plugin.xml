@@ -85,6 +85,8 @@
     <!-- android -->
     <platform name="android">
 
+        <dependency id="android.support.v4" />
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
@@ -133,8 +135,6 @@
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
-
-        <lib-file src="libs/android/android-support-v4.jar" />
 
         <source-file
             src="src/android/LocalNotification.java"
