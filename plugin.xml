@@ -53,6 +53,8 @@
     <!-- ios -->
     <platform name="ios">
 
+        <dependency id="de.appplant.cordova.common.registerusernotificationsettings" />
+
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="ios-package" value="APPLocalNotification" onload="true" />
@@ -71,14 +73,6 @@
 
         <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
         <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
-
-        <hook
-            type="after_platform_add"
-            src="scripts/ios/didRegisterUserNotificationSettings.js" />
-
-        <hook
-            type="after_plugin_install"
-            src="scripts/ios/didRegisterUserNotificationSettings.js" />
 
     </platform>
 
