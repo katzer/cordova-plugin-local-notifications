@@ -30,8 +30,6 @@
 
 #import <Cordova/CDVPlugin.h>
 
-NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
-
 @implementation AppDelegate
 
 @synthesize window, viewController;
@@ -149,19 +147,5 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-
-- (void)                    application:(UIApplication*)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
-{
-    NSNotificationCenter* center = [NSNotificationCenter
-                                    defaultCenter];
-
-    // re-post (broadcast)
-    [center postNotificationName:UIApplicationRegisterUserNotificationSettings
-                          object:settings];
-}
-#endif
 
 @end

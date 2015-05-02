@@ -80,6 +80,9 @@
     "dependent_plugins": {
         "org.apache.cordova.device": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
+        },
+        "android.support.v4": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
         }
     }
 }

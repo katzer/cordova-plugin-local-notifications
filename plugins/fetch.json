@@ -16,5 +16,30 @@
             "type": "local",
             "path": "../cordova-plugin-email-composer"
         }
+    },
+    "android.support.v4": {
+        "source": {
+            "type": "registry",
+            "id": "android.support.v4"
+        }
+    },
+    "de.appplant.cordova.common.RegisterUserNotificationSettings": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/katzer/cordova-common-RegisterUserNotificationSettings",
+            "subdir": "."
+        }
+    },
+    "de.appplant.cordova.plugin.badge": {
+        "source": {
+            "type": "registry",
+            "id": "de.appplant.cordova.plugin.badge"
+        }
+    },
+    "de.appplant.cordova.common.registerusernotificationsettings": {
+        "source": {
+            "type": "registry",
+            "id": "de.appplant.cordova.common.registerusernotificationsettings"
+        }
     }
 }

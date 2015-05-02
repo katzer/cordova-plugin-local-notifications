@@ -1,6 +1,17 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
+        "file": "plugins/nl.x-services.plugins.toast/www/Toast.js",
+        "id": "nl.x-services.plugins.toast.Toast",
+        "clobbers": [
+            "window.plugins.toast"
+        ]
+    },
+    {
+        "file": "plugins/nl.x-services.plugins.toast/test/tests.js",
+        "id": "nl.x-services.plugins.toast.tests"
+    },
+    {
         "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
         "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
         "clobbers": [
@@ -25,17 +36,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/nl.x-services.plugins.toast/www/Toast.js",
-        "id": "nl.x-services.plugins.toast.Toast",
-        "clobbers": [
-            "window.plugins.toast"
-        ]
-    },
-    {
-        "file": "plugins/nl.x-services.plugins.toast/test/tests.js",
-        "id": "nl.x-services.plugins.toast.tests"
-    },
-    {
         "file": "plugins/org.apache.cordova.device/www/device.js",
         "id": "org.apache.cordova.device.device",
         "clobbers": [
@@ -46,9 +46,11 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
+    "android.support.v4": "21.0.1",
     "nl.x-services.plugins.toast": "2.0.3",
-    "org.apache.cordova.device": "0.3.0"
+    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
+    "org.apache.cordova.device": "0.3.0",
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
 }
 // BOTTOM OF METADATA
 });

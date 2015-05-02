@@ -21,11 +21,11 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "AppDelegate.h"
 #import "APPLocalNotification.h"
 #import "APPLocalNotificationOptions.h"
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
+#import "AppDelegate+APPRegisterUserNotificationSettings.h"
 
 @interface APPLocalNotification ()
 

@@ -1,0 +1,21 @@
+{
+    "version": "1.0.1",
+    "name": "de.appplant.cordova.common.registerusernotificationsettings",
+    "cordova_name": "RegisterUserNotificationSettings",
+    "description": "Implements didRegisterUserNotificationSettings and broadcasts the event.",
+    "license": "Apache 2.0",
+    "repo": "https://github.com/katzer/cordova-common-registerusernotificationsettings",
+    "keywords": [
+        "appplant",
+        "didRegisterUserNotificationSettings"
+    ],
+    "platforms": [
+        "ios"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        }
+    ]
+}

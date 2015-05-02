@@ -48,7 +48,8 @@ module.exports.metadata =
 {
     "nl.x-services.plugins.toast": "2.0.3",
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
-    "org.apache.cordova.device": "0.3.0"
+    "org.apache.cordova.device": "0.3.0",
+    "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
 });
