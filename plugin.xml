@@ -25,6 +25,7 @@
 
     <!-- dependencies -->
     <dependency id="org.apache.cordova.device" />
+    <dependency id="android.support.v4" url="https://github.com/MobileChromeApps/cordova-plugin-android-support-v4.git" />
 
     <!-- info -->
     <info>
@@ -49,6 +50,7 @@
         <merges target="cordova.plugins.notification.local.core" />
         <merges target="plugin.notification.local.core" />
     </js-module>
+
 
     <!-- ios -->
     <platform name="ios">
