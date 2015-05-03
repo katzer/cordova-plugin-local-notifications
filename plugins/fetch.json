@@ -41,5 +41,11 @@
             "type": "registry",
             "id": "de.appplant.cordova.common.registerusernotificationsettings"
         }
+    },
+    "de.appplant.cordova.plugin.hidden-statusbar-overlay": {
+        "source": {
+            "type": "registry",
+            "id": "de.appplant.cordova.plugin.hidden-statusbar-overlay"
+        }
     }
 }

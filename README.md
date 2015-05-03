@@ -63,9 +63,11 @@ Note that iOS will only prompt the user only once! Later the user needs to confi
 The following screenshots give an overview of how the notification center on each mobile platform does look like when scheduling multiple local notifications at once.
 
 <p align="center">
-    <img width="40%" src="images/ios.png"></img>
+    <img width="30%" src="images/windows.png"></img>
     &nbsp;
-    <img width="40%" src="images/android.png"></img>
+    <img width="30%" src="images/ios.png"></img>
+    &nbsp;
+    <img width="30%" src="images/android.png"></img>
 </p>
 
 

@@ -4,7 +4,13 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {}
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": []
+                }
+            }
+        }
     },
     "installed_plugins": {
         "nl.x-services.plugins.toast": {
