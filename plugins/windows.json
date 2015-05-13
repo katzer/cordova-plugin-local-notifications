@@ -4,19 +4,19 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {
-            "config.xml": {
-                "parents": {
-                    "/*": []
-                }
-            }
-        }
+        "files": {}
     },
     "installed_plugins": {
-        "nl.x-services.plugins.toast": {
+        "android.support.v4": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "de.appplant.cordova.common.registerusernotificationsettings": {
             "PACKAGE_NAME": "NotificationExample"
         },
         "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "NotificationExample"
         }
     },

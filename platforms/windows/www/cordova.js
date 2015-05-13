@@ -8,9 +8,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
-
+ 
      http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -178,7 +178,6 @@ var cordova = {
     version:PLATFORM_VERSION_BUILD_LABEL,
     platformVersion:PLATFORM_VERSION_BUILD_LABEL,
     platformId:platform.id,
-    env:{},
     /**
      * Methods to add/remove your own addEventListener hijacking on document + window.
      */
@@ -1260,7 +1259,7 @@ exports.reset();
 define("cordova/platform", function(require, exports, module) {
 
 module.exports = {
-    // for backward compatibility we report 'windows8' when run on Windows 8.0 and
+    // for backward compatibility we report 'windows8' when run on Windows 8.0 and 
     // 'windows' for Windows 8.1 and Windows Phone 8.1
     id: (navigator.appVersion.indexOf("MSAppHost/1.0") !== -1) ? 'windows8' : 'windows',
     bootstrap:function() {
@@ -1282,15 +1281,9 @@ module.exports = {
                 cordova.fireDocumentEvent('resume',null,true);
             };
 
-            var activationHandler = function activationHandler(e) {
-                cordova.env = (cordova.env || { });
-                cordova.env.args = e.detail;
-            };
-
             app.addEventListener("checkpoint", checkpointHandler);
             Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", resumingHandler, false);
             var activatedHandler = function (args) {channel.deviceready.subscribe(function () {app.queueEvent(args);});};app.addEventListener('activated', activatedHandler, false);document.addEventListener('deviceready', function () {app.removeEventListener('activated', activatedHandler);}, false);
-            app.addEventListener('activated', activationHandler);
             app.start();
         };
 

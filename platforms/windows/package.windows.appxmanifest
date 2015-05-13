@@ -18,7 +18,7 @@
        under the License.
 -->
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="c05631e0-de03-11e4-96be-cfbf5b6cb232" Version="1.0.0.0" Publisher="CN=$username$" />
+  <Identity Name="1482d0c0-f943-11e4-ad39-81ab0f14e62c" Version="1.0.0.0" Publisher="CN=$username$" />
   <Properties>
     <DisplayName>NotificationExample</DisplayName>
     <PublisherDisplayName>$username$</PublisherDisplayName>

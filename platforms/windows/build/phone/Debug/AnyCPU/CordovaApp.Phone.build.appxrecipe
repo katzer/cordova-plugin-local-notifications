@@ -6,7 +6,7 @@
     <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
     <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
     <PackageArchitecture>neutral</PackageArchitecture>
-    <PackageIdentityName>c05631e0-de03-11e4-96be-cfbf5b6cb232</PackageIdentityName>
+    <PackageIdentityName>1482d0c0-f943-11e4-ad39-81ab0f14e62c</PackageIdentityName>
     <IntermediateOutputPath>Y:\Documents\github\cordova-example-local-notifications\platforms\windows\build\phone\bld\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
