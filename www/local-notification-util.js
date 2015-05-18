@@ -38,7 +38,8 @@ exports._defaults = {
     id:    0,
     data:  undefined,
     every: undefined,
-    at:    undefined
+    at:    undefined,
+    firstAt: undefined
 };
 
 // listener
