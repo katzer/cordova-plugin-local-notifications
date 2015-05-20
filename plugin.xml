@@ -158,6 +158,10 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
+            src="src/android/KillNotificationsService.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
+
+        <source-file
             src="src/android/notification/AbstractClearReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
