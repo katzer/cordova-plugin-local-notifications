@@ -23,9 +23,6 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -42,9 +39,13 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.os.Build;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.appplant.cordova.plugin.notification.Manager;
+import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.localnotification.KillNotificationsService;
-import de.appplant.cordova.plugin.notification.*;
+
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
@@ -269,7 +270,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().cancel(id);
 
-            fireEvent("cancel", notification);
+            if (notification != null) {
+                fireEvent("cancel", notification);
+            }
         }
     }
 
@@ -294,7 +297,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().clear(id);
 
-            fireEvent("clear", notification);
+            if (notification != null) {
+                fireEvent("clear", notification);
+            }
         }
     }
 

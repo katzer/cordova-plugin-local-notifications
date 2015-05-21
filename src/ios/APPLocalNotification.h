@@ -61,6 +61,13 @@
 // List all ids from all triggered notifications
 - (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
 
+// Propertys for given local notification
+- (void) getSingle:(CDVInvokedUrlCommand*)command;
+// Propertya for given scheduled notification
+- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command;
+// Propertys for given triggered notification
+- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command;
+
 // Property list for given local notifications
 - (void) getAll:(CDVInvokedUrlCommand*)command;
 // Property list for given scheduled notifications

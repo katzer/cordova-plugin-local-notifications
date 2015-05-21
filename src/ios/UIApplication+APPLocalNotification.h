@@ -37,14 +37,14 @@
 - (NSArray*) localNotificationIdsByType:(APPLocalNotificationType)type;
 
 // If local notification with ID exists
-- (BOOL) localNotificationExist:(NSString*)id;
+- (BOOL) localNotificationExist:(NSNumber*)id;
 // If local notification with ID and type exists
-- (BOOL) localNotificationExist:(NSString*)id type:(APPLocalNotificationType)type;
+- (BOOL) localNotificationExist:(NSNumber*)id type:(APPLocalNotificationType)type;
 
 // Local notification by ID
-- (UILocalNotification*) localNotificationWithId:(NSString*)id;
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id;
 // Local notification by ID and type
-- (UILocalNotification*) localNotificationWithId:(NSString*)id andType:(APPLocalNotificationType)type;
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPLocalNotificationType)type;
 
 // Property list from all local notifications
 - (NSArray*) localNotificationOptions;

@@ -21,11 +21,11 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "AppDelegate.h"
 #import "APPLocalNotification.h"
 #import "APPLocalNotificationOptions.h"
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
+#import "AppDelegate+APPRegisterUserNotificationSettings.h"
 
 @interface APPLocalNotification ()
 
@@ -102,7 +102,7 @@
 
     [self.commandDelegate runInBackground:^{
         for (NSDictionary* options in notifications) {
-            NSString* id = [options objectForKey:@"id"];
+            NSNumber* id = [options objectForKey:@"id"];
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -133,7 +133,7 @@
 - (void) cancel:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        for (NSString* id in command.arguments) {
+        for (NSNumber* id in command.arguments) {
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -170,7 +170,7 @@
 - (void) clear:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        for (NSString* id in command.arguments) {
+        for (NSNumber* id in command.arguments) {
             UILocalNotification* notification;
 
             notification = [self.app localNotificationWithId:id];
@@ -241,7 +241,7 @@
               type:(APPLocalNotificationType)type;
 {
     [self.commandDelegate runInBackground:^{
-        NSString* id = [command argumentAtIndex:0];
+        NSNumber* id = [command argumentAtIndex:0];
         BOOL exist;
 
         CDVPluginResult* result;
@@ -314,6 +314,28 @@
 }
 
 /**
+ * Propertys for given local notification.
+ */
+- (void) getSingle:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeAll];
+}
+
+/**
+ * Propertya for given scheduled notification.
+ */
+- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeScheduled];
+}
+
+// Propertys for given triggered notification
+- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command
+{
+    [self getOption:command byType:NotifcationTypeTriggered];
+}
+
+/**
  * Property list for given local notifications.
  *
  * @param ids
@@ -344,6 +366,38 @@
 - (void) getTriggered:(CDVInvokedUrlCommand *)command
 {
     [self getOptions:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * Propertys for given triggered notification.
+ *
+ * @param type
+ *      Notification life cycle type
+ * @param ids
+ *      The ID of the notification
+ */
+- (void) getOption:(CDVInvokedUrlCommand*)command
+            byType:(APPLocalNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+        NSArray* notifications;
+        CDVPluginResult* result;
+
+        if (type == NotifcationTypeAll) {
+            notifications = [self.app localNotificationOptionsById:ids];
+        }
+        else {
+            notifications = [self.app localNotificationOptionsByType:type
+                                                               andId:ids];
+        }
+
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsDictionary:notifications[0]];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
 }
 
 /**
@@ -474,7 +528,7 @@
  */
 - (void) cancelForerunnerLocalNotification:(UILocalNotification*)notification
 {
-    NSString* id = notification.options.id;
+    NSNumber* id = notification.options.id;
     UILocalNotification* forerunner;
 
     forerunner = [self.app localNotificationWithId:id];
