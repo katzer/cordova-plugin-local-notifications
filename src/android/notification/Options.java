@@ -196,6 +196,13 @@ public class Options {
     }
 
     /**
+     * with vibration flag for local notifications.
+     */
+    public Boolean isWithVibration() {
+        return options.optBoolean("withVibration", true);
+    }
+
+    /**
      * ID for the local notification as a number.
      */
     public Integer getId() {

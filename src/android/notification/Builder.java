@@ -117,6 +117,7 @@ public class Builder {
     public Notification build() {
         Uri sound = options.getSoundUri();
         Boolean withLed = options.isWithLed();
+        Boolean withVibration = options.isWithVibration();
         NotificationCompat.BigTextStyle style;
         NotificationCompat.Builder builder;
 
@@ -138,7 +139,9 @@ public class Builder {
         if (withLed) {
             builder.setLights(options.getLedColor(), 500, 500);
         }
-
+        if (!withVibration) {
+            builder.setVibrate(new long[]{0l});
+        }
         if (sound != null) {
             builder.setSound(sound);
         }
