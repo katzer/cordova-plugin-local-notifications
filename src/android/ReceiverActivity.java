@@ -21,6 +21,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +35,7 @@ public class ReceiverActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+      Log.v("NOTIFS", "onCreate create activity");
         super.onCreate(savedInstanceState);
 
         Intent intent = this.getIntent();
@@ -41,10 +43,11 @@ public class ReceiverActivity extends Activity {
 
         try {
             JSONObject args = new JSONObject(bundle.getString(Receiver.OPTIONS));
+            String actionSelected = bundle.getString(Receiver.ACTION_KEY);
             Options options = new Options(getApplicationContext()).parse(args);
 
             launchMainIntent();
-            fireClickEvent(options);
+            fireClickEvent(options, actionSelected);
         } catch (JSONException e) {}
     }
 
@@ -64,8 +67,14 @@ public class ReceiverActivity extends Activity {
     /**
      * Fires the onclick event.
      */
-    private void fireClickEvent (Options options) {
-        LocalNotification.fireEvent("click", options.getId(), options.getJSON());
+    private void fireClickEvent (Options options, String actionSelected) {
+        JSONObject json = new JSONObject();
+        try {
+          json.putOpt("json", options.getJSON());
+          json.putOpt("actionSelected", actionSelected);
+        } catch(JSONException e) {}
+
+        LocalNotification.fireEvent("click", options.getId(), json.toString());
 
         if (options.getAutoCancel()) {
             LocalNotification.fireEvent("cancel", options.getId(), options.getJSON());

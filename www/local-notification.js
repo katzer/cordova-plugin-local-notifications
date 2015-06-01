@@ -129,6 +129,10 @@ LocalNotification.prototype = {
         return options.id;
     },
 
+    registerCategories: function(categories) {
+        cordova.exec(null, null, 'LocalNotification', 'registerCategories', [categories]);
+    },
+
     /**
      * Cancels the specified notification
      *

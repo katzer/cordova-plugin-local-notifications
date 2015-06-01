@@ -57,6 +57,7 @@ public class LocalNotification extends CordovaPlugin {
     protected static Context context = null;
     protected static Boolean isInBackground = true;
     private   static ArrayList<String> eventQueue = new ArrayList<String>();
+    public    static JSONObject categories;
 
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -91,6 +92,12 @@ public class LocalNotification extends CordovaPlugin {
                     unpersist(id);
                 }
             });
+
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("registerCategories")) {
+            this.categories = args.optJSONObject(0);
 
             return true;
         }

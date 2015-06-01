@@ -26,6 +26,7 @@ import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -40,6 +41,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -50,6 +52,7 @@ import android.os.Bundle;
 public class Receiver extends BroadcastReceiver {
 
     public static final String OPTIONS = "LOCAL_NOTIFICATION_OPTIONS";
+    public static final String ACTION_KEY = "LOCAL_NOTIFICATION_ACTION_IDENTIFIER";
 
     private Context context;
     private Options options;
@@ -121,6 +124,7 @@ public class Receiver extends BroadcastReceiver {
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), options.getIcon());
         Uri sound   = options.getSound();
 
+
         Builder notification = new Notification.Builder(context)
 	        .setContentTitle(options.getTitle())
 	        .setContentText(options.getMessage())
@@ -141,8 +145,42 @@ public class Receiver extends BroadcastReceiver {
         }
         
         setClickEvent(notification);
+        addActions(notification);
 
         return notification;
+    }
+
+    // add our action buttons
+    private Builder addActions(Builder notification) {
+      int requestCode;
+
+      Log.v("LOCAL CATEGORIES", "BEFORE LOCAL CATEGORIES");
+      String cat_id       = options.getCategory();
+      Log.v("LOCAL CATEGORY", cat_id);
+      if(!cat_id.equals("NO_BUTTONS")) {
+        JSONObject category = LocalNotification.categories.optJSONObject(cat_id);
+        JSONArray actions   = category.optJSONArray("actions"); 
+        Intent intent;
+        PendingIntent contentIntent;
+
+        // add each action
+        for(int i = 0; i < actions.length(); i++) {
+          requestCode = new Random().nextInt();
+          JSONObject action = actions.optJSONObject(i);
+
+          intent = new Intent(context, ReceiverActivity.class)
+              .putExtra(OPTIONS, options.getJSONObject().toString())
+              .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+              .putExtra(ACTION_KEY, action.optString("identifier"));
+
+          contentIntent = PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+          notification  = notification.addAction(action.optInt("icon"), action.optString("title"), contentIntent);
+        }
+      }
+
+
+      return notification;
     }
 
     /**
@@ -152,6 +190,7 @@ public class Receiver extends BroadcastReceiver {
         Intent intent = new Intent(context, ReceiverActivity.class)
             .putExtra(OPTIONS, options.getJSONObject().toString())
             .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            //.putExtra(ACTION_KEY, "titleclicked")
 
         int requestCode = new Random().nextInt();
 

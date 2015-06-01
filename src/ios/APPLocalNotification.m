@@ -89,6 +89,10 @@
     [eventQueue removeAllObjects];
 }
 
+- (void) registerCategories:(CDVInvokedUrlCommand*)command
+{
+}
+
 /**
  * Schedules a new local notification.
  *
@@ -358,6 +362,7 @@
     NSString* title = [options objectForKey:@"title"];
     NSString* sound = [options objectForKey:@"sound"];
     NSString* repeat = [options objectForKey:@"repeat"];
+    NSString* category = [options objectForKey:@"category"];
     NSInteger badge = [[options objectForKey:@"badge"] intValue];
 
     notification.fireDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
@@ -367,6 +372,11 @@
 
     notification.repeatInterval = [[[self repeatDict] objectForKey:repeat]
                                    intValue];
+    
+    if (![self stringIsNullOrEmpty:category])
+    {
+        notification.category = category;
+    }
 
     if (![self stringIsNullOrEmpty:msg])
     {

@@ -118,6 +118,13 @@ public class Options {
     }
 
     /**
+     * Returns data describing additional actions
+     */
+    public String getCategory () {
+      return options.optString("category", "NO_BUTTONS");
+    }
+
+    /**
      * Returns the notification's message
      */
     public String getMessage () {
