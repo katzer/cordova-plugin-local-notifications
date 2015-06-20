@@ -28,8 +28,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -264,7 +262,6 @@ public class Options {
         // --> Parse it.
         String hex = (String) hexObject;
         int aRGB   = Integer.parseInt(hex,16);
-		Log.d("TEST", "aRGB: " + aRGB);
 
         aRGB += 0xFF000000;
 
