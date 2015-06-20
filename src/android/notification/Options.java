@@ -28,6 +28,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -244,6 +246,29 @@ public class Options {
         aRGB += 0xFF000000;
 
         return aRGB;
+    }
+
+    /**
+     * @return
+     *      The notification background color for the small icon
+     *      Returns null, if no color is given.
+     */
+    public Integer getColor() {
+        Object hexObject = options.opt("color");
+
+        // If there is no color --> return null
+        if( hexObject==null || !(hexObject instanceof String)){
+            return null;
+        }
+        // If we are here, hexOject is a real object (!=null) and a String
+        // --> Parse it.
+        String hex = (String) hexObject;
+        int aRGB   = Integer.parseInt(hex,16);
+		Log.d("TEST", "aRGB: " + aRGB);
+
+        aRGB += 0xFF000000;
+
+        return new Integer(aRGB);
     }
 
     /**

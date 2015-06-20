@@ -116,6 +116,7 @@ public class Builder {
      */
     public Notification build() {
         Uri sound = options.getSoundUri();
+        Integer color = options.getColor();
         NotificationCompat.BigTextStyle style;
         NotificationCompat.Builder builder;
 
@@ -137,6 +138,10 @@ public class Builder {
 
         if (sound != null) {
             builder.setSound(sound);
+        }
+
+        if(color!=null){
+           builder.setColor(color.intValue());
         }
 
         applyDeleteReceiver(builder);
