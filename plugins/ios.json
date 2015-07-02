@@ -55,9 +55,6 @@
     "dependent_plugins": {
         "org.apache.cordova.device": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
-        },
-        "de.appplant.cordova.common.registerusernotificationsettings": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     }
 }

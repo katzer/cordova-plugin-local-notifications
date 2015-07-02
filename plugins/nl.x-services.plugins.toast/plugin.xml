@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="nl.x-services.plugins.toast"
-        version="2.0.3">
+        version="2.0.4">
 
   <name>Toast</name>
 
@@ -72,4 +72,13 @@
     <source-file src="src/wp8/Toast.cs" />
   </platform>
 
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" target-dir="Toast"/>
+        <lib-file src="src/blackberry10/native/device/libToast.so" arch="device"/>
+        <lib-file src="src/blackberry10/native/simulator/libToast.so" arch="simulator"/>
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="Toast" value="Toast" />
+        </config-file>
+    </platform>
+  
 </plugin>

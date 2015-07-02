@@ -1,15 +1,11 @@
 {
-    "de.appplant.cordova.plugin.local-notification": {
-        "source": {
-            "type": "local",
-            "path": "/Users/sebastian/Documents/github/cordova-plugin-local-notifications"
-        }
-    },
     "org.apache.cordova.device": {
         "source": {
             "type": "registry",
             "id": "org.apache.cordova.device"
-        }
+        },
+        "is_top_level": false,
+        "variables": {}
     },
     "de.appplant.cordova.plugin.email-composer": {
         "source": {
@@ -47,5 +43,22 @@
             "type": "registry",
             "id": "de.appplant.cordova.plugin.hidden-statusbar-overlay"
         }
+    },
+    "nl.x-services.plugins.toast": {
+        "source": {
+            "type": "registry",
+            "id": "nl.x-services.plugins.toast"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "de.appplant.cordova.plugin.local-notification": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/katzer/cordova-plugin-local-notifications",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

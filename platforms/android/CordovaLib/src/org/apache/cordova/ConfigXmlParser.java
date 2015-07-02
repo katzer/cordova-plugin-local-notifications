@@ -25,29 +25,17 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.cordova.LOG;
+import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.app.Activity;
-import android.content.res.XmlResourceParser;
-import android.util.Log;
+import android.content.Context;
 
 public class ConfigXmlParser {
     private static String TAG = "ConfigXmlParser";
 
     private String launchUrl = "file:///android_asset/www/index.html";
     private CordovaPreferences prefs = new CordovaPreferences();
-    private Whitelist internalWhitelist = new Whitelist();
-    private Whitelist externalWhitelist = new Whitelist();
     private ArrayList<PluginEntry> pluginEntries = new ArrayList<PluginEntry>(20);
-
-    public Whitelist getInternalWhitelist() {
-        return internalWhitelist;
-    }
-
-    public Whitelist getExternalWhitelist() {
-        return externalWhitelist;
-    }
 
     public CordovaPreferences getPreferences() {
         return prefs;
@@ -60,8 +48,8 @@ public class ConfigXmlParser {
     public String getLaunchUrl() {
         return launchUrl;
     }
-    
-    public void parse(Activity action) {
+
+    public void parse(Context action) {
         // First checking the class namespace for config.xml
         int id = action.getResources().getIdentifier("config", "xml", action.getClass().getPackage().getName());
         if (id == 0) {
@@ -75,86 +63,20 @@ public class ConfigXmlParser {
         parse(action.getResources().getXml(id));
     }
 
-    public void parse(XmlResourceParser xml) {
+    boolean insideFeature = false;
+    String service = "", pluginClass = "", paramType = "";
+    boolean onload = false;
+
+    public void parse(XmlPullParser xml) {
         int eventType = -1;
-        String service = "", pluginClass = "", paramType = "";
-        boolean onload = false;
-        boolean insideFeature = false;
-        ArrayList<String> urlMap = null;
 
-        // Add implicitly allowed URLs
-        internalWhitelist.addWhiteListEntry("file:///*", false);
-        internalWhitelist.addWhiteListEntry("content:///*", false);
-        internalWhitelist.addWhiteListEntry("data:*", false);
-
-        while (eventType != XmlResourceParser.END_DOCUMENT) {
-            if (eventType == XmlResourceParser.START_TAG) {
-                String strNode = xml.getName();
-                if (strNode.equals("url-filter")) {
-                    Log.w(TAG, "Plugin " + service + " is using deprecated tag <url-filter>");
-                    if (urlMap == null) {
-                        urlMap = new ArrayList<String>(2);
-                    }
-                    urlMap.add(xml.getAttributeValue(null, "value"));
-                } else if (strNode.equals("feature")) {
-                    //Check for supported feature sets  aka. plugins (Accelerometer, Geolocation, etc)
-                    //Set the bit for reading params
-                    insideFeature = true;
-                    service = xml.getAttributeValue(null, "name");
-                }
-                else if (insideFeature && strNode.equals("param")) {
-                    paramType = xml.getAttributeValue(null, "name");
-                    if (paramType.equals("service")) // check if it is using the older service param
-                        service = xml.getAttributeValue(null, "value");
-                    else if (paramType.equals("package") || paramType.equals("android-package"))
-                        pluginClass = xml.getAttributeValue(null,"value");
-                    else if (paramType.equals("onload"))
-                        onload = "true".equals(xml.getAttributeValue(null, "value"));
-                }
-                else if (strNode.equals("access")) {
-                    String origin = xml.getAttributeValue(null, "origin");
-                    String subdomains = xml.getAttributeValue(null, "subdomains");
-                    boolean external = (xml.getAttributeValue(null, "launch-external") != null);
-                    if (origin != null) {
-                        if (external) {
-                            externalWhitelist.addWhiteListEntry(origin, (subdomains != null) && (subdomains.compareToIgnoreCase("true") == 0));
-                        } else {
-                            if ("*".equals(origin)) {
-                                // Special-case * origin to mean http and https when used for internal
-                                // whitelist. This prevents external urls like sms: and geo: from being
-                                // handled internally.
-                                internalWhitelist.addWhiteListEntry("http://*/*", false);
-                                internalWhitelist.addWhiteListEntry("https://*/*", false);
-                            } else {
-                                internalWhitelist.addWhiteListEntry(origin, (subdomains != null) && (subdomains.compareToIgnoreCase("true") == 0));
-                            }
-                        }
-                    }
-                }
-                else if (strNode.equals("preference")) {
-                    String name = xml.getAttributeValue(null, "name").toLowerCase(Locale.ENGLISH);
-                    String value = xml.getAttributeValue(null, "value");
-                    prefs.set(name, value);
-                }
-                else if (strNode.equals("content")) {
-                    String src = xml.getAttributeValue(null, "src");
-                    if (src != null) {
-                        setStartUrl(src);
-                    }
-                }
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG) {
+                handleStartTag(xml);
             }
-            else if (eventType == XmlResourceParser.END_TAG)
+            else if (eventType == XmlPullParser.END_TAG)
             {
-                String strNode = xml.getName();
-                if (strNode.equals("feature")) {
-                    pluginEntries.add(new PluginEntry(service, pluginClass, onload, urlMap));
-
-                    service = "";
-                    pluginClass = "";
-                    insideFeature = false;
-                    onload = false;
-                    urlMap = null;
-                }
+                handleEndTag(xml);
             }
             try {
                 eventType = xml.next();
@@ -163,6 +85,48 @@ public class ConfigXmlParser {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void handleStartTag(XmlPullParser xml) {
+        String strNode = xml.getName();
+        if (strNode.equals("feature")) {
+            //Check for supported feature sets  aka. plugins (Accelerometer, Geolocation, etc)
+            //Set the bit for reading params
+            insideFeature = true;
+            service = xml.getAttributeValue(null, "name");
+        }
+        else if (insideFeature && strNode.equals("param")) {
+            paramType = xml.getAttributeValue(null, "name");
+            if (paramType.equals("service")) // check if it is using the older service param
+                service = xml.getAttributeValue(null, "value");
+            else if (paramType.equals("package") || paramType.equals("android-package"))
+                pluginClass = xml.getAttributeValue(null,"value");
+            else if (paramType.equals("onload"))
+                onload = "true".equals(xml.getAttributeValue(null, "value"));
+        }
+        else if (strNode.equals("preference")) {
+            String name = xml.getAttributeValue(null, "name").toLowerCase(Locale.ENGLISH);
+            String value = xml.getAttributeValue(null, "value");
+            prefs.set(name, value);
+        }
+        else if (strNode.equals("content")) {
+            String src = xml.getAttributeValue(null, "src");
+            if (src != null) {
+                setStartUrl(src);
+            }
+        }
+    }
+
+    public void handleEndTag(XmlPullParser xml) {
+        String strNode = xml.getName();
+        if (strNode.equals("feature")) {
+            pluginEntries.add(new PluginEntry(service, pluginClass, onload));
+
+            service = "";
+            pluginClass = "";
+            insideFeature = false;
+            onload = false;
         }
     }
 

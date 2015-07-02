@@ -14,9 +14,6 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
-    <feature name="Toast">
-        <param name="ios-package" value="Toast" />
-    </feature>
     <name>NotificationExample</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -26,6 +23,9 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <feature name="Toast">
+        <param name="ios-package" value="Toast" />
+    </feature>
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
     </feature>

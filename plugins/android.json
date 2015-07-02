@@ -66,28 +66,26 @@
                         }
                     ]
                 }
-            },
-            "config.xml": {
-                "parents": {
-                    "/*": []
-                }
             }
         }
     },
     "installed_plugins": {
+        "android.support.v4": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
+        "de.appplant.cordova.common.registerusernotificationsettings": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
         "nl.x-services.plugins.toast": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     },
     "dependent_plugins": {
         "org.apache.cordova.device": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
-        },
-        "android.support.v4": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.local_notification.example"
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     }
 }

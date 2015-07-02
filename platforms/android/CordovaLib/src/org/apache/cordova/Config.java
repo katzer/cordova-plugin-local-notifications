@@ -36,8 +36,8 @@ public class Config {
     public static void init(Activity action) {
         parser = new ConfigXmlParser();
         parser.parse(action);
+        //TODO: Add feature to bring this back.  Some preferences should be overridden by intents, but not all
         parser.getPreferences().setPreferencesBundle(action.getIntent().getExtras());
-        parser.getPreferences().copyIntoIntentExtras(action);
     }
 
     // Intended to be used for testing only; creates an empty configuration.
@@ -45,48 +45,6 @@ public class Config {
         if (parser == null) {
             parser = new ConfigXmlParser();
         }
-    }
-    
-    /**
-     * Add entry to approved list of URLs (whitelist)
-     *
-     * @param origin        URL regular expression to allow
-     * @param subdomains    T=include all subdomains under origin
-     */
-    public static void addWhiteListEntry(String origin, boolean subdomains) {
-        if (parser == null) {
-            Log.e(TAG, "Config was not initialised. Did you forget to Config.init(this)?");
-            return;
-        }
-        parser.getInternalWhitelist().addWhiteListEntry(origin, subdomains);
-    }
-
-    /**
-     * Determine if URL is in approved list of URLs to load.
-     *
-     * @param url
-     * @return true if whitelisted
-     */
-    public static boolean isUrlWhiteListed(String url) {
-        if (parser == null) {
-            Log.e(TAG, "Config was not initialised. Did you forget to Config.init(this)?");
-            return false;
-        }
-        return parser.getInternalWhitelist().isUrlWhiteListed(url);
-    }
-
-    /**
-     * Determine if URL is in approved list of URLs to launch external applications.
-     *
-     * @param url
-     * @return true if whitelisted
-     */
-    public static boolean isUrlExternallyWhiteListed(String url) {
-        if (parser == null) {
-            Log.e(TAG, "Config was not initialised. Did you forget to Config.init(this)?");
-            return false;
-        }
-        return parser.getExternalWhitelist().isUrlWhiteListed(url);
     }
 
     public static String getStartUrl() {
@@ -98,14 +56,6 @@ public class Config {
 
     public static String getErrorUrl() {
         return parser.getPreferences().getString("errorurl", null);
-    }
-
-    public static Whitelist getWhitelist() {
-        return parser.getInternalWhitelist();
-    }
-
-    public static Whitelist getExternalWhitelist() {
-        return parser.getExternalWhitelist();
     }
 
     public static List<PluginEntry> getPluginEntries() {

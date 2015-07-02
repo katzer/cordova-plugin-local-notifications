@@ -21,11 +21,9 @@
 
 var exec  = require('./exec'),
     Q     = require('q'),
-    path  = require('path'),
     os    = require('os'),
     build = require('./build'),
-    appinfo = require('./appinfo'),
-    ROOT = path.join(__dirname, '..', '..');
+    appinfo = require('./appinfo');
 
 /**
  * Returns a promise for the list of the device ID's found
@@ -62,7 +60,7 @@ module.exports.list = function(lookHarder) {
         }
         return list;
     });
-}
+};
 
 module.exports.resolveTarget = function(target) {
     return this.list(true)
@@ -100,7 +98,7 @@ module.exports.install = function(target, buildResults) {
         var launchName = appinfo.getActivityName();
         console.log('Using apk: ' + apk_path);
         console.log('Installing app on device...');
-        var cmd = 'adb -s ' + resolvedTarget.target + ' install -r "' + apk_path + '"';
+        var cmd = 'adb -s ' + resolvedTarget.target + ' install -r -d "' + apk_path + '"';
         return exec(cmd, os.tmpdir())
         .then(function(output) {
             if (output.match(/Failure/)) return Q.reject('ERROR: Failed to install apk to device: ' + output);
@@ -120,4 +118,4 @@ module.exports.install = function(target, buildResults) {
             return Q.reject('ERROR: Failed to launch application on device: ' + err);
         });
     });
-}
+};

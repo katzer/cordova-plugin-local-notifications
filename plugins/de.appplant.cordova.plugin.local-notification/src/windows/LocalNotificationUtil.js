@@ -189,7 +189,7 @@ exports.buildToastTemplate = function (options) {
 		// template with Image
 		if (imageNode !== '') {
 			templateName = "ToastImageAndText";
-		}
+		};
 	} else {
 		imageNode = "";
 	}
@@ -390,7 +390,7 @@ exports.fireEvent = function (event, notification) {
         args = [event, state];
     }
 
-    if (this.isReady && plugin) {
+    if (this.isReady) {
         plugin.fireEvent.apply(plugin, args);
     } else {
         this.eventQueue.push(args);

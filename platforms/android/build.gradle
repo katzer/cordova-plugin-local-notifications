@@ -60,11 +60,11 @@ ext {
     apply from: 'CordovaLib/cordova.gradle'
     // The value for android.compileSdkVersion.
     if (!project.hasProperty('cdvCompileSdkVersion')) {
-        cdvCompileSdkVersion = privateHelpers.getProjectTarget()
+        cdvCompileSdkVersion = null;
     }
     // The value for android.buildToolsVersion.
     if (!project.hasProperty('cdvBuildToolsVersion')) {
-        cdvBuildToolsVersion = privateHelpers.findLatestInstalledBuildTools()
+        cdvBuildToolsVersion = null;
     }
     // Sets the versionCode to the given value.
     if (!project.hasProperty('cdvVersionCode')) {
@@ -76,7 +76,7 @@ ext {
     }
     // Whether to build architecture-specific APKs.
     if (!project.hasProperty('cdvBuildMultipleApks')) {
-        cdvBuildMultipleApks = false
+        cdvBuildMultipleApks = null
     }
     // .properties files to use for release signing.
     if (!project.hasProperty('cdvReleaseSigningPropertiesFile')) {
@@ -90,12 +90,37 @@ ext {
     if (!project.hasProperty('cdvBuildArch')) {
         cdvBuildArch = null
     }
+
+    // Plugin gradle extensions can append to this to have code run at the end.
+    cdvPluginPostBuildExtras = []
 }
+
+// PLUGIN GRADLE EXTENSIONS START
+// PLUGIN GRADLE EXTENSIONS END
 
 def hasBuildExtras = file('build-extras.gradle').exists()
 if (hasBuildExtras) {
     apply from: 'build-extras.gradle'
 }
+
+// Set property defaults after extension .gradle files.
+if (ext.cdvCompileSdkVersion == null) {
+    ext.cdvCompileSdkVersion = privateHelpers.getProjectTarget()
+}
+if (ext.cdvBuildToolsVersion == null) {
+    ext.cdvBuildToolsVersion = privateHelpers.findLatestInstalledBuildTools()
+}
+if (ext.cdvDebugSigningPropertiesFile == null && file('debug-signing.properties').exists()) {
+    ext.cdvDebugSigningPropertiesFile = 'debug-signing.properties'
+}
+if (ext.cdvReleaseSigningPropertiesFile == null && file('release-signing.properties').exists()) {
+    ext.cdvReleaseSigningPropertiesFile = 'release-signing.properties'
+}
+
+// Cast to appropriate types.
+ext.cdvBuildMultipleApks = !!cdvBuildMultipleApks;
+ext.cdvMinSdkVersion = cdvMinSdkVersion == null ? null : Integer.parseInt('' + cdvMinSdkVersion)
+ext.cdvVersionCode = cdvVersionCode == null ? null : Integer.parseInt('' + cdvVersionCode)
 
 def computeBuildTargetName(debugBuild) {
     def ret = 'assemble'
@@ -135,9 +160,6 @@ task cdvPrintProps << {
     }
 }
 
-// PLUGIN GRADLE EXTENSIONS START
-// PLUGIN GRADLE EXTENSIONS END
-
 android {
     sourceSets {
         main {
@@ -148,16 +170,14 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
         }
     }
 
-    def versionCodeOverride = cdvVersionCode ? Integer.parseInt(cdvVersionCode) : null
-    def minSdkVersionOverride = cdvMinSdkVersion ? Integer.parseInt(cdvMinSdkVersion) : null
-
     defaultConfig {
-        versionCode versionCodeOverride ?: Integer.parseInt("" + privateHelpers.extractIntFromManifest("versionCode") + "0")
-        if (minSdkVersionOverride != null) {
-            minSdkVersion minSdkVersionOverride
+        versionCode cdvVersionCode ?: Integer.parseInt("" + privateHelpers.extractIntFromManifest("versionCode") + "0")
+        if (cdvMinSdkVersion != null) {
+            minSdkVersion cdvMinSdkVersion
         }
     }
 
@@ -167,13 +187,13 @@ android {
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
         productFlavors {
             armv7 {
-                versionCode versionCodeOverride ?: defaultConfig.versionCode + 2
+                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
                 ndk {
                     abiFilters "armeabi-v7a", ""
                 }
             }
             x86 {
-                versionCode versionCodeOverride ?: defaultConfig.versionCode + 4
+                versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
                 ndk {
                     abiFilters "x86", ""
                 }
@@ -184,8 +204,8 @@ android {
                 }
             }
         }
-    } else if (!versionCodeOverride) {
-      def minSdkVersion = minSdkVersionOverride ?: privateHelpers.extractIntFromManifest("minSdkVersion")
+    } else if (!cdvVersionCode) {
+      def minSdkVersion = cdvMinSdkVersion ?: privateHelpers.extractIntFromManifest("minSdkVersion")
       // Vary versionCode by the two most common API levels:
       // 14 is ICS, which is the lowest API level for many apps.
       // 20 is Lollipop, which is the lowest API level for the updatable system webview.
@@ -226,6 +246,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     // SUB-PROJECT DEPENDENCIES START
+    debugCompile project(path: ":CordovaLib", configuration: "debug")
+    releaseCompile project(path: ":CordovaLib", configuration: "release")
     // SUB-PROJECT DEPENDENCIES END
 }
 
@@ -255,27 +277,32 @@ def addSigningProps(propsFilePath, signingConfig) {
     propsFile.withReader { reader ->
         props.load(reader)
     }
-    def storeFile = new File(privateHelpers.ensureValueExists(propsFilePath, props, 'storeFile'))
+
+    def storeFile = new File(props.get('key.store') ?: privateHelpers.ensureValueExists(propsFilePath, props, 'storeFile'))
     if (!storeFile.isAbsolute()) {
         storeFile = RelativePath.parse(true, storeFile.toString()).getFile(propsFile.getParentFile())
     }
     if (!storeFile.exists()) {
         throw new FileNotFoundException('Keystore file does not exist: ' + storeFile.getAbsolutePath())
     }
-    signingConfig.keyAlias = privateHelpers.ensureValueExists(propsFilePath, props, 'keyAlias')
-    signingConfig.keyPassword = props.get('keyPassword', signingConfig.keyPassword)
+    signingConfig.keyAlias = props.get('key.alias') ?: privateHelpers.ensureValueExists(propsFilePath, props, 'keyAlias')
+    signingConfig.keyPassword = props.get('keyPassword', props.get('key.alias.password', signingConfig.keyPassword))
     signingConfig.storeFile = storeFile
-    signingConfig.storePassword = props.get('storePassword', signingConfig.storePassword)
-    def storeType = props.get('storeType')
+    signingConfig.storePassword = props.get('storePassword', props.get('key.store.password', signingConfig.storePassword))
+    def storeType = props.get('storeType', props.get('key.store.type', ''))
     if (!storeType) {
         def filename = storeFile.getName().toLowerCase();
         if (filename.endsWith('.p12') || filename.endsWith('.pfx')) {
             storeType = 'pkcs12'
+        } else {
+            storeType = signingConfig.storeType // "jks"
         }
     }
-    if (storeType) {
-        signingConfig.storeType = storeType
-    }
+    signingConfig.storeType = storeType
+}
+
+for (def func : cdvPluginPostBuildExtras) {
+    func()
 }
 
 // This can be defined within build-extras.gradle as:

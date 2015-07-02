@@ -29,6 +29,8 @@
 
 #import <Cordova/CDVViewController.h>
 
+extern NSString* const UIApplicationRegisterUserNotificationSettings;
+
 @interface AppDelegate : NSObject <UIApplicationDelegate>{}
 
 // invoke string is passed to your app on launch, this is only valid if you

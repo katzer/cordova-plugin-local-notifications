@@ -16,37 +16,16 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova;
 
-import android.webkit.JavascriptInterface;
+package org.apache.cordova;
 
 import org.json.JSONException;
 
-/**
- * Contains APIs that the JS can call. All functions in here should also have
- * an equivalent entry in CordovaChromeClient.java, and be added to
- * cordova-js/lib/android/plugin/android/promptbasednativeapi.js
+/*
+ * Any exposed Javascript API MUST implement these three things!
  */
-/* package */ class ExposedJsApi {
-    
-    private CordovaBridge bridge;
-    
-    public ExposedJsApi(CordovaBridge bridge) {
-        this.bridge = bridge;
-    }
-
-    @JavascriptInterface
-    public String exec(int bridgeSecret, String service, String action, String callbackId, String arguments) throws JSONException, IllegalAccessException {
-        return bridge.jsExec(bridgeSecret, service, action, callbackId, arguments);
-    }
-    
-    @JavascriptInterface
-    public void setNativeToJsBridgeMode(int bridgeSecret, int value) throws IllegalAccessException {
-        bridge.jsSetNativeToJsBridgeMode(bridgeSecret, value);
-    }
-    
-    @JavascriptInterface
-    public String retrieveJsMessages(int bridgeSecret, boolean fromOnlineEvent) throws IllegalAccessException {
-        return bridge.jsRetrieveJsMessages(bridgeSecret, fromOnlineEvent);
-    }
+public interface ExposedJsApi {
+    public String exec(int bridgeSecret, String service, String action, String callbackId, String arguments) throws JSONException, IllegalAccessException;
+    public void setNativeToJsBridgeMode(int bridgeSecret, int value) throws IllegalAccessException;
+    public String retrieveJsMessages(int bridgeSecret, boolean fromOnlineEvent) throws IllegalAccessException;
 }

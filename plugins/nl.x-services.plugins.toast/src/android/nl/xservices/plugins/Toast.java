@@ -22,12 +22,14 @@ public class Toast extends CordovaPlugin {
 
   private android.widget.Toast mostRecentToast;
 
+  // note that webView.isPaused() is not Xwalk compatible, so tracking it poor-man style
+  private boolean isPaused;
+
   @Override
   public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
     if (ACTION_SHOW_EVENT.equals(action)) {
 
-      if (webView.isPaused()) {
-        // suppress while paused
+      if (this.isPaused) {
         return true;
       }
 
@@ -77,5 +79,11 @@ public class Toast extends CordovaPlugin {
     if (mostRecentToast != null) {
       mostRecentToast.cancel();
     }
+    this.isPaused = true;
+  }
+
+  @Override
+  public void onResume(boolean multitasking) {
+    this.isPaused = false;
   }
 }
