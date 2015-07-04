@@ -64,6 +64,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.smallIcon = 'res://ic_popup_reminder';
         defaults.ongoing   = false;
         defaults.autoClear = true;
+        defaults.color     = '000000';
         defaults.led       = 'FFFFFF';
         break;
     }
@@ -101,7 +102,7 @@ exports.mergeWithDefaults = function (options) {
 
     for (var key in defaults) {
         if (options[key] === null || options[key] === undefined) {
-            if (options.hasOwnProperty(key) && ['data','sound'].indexOf(key) > -1) {
+            if (options.hasOwnProperty(key) && ['data','sound','icon'].indexOf(key) > -1) {
                 options[key] = undefined;
             } else {
                 options[key] = defaults[key];

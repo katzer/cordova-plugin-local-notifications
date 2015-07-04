@@ -133,6 +133,7 @@ public class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setStyle(style)
+				.setColor(options.getColor())
                 .setLights(options.getLedColor(), 500, 500);
 
         if (sound != null) {

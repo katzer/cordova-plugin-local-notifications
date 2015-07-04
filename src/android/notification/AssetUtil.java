@@ -97,7 +97,7 @@ class AssetUtil {
                     .TYPE_NOTIFICATION);
         }
 
-        return parse(path);
+		return parseUri(path);
     }
 
 	/**
@@ -107,6 +107,19 @@ class AssetUtil {
      *      The given path
 	 */
     Uri parse (String path) {
+        if (path == null || path.isEmpty())
+            return Uri.EMPTY;
+	
+		return parseUri(path);
+	}
+	
+	/**
+	 * The URI for a path.
+	 *
+	 * @param path
+     *      The given path
+	 */
+    Uri parseUri(String path) {
 
 		if (path.startsWith("res:")) {
 			return getUriForResourcePath(path);

@@ -128,7 +128,7 @@ public class Options {
         if (options.has("iconUri"))
             return;
 
-        Uri iconUri = assets.parse(options.optString("icon", "icon"));
+        Uri iconUri = assets.parse(options.optString("icon", null));
         Uri soundUri = assets.parseSound(options.optString("sound", null));
 
         try {
@@ -247,6 +247,19 @@ public class Options {
     }
 
     /**
+     * @return
+     *      The notification color for Android 5.0 and up
+     */
+    public int getColor() {
+        String hex = options.optString("color", "000000");
+        int aRGB   = Integer.parseInt(hex,16);
+
+        aRGB += 0xFF000000;
+
+        return aRGB;
+    }
+	
+    /**
      * Sound file path for the local notification.
      */
     public Uri getSoundUri() {
@@ -270,7 +283,13 @@ public class Options {
 
         try{
             Uri uri = Uri.parse(options.optString("iconUri"));
-            bmp = assets.getIconFromUri(uri);
+			
+			if(uri.toString().isEmpty()) {
+				bmp = null
+			}
+			else {
+				bmp = assets.getIconFromUri(uri);
+			}
         } catch (Exception e){
             bmp = assets.getIconFromDrawable(icon);
         }
