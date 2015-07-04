@@ -285,7 +285,7 @@ public class Options {
             Uri uri = Uri.parse(options.optString("iconUri"));
 			
 			if(uri.toString().isEmpty()) {
-				bmp = null
+				bmp = null;
 			}
 			else {
 				bmp = assets.getIconFromUri(uri);
