@@ -29,12 +29,8 @@
 
 
 var fs = require('fs'),
-    path = require('path'),
-    rootdir = process.argv[2];
-
-if (!rootdir)
-    return;
-
+    path = require('path');
+	
 module.exports = function (context) {
 
     var cordova_util = context.requireCordovaModule('cordova-lib/src/cordova/util'),
