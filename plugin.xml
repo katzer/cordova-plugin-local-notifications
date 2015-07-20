@@ -23,7 +23,7 @@
     </engines>
 
     <!-- dependencies -->
-    <dependency id="org.apache.cordova.device" />
+    <dependency id="cordova-plugin-device" />
 
     <!-- info -->
     <info>
