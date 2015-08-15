@@ -326,6 +326,9 @@ class AssetUtil {
      */
     int getResIdForDrawable(String resPath) {
         int resId = getResIdForDrawable(getPkgName(), resPath);
+        if (resId == 0) {
+            resId = getResIdForDrawable(getActivityName(), resPath);
+        }
 
         if (resId == 0) {
             resId = getResIdForDrawable("android", resPath);
@@ -366,6 +369,9 @@ class AssetUtil {
         int iconId;
 
         iconId = getResIdForDrawable(getPkgName(), drawable);
+        if (iconId == 0) {
+            iconId = getResIdForDrawable(getActivityName(), drawable);
+        }
 
         if (iconId == 0) {
             iconId = getResIdForDrawable("android", drawable);
@@ -433,4 +439,7 @@ class AssetUtil {
         return context.getPackageName();
     }
 
+    private String getActivityName () {
+        return context.getClass().getPackage().getName();
+    }
 }
