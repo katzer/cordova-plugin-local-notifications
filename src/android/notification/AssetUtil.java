@@ -39,9 +39,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Util class to map unified asset URIs to native URIs. URIs like file:///
@@ -239,6 +242,47 @@ class AssetUtil {
         return Uri.EMPTY;
 	}
 
+    /**
+     * Gets an MD5 hash of a given text value
+     * Returns a random UUID in the event of failure
+     *
+     * @param text
+     *      Value to hash
+     *
+     * @return
+     *      A hashed String
+     */
+    private static String getHash(String text) {
+
+        String digest = null;
+
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return java.util.UUID.randomUUID().toString();
+        }
+        byte[] hash = new byte[0];
+        try {
+            hash = md.digest(text.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return java.util.UUID.randomUUID().toString();
+        }
+
+        //converting byte array to Hexadecimal
+        StringBuilder sb = new StringBuilder(2*hash.length);
+        for(byte b : hash){
+            sb.append(String.format("%02x", b&0xff));
+        }
+
+        digest = sb.toString();
+
+        return digest;
+
+    }
+
 	/**
 	 * Uri from remote located content.
      *
@@ -256,10 +300,8 @@ class AssetUtil {
             return Uri.EMPTY;
         }
 
-        String resName  = extractResourceName(path);
-        String extName  = extractResourceExtension(path);
         String storage  = dir.toString() + STORAGE_FOLDER;
-        File file       = new File(storage, resName + extName);
+        File file       = new File(storage, getHash(path));
 
         //noinspection ResultOfMethodCallIgnored
         new File(storage).mkdir();
