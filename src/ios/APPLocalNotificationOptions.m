@@ -29,7 +29,7 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
 @interface APPLocalNotificationOptions ()
 
 // The dictionary which contains all notification properties
-@property(readwrite, assign) NSDictionary* dict;
+@property(nonatomic, retain) NSDictionary* dict;
 
 @end
 
