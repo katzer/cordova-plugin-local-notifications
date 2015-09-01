@@ -32,17 +32,14 @@
                         }
                     ]
                 }
-            },
-            "*-Info.plist": {
-                "parents": {
-                    "UIStatusBarHidden": [],
-                    "UIViewControllerBasedStatusBarAppearance": []
-                }
             }
         }
     },
     "installed_plugins": {
         "android.support.v4": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
+        "de.appplant.cordova.common.registerusernotificationsettings": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "nl.x-services.plugins.toast": {
@@ -53,7 +50,7 @@
         }
     },
     "dependent_plugins": {
-        "org.apache.cordova.device": {
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     }

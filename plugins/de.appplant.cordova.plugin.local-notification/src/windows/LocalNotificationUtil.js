@@ -189,7 +189,7 @@ exports.buildToastTemplate = function (options) {
 		// template with Image
 		if (imageNode !== '') {
 			templateName = "ToastImageAndText";
-		};
+		}
 	} else {
 		imageNode = "";
 	}
@@ -294,7 +294,7 @@ exports.isToastScheduled = function (toast) {
  */
 exports.isToastTriggered = function (toast) {
     var id = this.getToastId(toast),
-        notification = this.getAll(id)[0];
+        notification = this.getAll([id])[0],
         fireDate = new Date((notification.at) * 1000);
 
     if (this.isRepeating(notification))
@@ -390,7 +390,7 @@ exports.fireEvent = function (event, notification) {
         args = [event, state];
     }
 
-    if (this.isReady) {
+    if (this.isReady && plugin) {
         plugin.fireEvent.apply(plugin, args);
     } else {
         this.eventQueue.push(args);

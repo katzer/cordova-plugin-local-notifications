@@ -21,7 +21,7 @@
         }
     },
     "dependent_plugins": {
-        "org.apache.cordova.device": {
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "NotificationExample"
         }
     }

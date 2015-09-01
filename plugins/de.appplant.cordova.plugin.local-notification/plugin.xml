@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.2dev">
+        version="0.8.2-dev">
 
     <name>LocalNotification</name>
 
@@ -19,11 +19,12 @@
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
+        <engine name="cordova" version=">=3.6.0" />
+        <engine name="cordova" version="<4.0.0" />
     </engines>
 
     <!-- dependencies -->
-    <dependency id="org.apache.cordova.device" />
+    <dependency id="cordova-plugin-device" />
 
     <!-- info -->
     <info>
@@ -52,6 +53,8 @@
     <!-- ios -->
     <platform name="ios">
 
+        <dependency id="de.appplant.cordova.common.registerusernotificationsettings" />
+
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="ios-package" value="APPLocalNotification" onload="true" />
@@ -71,18 +74,12 @@
         <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
         <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
 
-        <hook
-            type="after_platform_add"
-            src="scripts/ios/didRegisterUserNotificationSettings.js" />
-
-        <hook
-            type="after_plugin_install"
-            src="scripts/ios/didRegisterUserNotificationSettings.js" />
-
     </platform>
 
     <!-- android -->
     <platform name="android">
+
+        <dependency id="android.support.v4" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
@@ -132,8 +129,6 @@
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
-
-        <lib-file src="libs/android/android-support-v4.jar" />
 
         <source-file
             src="src/android/LocalNotification.java"

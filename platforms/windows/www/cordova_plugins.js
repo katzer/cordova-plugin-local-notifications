@@ -57,15 +57,15 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/org.apache.cordova.device/www/device.js",
-        "id": "org.apache.cordova.device.device",
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
         "clobbers": [
             "device"
         ]
     },
     {
-        "file": "plugins/org.apache.cordova.device/src/windows/DeviceProxy.js",
-        "id": "org.apache.cordova.device.DeviceProxy",
+        "file": "plugins/cordova-plugin-device/src/windows/DeviceProxy.js",
+        "id": "cordova-plugin-device.DeviceProxy",
         "merges": [
             ""
         ]
@@ -77,8 +77,8 @@ module.exports.metadata =
     "android.support.v4": "21.0.1",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
     "nl.x-services.plugins.toast": "2.0.4",
-    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
-    "org.apache.cordova.device": "0.3.0"
+    "de.appplant.cordova.plugin.local-notification": "0.8.2-dev",
+    "cordova-plugin-device": "1.0.1"
 }
 // BOTTOM OF METADATA
 });
