@@ -134,7 +134,7 @@ public class Builder {
                 .setOngoing(options.isOngoing())
                 .setStyle(style)
 				.setColor(options.getColor())
-                .setLights(options.getLedColor(), 500, 500);
+                .setLights(options.getLedColor(), options.getLedOnMs(), options.getLedOffMs());
 
         if (sound != null) {
             builder.setSound(sound);

@@ -245,7 +245,21 @@ public class Options {
 
         return aRGB;
     }
+	
+    /**
+     * Duration for the ON state of the blink duty cycle of the LED for the local notification as a number.
+     */
+    public Integer getLedOnMs() {
+        return options.optInt("ledOnMs", 500);
+    }	
 
+    /**
+     * Duration for the OFF state of the blink duty cycle of the LED for the local notification as a number.
+     */
+    public Integer getLedOffMs() {
+        return options.optInt("ledOffMs", 500);
+    }	
+	
     /**
      * @return
      *      The notification color for Android 5.0 and up
