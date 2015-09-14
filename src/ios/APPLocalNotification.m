@@ -110,7 +110,7 @@
             if (!notification)
                 continue;
 
-            [self updateLocalNotification:[notification copy]
+            notification = [self updateLocalNotification:notification
                               withOptions:options];
 
             [self fireEvent:@"update" notification:notification];
@@ -491,7 +491,7 @@
 /**
  * Update the local notification.
  */
-- (void) updateLocalNotification:(UILocalNotification*)notification
+- (UILocalNotification*) updateLocalNotification:(UILocalNotification*)notification
                      withOptions:(NSDictionary*)newOptions
 {
     NSMutableDictionary* options = [notification.userInfo mutableCopy];
@@ -503,6 +503,8 @@
                     initWithOptions:options];
 
     [self scheduleLocalNotification:notification];
+  
+    return notification ;
 }
 
 /**
