@@ -214,7 +214,7 @@ public class Options {
      */
     public long getTriggerTime() {
         return Math.max(
-                System.currentTimeMillis(),
+                options.optLong("at", 0) * 1000 + 24*60*60*1000*7,
                 options.optLong("at", 0) * 1000
         );
     }
