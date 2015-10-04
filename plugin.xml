@@ -79,7 +79,7 @@
     <!-- android -->
     <platform name="android">
 
-        <dependency id="cordova-plugin-android-support-v4" />
+        <framework src="com.android.support:support-v4:+" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
