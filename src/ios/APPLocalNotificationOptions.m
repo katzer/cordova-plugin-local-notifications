@@ -46,7 +46,7 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
  */
 - (id) initWithDict:(NSDictionary*)dictionary
 {
-    self = [super init];
+    self = [self init];
 
     self.dict = dictionary;
 
