@@ -41,7 +41,7 @@ char *CDVNewBase64Encode(
 
 - (NSString*)base64EncodedString CDV_DEPRECATED(3.8 .0, "Use [NSData cdv_base64EncodedString]");
 
-+ (NSData*)cdv_dataFromBase64String:(NSString*)aString;
-- (NSString*)cdv_base64EncodedString;
++ (NSData*)cdv_dataFromBase64String:(NSString*)aString CDV_DEPRECATED(3.9.2, "Use NSData initWithBase64EncodedString instead. This will be removed in 4.0.0");
+- (NSString*)cdv_base64EncodedString CDV_DEPRECATED(3.9.2, "Use NSData base64EncodedStringWithOptions instead. This will be removed in 4.0.0");
 
 @end

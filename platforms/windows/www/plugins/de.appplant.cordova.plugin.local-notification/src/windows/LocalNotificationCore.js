@@ -1,4 +1,4 @@
-cordova.define("de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy.Core", function(require, exports, module) { /*
+﻿cordova.define("de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy.Core", function(require, exports, module) { /*
     Copyright 2013-2015 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one

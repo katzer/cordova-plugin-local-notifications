@@ -7,13 +7,13 @@
         "files": {}
     },
     "installed_plugins": {
-        "android.support.v4": {
-            "PACKAGE_NAME": "NotificationExample"
-        },
         "de.appplant.cordova.common.registerusernotificationsettings": {
             "PACKAGE_NAME": "NotificationExample"
         },
-        "nl.x-services.plugins.toast": {
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "cordova-android-support-v4": {
             "PACKAGE_NAME": "NotificationExample"
         },
         "de.appplant.cordova.plugin.local-notification": {

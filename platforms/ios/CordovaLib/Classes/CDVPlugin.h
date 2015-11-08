@@ -38,7 +38,7 @@ extern NSString* const CDVRemoteNotificationError;
 
 @property (readonly, assign) BOOL hasPendingOperation;
 
-- (CDVPlugin*)initWithWebView:(UIWebView*)theWebView;
+- (CDVPlugin*)initWithWebView:(UIWebView*)theWebView CDV_DEPRECATED(3.9.2, "Use pluginInitialize method instead. This will be removed in 4.0.0");
 - (void)pluginInitialize;
 
 - (void)handleOpenURL:(NSNotification*)notification;

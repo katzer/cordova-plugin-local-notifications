@@ -13,12 +13,6 @@
             "path": "../cordova-plugin-email-composer"
         }
     },
-    "android.support.v4": {
-        "source": {
-            "type": "registry",
-            "id": "android.support.v4"
-        }
-    },
     "de.appplant.cordova.common.RegisterUserNotificationSettings": {
         "source": {
             "type": "git",
@@ -44,14 +38,6 @@
             "id": "de.appplant.cordova.plugin.hidden-statusbar-overlay"
         }
     },
-    "nl.x-services.plugins.toast": {
-        "source": {
-            "type": "registry",
-            "id": "nl.x-services.plugins.toast"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-device": {
         "source": {
             "type": "registry",
@@ -66,6 +52,22 @@
             "id": "cordova-plugin-android-support-v4"
         },
         "is_top_level": false,
+        "variables": {}
+    },
+    "cordova-plugin-x-toast": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-x-toast"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-android-support-v4": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-android-support-v4"
+        },
+        "is_top_level": true,
         "variables": {}
     },
     "de.appplant.cordova.plugin.local-notification": {

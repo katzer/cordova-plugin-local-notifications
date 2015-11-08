@@ -197,7 +197,7 @@ static NSString *stripFragment(NSString* url)
 {
     NSString* scheme = [[request URL] scheme];
 
-    if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"] || [scheme isEqualToString:@"sms"]) {
+    if ([scheme isEqualToString:@"mailto"] || [scheme isEqualToString:@"tel"] || [scheme isEqualToString:@"sms"] || [scheme isEqualToString:@"blob"]) {
         return YES;
     }
 

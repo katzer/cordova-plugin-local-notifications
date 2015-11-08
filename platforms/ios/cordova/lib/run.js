@@ -50,7 +50,7 @@ module.exports.run = function (argv) {
     // Valid values for "--target" (case sensitive):
     var validTargets = ['iPhone-4s', 'iPhone-5', 'iPhone-5s', 'iPhone-6-Plus', 'iPhone-6',
         'iPad-2', 'iPad-Retina', 'iPad-Air', 'Resizable-iPhone', 'Resizable-iPad'];
-    if (args.target && validTargets.indexOf(args.target) < 0 ) {
+    if (!(args.device) && args.target && validTargets.indexOf(args.target.split(',')[0]) < 0 ) {
         return Q.reject(args.target + ' is not a valid target for emulator');
     }
 

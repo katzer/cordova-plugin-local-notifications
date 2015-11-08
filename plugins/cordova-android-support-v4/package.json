@@ -1,0 +1,31 @@
+{
+  "name": "cordova-android-support-v4",
+  "version": "4.0.0",
+  "description": "cordova-android-support-v4 =================================",
+  "cordova": {
+    "id": "cordova-android-support-v4",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appfeel/cordova-plugin-android-support-v4.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "AppFeel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/appfeel/cordova-plugin-android-support-v4/issues"
+  },
+  "homepage": "https://github.com/appfeel/cordova-plugin-android-support-v4#readme"
+}
