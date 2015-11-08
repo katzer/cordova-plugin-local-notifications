@@ -213,10 +213,10 @@ public class Options {
      * Trigger date in milliseconds.
      */
     public long getTriggerTime() {
-        return Math.max(
-                System.currentTimeMillis(),
-                options.optLong("at", 0) * 1000
-        );
+        //return Math.max(
+        //        System.currentTimeMillis(),
+                return options.optLong("at", 0) * 1000;
+        //);
     }
 
     /**
