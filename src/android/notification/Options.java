@@ -109,6 +109,9 @@ public class Options {
         if (every.equals("month")) {
             interval = AlarmManager.INTERVAL_DAY * 31;
         } else
+		if (every.equals("quarter")) {
+		    interval = AlarmManager.INTERVAL_HOUR * 2190;
+		} else
         if (every.equals("year")) {
             interval = AlarmManager.INTERVAL_DAY * 365;
         } else {
