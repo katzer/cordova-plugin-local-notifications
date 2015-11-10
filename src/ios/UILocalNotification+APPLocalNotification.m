@@ -41,7 +41,7 @@ NSInteger const APPLocalNotificationTypeTriggered = 2;
  */
 - (id) initWithOptions:(NSDictionary*)dict
 {
-    self = [super init];
+    self = [self init];
 
     [self setUserInfo:dict];
     [self __init];

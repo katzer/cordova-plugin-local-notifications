@@ -23,6 +23,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -32,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +42,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.os.Build;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -601,16 +606,18 @@ public class LocalNotification extends CordovaPlugin {
             eventQueue.add(js);
             return;
         }
-
-        webView.post(new Runnable(){
-            public void run(){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webView.evaluateJavascript(js, null);
-                } else {
-                    webView.loadUrl("javascript:" + js);
-                }
+        Runnable jsLoader = new Runnable() {
+            public void run() {
+                webView.loadUrl("javascript:" + js);
             }
-        });
+        };
+        try {
+            Method post = webView.getClass().getMethod("post",Runnable.class);
+            post.invoke(webView,jsLoader);
+        } catch(Exception e) {
+
+            ((Activity)(webView.getContext())).runOnUiThread(jsLoader);
+        }
     }
 
     /**

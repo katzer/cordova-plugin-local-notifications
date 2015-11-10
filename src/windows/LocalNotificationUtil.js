@@ -294,7 +294,7 @@ exports.isToastScheduled = function (toast) {
  */
 exports.isToastTriggered = function (toast) {
     var id = this.getToastId(toast),
-        notification = this.getAll(id)[0];
+        notification = this.getAll([id])[0],
         fireDate = new Date((notification.at) * 1000);
 
     if (this.isRepeating(notification))

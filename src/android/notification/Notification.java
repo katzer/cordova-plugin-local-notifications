@@ -144,8 +144,7 @@ public class Notification {
         if (!options.getDict().has("updatedAt"))
             return false;
 
-        long now = new Date().getTime();
-
+        long now       = new Date().getTime();
         long updatedAt = options.getDict().optLong("updatedAt", now);
 
         return (now - updatedAt) < 1000;
@@ -184,14 +183,14 @@ public class Notification {
 
     /**
      * Clear the local notification without canceling repeating alarms.
-     *
      */
     public void clear () {
-        if (!isRepeating() && wasInThePast()) {
+
+        if (!isRepeating() && wasInThePast())
             unpersist();
-        } else {
+
+        if (!isRepeating())
             getNotMgr().cancel(getId());
-        }
     }
 
     /**
@@ -237,13 +236,6 @@ public class Notification {
             // Notification for Jellybean and above
             getNotMgr().notify(id, builder.build());
         }
-    }
-
-    /**
-     * Show as modal dialog when in foreground.
-     */
-    private void showDialog () {
-        // TODO
     }
 
     /**
