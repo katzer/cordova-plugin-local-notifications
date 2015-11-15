@@ -34,6 +34,12 @@ import de.appplant.cordova.plugin.notification.TriggerReceiver;
  */
 public class ClickActivity extends de.appplant.cordova.plugin.notification.ClickActivity {
 
+    @Override
+    protected void onStart() {
+      super.onStart();
+      setVisible(true);
+    }
+
     /**
      * Called when local notification was clicked by the user.
      *
