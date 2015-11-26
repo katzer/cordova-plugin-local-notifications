@@ -30,6 +30,7 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.NumberFormatException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -193,7 +194,11 @@ public class Manager {
         ArrayList<Integer> ids = new ArrayList<Integer>();
 
         for (String key : keys) {
-            ids.add(Integer.parseInt(key));
+            try {
+                ids.add(Integer.parseInt(key));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         return ids;
