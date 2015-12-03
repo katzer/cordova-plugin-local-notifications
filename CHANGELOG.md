@@ -3,6 +3,9 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.8.3 (not yet released)
+- Fixed crashing `get(ID)` if notification doesn't exist
+
 #### Version 0.8.2 (08.11.2015)
 - Submitted to npm
 - Initial support for the `windows` platform
