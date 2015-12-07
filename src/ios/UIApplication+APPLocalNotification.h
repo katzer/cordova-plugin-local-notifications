@@ -31,7 +31,7 @@
 // If the app has the permission to schedule local notifications
 - (BOOL) hasPermissionToScheduleLocalNotifications;
 // Ask for permission to schedule local notifications
-- (void) registerPermissionToScheduleLocalNotifications;
+- (void) registerPermissionToScheduleLocalNotifications:(NSArray*)interactions;
 
 // List of all local notification IDs from given type
 - (NSArray*) localNotificationIdsByType:(APPLocalNotificationType)type;
