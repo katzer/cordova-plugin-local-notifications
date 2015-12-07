@@ -40,12 +40,6 @@ public class ClickActivity extends AbstractClickActivity {
     @Override
     public void onClick(Notification notification) {
         launchApp();
-
-        if (notification.isRepeating()) {
-            notification.clear();
-        } else {
-            notification.cancel();
-        }
     }
 
     /**

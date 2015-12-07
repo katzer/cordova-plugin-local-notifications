@@ -200,6 +200,10 @@
             src="src/android/notification/TriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
+        <source-file
+            src="src/android/notification/Action.java"
+            target-dir="src/de/appplant/cordova/plugin/notification" />
+
     </platform>
 
     <!-- windows -->
