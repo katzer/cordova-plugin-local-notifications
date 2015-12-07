@@ -30,8 +30,11 @@ import android.net.Uri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.Date;
+
+import de.appplant.cordova.plugin.notification.Action;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all
@@ -48,6 +51,9 @@ public class Options {
 
     // Repeat interval
     private long interval = 0;
+
+    // Action buttons
+    private Action[] actions = null;
 
     // Application context
     private final Context context;
@@ -78,6 +84,7 @@ public class Options {
 
         parseInterval();
         parseAssets();
+        parseActions();
 
         return this;
     }
@@ -137,6 +144,66 @@ public class Options {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+     * Parse actions.
+     */
+    private void parseActions() {
+        if(options.has("actions") && options.has("category")) {
+            String categoryIdentifier = options.optString("category", "");
+
+            Action[] actionsForCategory = Action.getActionsForCategory(categoryIdentifier);
+
+            if (actionsForCategory == null || actionsForCategory.length == 0) {
+                actionsForCategory = parseActionsForCategory(categoryIdentifier); 
+            }
+
+            actions = actionsForCategory;
+        }
+    }
+
+    /*
+     * Parse action from JSON.
+     *
+     * @param actionJSON
+     *      JSON representation of action 
+     */
+    private Action parseAction(JSONObject actionJSON) {
+        String identifier = actionJSON.optString("identifier", "");
+
+        Action action = Action.getAction(identifier);
+
+        if (action == null && identifier.length() > 0) {
+            action = new Action(getActionIcon(actionJSON.optString("icon", "")), actionJSON.optString("title", ""), identifier);
+        }
+
+        return action;
+    }
+
+    /*
+     * Parse all actions associated with the category.
+     *
+     * @param categoryIdentifier
+     *      Identifier for category of actions
+     */
+    private Action[] parseActionsForCategory(String categoryIdentifier) {
+        JSONArray actions = options.optJSONArray("actions"); 
+
+        Action[] actionsForCategory = new Action[actions.length()]; 
+
+        for (int i = 0; i < actions.length(); i++) {
+            Action action = parseAction(actions.optJSONObject(i));
+
+            if (action != null) {
+                Action.addAction(action);
+                actionsForCategory[i] = action;
+            }
+        }
+
+        Action.addCategory(categoryIdentifier, actionsForCategory);
+
+        return actionsForCategory;
     }
 
     /**
@@ -291,6 +358,27 @@ public class Options {
         }
 
         return resId;
+    }
+
+    /**
+     * Icon resource ID for given local notification action.
+     *
+     * @param icon
+     *      String pulled from action JSONObject
+     */
+    private int getActionIcon (String icon) {
+
+        int resId = assets.getResIdForDrawable(icon);
+
+        if (resId == 0) {
+            resId = android.R.drawable.screen_background_dark;
+        }
+
+        return resId;
+    }
+
+    public Action[] getActions () {
+        return actions;
     }
 
     /**

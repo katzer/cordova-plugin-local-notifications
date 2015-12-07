@@ -26,6 +26,9 @@
 
 @implementation UIApplication (APPLocalNotification)
 
+NSMutableDictionary *allNotificationActions;
+NSMutableDictionary *allNotificationCategories;
+
 #pragma mark -
 #pragma mark Permissions
 
@@ -54,7 +57,7 @@
 /**
  * Ask for permission to schedule local notifications.
  */
-- (void) registerPermissionToScheduleLocalNotifications
+- (void) registerPermissionToScheduleLocalNotifications:(NSArray*)interactions
 {
     if ([[UIApplication sharedApplication]
          respondsToSelector:@selector(registerUserNotificationSettings:)])
@@ -67,14 +70,146 @@
 
         types = settings.types|UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound;
 
+        NSSet* categories = [self parseNotificationInteractions:interactions];
+
         settings = [UIUserNotificationSettings settingsForTypes:types
-                                                     categories:nil];
+                                                     categories:categories];
 
         [[UIApplication sharedApplication]
          registerUserNotificationSettings:settings];
     }
 }
 
+/**
+ * Persist all actions and categories for notifications, adding new ones if necessary.
+ */
+- (NSSet*) parseNotificationInteractions:(NSArray*)interactions
+{
+    [self initAllActionsAndCategories];
+    
+    if (interactions && [interactions count])
+    {
+        for (NSString* interaction in interactions)
+        {
+            NSData* interactionsData = 
+                [interaction dataUsingEncoding:NSUTF8StringEncoding];
+
+            NSDictionary* interactionsDict = 
+                                [NSJSONSerialization 
+                                    JSONObjectWithData:interactionsData 
+                                    options:NSJSONReadingMutableContainers 
+                                    error:nil];
+            
+            NSArray* actions = [interactionsDict objectForKey:@"actions"];
+            NSString* category = [interactionsDict objectForKey:@"category"];
+            
+            [self setActions:actions forCategory:category];
+        }
+    }
+
+    NSSet* categories = 
+        [NSSet setWithArray:[allNotificationCategories allValues]];
+    return categories;
+}
+
+- (void) initAllActionsAndCategories
+{
+    if (!allNotificationActions) {
+        allNotificationActions = [[NSMutableDictionary alloc] init];
+    }
+    
+    if (!allNotificationCategories) {
+        allNotificationCategories = [[NSMutableDictionary alloc] init];
+    }
+}
+
+- (void) setActions:(NSArray*)actions forCategory:(NSString*)category
+{
+    if ([actions count] && category.length) {
+        if (![allNotificationCategories objectForKey:category])
+        {
+            UIMutableUserNotificationCategory* newCategory;
+            newCategory = [[UIMutableUserNotificationCategory alloc] init];
+            [newCategory setIdentifier:category];
+            
+            NSArray* actionsArray = [self parseActions:actions];
+            
+            if ([actionsArray count] > 2) {
+                [newCategory setActions:@[
+                    [actionsArray objectAtIndex:1], 
+                    [actionsArray objectAtIndex:0]] 
+                forContext:UIUserNotificationActionContextMinimal];
+            } else {
+                [newCategory setActions:[
+                    [actionsArray reverseObjectEnumerator] allObjects] 
+                forContext:UIUserNotificationActionContextMinimal];
+            }
+
+            [newCategory setActions:actionsArray 
+                forContext:UIUserNotificationActionContextDefault];
+
+            [allNotificationCategories setObject:newCategory forKey: category];
+        }
+    }
+}
+
+- (NSArray*) parseActions:(NSArray*)actions
+{
+    NSMutableArray* actionsArray;
+    actionsArray = [[NSMutableArray alloc] init];
+    
+    for (NSDictionary* action in actions)
+    {
+        if ([action isKindOfClass:[NSDictionary class]])
+        {
+            NSString* actionIdent = [action objectForKey:@"identifier"];
+            [self parseAction:action withIdentifier:actionIdent];
+            [actionsArray addObject:
+                [allNotificationActions objectForKey:actionIdent]];
+        }
+    }
+    
+    return actionsArray;
+}
+
+- (void) parseAction:(NSDictionary*)action withIdentifier:(NSString*)identifier
+{
+    
+    UIMutableUserNotificationAction* existingAction = 
+        [allNotificationActions objectForKey:identifier];
+    
+    if (!existingAction) {
+        
+        UIMutableUserNotificationAction* newAction = 
+            [[UIMutableUserNotificationAction alloc] init];
+        
+        [newAction setActivationMode:[
+            [action objectForKey:@"foreground"] boolValue]
+                ? UIUserNotificationActivationModeForeground
+                : UIUserNotificationActivationModeBackground];
+        [newAction setTitle:[action objectForKey:@"title"]];
+        [newAction setIdentifier:identifier];
+        [newAction setDestructive:[
+            [action objectForKey:@"destructive"] boolValue]];
+        [newAction setAuthenticationRequired:[
+            [action objectForKey:@"needsAuth"] boolValue]];
+        
+        if ([newAction respondsToSelector:@selector(setBehavior:)]) {
+            [newAction setBehavior:[
+                [action objectForKey:@"acceptsReply"] boolValue]
+                    ? UIUserNotificationActionBehaviorTextInput 
+                    : UIUserNotificationActionBehaviorDefault];
+            
+            if ([action objectForKey:@"replySendTitle"]) {
+                [newAction setParameters:[NSDictionary dictionaryWithObject:
+                    [action objectForKey:@"replySendTitle"]
+                    forKey:UIUserNotificationTextInputActionButtonTitleKey]];
+            }
+        }
+        
+        [allNotificationActions setObject:newAction forKey:identifier];
+    }
+}
 #pragma mark -
 #pragma mark LocalNotifications
 

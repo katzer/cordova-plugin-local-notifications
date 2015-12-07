@@ -37,6 +37,10 @@ import org.json.JSONObject;
  */
 abstract public class AbstractClickActivity extends Activity {
 
+    // Holds identifier of action most recently chosen  
+    // Null if notification was simply clicked
+    public String actionIdentifier = null;
+
     /**
      * Called when local notification was clicked to launch the main intent.
      *
@@ -52,8 +56,9 @@ abstract public class AbstractClickActivity extends Activity {
         Context context = getApplicationContext();
 
         try {
-            String data = bundle.getString(Options.EXTRA);
-            JSONObject options = new JSONObject(data);
+            String[] data = bundle.getStringArray(Options.EXTRA);
+            actionIdentifier = data[1];
+            JSONObject options = new JSONObject(data[0]);
 
             Builder builder =
                     new Builder(context, options);
