@@ -162,7 +162,7 @@ public class Builder {
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent dpi = PendingIntent.getBroadcast(
-                context, 0, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setDeleteIntent(dpi);
     }
@@ -186,7 +186,7 @@ public class Builder {
         int requestCode = new Random().nextInt();
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
     }
