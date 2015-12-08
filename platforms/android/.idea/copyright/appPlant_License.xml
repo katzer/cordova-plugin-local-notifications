@@ -1,0 +1,9 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="notice" value="Copyright (c) 2014-2015 by appPlant UG. All rights reserved.&#10;&#10;@APPPLANT_LICENSE_HEADER_START@&#10;&#10;This file contains Original Code and/or Modifications of Original Code&#10;as defined in and that are subject to the Apache License&#10;Version 2.0 (the 'License'). You may not use this file except in&#10;compliance with the License. Please obtain a copy of the License at&#10;http://opensource.org/licenses/Apache-2.0/ and read it before using this&#10;file.&#10;&#10;The Original Code and all software distributed under the License are&#10;distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER&#10;EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,&#10;INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,&#10;FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.&#10;Please see the License for the specific language governing rights and&#10;limitations under the License.&#10;&#10;@APPPLANT_LICENSE_HEADER_END@" />
+    <option name="keyword" value="@APPPLANT_LICENSE_HEADER_START@" />
+    <option name="allowReplaceKeyword" value="appPlant" />
+    <option name="myName" value="appPlant License" />
+    <option name="myLocal" value="true" />
+  </copyright>
+</component>

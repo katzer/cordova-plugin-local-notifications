@@ -26,25 +26,11 @@
             "id": "de.appplant.cordova.plugin.badge"
         }
     },
-    "de.appplant.cordova.common.registerusernotificationsettings": {
-        "source": {
-            "type": "registry",
-            "id": "de.appplant.cordova.common.registerusernotificationsettings"
-        }
-    },
     "de.appplant.cordova.plugin.hidden-statusbar-overlay": {
         "source": {
             "type": "registry",
             "id": "de.appplant.cordova.plugin.hidden-statusbar-overlay"
         }
-    },
-    "cordova-plugin-device": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-device"
-        },
-        "is_top_level": false,
-        "variables": {}
     },
     "cordova-plugin-android-support-v4": {
         "source": {
@@ -52,6 +38,22 @@
             "id": "cordova-plugin-android-support-v4"
         },
         "is_top_level": false,
+        "variables": {}
+    },
+    "cordova-android-support-v4": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-android-support-v4"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-device": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-device"
+        },
+        "is_top_level": true,
         "variables": {}
     },
     "cordova-plugin-x-toast": {
@@ -62,10 +64,10 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-android-support-v4": {
+    "de.appplant.cordova.common.registerusernotificationsettings": {
         "source": {
             "type": "registry",
-            "id": "cordova-android-support-v4"
+            "id": "de.appplant.cordova.common.registerusernotificationsettings"
         },
         "is_top_level": true,
         "variables": {}

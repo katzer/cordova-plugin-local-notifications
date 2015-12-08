@@ -1,21 +1,210 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidConfiguredLogFilters">
-    <filters>
-      <filter>
-        <option name="name" value="app: de.appplant.cordova.plugin.local_notification.example" />
-        <option name="packageNamePattern" value="de.appplant.cordova.plugin.local_notification.example" />
-      </filter>
-    </filters>
-  </component>
-  <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="app: de.appplant.cordova.plugin.local_notification.example" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa860bb5-e33b-45b0-af5c-2a9cb390f8e8" name="Default" comment="" />
+    <list default="true" id="5a765c74-6843-45ca-a81b-a066d550f0fd" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/cordova-example-local-notifications.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dictionaries/sebastian.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/android_support_v4.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/android_support_v41.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/android_support_v412.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/android_support_v413.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/.project" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/.project" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/assets/_where-is-www.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/appinfo.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/exec.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/spawn.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/CONTRIBUTING.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/benchmark/compare-with-callbacks.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/benchmark/scenarios.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/which/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/which/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/which/bin/which" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/which/package.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/which/which.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/platforms/android/res/drawable/icon.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/CHANGELOG.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/plugin.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/scripts/windows/broadcastActivateEvent.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/scripts/windows/setToastCapable.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/ClearReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/ClickActivity.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/LocalNotification.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/RestoreReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/TriggerReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/AbstractClearReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/AbstractClickActivity.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/AbstractRestoreReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/AbstractTriggerReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/AssetUtil.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/Builder.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/ClearReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/ClickActivity.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/Manager.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/Notification.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/Options.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/android/notification/TriggerReceiver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/APPLocalNotification.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/APPLocalNotification.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/APPLocalNotificationOptions.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/APPLocalNotificationOptions.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/UIApplication+APPLocalNotification.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/UIApplication+APPLocalNotification.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/UILocalNotification+APPLocalNotification.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/ios/UILocalNotification+APPLocalNotification.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/windows/LocalNotificationCore.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/windows/LocalNotificationProxy.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/src/windows/LocalNotificationUtil.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample.xcodeproj/project.xcworkspace/xcuserdata/sebastian.xcuserdatad/UserInterfaceState.xcuserstate" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample.xcodeproj/project.xcworkspace/xcuserdata/sebastian.xcuserdatad/UserInterfaceState.xcuserstate" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/libs/android-support-v4.jar" afterPath="$PROJECT_DIR$/platforms/android/libs/android-support-v4.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/.travis.yml" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/.travis.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotification.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotification.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotification.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotification.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClearReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClearReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClickActivity.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClickActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractRestoreReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractRestoreReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractTriggerReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractTriggerReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/AndroidManifest.xml" afterPath="$PROJECT_DIR$/platforms/android/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/AndroidManifest.xml" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AssetUtil.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AssetUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Builder.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Builder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-device/CDVDevice.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-device/CDVDevice.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-device/CDVDevice.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-device/CDVDevice.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/ios/CDVDevice.m" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/ios/CDVDevice.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/CONTRIBUTING.md" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/CONTRIBUTING.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClearReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClearReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClearReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClearReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClickActivity.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClickActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClickActivity.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClickActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaActivity.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaInterface.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaInterface.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaResourceApi.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaResourceApi.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaWebView.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaWebView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/wp/Device.cs" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/wp/Device.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/org/apache/cordova/device/Device.java" afterPath="$PROJECT_DIR$/platforms/android/src/org/apache/cordova/device/Device.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/android/Device.java" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/android/Device.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/platform_www/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" afterPath="$PROJECT_DIR$/platforms/windows/platform_www/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/www/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" afterPath="$PROJECT_DIR$/platforms/windows/www/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/src/windows/DeviceProxy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/LICENSE" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/LICENSE" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/NativeToJsMessageQueue.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/NativeToJsMessageQueue.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/NotificationExample-Info.plist" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/NotificationExample-Info.plist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/PluginManager.java" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/PluginManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/README.md" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/README.md" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/README.md" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/README.md" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/RELEASENOTES.md" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/RELEASENOTES.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/RestoreReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/RestoreReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast+UIView.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast+UIView.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast+UIView.h" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast+UIView.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast+UIView.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast+UIView.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast+UIView.m" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast+UIView.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/nl/xservices/plugins/Toast.java" afterPath="$PROJECT_DIR$/platforms/android/src/nl/xservices/plugins/Toast.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/android/nl/xservices/plugins/Toast.java" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/android/nl/xservices/plugins/Toast.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-x-toast/www/Toast.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-x-toast/www/Toast.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-x-toast/www/Toast.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-x-toast/www/Toast.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/cordova-plugin-x-toast/Toast.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast.m" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/src/ios/Toast.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/TriggerReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/TriggerReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/TriggerReceiver.java" afterPath="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/TriggerReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.h" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.m" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample/Plugins/de.appplant.cordova.plugin.local-notification/UILocalNotification+APPLocalNotification.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/android.json" afterPath="$PROJECT_DIR$/platforms/android/android.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/android.json" afterPath="$PROJECT_DIR$/plugins/android.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/build.gradle" afterPath="$PROJECT_DIR$/platforms/android/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/build.gradle" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/build.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/lib/build.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/build" afterPath="$PROJECT_DIR$/platforms/android/cordova/build" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/check_reqs.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/lib/check_reqs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/clean" afterPath="$PROJECT_DIR$/platforms/android/cordova/clean" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/common.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/common.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/res/xml/config.xml" afterPath="$PROJECT_DIR$/platforms/android/res/xml/config.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/cordova.gradle" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/cordova.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/cordova.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/cordova.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/cordova.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/cordova.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/platform_www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/ios/platform_www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/ios/www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/platform_www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/windows/platform_www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/www/cordova_plugins.js" afterPath="$PROJECT_DIR$/platforms/windows/www/cordova_plugins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/cp.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/cp.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/device.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/lib/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/platform_www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/ios/platform_www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/ios/www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/platform_www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/windows/platform_www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/www/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/platforms/windows/www/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/www/device.js" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/www/device.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/emulator.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/lib/emulator.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/exec.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/exec.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/fetch.json" afterPath="$PROJECT_DIR$/plugins/fetch.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/frameworks.json" afterPath="$PROJECT_DIR$/platforms/ios/frameworks.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/ios.json" afterPath="$PROJECT_DIR$/platforms/ios/ios.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/make.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/make.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/package.json" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/package.json" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/package.json" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/package.json" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/platforms.json" afterPath="$PROJECT_DIR$/platforms/platforms.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/plugin.xml" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/plugin.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/tests/plugin.xml" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/tests/plugin.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/plugin.xml" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-x-toast/plugin.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/ios/NotificationExample.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/platforms/ios/NotificationExample.xcodeproj/project.pbxproj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/project.properties" afterPath="$PROJECT_DIR$/platforms/android/project.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/CordovaLib/project.properties" afterPath="$PROJECT_DIR$/platforms/android/CordovaLib/project.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/q.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/q/q.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/rm.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/rm.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/lib/run.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/lib/run.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/run" afterPath="$PROJECT_DIR$/platforms/android/cordova/run" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/sed.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/sed.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/shell.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/shell.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-x-toast/test/tests.js" afterPath="$PROJECT_DIR$/platforms/android/assets/www/plugins/cordova-plugin-x-toast/test/tests.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-x-toast/test/tests.js" afterPath="$PROJECT_DIR$/platforms/android/platform_www/plugins/cordova-plugin-x-toast/test/tests.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/cordova-plugin-device/tests/tests.js" afterPath="$PROJECT_DIR$/plugins/cordova-plugin-device/tests/tests.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/version" afterPath="$PROJECT_DIR$/platforms/android/cordova/version" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/which.js" afterPath="$PROJECT_DIR$/platforms/android/cordova/node_modules/shelljs/src/which.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/platforms/windows/windows.json" afterPath="$PROJECT_DIR$/platforms/windows/windows.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/windows.json" afterPath="$PROJECT_DIR$/plugins/windows.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="cordova-example-local-notifications.iws" />
     <ignored path=".idea/workspace.xml" />
-    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/.gradle/" />
+    <ignored path="$PROJECT_DIR$/build/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,28 +220,238 @@
   <component name="FavoritesManager">
     <favorites_list name="cordova-example-local-notifications" />
   </component>
-  <component name="FileEditorManager">
-    <leaf />
-  </component>
-  <component name="FindManager">
-    <FindUsagesManager>
-      <setting name="OPEN_NEW_TAB" value="true" />
-    </FindUsagesManager>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="cordova-example-local-notifications" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="cordova-example-local-notifications" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="availableTasks">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <list>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the components produced by root project 'cordova-example-local-notifications'. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="components" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays all dependencies declared in root project 'cordova-example-local-notifications'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="dependencies" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the insight into a specific dependency in root project 'cordova-example-local-notifications'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="dependencyInsight" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays a help message." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="help" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Initializes a new Gradle build. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="init" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the configuration model of root project 'cordova-example-local-notifications'. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="model" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the sub-projects of root project 'cordova-example-local-notifications'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="projects" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the properties of root project 'cordova-example-local-notifications'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="properties" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the tasks runnable from root project 'cordova-example-local-notifications'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="tasks" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates Gradle wrapper files. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="wrapper" />
+              </ExternalTaskPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="modificationStamps">
+      <map>
+        <entry key="$PROJECT_DIR$/../../appPlant/it-projects/workshop/droidshop" value="5724663350000" />
+      </map>
+    </option>
+    <option name="projectBuildClasspath">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <ExternalProjectBuildClasspathPojo>
+              <option name="modulesBuildClasspath">
+                <map>
+                  <entry key="$PROJECT_DIR$">
+                    <value>
+                      <ExternalModuleBuildClasspathPojo>
+                        <option name="path" value="$PROJECT_DIR$" />
+                      </ExternalModuleBuildClasspathPojo>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="name" value="cordova-example-local-notifications" />
+              <option name="projectBuildClasspath">
+                <list>
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/announce" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/antlr" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/base-services" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/base-services-groovy" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/build-comparison" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/build-init" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/cli" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/code-quality" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/core" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/dependency-management" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/diagnostics" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/ear" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/ide" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/ide-native" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/internal-integ-testing" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/internal-testing" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/ivy" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/jacoco" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/javascript" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/jetty" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/language-groovy" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/language-java" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/language-jvm" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/language-native" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/language-scala" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/launcher" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/maven" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/messaging" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/model-core" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/model-groovy" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/native" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/open-api" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/osgi" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/platform-base" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/platform-jvm" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/platform-native" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/platform-play" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/plugin-development" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/plugin-use" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/plugins" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/publish" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/reporting" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/resources" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/resources-http" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/resources-s3" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/resources-sftp" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/scala" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/signing" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/sonar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/test-kit" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/testing-native" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/tooling-api" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/tooling-api-builders" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/ui" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/src/wrapper" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/ant-1.9.3.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/ant-launcher-1.9.3.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-base-services-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-base-services-groovy-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-cli-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-core-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-docs-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-launcher-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-messaging-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-model-core-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-model-groovy-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-native-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-open-api-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-resources-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-tooling-api-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-ui-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/gradle-wrapper-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/groovy-all-2.4.4.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-announce-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-antlr-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-build-comparison-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-build-init-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-code-quality-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-dependency-management-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-diagnostics-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-ear-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-ide-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-ide-native-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-ivy-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-jacoco-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-javascript-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-jetty-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-language-groovy-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-language-java-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-language-jvm-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-language-native-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-language-scala-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-maven-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-osgi-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-platform-base-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-platform-jvm-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-platform-native-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-platform-play-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-plugin-development-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-plugin-use-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-plugins-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-publish-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-reporting-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-resources-http-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-resources-s3-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-resources-sftp-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-scala-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-signing-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-sonar-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-test-kit-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-testing-native-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/gradle-tooling-api-builders-2.8.jar" />
+                  <option value="$APPLICATION_HOME_DIR$/gradle/gradle-2.8/lib/plugins/ivy-2.2.0.jar" />
+                  <option value="$PROJECT_DIR$/buildSrc/src/main/java" />
+                  <option value="$PROJECT_DIR$/buildSrc/src/main/groovy" />
+                </list>
+              </option>
+            </ExternalProjectBuildClasspathPojo>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="externalProjectsViewState">
       <projects_view />
-    </option>
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java" />
-        <option value="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/TriggerReceiver.java" />
-        <option value="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java" />
-        <option value="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AssetUtil.java" />
-        <option value="$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java" />
-      </list>
     </option>
   </component>
   <component name="NamedScopeManager">
@@ -61,7 +460,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="809" />
+    <option name="height" value="808" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -72,9 +471,6 @@
     <OptionsSetting value="true" id="Edit" />
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
-  </component>
-  <component name="ProjectReloadState">
-    <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
     <navigator currentView="AndroidView" proportions="" version="1">
@@ -90,92 +486,12 @@
     </navigator>
     <panes>
       <pane id="AndroidView">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.NonAndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="localnotification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cordova-example-local-notifications" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="ProjectPane" />
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -185,74 +501,18 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="options.lastSelected" value="copyright" />
+    <property name="options.lastSelected" value="gradle.experimental" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="recentsLimit" value="5" />
-    <property name="restartRequiresConfirmation" value="true" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_22" />
-    <property name="FullScreen" value="false" />
+    <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="android.sdk.path" value="$USER_HOME$/.android/sdk" />
   </component>
-  <component name="RecentsManager">
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="de.appplant.cordova.plugin.localnotification" />
-      <recent name="de.appplant.cordova.plugin.notification" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Android Application.android">
-    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
-      <module name="" />
-      <option name="ACTIVITY_CLASS" value="" />
-      <option name="MODE" value="default_activity" />
-      <option name="DEPLOY" value="true" />
-      <option name="ARTIFACT_NAME" value="" />
-      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="USE_COMMAND_LINE" value="true" />
-      <option name="COMMAND_LINE" value="" />
-      <option name="WIPE_USER_DATA" value="false" />
-      <option name="DISABLE_BOOT_ANIMATION" value="false" />
-      <option name="NETWORK_SPEED" value="full" />
-      <option name="NETWORK_LATENCY" value="none" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
-      <module name="" />
-      <option name="TESTING_TYPE" value="0" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="USE_COMMAND_LINE" value="true" />
-      <option name="COMMAND_LINE" value="" />
-      <option name="WIPE_USER_DATA" value="false" />
-      <option name="DISABLE_BOOT_ANIMATION" value="false" />
-      <option name="NETWORK_SPEED" value="full" />
-      <option name="NETWORK_LATENCY" value="none" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
-      <method />
-    </configuration>
+  <component name="RunManager">
     <configuration default="true" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" />
@@ -266,22 +526,6 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="" />
       <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list />
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
       <method />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
@@ -303,13 +547,6 @@
       </option>
       <envs />
       <patterns />
-      <method>
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JarApplication" factoryName="JAR Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <envs />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -320,35 +557,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="false" name="android" type="AndroidRunConfigurationType" factoryName="Android Application">
-      <module name="android" />
-      <option name="ACTIVITY_CLASS" value="" />
-      <option name="MODE" value="default_activity" />
-      <option name="DEPLOY" value="true" />
-      <option name="ARTIFACT_NAME" value="" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="USE_COMMAND_LINE" value="true" />
-      <option name="COMMAND_LINE" value="" />
-      <option name="WIPE_USER_DATA" value="false" />
-      <option name="DISABLE_BOOT_ANIMATION" value="false" />
-      <option name="NETWORK_SPEED" value="full" />
-      <option name="NETWORK_LATENCY" value="none" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
-      <RunnerSettings RunnerId="AndroidDebugRunner" />
-      <ConfigurationWrapper RunnerId="AndroidDebugRunner" />
-      <method />
-    </configuration>
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="Android Application.android" />
-    </list>
     <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
     </configuration>
@@ -359,412 +567,42 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="809" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="808" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3997114" sideWeight="0.46280402" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19097957" sideWeight="0.5050505" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25299507" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19097957" sideWeight="0.4949495" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3997114" sideWeight="0.53648067" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24964234" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
-  </component>
-  <component name="Vcs.Log.UiProperties">
-    <option name="RECENTLY_FILTERED_USER_GROUPS">
-      <collection />
-    </option>
-    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-      <collection />
-    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="213" />
-    </breakpoint-manager>
-    <watches-manager />
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/plugins/de.appplant.cordova.plugin.local-notification" />
+    </ignored-roots>
   </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="542" column="7" selection-start-line="542" selection-start-column="7" selection-end-line="542" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="327" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="456" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="28" selection-start-line="0" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="327" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="456" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="28" selection-start-line="0" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="465" column="0" selection-start-line="465" selection-start-column="0" selection-end-line="465" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="327" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="456" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="28" selection-start-line="0" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="465" column="0" selection-start-line="465" selection-start-column="0" selection-end-line="465" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="327" column="17" selection-start-line="0" selection-start-column="0" selection-end-line="456" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="28" selection-start-line="0" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AssetUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="131" column="14" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Builder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="134" column="22" selection-start-line="134" selection-start-column="22" selection-end-line="134" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="63" column="14" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="63" column="14" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="62" column="14" selection-start-line="62" selection-start-column="14" selection-end-line="62" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="45" selection-start-line="46" selection-start-column="39" selection-end-line="46" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="32" selection-start-line="54" selection-start-column="32" selection-end-line="54" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="45" selection-start-line="46" selection-start-column="39" selection-end-line="46" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="32" selection-start-line="54" selection-start-column="32" selection-end-line="54" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="13" column="68" selection-start-line="13" selection-start-column="68" selection-end-line="13" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/CordovaLib/src/org/apache/cordova/CordovaPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.72">
-          <caret line="18" column="60" selection-start-line="18" selection-start-column="60" selection-end-line="18" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Manager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="353" column="0" selection-start-line="353" selection-start-column="0" selection-end-line="353" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClickActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="45" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/ClearReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Builder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="134" column="22" selection-start-line="134" selection-start-column="22" selection-end-line="134" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractRestoreReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClickActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="22" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractClearReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="7" selection-start-line="39" selection-start-column="7" selection-end-line="39" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClearReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/ClickActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/TriggerReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.40601504">
-          <caret line="39" column="26" selection-start-line="39" selection-start-column="26" selection-end-line="39" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/RestoreReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24812031">
-          <caret line="34" column="13" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Notification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7669173">
-          <caret line="192" column="27" selection-start-line="192" selection-start-column="27" selection-end-line="192" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/Options.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4781955">
-          <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AbstractTriggerReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.75789475">
-          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/TriggerReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.518797">
-          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/localnotification/LocalNotification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.5618557">
-          <caret line="268" column="6" selection-start-line="268" selection-start-column="6" selection-end-line="268" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/platforms/android/src/de/appplant/cordova/plugin/notification/AssetUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.39433">
-          <caret line="208" column="39" selection-start-line="208" selection-start-column="20" selection-end-line="208" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
   </component>
 </project>

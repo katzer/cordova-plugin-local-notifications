@@ -4,88 +4,24 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {
-            "res/xml/config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"LocalNotification\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.localnotification.LocalNotification\" /></feature>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/manifest/application": [
-                        {
-                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.TriggerReceiver\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.ClearReceiver\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<activity android:exported=\"false\" android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.localnotification.ClickActivity\" android:theme=\"@android:style/Theme.NoDisplay\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.notification.TriggerReceiver\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.notification.ClearReceiver\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.RestoreReceiver\"><intent-filter><action android:name=\"android.intent.action.BOOT_COMPLETED\" /></intent-filter></receiver>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<activity android:exported=\"false\" android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.notification.ClickActivity\" android:theme=\"@android:style/Theme.NoDisplay\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            }
-        }
+        "files": {}
     },
     "installed_plugins": {
-        "de.appplant.cordova.common.registerusernotificationsettings": {
+        "cordova-android-support-v4": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
-        "cordova-android-support-v4": {
+        "de.appplant.cordova.common.registerusernotificationsettings": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     },
-    "dependent_plugins": {
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
-        }
-    }
+    "dependent_plugins": {}
 }

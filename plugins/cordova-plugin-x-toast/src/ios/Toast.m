@@ -30,9 +30,15 @@
     return;
   }
 
-  [self.webView makeToast:message duration:durationInt position:position addPixelsY:addPixelsY == nil ? 0 : [addPixelsY intValue]];
+  [self.webView makeToast:message
+                 duration:durationInt
+                 position:position
+               addPixelsY:addPixelsY == nil ? 0 : [addPixelsY intValue]
+          commandDelegate:self.commandDelegate
+               callbackId:command.callbackId];
 
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  pluginResult.keepCallback = [NSNumber numberWithBool:YES];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 

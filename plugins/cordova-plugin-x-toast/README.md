@@ -151,7 +151,7 @@ You can copy-paste these lines of code for a quick test:
 Since 2.1.0 you can add pixels to move the toast up or down.
 Note that `showWithOptions` can be used instead of the functions above, but it's not useful unless you want to pass `addPixelsY`.
 ```js
-function showTop() {
+function showBottom() {
   window.plugins.toast.showWithOptions(
     {
       message: "hey there",
@@ -174,6 +174,33 @@ function hide() {
 }
 ```
 
+### Receiving a callback when a Toast is tapped
+On iOS and Android the success handler of your `show` function will be notified (again) when the toast was tapped.
+
+So the first time the success handler fires is when the toast is shown, and in case the user taps the toast it will be
+called again. You can distinguish between those events of course:
+
+```js
+  window.plugins.toast.showWithOptions(
+    {
+      message: "hey there",
+      duration: "short",
+      position: "bottom",
+      addPixelsY: -40  // added a negative value to move it up a bit (default 0)
+    },
+    // implement the success callback
+    function(result) {
+      if (result && result.event) {
+        console.log("The toast was tapped");
+        console.log("Event: " + result.event); // will be defined, with a value of "touch" when it was tapped by the user
+        console.log("Message: " + result.message); // will be equal to the message you passed in
+      } else {
+        console.log("The toast has been shown");
+      }
+    }
+  );
+```
+
 ### WP8 quirks
 The WP8 implementation needs a little more work, but it's perfectly useable when you keep this in mind:
 * You can't show two Toasts simultaneously.
@@ -188,6 +215,8 @@ The Android code was entirely created by me.
 For iOS most credits go to this excellent [Toast for iOS project by Charles Scalesse] (https://github.com/scalessec/Toast).
 
 ## 6. CHANGELOG
+2.3.0: The plugin will now report back to JS if Toasts were tapped by the user.
+
 2.0.1: iOS messages are hidden when another one is shown. [Thanks Richie Min!](https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin/pull/13)
 
 2.0: WP8 support

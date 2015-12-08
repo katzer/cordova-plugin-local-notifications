@@ -51,6 +51,12 @@ module.exports = [
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{}
+{
+    "cordova-android-support-v4": "4.0.0",
+    "cordova-plugin-device": "1.1.0",
+    "cordova-plugin-x-toast": "2.3.0",
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
+    "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
+}
 // BOTTOM OF METADATA
 });
