@@ -20,6 +20,7 @@
     <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.6.0" />
+        <engine name="cordova-plugman" version=">=4.3.0" />
     </engines>
 
     <!-- dependencies -->
@@ -78,7 +79,7 @@
     <!-- android -->
     <platform name="android">
 
-        <framework src="com.android.support:support-v4:+" />
+        <framework src="com.android.support:support-v4:+" value="gradle" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
