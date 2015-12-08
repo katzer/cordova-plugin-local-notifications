@@ -173,6 +173,9 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
     else if ([interval isEqualToString:@"month"]) {
         return NSCalendarUnitMonth;
     }
+    else if ([interval isEqualToString:@"quarter"]) {
+        return NSCalendarUnitQuarter;
+    }
     else if ([interval isEqualToString:@"year"]) {
         return NSCalendarUnitYear;
     }
