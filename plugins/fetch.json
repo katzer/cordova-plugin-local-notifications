@@ -40,10 +40,10 @@
         "is_top_level": false,
         "variables": {}
     },
-    "cordova-android-support-v4": {
+    "cordova-plugin-x-toast": {
         "source": {
             "type": "registry",
-            "id": "cordova-android-support-v4"
+            "id": "cordova-plugin-x-toast"
         },
         "is_top_level": true,
         "variables": {}
@@ -53,15 +53,7 @@
             "type": "registry",
             "id": "cordova-plugin-device"
         },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-x-toast": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-x-toast"
-        },
-        "is_top_level": true,
+        "is_top_level": false,
         "variables": {}
     },
     "de.appplant.cordova.common.registerusernotificationsettings": {
@@ -69,7 +61,7 @@
             "type": "registry",
             "id": "de.appplant.cordova.common.registerusernotificationsettings"
         },
-        "is_top_level": true,
+        "is_top_level": false,
         "variables": {}
     },
     "de.appplant.cordova.plugin.local-notification": {

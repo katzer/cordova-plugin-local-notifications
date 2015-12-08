@@ -334,7 +334,7 @@
 
             var callbackSingleOpts = function (notification) {
                 console.log(notification);
-                showToast(notification.toString());
+                showToast(notification ? notification.toString() : '- none -');
             };
 
             get = function () {

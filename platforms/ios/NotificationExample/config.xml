@@ -14,11 +14,11 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
-    <feature name="Device">
-        <param name="ios-package" value="CDVDevice" />
-    </feature>
     <feature name="Toast">
         <param name="ios-package" value="Toast" />
+    </feature>
+    <feature name="Device">
+        <param name="ios-package" value="CDVDevice" />
     </feature>
     <feature name="LocalNotification">
         <param name="ios-package" onload="true" value="APPLocalNotification" />

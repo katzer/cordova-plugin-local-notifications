@@ -52,6 +52,7 @@ static UIView *prevToast = NULL;
 static id commandDelegate;
 static id callbackId;
 static id msg;
+static id data;
 
 @interface UIView (ToastPrivate)
 
@@ -66,6 +67,7 @@ static id msg;
 
 @implementation UIView (Toast)
 
+
 #pragma mark - Toast Methods
 
 - (void)makeToast:(NSString *)message {
@@ -77,10 +79,11 @@ static id msg;
     [self showToast:toast duration:duration position:position];
 }
 
-- (void)makeToast:(NSString *)message duration:(NSTimeInterval)duration position:(id)position addPixelsY:(int)addPixelsY commandDelegate:(id <CDVCommandDelegate>)_commandDelegate callbackId:(NSString *)_callbackId {
+- (void)makeToast:(NSString *)message duration:(NSTimeInterval)duration position:(id)position addPixelsY:(int)addPixelsY data:(NSDictionary*)_data commandDelegate:(id <CDVCommandDelegate>)_commandDelegate callbackId:(NSString *)_callbackId {
   commandDelegate = _commandDelegate;
   callbackId = _callbackId;
   msg = message;
+  data = _data;
   UIView *toast = [self viewForMessage:message title:nil image:nil];
   [self showToast:toast duration:duration position:position addedPixelsY:addPixelsY];
 }
@@ -178,7 +181,11 @@ static id msg;
     [self hideToast:recognizer.view];
   
     // also send an event back to JS
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:msg, @"message", @"touch", @"event", nil];
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:msg, @"message", @"touch", @"event", nil];
+    if (data != nil) {
+      [dict setObject:data forKey:@"data"];
+    }
+  
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
     [commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }

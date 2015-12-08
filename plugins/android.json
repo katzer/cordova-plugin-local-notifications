@@ -7,9 +7,6 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-android-support-v4": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
-        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },

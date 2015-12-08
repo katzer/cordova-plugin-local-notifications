@@ -1,14 +1,6 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "id": "cordova-plugin-device.device",
-        "pluginId": "cordova-plugin-device",
-        "clobbers": [
-            "device"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
         "id": "cordova-plugin-x-toast.Toast",
         "pluginId": "cordova-plugin-x-toast",
@@ -20,6 +12,14 @@ module.exports = [
         "file": "plugins/cordova-plugin-x-toast/test/tests.js",
         "id": "cordova-plugin-x-toast.tests",
         "pluginId": "cordova-plugin-x-toast"
+    },
+    {
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
+        "pluginId": "cordova-plugin-device",
+        "clobbers": [
+            "device"
+        ]
     },
     {
         "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
@@ -52,9 +52,8 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-android-support-v4": "4.0.0",
+    "cordova-plugin-x-toast": "2.3.1",
     "cordova-plugin-device": "1.1.0",
-    "cordova-plugin-x-toast": "2.3.0",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
     "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
 }

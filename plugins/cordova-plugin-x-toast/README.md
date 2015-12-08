@@ -186,7 +186,8 @@ called again. You can distinguish between those events of course:
       message: "hey there",
       duration: "short",
       position: "bottom",
-      addPixelsY: -40  // added a negative value to move it up a bit (default 0)
+      addPixelsY: -40,  // (optional) added a negative value to move it up a bit (default 0)
+      data: {'foo','bar'} // (optional) pass in a JSON object here (it will be sent back in the success callback below)
     },
     // implement the success callback
     function(result) {
@@ -194,6 +195,7 @@ called again. You can distinguish between those events of course:
         console.log("The toast was tapped");
         console.log("Event: " + result.event); // will be defined, with a value of "touch" when it was tapped by the user
         console.log("Message: " + result.message); // will be equal to the message you passed in
+        console.log("data.foo: " + result.data.foo); // .. retrieve passed in data here
       } else {
         console.log("The toast has been shown");
       }

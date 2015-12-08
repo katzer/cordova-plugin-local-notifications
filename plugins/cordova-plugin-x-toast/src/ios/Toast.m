@@ -11,6 +11,7 @@
   NSString *message  = [options objectForKey:@"message"];
   NSString *duration = [options objectForKey:@"duration"];
   NSString *position = [options objectForKey:@"position"];
+  NSDictionary *data = [options objectForKey:@"data"];
   NSNumber *addPixelsY = [options objectForKey:@"addPixelsY"];
 
   if (![position isEqual: @"top"] && ![position isEqual: @"center"] && ![position isEqual: @"bottom"]) {
@@ -34,6 +35,7 @@
                  duration:durationInt
                  position:position
                addPixelsY:addPixelsY == nil ? 0 : [addPixelsY intValue]
+                     data:data
           commandDelegate:self.commandDelegate
                callbackId:command.callbackId];
 

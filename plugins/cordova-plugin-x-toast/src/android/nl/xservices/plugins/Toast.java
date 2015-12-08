@@ -55,6 +55,7 @@ public class Toast extends CordovaPlugin {
       final String duration = options.getString("duration");
       final String position = options.getString("position");
       final int addPixelsY = options.has("addPixelsY") ? options.getInt("addPixelsY") : 0;
+      final JSONObject data = options.has("data") ? options.getJSONObject("data") : null;
 
       cordova.getActivity().runOnUiThread(new Runnable() {
         public void run() {
@@ -88,6 +89,7 @@ public class Toast extends CordovaPlugin {
                 try {
                   json.put("event", "touch");
                   json.put("message", message);
+                  json.put("data", data);
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }

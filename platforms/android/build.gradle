@@ -245,6 +245,7 @@ dependencies {
     // SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: "CordovaLib", configuration: "debug")
     releaseCompile project(path: "CordovaLib", configuration: "release")
+    compile "com.android.support:support-v4:+"
     // SUB-PROJECT DEPENDENCIES END
 }
 
