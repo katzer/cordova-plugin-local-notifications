@@ -68,6 +68,16 @@ abstract public class AbstractClickActivity extends Activity {
     }
 
     /**
+     * Fixes "Unable to resume activity" error.
+     * Theme_NoDisplay: Activities finish themselves before being resumed.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        finish();
+    }
+
+    /**
      * Called when local notification was clicked by the user.
      *
      * @param notification
