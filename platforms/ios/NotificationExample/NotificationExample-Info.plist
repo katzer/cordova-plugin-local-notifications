@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
@@ -56,42 +61,20 @@
     <string>${PRODUCT_NAME}</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>0.0.1</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
     <string>0.0.1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.0.1</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-      <key>NSExceptionDomains</key>
-      <dict>
-        <key>m.facebook.com</key>
-        <dict/>
-        <key>graph.facebook.com</key>
-        <dict/>
-        <key>api.facebook.com</key>
-        <dict/>
-        <key>fbcdn.net</key>
-        <dict>
-          <key>NSIncludesSubdomains</key>
-          <true/>
-        </dict>
-        <key>akamaihd.net</key>
-        <dict>
-          <key>NSIncludesSubdomains</key>
-          <true/>
-        </dict>
-      </dict>
-    </dict>
     <key>NSMainNibFile</key>
     <string/>
     <key>NSMainNibFile~ipad</key>
     <string/>
+    <key>UIRequiresFullScreen</key>
+    <true/>
     <key>UILaunchImages</key>
     <array>
       <dict>
@@ -195,7 +178,5 @@
         <string>{768, 1024}</string>
       </dict>
     </array>
-    <key>UIRequiresFullScreen</key>
-    <true/>
   </dict>
 </plist>

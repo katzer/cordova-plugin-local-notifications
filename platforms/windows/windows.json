@@ -19,6 +19,9 @@
         "cordova-plugin-device": {
             "PACKAGE_NAME": "NotificationExample"
         },
+        "cordova-plugin-registerusernotificationsettings": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
         "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "NotificationExample"
         }
@@ -109,6 +112,7 @@
     "plugin_metadata": {
         "cordova-plugin-x-toast": "2.3.1",
         "cordova-plugin-device": "1.1.0",
+        "cordova-plugin-registerusernotificationsettings": "1.0.2",
         "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
     }
 }

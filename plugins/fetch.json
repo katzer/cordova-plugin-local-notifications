@@ -56,6 +56,14 @@
         "is_top_level": false,
         "variables": {}
     },
+    "cordova-plugin-registerusernotificationsettings": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-registerusernotificationsettings"
+        },
+        "is_top_level": false,
+        "variables": {}
+    },
     "de.appplant.cordova.common.registerusernotificationsettings": {
         "source": {
             "type": "registry",

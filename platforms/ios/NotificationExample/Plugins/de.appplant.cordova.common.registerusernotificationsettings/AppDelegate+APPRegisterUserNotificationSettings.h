@@ -1,1 +1,0 @@
-../../../../../plugins/de.appplant.cordova.common.registerusernotificationsettings/src/ios/AppDelegate+APPRegisterUserNotificationSettings.h

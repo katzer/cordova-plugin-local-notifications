@@ -2,8 +2,8 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="de.appplant.cordova.common.registerusernotificationsettings"
-        version="1.0.1">
+        id="cordova-plugin-registerusernotificationsettings"
+        version="1.0.2">
 
     <name>RegisterUserNotificationSettings</name>
 
@@ -11,7 +11,7 @@
 
     <repo>https://github.com/katzer/cordova-common-registerusernotificationsettings</repo>
 
-    <keywords>appplant, didRegisterUserNotificationSettings</keywords>
+    <keywords>appplant</keywords>
 
     <license>Apache 2.0</license>
 
