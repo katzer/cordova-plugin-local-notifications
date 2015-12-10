@@ -12,10 +12,13 @@
 /**
  * Handle notification actions for iOS < 9.
  */
- - (void) application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotificiation:(UILocalNotification *)notification completionHandler:(void(^)())completionHandler;
+ - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void(^)())completionHandler  
  {
- 	NSDictionary *userInfo = [NSDictionary dictionaryWithObject:notification forKey:@"localNotification"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SendActionIdentifier" object:identifier userInfo:userInfo];
+    [self application:[UIApplication sharedApplication]
+        handleActionWithIdentifier:identifier
+        forLocalNotification:notification
+        withResponseInfo:nil
+        completionHandler:(void (^)())completionHandler];
     
     completionHandler();
  }
@@ -25,8 +28,14 @@
  */
  - (void) application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler   
 {   
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:notification, @"localNotification", responseInfo, @"responseInfo", nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SendActionIdentifier" object:identifier userInfo:userInfo];
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						    	notification, @"localNotification", 
+						    	responseInfo, @"responseInfo", 
+						    	nil];
+    [[NSNotificationCenter defaultCenter] 
+    	postNotificationName:@"SendActionIdentifier" 
+    		object:identifier 
+    		userInfo:userInfo];
   
     completionHandler();   
 }  

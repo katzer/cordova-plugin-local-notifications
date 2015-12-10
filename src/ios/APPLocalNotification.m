@@ -471,7 +471,8 @@
         NSArray* interactions = command.arguments;
 
         [self.commandDelegate runInBackground:^{
-            [self.app registerPermissionToScheduleLocalNotifications:interactions];
+            [self.app 
+                registerPermissionToScheduleLocalNotifications:interactions];
         }];
     } else {
         [self hasPermission:command];
@@ -764,14 +765,22 @@
      NSString* identifier = [notification object];
      
      NSDictionary* userInfo = notification.userInfo;
-     UILocalNotification *localNotification = [userInfo objectForKey:@"localNotification"];
+     UILocalNotification *localNotification = 
+        [userInfo objectForKey:@"localNotification"];
      
      NSDictionary* responseInfo = [userInfo objectForKey:@"responseInfo"];
      
-     NSDictionary* dataDict = [NSDictionary dictionaryWithObjectsAndKeys:identifier, @"identifier",
-                               [responseInfo objectForKey:@"UIUserNotificationActionResponseTypedTextKey"], @"responseInfoText", nil];
-     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dataDict options:0 error:nil];
-     NSString* data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+     NSDictionary* dataDict = [NSDictionary dictionaryWithObjectsAndKeys:
+        identifier, @"identifier",
+        [responseInfo 
+            objectForKey:@"UIUserNotificationActionResponseTypedTextKey"],
+        @"responseInfoText", nil];
+
+     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dataDict 
+        options:0 error:nil];
+
+     NSString* data = [[NSString alloc] initWithData:jsonData 
+        encoding:NSUTF8StringEncoding];
      
      [self fireEvent:@"action" notification:localNotification data:data];
 
