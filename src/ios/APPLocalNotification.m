@@ -782,7 +782,7 @@
      NSString* data = [[NSString alloc] initWithData:jsonData 
         encoding:NSUTF8StringEncoding];
      
-     [self fireEvent:@"action" notification:localNotification data:data];
+     [self fireEvent:@"click" notification:localNotification data:data];
 
      if ([localNotification isRepeating]) {
         [self fireEvent:@"clear" notification:localNotification];

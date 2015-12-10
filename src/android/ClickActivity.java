@@ -42,11 +42,7 @@ public class ClickActivity extends de.appplant.cordova.plugin.notification.Click
      */
     @Override
     public void onClick(Notification notification) {
-        if (actionIdentifier != null) {
-            LocalNotification.fireEvent("action", notification, actionIdentifier);
-        } else {
-            LocalNotification.fireEvent("click", notification);
-        }
+        LocalNotification.fireEvent("click", notification, actionIdentifier);
 
         super.onClick(notification);
 
