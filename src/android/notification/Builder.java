@@ -157,14 +157,14 @@ public class Builder {
         if (clearReceiver == null)
             return;
 
-        Intent deleteIntent = new Intent(context, clearReceiver)
+        Intent intent = new Intent(context, clearReceiver)
                 .setAction(options.getIdStr())
                 .putExtra(Options.EXTRA, options.toString());
 
-        PendingIntent dpi = PendingIntent.getBroadcast(
-                context, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent deleteIntent = PendingIntent.getBroadcast(
+                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        builder.setDeleteIntent(dpi);
+        builder.setDeleteIntent(deleteIntent);
     }
 
     /**
@@ -183,10 +183,10 @@ public class Builder {
                 .putExtra(Options.EXTRA, options.toString())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int requestCode = new Random().nextInt();
+        int reqCode = new Random().nextInt();
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
     }
