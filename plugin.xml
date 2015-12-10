@@ -52,6 +52,7 @@
         <merges target="plugin.notification.local.core" />
     </js-module>
 
+
     <!-- ios -->
     <platform name="ios">
 
@@ -123,6 +124,8 @@
                 android:theme="@android:style/Theme.NoDisplay"
                 android:exported="false" />
 
+            <service android:name="de.appplant.cordova.plugin.localnotification.KillNotificationsService"></service>
+
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
@@ -148,6 +151,10 @@
 
         <source-file
             src="src/android/RestoreReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
+
+        <source-file
+            src="src/android/KillNotificationsService.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file

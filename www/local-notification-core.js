@@ -133,6 +133,19 @@ exports.clearAll = function (callback, scope) {
 };
 
 /**
+ * Set to automatically clear all previously sheduled notifications 
+ *  on application exit
+ *
+ * @param {Function} callback
+ *      A function to be called after all notifications have been cleared
+ * @param {Object?} scope
+ *      The scope for the callback function
+ */
+exports.setAutoClearAll = function (callback, scope) {
+    this.exec('setAutoClearAll', null, callback, scope);
+};
+
+/**
  * Cancel the specified notifications.
  *
  * @param {String[]} ids

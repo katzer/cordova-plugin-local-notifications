@@ -192,6 +192,20 @@ public class Options {
     }
 
     /**
+     * with led flag for local notifications.
+     */
+    public Boolean isWithLed() {
+        return options.optBoolean("withLed", true);
+    }
+
+    /**
+     * with vibration flag for local notifications.
+     */
+    public Boolean isWithVibration() {
+        return options.optBoolean("withVibration", true);
+    }
+
+    /**
      * ID for the local notification as a number.
      */
     public Integer getId() {
