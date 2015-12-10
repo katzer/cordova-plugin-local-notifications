@@ -5,6 +5,7 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 
 #### Version 0.8.3 (not yet released)
 - New "quarter" intervall for iOS & Android
+- Fixed #588 crash when basename & extension can't be extracted (Android)
 - Fixed #732 loop between update and trigger (Android)
 - Fixed #710 crash due to >500 notifications (Android)
 - Fixed #682 crash while resuming app from notification (Android 6)
