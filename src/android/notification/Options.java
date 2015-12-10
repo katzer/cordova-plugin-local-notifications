@@ -150,36 +150,60 @@ public class Options {
      * Parse actions.
      */
     private void parseActions() {
-
         if(options.has("actions") && options.has("category")) {
-            String actionCategoryIdentifier = options.optString("category");
-            Action[] actionsForCategory = Action.getNotificationActionsForCategory(actionCategoryIdentifier);
+            String categoryIdentifier = options.optString("category", ""); // could be null
+
+            Action[] actionsForCategory = Action.getActionsForCategory(categoryIdentifier); // in this case will return null, resulting in null
 
             if (actionsForCategory == null || actionsForCategory.length == 0) {
-                JSONArray actionsArray = options.optJSONArray("actions"); 
-                actionsForCategory = new Action[actionsArray.length()]; 
-
-                for (int i = 0; i < actionsArray.length(); i++) { 
-                    try {
-                        String actionIdentifier = actionsArray.getJSONObject(i).getString("identifier"); 
-                        Action action = Action.getNotificationAction(actionIdentifier);
-
-                        if (action == null) {
-                            action = new Action(getActionIcon(actionsArray.getJSONObject(i).optString("icon", "")), 
-                                            actionsArray.getJSONObject(i).getString("title"), actionIdentifier);
-                            Action.addNotificationAction(action);
-                        } 
-
-                        actionsForCategory[i] = action;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Action.addNotificationActionCategory(actionCategoryIdentifier, actionsForCategory);
-            } 
+                actionsForCategory = parseActionsForCategory(categoryIdentifier); // could pass null
+            }
 
             actions = actionsForCategory;
         }
+    }
+
+    /*
+     * Parse action from JSON.
+     *
+     * @param actionJSON
+     *      JSON representation of action 
+     */
+    private Action parseAction(JSONObject actionJSON) {
+        String identifier = actionJSON.optString("identifier", "");
+
+        Action action = Action.getAction(identifier);
+
+        if (action == null && identifier.length() > 0) {
+            action = new Action(getActionIcon(actionJSON.optString("icon", "")), actionJSON.optString("title", ""), identifier);
+        }
+
+        return action;
+    }
+
+    /*
+     * Parse all actions associated with the category.
+     *
+     * @param categoryIdentifier
+     *      Identifier for category of actions
+     */
+    private Action[] parseActionsForCategory(String categoryIdentifier) {
+        JSONArray actions = options.optJSONArray("actions"); // could be null
+
+        Action[] actionsForCategory = new Action[actions.length()]; //in which case this would throw
+
+        for (int i = 0; i < actions.length(); i++) {
+            Action action = parseAction(actions.optJSONObject(i));
+
+            if (action != null) {
+                Action.addAction(action);
+                actionsForCategory[i] = action;
+            }
+        }
+
+        Action.addCategory(categoryIdentifier, actionsForCategory);
+
+        return actionsForCategory;
     }
 
     /**

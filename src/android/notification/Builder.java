@@ -192,9 +192,9 @@ public class Builder {
         PendingIntent contentIntent = PendingIntent.getActivity(
                 context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        Action[] actionsArray = options.getActions();
-        if (actionsArray != null && actionsArray.length > 0) {
-            for (Action action : actionsArray) {
+        Action[] actions = options.getActions();
+        if (actions != null && actions.length > 0) {
+            for (Action action : actions) {
                 builder.addAction(action.getIcon(), action.getTitle(), getPendingIntentForAction(action));
             }
         }

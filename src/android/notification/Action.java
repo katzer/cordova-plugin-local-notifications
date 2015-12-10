@@ -42,10 +42,10 @@ public class Action {
     private String identifier;
 
     // Persistant map of all action categories
-    private static HashMap<String, Action[]> allNotificationActionCategories = new HashMap<String, Action[]>();
+    private static HashMap<String, Action[]> allCategories = new HashMap<String, Action[]>();
 
     // Persistant map of all actions used
-    private static HashMap<String, Action> allNotificationActions = new HashMap<String, Action>();
+    private static HashMap<String, Action> allActions = new HashMap<String, Action>();
 
     /**
      * Constructor
@@ -90,8 +90,8 @@ public class Action {
      * @param actionIdentifier
      *     Identifier of action to be returned
      */
-    public static Action getNotificationAction(String actionIdentifier) {
-        return allNotificationActions.get(actionIdentifier);
+    public static Action getAction(String actionIdentifier) {
+        return allActions.get(actionIdentifier);
     } 
 
     /**
@@ -100,8 +100,8 @@ public class Action {
      * @param actionCategoryIdentifier
      *      Identifier of category to be returned
      */
-    public static Action[] getNotificationActionsForCategory(String actionCategoryIdentifier) {
-        return allNotificationActionCategories.get(actionCategoryIdentifier);
+    public static Action[] getActionsForCategory(String actionCategoryIdentifier) {
+        return allCategories.get(actionCategoryIdentifier);
     }
 
     /**
@@ -110,8 +110,8 @@ public class Action {
      * @param action
      *      New action to be added
      */
-    public static void addNotificationAction(Action action) {
-        allNotificationActions.put(action.getIdentifier(), action);
+    public static void addAction(Action action) {
+        allActions.put(action.getIdentifier(), action);
     }
 
     /**
@@ -122,7 +122,7 @@ public class Action {
      * @param actions
      *      Array of actions to be associated with new category
      */
-    public static void addNotificationActionCategory(String actionCategoryIdentfier, Action[] actions) {
-        allNotificationActionCategories.put(actionCategoryIdentfier, actions);
+    public static void addCategory(String actionCategoryIdentfier, Action[] actions) {
+        allCategories.put(actionCategoryIdentfier, actions);
     }
 }
