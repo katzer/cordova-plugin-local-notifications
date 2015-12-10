@@ -151,12 +151,12 @@ public class Options {
      */
     private void parseActions() {
         if(options.has("actions") && options.has("category")) {
-            String categoryIdentifier = options.optString("category", ""); // could be null
+            String categoryIdentifier = options.optString("category", "");
 
-            Action[] actionsForCategory = Action.getActionsForCategory(categoryIdentifier); // in this case will return null, resulting in null
+            Action[] actionsForCategory = Action.getActionsForCategory(categoryIdentifier);
 
             if (actionsForCategory == null || actionsForCategory.length == 0) {
-                actionsForCategory = parseActionsForCategory(categoryIdentifier); // could pass null
+                actionsForCategory = parseActionsForCategory(categoryIdentifier); 
             }
 
             actions = actionsForCategory;
@@ -188,9 +188,9 @@ public class Options {
      *      Identifier for category of actions
      */
     private Action[] parseActionsForCategory(String categoryIdentifier) {
-        JSONArray actions = options.optJSONArray("actions"); // could be null
+        JSONArray actions = options.optJSONArray("actions"); 
 
-        Action[] actionsForCategory = new Action[actions.length()]; //in which case this would throw
+        Action[] actionsForCategory = new Action[actions.length()]; 
 
         for (int i = 0; i < actions.length(); i++) {
             Action action = parseAction(actions.optJSONObject(i));
