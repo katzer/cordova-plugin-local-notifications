@@ -116,11 +116,7 @@ public class Builder {
      */
     public Notification build() {
         Uri sound = options.getSoundUri();
-        NotificationCompat.BigTextStyle style;
         NotificationCompat.Builder builder;
-
-        style = new NotificationCompat.BigTextStyle()
-                .bigText(options.getText());
 
         builder = new NotificationCompat.Builder(context)
                 .setDefaults(0)
@@ -132,7 +128,6 @@ public class Builder {
                 .setLargeIcon(options.getIconBitmap())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setStyle(style)
                 .setLights(options.getLedColor(), 500, 500);
 
         if (sound != null) {
