@@ -268,14 +268,14 @@ public class Options {
      * Icon bitmap for the local notification.
      */
     public Bitmap getIconBitmap() {
-        String icon = options.optString("icon", "icon");
         Bitmap bmp;
 
-        try{
+        try {
             Uri uri = Uri.parse(options.optString("iconUri"));
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
-            bmp = assets.getIconFromDrawable(icon);
+            e.printStackTrace();
+            bmp = assets.getIconFromDrawable("icon");
         }
 
         return bmp;
