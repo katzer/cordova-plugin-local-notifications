@@ -115,7 +115,8 @@ public class Builder {
      * Creates the notification with all its options passed through JS.
      */
     public Notification build() {
-        Uri sound = options.getSoundUri();
+        Uri sound     = options.getSoundUri();
+        int smallIcon = options.getSmallIcon();
         NotificationCompat.Builder builder;
 
         builder = new NotificationCompat.Builder(context)
@@ -124,14 +125,19 @@ public class Builder {
                 .setContentText(options.getText())
                 .setNumber(options.getBadgeNumber())
                 .setTicker(options.getText())
-                .setSmallIcon(options.getSmallIcon())
-                .setLargeIcon(options.getIconBitmap())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setLights(options.getLedColor(), 500, 500);
 
         if (sound != null) {
             builder.setSound(sound);
+        }
+
+        if (smallIcon == 0) {
+            builder.setSmallIcon(options.getIcon());
+        } else {
+            builder.setSmallIcon(options.getSmallIcon());
+            builder.setLargeIcon(options.getIconBitmap());
         }
 
         applyDeleteReceiver(builder);

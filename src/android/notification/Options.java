@@ -131,7 +131,7 @@ public class Options {
         if (options.has("iconUri"))
             return;
 
-        Uri iconUri = assets.parse(options.optString("icon", "icon"));
+        Uri iconUri  = assets.parse(options.optString("icon", "icon"));
         Uri soundUri = assets.parseSound(options.optString("sound", null));
 
         try {
@@ -282,18 +282,31 @@ public class Options {
     }
 
     /**
+     * Icon resource ID for the local notification.
+     */
+    public int getIcon () {
+        String icon = options.optString("icon", "");
+
+        int resId = assets.getResIdForDrawable(icon);
+
+        if (resId == 0) {
+            resId = getSmallIcon();
+        }
+
+        if (resId == 0) {
+            resId = android.R.drawable.ic_popup_reminder;
+        }
+
+        return resId;
+    }
+
+    /**
      * Small icon resource ID for the local notification.
      */
     public int getSmallIcon () {
         String icon = options.optString("smallIcon", "");
 
-        int resId = assets.getResIdForDrawable(icon);
-
-        if (resId == 0) {
-            resId = android.R.drawable.screen_background_dark;
-        }
-
-        return resId;
+        return assets.getResIdForDrawable(icon);
     }
 
     /**
