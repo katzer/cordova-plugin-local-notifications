@@ -349,7 +349,7 @@ class AssetUtil {
         }
 
         if (iconId == 0) {
-            iconId = android.R.drawable.ic_menu_info_details;
+            iconId = android.R.drawable.screen_background_dark_transparent;
         }
 
         return BitmapFactory.decodeResource(res, iconId);
