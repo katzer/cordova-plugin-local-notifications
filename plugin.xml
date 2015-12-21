@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.2dev">
+        version="0.8.3-dev">
 
     <name>LocalNotification</name>
 
@@ -20,11 +20,13 @@
     <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.6.0" />
-        <engine name="cordova" version="<4.0.0" />
+        <engine name="cordova-plugman" version=">=4.3.0" />
+        <engine name="cordova-ios" version="<4.0.0" />
     </engines>
 
     <!-- dependencies -->
-    <dependency id="org.apache.cordova.device" />
+    <dependency id="cordova-plugin-device" />
+    <dependency id="cordova-plugin-registerusernotificationsettings" />
 
     <!-- info -->
     <info>
@@ -79,7 +81,7 @@
     <!-- android -->
     <platform name="android">
 
-        <dependency id="android.support.v4" />
+        <framework src="com.android.support:support-v4:+" value="gradle" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">

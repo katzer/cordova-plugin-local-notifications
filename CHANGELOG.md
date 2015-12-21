@@ -3,6 +3,27 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.8.3 (not yet released)
+- New "quarter" intervall for iOS & Android
+- Made small icon optional (Android)
+- Fixed #588 crash when basename & extension can't be extracted (Android)
+- Fixed #732 loop between update and trigger (Android)
+- Fixed #710 crash due to >500 notifications (Android)
+- Fixed #682 crash while resuming app from notification (Android 6)
+- Fixed crashing `get(ID)` if notification doesn't exist
+
+#### Version 0.8.2 (08.11.2015)
+- Submitted to npm
+- Initial support for the `windows` platform
+- Re-add autoCancel option on Android
+- Warn about unknown properties
+- Fix crash on iOS 9
+- Fixed webView-Problems with cordova-android 4.0
+- Fix get* with single id
+- Fix issue when passing data in milliseconds
+- Update device plugin id
+- Several other fixes
+
 #### Version 0.8.1 (08.03.2015)
 
 - Fix incompatibility with cordova version 3.5-3.0

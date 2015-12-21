@@ -23,7 +23,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import android.os.Build;
+import android.app.Activity;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -233,6 +234,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().update(id, update, TriggerReceiver.class);
 
+            if (notification == null)
+                continue;
+
             fireEvent("update", notification);
         }
     }
@@ -250,9 +254,10 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().cancel(id);
 
-            if (notification != null) {
-                fireEvent("cancel", notification);
-            }
+            if (notification == null)
+                continue;
+
+            fireEvent("cancel", notification);
         }
     }
 
@@ -277,9 +282,10 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     getNotificationMgr().clear(id);
 
-            if (notification != null) {
-                fireEvent("clear", notification);
-            }
+            if (notification == null)
+                continue;
+
+            fireEvent("clear", notification);
         }
     }
 
@@ -468,11 +474,20 @@ public class LocalNotification extends CordovaPlugin {
                              CallbackContext command) {
 
         JSONArray ids = new JSONArray().put(id);
+        PluginResult result;
 
-        JSONObject options =
-                getNotificationMgr().getOptionsBy(type, toList(ids)).get(0);
+        List<JSONObject> options =
+                getNotificationMgr().getOptionsBy(type, toList(ids));
 
-        command.success(options);
+        if (options.isEmpty()) {
+            // Status.NO_RESULT led to no callback invocation :(
+            // Status.OK        led to no NPE and crash
+            result = new PluginResult(PluginResult.Status.NO_RESULT);
+        } else {
+            result = new PluginResult(PluginResult.Status.OK, options.get(0));
+        }
+
+        command.sendPluginResult(result);
     }
 
     /**
@@ -557,16 +572,18 @@ public class LocalNotification extends CordovaPlugin {
             eventQueue.add(js);
             return;
         }
-
-        webView.post(new Runnable(){
-            public void run(){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webView.evaluateJavascript(js, null);
-                } else {
-                    webView.loadUrl("javascript:" + js);
-                }
+        Runnable jsLoader = new Runnable() {
+            public void run() {
+                webView.loadUrl("javascript:" + js);
             }
-        });
+        };
+        try {
+            Method post = webView.getClass().getMethod("post",Runnable.class);
+            post.invoke(webView,jsLoader);
+        } catch(Exception e) {
+
+            ((Activity)(webView.getContext())).runOnUiThread(jsLoader);
+        }
     }
 
     /**

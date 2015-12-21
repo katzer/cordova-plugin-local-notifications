@@ -393,7 +393,7 @@
         }
 
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                    messageAsDictionary:notifications[0]];
+                               messageAsDictionary:[notifications firstObject]];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
@@ -571,7 +571,7 @@
 {
     UILocalNotification* notification = [localNotification object];
 
-    if ([notification wasUpdated])
+    if ([notification userInfo] == NULL || [notification wasUpdated] )
         return;
 
     NSTimeInterval timeInterval = [notification timeIntervalSinceLastTrigger];
