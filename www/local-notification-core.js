@@ -63,7 +63,7 @@ exports.setDefaults = function (newDefaults) {
  *      The scope for the callback function
  */
 exports.schedule = function (opts, callback, scope) {
-    this.registerPermission(function(granted) {
+    this.hasPermission(function(granted) {
 
         if (!granted)
             return;
