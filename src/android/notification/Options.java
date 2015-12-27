@@ -250,6 +250,28 @@ public class Options {
     }
 
     /**
+     * @return
+     *      The notification background color for the small icon
+     *      Returns null, if no color is given.
+     */
+    public Integer getColor() {
+        Object hexObject = options.opt("color");
+
+        // If there is no color --> return null
+        if( hexObject==null || !(hexObject instanceof String)){
+            return null;
+        }
+        // If we are here, hexOject is a real object (!=null) and a String
+        // --> Parse it.
+        String hex = (String) hexObject;
+        int aRGB   = Integer.parseInt(hex,16);
+
+        aRGB += 0xFF000000;
+
+        return new Integer(aRGB);
+    }
+
+    /**
      * Sound file path for the local notification.
      */
     public Uri getSoundUri() {

@@ -117,6 +117,8 @@ public class Builder {
     public Notification build() {
         Uri sound     = options.getSoundUri();
         int smallIcon = options.getSmallIcon();
+		Integer color = options.getColor();
+		
         NotificationCompat.Builder builder;
 
         builder = new NotificationCompat.Builder(context)
@@ -133,6 +135,10 @@ public class Builder {
             builder.setSound(sound);
         }
 
+        if(color!=null){
+           builder.setColor(color.intValue());
+		}
+		
         if (smallIcon == 0) {
             builder.setSmallIcon(options.getIcon());
         } else {
