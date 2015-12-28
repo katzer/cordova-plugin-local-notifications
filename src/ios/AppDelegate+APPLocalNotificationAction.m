@@ -19,8 +19,6 @@
         forLocalNotification:notification
         withResponseInfo:nil
         completionHandler:(void (^)())completionHandler];
-    
-    completionHandler();
  }
 
 /**
