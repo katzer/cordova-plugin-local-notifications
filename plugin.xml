@@ -74,6 +74,9 @@
         <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
         <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
 
+        <header-file src="src/ios/AppDelegate+APPLocalNotificationAction.h" />
+        <source-file src="src/ios/AppDelegate+APPLocalNotificationAction.m" />
+
     </platform>
 
     <!-- android -->
@@ -196,6 +199,10 @@
 
         <source-file
             src="src/android/notification/TriggerReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/notification" />
+
+        <source-file
+            src="src/android/notification/Action.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
     </platform>

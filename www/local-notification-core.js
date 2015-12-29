@@ -63,21 +63,21 @@ exports.setDefaults = function (newDefaults) {
  *      The scope for the callback function
  */
 exports.schedule = function (opts, callback, scope) {
-    this.registerPermission(function(granted) {
+    var notifications = Array.isArray(opts) ? opts : [opts];
+    var allInteractions = [];
 
-        if (!granted)
-            return;
+    for (var i = 0; i < notifications.length; i++) {
+        var properties = notifications[i];
 
-        var notifications = Array.isArray(opts) ? opts : [opts];
+        allInteractions.push(JSON.stringify(this.prepareActions(properties)));
+        this.mergeWithDefaults(properties);
+        this.convertProperties(properties);
+    }
 
-        for (var i = 0; i < notifications.length; i++) {
-            var properties = notifications[i];
-
-            this.mergeWithDefaults(properties);
-            this.convertProperties(properties);
+    this.registerPermission(allInteractions, function(granted) {
+        if (granted) {
+            this.exec('schedule', notifications, callback, scope);
         }
-
-        this.exec('schedule', notifications, callback, scope);
     }, this);
 };
 
@@ -408,12 +408,14 @@ exports.hasPermission = function (callback, scope) {
 /**
  * Register permission to show notifications if not already granted.
  *
+ * @param {Object} interactions
+ *      Category and all actions for iOS
  * @param {Function} callback
  *      The function to be exec as the callback
  * @param {Object?} scope
  *      The callback function's scope
  */
-exports.registerPermission = function (callback, scope) {
+exports.registerPermission = function (interactions, callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
 
     if (device.platform != 'iOS') {
@@ -421,7 +423,7 @@ exports.registerPermission = function (callback, scope) {
         return;
     }
 
-    exec(fn, null, 'LocalNotification', 'registerPermission', []);
+    exec(fn, null, 'LocalNotification', 'registerPermission', interactions);
 };
 
 
