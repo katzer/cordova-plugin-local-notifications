@@ -4,7 +4,8 @@ ChangeLog
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 #### Version 0.8.3 (not yet released)
-- New "quarter" intervall for iOS & Android
+- New `color` attribute for Android (Thanks to @Eusebius1920)
+- New `quarter` intervall for iOS & Android
 - Made small icon optional (Android)
 - Fixed #588 crash when basename & extension can't be extracted (Android)
 - Fixed #732 loop between update and trigger (Android)

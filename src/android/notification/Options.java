@@ -27,6 +27,7 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -247,6 +248,23 @@ public class Options {
         aRGB += 0xFF000000;
 
         return aRGB;
+    }
+
+    /**
+     * @return
+     *      The notification background color for the small icon
+     *      Returns null, if no color is given.
+     */
+    public Integer getColor() {
+        String hex = options.optString("color", null);
+
+        if (hex == null) {
+            return NotificationCompat.COLOR_DEFAULT;
+        }
+
+        int aRGB = Integer.parseInt(hex, 16);
+
+        return aRGB + 0xFF000000;
     }
 
     /**
