@@ -441,6 +441,9 @@ exports.registerPermission = function (callback, scope) {
  */
 exports.on = function (event, callback, scope) {
 
+    if (typeof callback !== "function")
+        return;
+
     if (!this._listener[event]) {
         this._listener[event] = [];
     }
