@@ -183,26 +183,26 @@ NSMutableDictionary *allNotificationCategories;
         UIMutableUserNotificationAction* newAction = 
             [[UIMutableUserNotificationAction alloc] init];
         
-        [newAction setActivationMode:[[action objectForKey:@"activationMode"]  
-            isEqual: @"background"] 
-                ? UIUserNotificationActivationModeBackground 
-                : UIUserNotificationActivationModeForeground];
+        [newAction setActivationMode:[
+            [action objectForKey:@"foreground"] boolValue]
+                ? UIUserNotificationActivationModeForeground
+                : UIUserNotificationActivationModeBackground];
         [newAction setTitle:[action objectForKey:@"title"]];
         [newAction setIdentifier:identifier];
         [newAction setDestructive:[
             [action objectForKey:@"destructive"] boolValue]];
         [newAction setAuthenticationRequired:[
-            [action objectForKey:@"authenticationRequired"] boolValue]];
+            [action objectForKey:@"needsAuth"] boolValue]];
         
         if ([newAction respondsToSelector:@selector(setBehavior:)]) {
-            [newAction setBehavior:[[action objectForKey:@"behavior"] 
-                isEqual: @"textInput"]
+            [newAction setBehavior:[
+                [action objectForKey:@"acceptsReply"] boolValue]
                     ? UIUserNotificationActionBehaviorTextInput 
                     : UIUserNotificationActionBehaviorDefault];
             
-            if ([action objectForKey:@"textInputSendTitle"]) {
+            if ([action objectForKey:@"replySendTitle"]) {
                 [newAction setParameters:[NSDictionary dictionaryWithObject:
-                    [action objectForKey:@"textInputSendTitle"]
+                    [action objectForKey:@"replySendTitle"]
                     forKey:UIUserNotificationTextInputActionButtonTitleKey]];
             }
         }
