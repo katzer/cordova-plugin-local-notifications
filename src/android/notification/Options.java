@@ -116,6 +116,9 @@ public class Options {
         if (every.equals("month")) {
             interval = AlarmManager.INTERVAL_DAY * 31;
         } else
+        if (every.equals("quarter")) {
+            interval = AlarmManager.INTERVAL_HOUR * 2190;
+        } else
         if (every.equals("year")) {
             interval = AlarmManager.INTERVAL_DAY * 365;
         } else {
@@ -135,7 +138,7 @@ public class Options {
         if (options.has("iconUri"))
             return;
 
-        Uri iconUri = assets.parse(options.optString("icon", "icon"));
+        Uri iconUri  = assets.parse(options.optString("icon", "icon"));
         Uri soundUri = assets.parseSound(options.optString("sound", null));
 
         try {
@@ -332,17 +335,36 @@ public class Options {
      * Icon bitmap for the local notification.
      */
     public Bitmap getIconBitmap() {
-        String icon = options.optString("icon", "icon");
         Bitmap bmp;
 
-        try{
+        try {
             Uri uri = Uri.parse(options.optString("iconUri"));
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
-            bmp = assets.getIconFromDrawable(icon);
+            e.printStackTrace();
+            bmp = assets.getIconFromDrawable("icon");
         }
 
         return bmp;
+    }
+
+    /**
+     * Icon resource ID for the local notification.
+     */
+    public int getIcon () {
+        String icon = options.optString("icon", "");
+
+        int resId = assets.getResIdForDrawable(icon);
+
+        if (resId == 0) {
+            resId = getSmallIcon();
+        }
+
+        if (resId == 0) {
+            resId = android.R.drawable.ic_popup_reminder;
+        }
+
+        return resId;
     }
 
     /**
@@ -351,13 +373,7 @@ public class Options {
     public int getSmallIcon () {
         String icon = options.optString("smallIcon", "");
 
-        int resId = assets.getResIdForDrawable(icon);
-
-        if (resId == 0) {
-            resId = android.R.drawable.screen_background_dark;
-        }
-
-        return resId;
+        return assets.getResIdForDrawable(icon);
     }
 
     /**

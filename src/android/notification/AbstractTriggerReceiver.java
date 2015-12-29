@@ -70,7 +70,7 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
 
         Builder builder = new Builder(options);
         Notification notification = buildNotification(builder);
-        boolean updated = notification.isUpdate();
+        boolean updated = notification.isUpdate(false);
 
         onTrigger(notification, updated);
     }

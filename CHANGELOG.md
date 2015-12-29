@@ -4,6 +4,12 @@ ChangeLog
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 #### Version 0.8.3 (not yet released)
+- New "quarter" intervall for iOS & Android
+- Made small icon optional (Android)
+- Fixed #588 crash when basename & extension can't be extracted (Android)
+- Fixed #732 loop between update and trigger (Android)
+- Fixed #710 crash due to >500 notifications (Android)
+- Fixed #682 crash while resuming app from notification (Android 6)
 - Fixed crashing `get(ID)` if notification doesn't exist
 
 #### Version 0.8.2 (08.11.2015)
