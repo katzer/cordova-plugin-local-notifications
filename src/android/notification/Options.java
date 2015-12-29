@@ -242,12 +242,15 @@ public class Options {
      *      The notification color for LED
      */
     public int getLedColor() {
-        String hex = options.optString("led", "000000");
-        int aRGB   = Integer.parseInt(hex,16);
+        String hex = options.optString("led", null);
 
-        aRGB += 0xFF000000;
+        if (hex == null) {
+            return NotificationCompat.DEFAULT_LIGHTS;
+        }
 
-        return aRGB;
+        int aRGB = Integer.parseInt(hex, 16);
+
+        return aRGB + 0xFF000000;
     }
 
     /**
@@ -255,7 +258,7 @@ public class Options {
      *      The notification background color for the small icon
      *      Returns null, if no color is given.
      */
-    public Integer getColor() {
+    public int getColor() {
         String hex = options.optString("color", null);
 
         if (hex == null) {
