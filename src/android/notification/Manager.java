@@ -120,7 +120,7 @@ public class Manager {
                 notification.getOptions().getDict(), updates);
 
         try {
-            options.putOpt("updated", true);
+            options.put("updated", true);
         } catch (JSONException ignore) {}
 
         return schedule(options, receiver);

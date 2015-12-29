@@ -129,7 +129,7 @@ public class Options {
      */
     private void parseAssets() {
 
-        if (options.has("iconUri"))
+        if (options.has("iconUri") && !options.optBoolean("updated"))
             return;
 
         Uri iconUri  = assets.parse(options.optString("icon", "icon"));
