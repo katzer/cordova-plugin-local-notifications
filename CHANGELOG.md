@@ -7,7 +7,9 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 - New `color` attribute for Android (Thanks to @Eusebius1920)
 - New `quarter` intervall for iOS & Android
 - Made small icon optional (Android)
-- Windows platform does not use hooks anymore
+- Windows platform works without hooks
+- `update` checks for permission like `schedule`
+- Fixed #634 option to skip permission check
 - Fixed #588 crash when basename & extension can't be extracted (Android)
 - Fixed #732 loop between update and trigger (Android)
 - Fixed #710 crash due to >500 notifications (Android)
