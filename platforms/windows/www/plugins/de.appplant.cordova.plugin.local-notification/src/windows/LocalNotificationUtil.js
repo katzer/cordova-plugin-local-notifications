@@ -412,8 +412,8 @@ channel.onCordovaReady.subscribe(function () {
 });
 
 // Handle onclick event
-WinJS.Application.addEventListener('activated', function (args) {
-    var id = args.detail.arguments,
+document.addEventListener('activated', function (e) {
+    var id = e.args,
         notification = exports.getAll([id])[0];
 
     if (!notification)

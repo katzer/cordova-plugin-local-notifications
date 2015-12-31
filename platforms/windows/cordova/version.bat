@@ -15,9 +15,9 @@
 :: specific language governing permissions and limitations
 :: under the License
 @ECHO OFF
-SET full_path=%~dp0
-IF EXIST "%full_path%..\VERSION" (
-    type "%full_path%..\VERSION"
+SET full_path="%~dp0"
+IF EXIST %full_path%..\VERSION (
+    type %full_path%..\VERSION
 ) ELSE (
     ECHO.
     ECHO ERROR: Could not find file VERSION in project folder

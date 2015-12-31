@@ -7,6 +7,9 @@
         "files": {}
     },
     "installed_plugins": {
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "NotificationExample"
         },
@@ -15,9 +18,6 @@
         }
     },
     "dependent_plugins": {
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "NotificationExample"
-        },
         "cordova-plugin-registerusernotificationsettings": {
             "PACKAGE_NAME": "NotificationExample"
         }

@@ -20,6 +20,5 @@
 #
 -->
 <widget xmlns="http://www.w3.org/ns/widgets">
-    <preference name="windows-target-version" value="8.0" />
-    <preference name="windows-phone-target-version" value="8.1" />
+    
 </widget>

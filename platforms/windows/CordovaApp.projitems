@@ -11,4 +11,6 @@
     <ItemGroup>
         <Content Include="$(MSBuildThisFileDirectory)config.xml" />
     </ItemGroup>
+    <Import Condition="Exists('$(MSBuildThisFileDirectory)CordovaAppDebug.projitems') And '$(Configuration)'=='Debug'" Project="CordovaAppDebug.projitems" />
+    <Import Condition="Exists('$(MSBuildThisFileDirectory)CordovaAppRelease.projitems') And '$(Configuration)'!='Debug'" Project="CordovaAppRelease.projitems" />
 </Project>

@@ -60,7 +60,7 @@
             <!-- update -->
             <h2 class="section">Update</h2>
             <div class="container">
-                <div onclick="update()">Title<br /><span>update(1)</span></div>
+                <div onclick="update()">Text<br /><span>update(1)</span></div>
                 <div onclick="updateInterval()">Interval<br /><span>update(1, every:minute)</span></div>
             </div>
 
@@ -188,7 +188,8 @@
                 cordova.plugins.notification.local.schedule({
                     id: 1,
                     text: 'Test Message 1',
-                    icon: 'http://www.optimizeordie.de/wp-content/plugins/social-media-widget/images/default/64/googleplus.png',
+                    icon: 'http://3.bp.blogspot.com/-Qdsy-GpempY/UU_BN9LTqSI/AAAAAAAAAMA/LkwLW2yNBJ4/s1600/supersu.png',
+                    smallIcon: 'res://cordova',
                     sound: null,
                     data: { test: id }
                 });
@@ -197,13 +198,18 @@
             scheduleMultiple = function () {
                 cordova.plugins.notification.local.schedule([{
                     id: 1,
-                    text: 'Multi Message 1'
+                    text: 'Multi Message 1',
+                    icon: 'res://cordova'
                 }, {
                     id: 2,
-                    text: 'Multi Message 2'
+                    text: 'Multi Message 2',
+                    icon: 'res://icon',
+                    smallIcon: 'ic_media_play'
                 }, {
                     id: 3,
-                    text: 'Multi Message 3'
+                    text: 'Multi Message 3',
+                    icon: 'res://icon',
+                    smallIcon: 'ic_media_pause'
                 }]);
             };
 
@@ -230,7 +236,9 @@
                     id: 1,
                     text: 'Scheduled every minute',
                     every: 'minute',
-                    sound: sound
+                    sound: sound,
+                    icon: 'res://icon',
+                    smallIcon: 'res://ic_popup_sync'
                 });
             };
         </script>
@@ -241,6 +249,8 @@
                 cordova.plugins.notification.local.update({
                     id: 1,
                     text: 'Updated Message 1',
+                    icon: 'res://icon',
+                    color: 'FF0000',
                     json: { updated: true }
                 });
             };

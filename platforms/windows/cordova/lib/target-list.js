@@ -17,20 +17,21 @@
        under the License.
 */
 
-var devices = require('./package'),
+var deploy  = require('./deployment'),
     args = process.argv.slice(2);
 
 // help/usage function
 function help() {
     console.log('');
-    console.log('Usage: node target-list.js  [ --emulators | --devices | --started_emulators | --all ]');
+    console.log('Usage: node target-list.js [--win10] [ --emulators | --devices | --started_emulators | --all ]');
+    console.log('    --win10             : Chooses to list Windows 10 devices (Windows 8.1 is default).');
     console.log('    --emulators         : List the possible target emulators availible.');
-    console.log('    --devices           : List the possible target devices availible. *NOT IMPLEMENTED YET*');
+    console.log('    --devices           : List the possible target devices availible.');
     console.log('    --started_emulators : List any started emulators availible. *NOT IMPLEMENTED YET*');
     console.log('    --all               : List all available devices');
     console.log('examples:');
     console.log('    node target-list.js --emulators');
-    console.log('    node target-list.js --devices');
+    console.log('    node target-list.js --win10 --devices');
     console.log('    node target-list.js --started_emulators');
     console.log('    node target-list.js --all');
     console.log('');
@@ -40,10 +41,42 @@ function help() {
 if (['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(args[0]) > -1) {
     help();
 } else {
-    devices.listDevices()
-    .then(function (deviceList) {
+
+    var version = '8.1';
+    if (args.indexOf('--win10') >= 0) {
+        version = '10.0';
+    }
+
+    var onlyDevices = false;
+    if (args.indexOf('--devices') >= 0) {
+        onlyDevices = true;
+    }
+
+    var onlyEmulators = false;
+    if (args.indexOf('--emulators') >= 0) {
+        onlyEmulators = true;
+    }
+
+    if (onlyDevices && onlyEmulators) {
+        console.warn('Error: Cannot specify both --emulators and --devices');
+        help();
+        return;
+    }
+
+    var deploymentTool = deploy.getDeploymentTool(version);
+    deploymentTool.enumerateDevices().then(function (deviceList) {
+        if (onlyDevices || onlyEmulators) {
+            deviceList = deviceList.filter(function(device) {
+                return (onlyDevices && device.type === 'device') || (onlyEmulators && device.type === 'emulator');
+            });
+        }
+
         deviceList.forEach(function (device) {
-            console.log(device);
+            console.log(device.toString());
         });
+
+        if (deviceList.length === 0) {
+            console.log('No devices found matching the specified criteria.');
+        }
     });
 }

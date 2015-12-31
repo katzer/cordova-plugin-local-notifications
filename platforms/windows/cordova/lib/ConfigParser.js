@@ -90,6 +90,9 @@ ConfigParser.prototype = {
     version: function() {
         return this.doc.getroot().attrib['version'];
     },
+    windows_packageVersion: function() {
+        return this.doc.getroot().attrib['windows-packageVersion'];
+    },
     android_versionCode: function() {
         return this.doc.getroot().attrib['android-versionCode'];
     },
@@ -112,6 +115,17 @@ ConfigParser.prototype = {
             }
         });
         return ret;
+    },
+    getMatchingPreferences: function(regexp) {
+        var preferences = this.doc.findall('preference');
+        var result = [];
+        preferences.forEach(function(preference) {
+            if (regexp.test(preference.attrib.name)) {
+                result.push({ name: preference.attrib.name, value: preference.attrib.value });
+            }
+        });
+
+        return result;
     },
     /**
      * Returns all resources.
@@ -163,7 +177,49 @@ ConfigParser.prototype = {
         }); 
         return ret; 
     },
+    
+    /**
+     * Returns all <allow-navigation> rules.
+     * @return {string[]} Array of allow-navigation rules.
+     */
+    getNavigationWhitelistRules: function() {
+        var rules = this.doc.getroot().findall('allow-navigation');
+        var result = [];
+        rules.forEach(function(rule) {
+            if (rule.attrib.href) {
+                result.push(rule.attrib.href);
+            }
+        });
 
+        return result;
+    },
+
+    getWindowsTargetVersion: function() {
+        var preference = this.getPreference('windows-target-version');
+
+        if (!preference) 
+            preference = '8.1'; // default is 8.1.
+
+        return preference;
+    },
+
+    getWindowsPhoneTargetVersion: function() {
+        // This is a little more complicated than the previous one.
+        // 1. Check for an explicit preference.  If the preference is set explicitly, return that, irrespective of whether it is valid
+        // 2. Get the Windows baseline version.  If it's equivalent to 8.0, bump it to 8.1.
+        // 3. Return the Windows baseline version.
+        var explicitPreference = this.getPreference('windows-phone-target-version');
+        if (explicitPreference)
+            return explicitPreference;
+
+        var windowsTargetVersion = this.getWindowsTargetVersion();
+        if (windowsTargetVersion === '8' || windowsTargetVersion === '8.0')
+            windowsTargetVersion = '8.1';
+
+        return windowsTargetVersion;
+
+    },
+    
     // Returns the widget defaultLocale
     defaultLocale: function() {
         return this.doc.getroot().attrib['defaultlocale'];

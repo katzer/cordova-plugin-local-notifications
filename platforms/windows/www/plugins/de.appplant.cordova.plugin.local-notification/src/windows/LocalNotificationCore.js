@@ -103,9 +103,7 @@ proxy.core = {
         toast.id = options.id;
         toast.tag = 'Toast' + toast.id;
 
-        Notifications.ToastNotificationManager
-            .createToastNotifier()
-            .addToSchedule(toast);
+        this.getToastNotifier().addToSchedule(toast);
     },
 
     /**
@@ -326,9 +324,12 @@ proxy.core = {
             ids = [];
 
         for (var i = 0; i < toasts.length; i++) {
-            var toast = toasts[i];
+            var toast   = toasts[i],
+                toastId = this.getToastId(toast);
 
-            ids.push(this.getToastId(toast));
+            if (ids.indexOf(toastId) == -1) {
+                ids.push(toastId);
+            }
         }
 
         return ids;

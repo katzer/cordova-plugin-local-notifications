@@ -129,6 +129,24 @@ function Install-App {
     }
 }
 
+function Install-AppFromDirectory {
+    param(
+        [Parameter(Mandatory=$true, Position=0, ValueFromPipelineByPropertyName=$true)]
+        [string] $Path <# Full path to actual AppxManifest.xml #>
+    )
+    
+    Add-AppxPackage -Path $Path -Register -ForceApplicationShutdown
+}
+
+function Install-AppFromAppx {
+    param(
+        [Parameter(Mandatory=$true, Position=0, ValueFromPipelineByPropertyName=$true)]
+        [string] $Path <# Full path to actual .appx #>
+    )
+
+    Add-AppxPackage -Path $Path -ForceApplicationShutdown
+}
+
 function Start-Locally {
     param(
         [Parameter(Mandatory=$true, Position=0, ValueFromPipelineByPropertyName=$true)]

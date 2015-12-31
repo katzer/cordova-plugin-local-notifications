@@ -1,2 +1,0 @@
-Scale=240
-Scale=100

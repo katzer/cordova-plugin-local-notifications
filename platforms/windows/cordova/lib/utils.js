@@ -19,11 +19,12 @@
 
 /* jshint sub:true */
 
-var Q     = require('Q'),
+var Q     = require('q'),
     fs    = require('fs'),
     path  = require('path'),
     exec  = require('./exec'),
-    spawn = require('./spawn');
+    spawn = require('./spawn'),
+    deploy = require('./deployment');
 
 // returns full path to msbuild tools required to build the project and tools version
 module.exports.getMSBuildTools = function () {
@@ -57,7 +58,6 @@ module.exports.getAppStoreUtils = function () {
     if (!fs.existsSync (appStoreUtils)) {
         return Q.reject('Can\'t unblock AppStoreUtils script');
     }
-    //console.log("Removing execution restrictions from AppStoreUtils...");
     return spawn('powershell', ['Unblock-File', module.exports.quote(appStoreUtils)]).then(function () {
         return Q.resolve(appStoreUtils);
     }).fail(function (err) {
@@ -66,15 +66,15 @@ module.exports.getAppStoreUtils = function () {
 };
 
 // returns path to AppDeploy util from Windows Phone 8.1 SDK
-module.exports.getAppDeployUtils = function () {
-    var appDeployUtils = path.join((process.env['ProgramFiles(x86)'] || process.env['ProgramFiles']),
-        'Microsoft SDKs', 'Windows Phone', 'v8.1', 'Tools', 'AppDeploy', 'AppDeployCmd.exe');
-    // Check if AppDeployCmd is exists
-    if (!fs.existsSync(appDeployUtils)) {
-        console.warn('WARNING: AppDeploy tool (AppDeployCmd.exe) didn\'t found. Assume that it\'s in %PATH%');
-        return Q.resolve('AppDeployCmd');
+module.exports.getAppDeployUtils = function (targetWin10) {
+    var version = targetWin10 ? '10.0' : '8.1';
+    var tool = deploy.getDeploymentTool(version);
+
+    if (!tool.isAvailable()) {
+        return Q.reject('App deployment utilities: "' + tool.path + '", not found.  Ensure the Windows SDK is installed.');
     }
-    return Q.resolve(appDeployUtils);
+
+    return Q.resolve(tool);
 };
 
 // checks to see if a .jsproj file exists in the project root

@@ -1,1 +1,0 @@
-Y:\Documents\github\cordova-example-local-notifications\platforms\windows\CordovaApp.Phone.jsproj;neutral
