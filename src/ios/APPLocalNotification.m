@@ -571,12 +571,11 @@
 {
     UILocalNotification* notification = [localNotification object];
 
-    if ([notification userInfo] == NULL || [notification wasUpdated] )
+    if ([notification userInfo] == NULL || [notification wasUpdated])
         return;
 
     NSTimeInterval timeInterval = [notification timeIntervalSinceLastTrigger];
-
-    NSString* event = (timeInterval <= 1 && deviceready) ? @"trigger" : @"click";
+    NSString* event = timeInterval < 0.2 && deviceready ? @"trigger" : @"click";
 
     [self fireEvent:event notification:notification];
 

@@ -7,6 +7,7 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 - New `color` attribute for Android (Thanks to @Eusebius1920)
 - New `quarter` intervall for iOS & Android
 - Made small icon optional (Android)
+- Decreased time-frame for trigger event (iOS)
 - Windows platform works without hooks
 - `update` checks for permission like `schedule`
 - Fixed #634 option to skip permission check
