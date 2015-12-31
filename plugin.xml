@@ -203,6 +203,10 @@
     <!-- windows -->
     <platform name="windows">
 
+        <config-file target="config.xml" parent="/*" >
+            <preference name="WindowsToastCapable" value="true" />
+        </config-file>
+
         <js-module src="src/windows/LocalNotificationProxy.js" name="LocalNotification.Proxy" >
             <merges target="" />
         </js-module>
@@ -214,14 +218,6 @@
         <js-module src="src/windows/LocalNotificationUtil.js" name="LocalNotification.Proxy.Util" >
             <merges target="" />
         </js-module>
-
-        <!-- Platform Hooks -->
-        <hook type="after_platform_add" src="scripts/windows/setToastCapable.js" />
-        <hook type="after_plugin_install" src="scripts/windows/setToastCapable.js" />
-
-        <hook type="after_platform_add" src="scripts/windows/broadcastActivateEvent.js" />
-        <hook type="after_plugin_install" src="scripts/windows/broadcastActivateEvent.js" />
-        <hook type="after_prepare" src="scripts/windows/broadcastActivateEvent.js" />
 
     </platform>
 

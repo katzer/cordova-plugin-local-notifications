@@ -103,9 +103,7 @@ proxy.core = {
         toast.id = options.id;
         toast.tag = 'Toast' + toast.id;
 
-        Notifications.ToastNotificationManager
-            .createToastNotifier()
-            .addToSchedule(toast);
+        this.getToastNotifier().addToSchedule(toast);
     },
 
     /**
