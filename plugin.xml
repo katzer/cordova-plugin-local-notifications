@@ -21,12 +21,11 @@
     <engines>
         <engine name="cordova" version=">=3.6.0" />
         <engine name="cordova-plugman" version=">=4.3.0" />
-        <engine name="cordova-ios" version="<4.0.0" />
     </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-registerusernotificationsettings" />
+    <dependency id="cordova-plugin-app-event" />
 
     <!-- info -->
     <info>

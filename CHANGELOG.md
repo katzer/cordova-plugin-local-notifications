@@ -4,6 +4,7 @@ ChangeLog
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 #### Version 0.8.3 (not yet released)
+- Support cordova-ios@4 and the new WKWebView Engine
 - New `color` attribute for Android (Thanks to @Eusebius1920)
 - New `quarter` intervall for iOS & Android
 - Made small icon optional (Android)

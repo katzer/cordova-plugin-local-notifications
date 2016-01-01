@@ -25,7 +25,6 @@
 #import "APPLocalNotificationOptions.h"
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
-#import "AppDelegate+APPRegisterUserNotificationSettings.h"
 
 @interface APPLocalNotification ()
 
@@ -615,8 +614,7 @@
  */
 - (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
 {
-    if (_command)
-    {
+    if (_command) {
         [self hasPermission:_command];
         _command = NULL;
     }
@@ -630,25 +628,7 @@
  */
 - (void) pluginInitialize
 {
-    NSNotificationCenter* center = [NSNotificationCenter
-                                    defaultCenter];
-
     eventQueue = [[NSMutableArray alloc] init];
-
-    [center addObserver:self
-               selector:@selector(didReceiveLocalNotification:)
-                   name:CDVLocalNotification
-                 object:nil];
-
-    [center addObserver:self
-               selector:@selector(didFinishLaunchingWithOptions:)
-                   name:UIApplicationDidFinishLaunchingNotification
-                 object:nil];
-
-    [center addObserver:self
-               selector:@selector(didRegisterUserNotificationSettings:)
-                   name:UIApplicationRegisterUserNotificationSettings
-                 object:nil];
 }
 
 /**
