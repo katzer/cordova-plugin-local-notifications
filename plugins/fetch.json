@@ -7,38 +7,12 @@
         "is_top_level": false,
         "variables": {}
     },
-    "de.appplant.cordova.plugin.email-composer": {
-        "source": {
-            "type": "local",
-            "path": "../cordova-plugin-email-composer"
-        }
-    },
     "de.appplant.cordova.common.RegisterUserNotificationSettings": {
         "source": {
             "type": "git",
             "url": "https://github.com/katzer/cordova-common-RegisterUserNotificationSettings",
             "subdir": "."
         }
-    },
-    "de.appplant.cordova.plugin.badge": {
-        "source": {
-            "type": "registry",
-            "id": "de.appplant.cordova.plugin.badge"
-        }
-    },
-    "de.appplant.cordova.plugin.hidden-statusbar-overlay": {
-        "source": {
-            "type": "registry",
-            "id": "de.appplant.cordova.plugin.hidden-statusbar-overlay"
-        }
-    },
-    "cordova-plugin-android-support-v4": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-android-support-v4"
-        },
-        "is_top_level": false,
-        "variables": {}
     },
     "cordova-plugin-x-toast": {
         "source": {
@@ -64,12 +38,12 @@
         "is_top_level": false,
         "variables": {}
     },
-    "de.appplant.cordova.common.registerusernotificationsettings": {
+    "cordova-plugin-app-event": {
         "source": {
-            "type": "registry",
-            "id": "de.appplant.cordova.common.registerusernotificationsettings"
+            "type": "local",
+            "path": "/Users/sebastian/Documents/github/cordova-plugin-app-event"
         },
-        "is_top_level": false,
+        "is_top_level": true,
         "variables": {}
     },
     "de.appplant.cordova.plugin.local-notification": {

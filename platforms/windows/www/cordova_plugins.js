@@ -86,7 +86,7 @@ module.exports.metadata =
 {
     "cordova-plugin-device": "1.1.0",
     "cordova-plugin-x-toast": "2.3.1",
-    "cordova-plugin-registerusernotificationsettings": "1.0.2",
+    "cordova-plugin-app-event": "1.1.0",
     "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
 }
 // BOTTOM OF METADATA

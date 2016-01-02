@@ -43,7 +43,6 @@ module.exports = function(cmd, args, opt_cwd) {
             }
         });
     } catch(e) {
-        console.error('error caught: ' + e);
         d.reject(e);
     }
     return d.promise;

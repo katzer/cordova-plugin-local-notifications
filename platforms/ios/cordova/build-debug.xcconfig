@@ -22,4 +22,7 @@
 //
 
 #include "build.xcconfig"
+
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1
+
 #include "build-extras.xcconfig"

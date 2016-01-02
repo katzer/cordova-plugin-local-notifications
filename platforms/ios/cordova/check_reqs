@@ -23,7 +23,7 @@ var check_reqs = require('./lib/check_reqs');
 
 // check for help flag
 if (['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(process.argv[2]) > -1) {
-    check_reqs.help();
+    console.log('Usage: check_reqs or node check_reqs');
 } else {
   check_reqs.run().done(null, function (err) {
       console.error('Failed to check requirements due to ' + err);

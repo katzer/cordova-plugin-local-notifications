@@ -22,6 +22,7 @@
 /*jshint node: true*/
 
 var Q = require('q'),
+    iossim = require('ios-sim'),
     exec = require('child_process').exec,
     check_reqs = require('./check_reqs');
 
@@ -30,14 +31,9 @@ var Q = require('q'),
  * @return {Promise} Promise fulfilled with list of devices available for simulation
  */
 function listEmulatorImages () {
-    return check_reqs.check_ios_sim().then(function () {
-        return Q.nfcall(exec, 'ios-sim showdevicetypes 2>&1 | ' +
-            'sed "s/com.apple.CoreSimulator.SimDeviceType.//g"');
-    }).then(function (stdio) {
-        // Exec promise resolves with array [stout, stderr], and we need stdout only
-        return stdio[0].trim().split('\n');
-    });
+    return Q.resolve(iossim.getdevicetypes());
 }
+
 
 exports.run = listEmulatorImages;
 

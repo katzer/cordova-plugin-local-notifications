@@ -25,6 +25,11 @@
     Note: it does not work if the --shared option was used to create the project.
 */
 
-var VERSION="3.9.2"
+// Coho updates this line
+var VERSION="4.0.1"
 
-console.log(VERSION);
+module.exports.version = VERSION;
+
+if (!module.parent) {
+    console.log(VERSION);
+}

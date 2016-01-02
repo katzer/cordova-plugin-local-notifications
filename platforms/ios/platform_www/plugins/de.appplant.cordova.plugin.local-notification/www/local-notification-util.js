@@ -1,4 +1,5 @@
-cordova.define("de.appplant.cordova.plugin.local-notification.LocalNotification.Util", function(require, exports, module) { /*
+cordova.define("de.appplant.cordova.plugin.local-notification.LocalNotification.Util", function(require, exports, module) {
+/*
  * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
@@ -43,6 +44,9 @@ exports._defaults = {
 
 // listener
 exports._listener = {};
+
+// Registered permission flag
+exports._registered = false;
 
 
 /********

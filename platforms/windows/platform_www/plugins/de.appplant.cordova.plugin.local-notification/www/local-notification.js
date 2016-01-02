@@ -47,29 +47,35 @@ exports.setDefaults = function (defaults) {
 /**
  * Schedule a new local notification.
  *
- * @param {Object} opts
+ * @param {Object} notifications
  *      The notification properties
  * @param {Function} callback
  *      A function to be called after the notification has been canceled
  * @param {Object?} scope
  *      The scope for the callback function
+ * @param {Object?} args
+ *      skipPermission:true schedules the notifications immediatly without
+ *                          registering or checking for permission
  */
-exports.schedule = function (opts, callback, scope) {
-    this.core.schedule(opts, callback, scope);
+exports.schedule = function (notifications, callback, scope, args) {
+    this.core.schedule(notifications, callback, scope, args);
 };
 
 /**
  * Update existing notifications specified by IDs in options.
  *
- * @param {Object} options
+ * @param {Object} notifications
  *      The notification properties to update
  * @param {Function} callback
  *      A function to be called after the notification has been updated
  * @param {Object?} scope
  *      The scope for the callback function
+ * @param {Object?} args
+ *      skipPermission:true schedules the notifications immediatly without
+ *                          registering or checking for permission
  */
-exports.update = function (opts, callback, scope) {
-    this.core.update(opts, callback, scope);
+exports.update = function (notifications, callback, scope, args) {
+    this.core.update(notifications, callback, scope, args);
 };
 
 /**

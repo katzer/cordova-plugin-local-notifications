@@ -21,16 +21,11 @@ var Q     = require('q'),
     shell = require('shelljs'),
     versions = require('./versions');
 
-var XCODEBUILD_MIN_VERSION = '4.6.0';
+var XCODEBUILD_MIN_VERSION = '6.0.0';
 var XCODEBUILD_NOT_FOUND_MESSAGE =
     'Please install version ' + XCODEBUILD_MIN_VERSION + ' or greater from App Store';
 
-var IOS_SIM_MIN_VERSION = '3.0.0';
-var IOS_SIM_NOT_FOUND_MESSAGE =
-    'Please download, build and install version ' + IOS_SIM_MIN_VERSION + ' or greater' +
-    ' from https://github.com/phonegap/ios-sim into your path, or do \'npm install -g ios-sim\'';
-
-var IOS_DEPLOY_MIN_VERSION = '1.4.0';
+var IOS_DEPLOY_MIN_VERSION = '1.8.0';
 var IOS_DEPLOY_NOT_FOUND_MESSAGE =
     'Please download, build and install version ' + IOS_DEPLOY_MIN_VERSION + ' or greater' +
     ' from https://github.com/phonegap/ios-deploy into your path, or do \'npm install -g ios-deploy\'';
@@ -51,14 +46,6 @@ module.exports.check_ios_deploy = function () {
     return checkTool('ios-deploy', IOS_DEPLOY_MIN_VERSION, IOS_DEPLOY_NOT_FOUND_MESSAGE);
 };
 
-/**
- * Checks if ios-sim util is available
- * @return {Promise} Returns a promise either resolved with ios-sim version or rejected
- */
-module.exports.check_ios_sim = function () {
-    return checkTool('ios-sim', IOS_SIM_MIN_VERSION, IOS_SIM_NOT_FOUND_MESSAGE);
-};
-
 module.exports.check_os = function () {
     // Build iOS apps available for OSX platform only, so we reject on others platforms
     return process.platform === 'darwin' ?
@@ -66,13 +53,9 @@ module.exports.check_os = function () {
         Q.reject('Cordova tooling for iOS requires Apple OS X');
 };
 
-module.exports.help = function () {
-    console.log('Usage: check_reqs or node check_reqs');
-};
-
 /**
  * Checks if specific tool is available.
- * @param  {String} tool       Tool name to check. Known tools are 'xcodebuild', 'ios-sim' and 'ios-deploy'
+ * @param  {String} tool       Tool name to check. Known tools are 'xcodebuild' and 'ios-deploy'
  * @param  {Number} minVersion Min allowed tool version.
  * @param  {String} message    Message that will be used to reject promise.
  * @return {Promise}           Returns a promise either resolved with tool version or rejected
@@ -119,8 +102,7 @@ module.exports.check_all = function() {
     var requirements = [
         new Requirement('os', 'Apple OS X', true),
         new Requirement('xcode', 'Xcode'),
-        new Requirement('ios-deploy', 'ios-deploy'),
-        new Requirement('ios-sim', 'ios-sim')
+        new Requirement('ios-deploy', 'ios-deploy')
     ];
 
     var result = [];
@@ -129,8 +111,7 @@ module.exports.check_all = function() {
     var checkFns = [
         module.exports.check_os,
         module.exports.check_xcodebuild,
-        module.exports.check_ios_deploy,
-        module.exports.check_ios_sim
+        module.exports.check_ios_deploy
     ];
 
     // Then execute requirement checks one-by-one

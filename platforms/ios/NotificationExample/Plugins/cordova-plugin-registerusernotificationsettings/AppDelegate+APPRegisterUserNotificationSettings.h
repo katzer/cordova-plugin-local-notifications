@@ -1,1 +1,0 @@
-../../../../../plugins/cordova-plugin-registerusernotificationsettings/src/ios/AppDelegate+APPRegisterUserNotificationSettings.h

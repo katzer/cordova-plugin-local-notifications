@@ -19,18 +19,40 @@
        under the License.
 */
 
-var build = require('./lib/build'),
-    args  = process.argv;
+var args  = process.argv;
+var Api = require('./Api');
+var nopt = require('nopt');
+var path = require('path');
 
-// Handle help flag
-if (['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(args[2]) > -1) {
-    build.help();
-} else {
-    build.run(args).done(function() {
+// Support basic help commands
+if(['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(process.argv[2]) >= 0) {
+    require('./lib/build').help();
+    process.exit(0);
+}
+
+// Parse arguments
+var buildOpts = nopt({
+    'verbose' : Boolean,
+    'silent' : Boolean,
+    'archs': String,
+    'debug': Boolean,
+    'release': Boolean,
+    'device': Boolean,
+    'emulator': Boolean,
+    'codeSignIdentity': String,
+    'codeSignResourceRules': String,
+    'provisioningProfile': String,
+    'buildConfig' : String,
+    'noSign' : Boolean
+}, {'-r': '--release'}, args);
+
+// Make buildOptions compatible with PlatformApi build method spec
+buildOpts.argv = buildOpts.argv.remain;
+
+new Api().build(buildOpts).done(function() {
         console.log('** BUILD SUCCEEDED **');
     }, function(err) {
         var errorMessage = (err && err.stack) ? err.stack : err;
         console.error(errorMessage);
         process.exit(2);
     });
-}

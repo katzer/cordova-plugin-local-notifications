@@ -13,13 +13,12 @@
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        },
         "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         }
     },
-    "dependent_plugins": {
-        "cordova-plugin-registerusernotificationsettings": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
-        }
-    }
+    "dependent_plugins": {}
 }

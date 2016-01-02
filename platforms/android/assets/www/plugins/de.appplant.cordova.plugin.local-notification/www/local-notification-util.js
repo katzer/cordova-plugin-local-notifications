@@ -45,6 +45,9 @@ exports._defaults = {
 // listener
 exports._listener = {};
 
+// Registered permission flag
+exports._registered = false;
+
 
 /********
  * UTIL *

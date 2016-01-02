@@ -32,7 +32,7 @@
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
-        "cordova-plugin-registerusernotificationsettings": {
+        "cordova-plugin-app-event": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "de.appplant.cordova.plugin.local-notification": {
@@ -89,11 +89,5 @@
                 "plugin.notification.local.core"
             ]
         }
-    ],
-    "plugin_metadata": {
-        "cordova-plugin-device": "1.1.0",
-        "cordova-plugin-x-toast": "2.3.1",
-        "cordova-plugin-registerusernotificationsettings": "1.0.2",
-        "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
-    }
+    ]
 }

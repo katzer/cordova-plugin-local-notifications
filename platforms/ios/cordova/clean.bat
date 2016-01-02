@@ -14,12 +14,6 @@
 :: KIND, either express or implied.  See the License for the
 :: specific language governing permissions and limitations
 :: under the License
+
 @ECHO OFF
-SET script_path="%~dp0clean"
-IF EXIST %script_path% (
-        node %script_path% %*
-) ELSE (
-    ECHO.
-    ECHO ERROR: Could not find 'clean' script in 'cordova' folder, aborting...>&2
-    EXIT /B 1
-)
+ECHO WARN: The 'clean' command is not available for cordova-ios on windows machines.>&2
