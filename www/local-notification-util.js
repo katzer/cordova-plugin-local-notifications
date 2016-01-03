@@ -172,7 +172,7 @@ exports.convertProperties = function (options) {
         options.data = JSON.stringify(options.data);
     }
 
-    if (options.every)
+    if (options.every) {
         if (device.platform == 'iOS' && typeof options.every != 'string') {
             options.every = this.getDefaults().every;
             var warning = 'Every option is not a string: ' + options.id;
