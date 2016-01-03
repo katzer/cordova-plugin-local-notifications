@@ -156,7 +156,7 @@ public class Notification {
      * Notification type can be one of pending or scheduled.
      */
     public Type getType () {
-        return isTriggered() ? Type.TRIGGERED : Type.SCHEDULED;
+        return isScheduled() ? Type.SCHEDULED : Type.TRIGGERED;
     }
 
     /**
