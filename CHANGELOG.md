@@ -19,6 +19,7 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
 - Fixed #612 cannot update icon or sound (Android)
 - Fixed crashing `get(ID)` if notification doesn't exist
 - Fixed #569 `getScheduled` returns two items per notification
+- Fixed #700 notifications appears on bootup
 
 #### Version 0.8.2 (08.11.2015)
 - Submitted to npm
