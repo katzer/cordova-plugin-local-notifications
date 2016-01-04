@@ -3,6 +3,10 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.8.4 (04.01.2016)
+- Bug fixes
+ - SyntaxError: missing ) after argument list
+
 #### Version 0.8.3 (03.01.2016)
 - Platform enhancements
  - Support for the `Crosswalk Engine`
