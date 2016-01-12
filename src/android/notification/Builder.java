@@ -117,7 +117,9 @@ public class Builder {
     public Notification build() {
         Uri sound     = options.getSoundUri();
         int smallIcon = options.getSmallIcon();
+        Uri banner    = options.getBannerUri();
         NotificationCompat.Builder builder;
+        NotificationCompat.BigTextStyle style;
 
         builder = new NotificationCompat.Builder(context)
                 .setDefaults(0)
@@ -139,6 +141,13 @@ public class Builder {
         } else {
             builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getIconBitmap());
+        }
+
+        if(banner != null) {
+            builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(options.getBannerBitmap()));
+        } else {
+            style = new NotificationCompat.BigTextStyle().bigText(options.getText());
+            builder.setStyle(style);    
         }
 
         applyDeleteReceiver(builder);
