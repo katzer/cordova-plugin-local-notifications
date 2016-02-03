@@ -130,7 +130,7 @@ public class Builder {
                 .setColor(options.getColor())
                 .setLights(options.getLedColor(), 100, 100);
 
-        if (sound != null) {
+        if (!sound.equals(Uri.EMPTY)) {
             builder.setSound(sound);
         }
 
