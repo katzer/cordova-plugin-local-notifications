@@ -132,7 +132,7 @@ public class Options {
         if (options.has("iconUri") && !options.optBoolean("updated"))
             return;
 
-        Uri iconUri  = assets.parse(options.optString("icon", "icon"));
+        Uri iconUri  = assets.parse(options.optString("icon", "res://icon"));
         Uri soundUri = assets.parseSound(options.optString("sound", null));
 
         try {
