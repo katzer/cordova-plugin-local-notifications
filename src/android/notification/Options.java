@@ -261,7 +261,7 @@ public class Options {
             return 100;
         }
 
-        return = Integer.parseInt(timeon, 10);
+        return Integer.parseInt(timeon, 10);
     }
 
     /**
@@ -275,7 +275,7 @@ public class Options {
             return 100;
         }
 
-        return = Integer.parseInt(timeoff, 10);
+        return Integer.parseInt(timeoff, 10);
     }
 
     /**
