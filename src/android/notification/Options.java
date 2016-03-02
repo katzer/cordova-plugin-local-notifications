@@ -252,6 +252,34 @@ public class Options {
 
     /**
      * @return
+     *      The time in msecs that the LED should be illuminated
+     */
+    public int getMsecsLedOn() {
+        String timeon = options.optString("msecsledon", null);
+
+        if (timeon == null) {
+            return 100;
+        }
+
+        return = Integer.parseInt(timeon, 10);
+    }
+
+    /**
+     * @return
+     *      The time in msecs that the LED should be extinguished
+     */
+    public int getMsecsLedOff() {
+        String timeoff = options.optString("msecsledoff", null);
+
+        if (timeoff == null) {
+            return 100;
+        }
+
+        return = Integer.parseInt(timeoff, 10);
+    }
+
+    /**
+     * @return
      *      The notification background color for the small icon
      *      Returns null, if no color is given.
      */

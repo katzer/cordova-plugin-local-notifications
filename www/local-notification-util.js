@@ -68,6 +68,8 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.ongoing   = false;
         defaults.autoClear = true;
         defaults.led       = 'FF0000';
+        defaults.msecsledoff    = '100';
+        defaults.msecsledon     = '100';
         defaults.color     = undefined;
         break;
     }
