@@ -242,13 +242,12 @@ public class Options {
         String hex = options.optString("led", null);
 
         if (hex == null) {
-            return Integer.parseInt("FFFFFFFF", 16);
-            //return NotificationCompat.DEFAULT_LIGHTS;
+            return NotificationCompat.DEFAULT_LIGHTS;
         }
 
         int aRGB = Integer.parseInt(hex, 16);
 
-        return aRGB - 16777216; // add 100% alpha
+        return aRGB + 0xFF000000;
     }
 
     /**

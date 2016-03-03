@@ -128,7 +128,7 @@ public class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setColor(options.getColor());
-                //.setLights(options.getLedColor(), options.getMsecsLedOn(), options.getMsecsLedOff());
+                .setLights(options.getLedColor(), options.getMsecsLedOn(), options.getMsecsLedOff());
                 //.setLights(-16711936, 1000, 1000);
                 //.setLights(options.getLedColor(), 1000, 1000);
 
@@ -146,20 +146,20 @@ public class Builder {
         //builder.ledARGB = options.getLedColor();
         //builder.ledOnMS = options.getMsecsLedOn();
         //builder.ledOffMS = options.getMsecsLedOff();
-        int color = options.getLedColor();
-        if (color != -16711681) {
-            color = -256;
-        }
+        //int color = options.getLedColor();
+        //if (color != -16711681) {
+        //    color = -256;
+        //}
         //int color = -16711681;  // cyan
-        int on = options.getMsecsLedOn();
-        if (on != 2000) {
+        //int on = options.getMsecsLedOn();
+        //if (on != 2000) {
             on = 100;
+        //}
+        //int off = options.getMsecsLedOff();
+        //if (off != 2000) {
+        //    off = 100;
         }
-        int off = options.getMsecsLedOff();
-        if (off != 2000) {
-            off = 100;
-        }
-        builder.setLights(color, on, off);
+        //builder.setLights(color, on, off);
         //builder.setLights(-16711936, options.getMsecsLedOn(), options.getMsecsLedOff());
         //builder.setLights(-16711936, 500, 500);   // green
 
