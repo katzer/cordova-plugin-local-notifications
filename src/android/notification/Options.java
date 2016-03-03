@@ -247,7 +247,7 @@ public class Options {
 
         int aRGB = Integer.parseInt(hex, 16);
 
-        return aRGB + 0xFF000000;
+        return aRGB - 16777216; // add 100% alpha
     }
 
     /**
@@ -258,10 +258,10 @@ public class Options {
         String timeon = options.optString("msecsledon", null);
 
         if (timeon == null) {
-            return 100;
+            return 1000;
         }
 
-        return Integer.parseInt(timeon, 10);
+        return Integer.parseInt(timeon);
     }
 
     /**
@@ -272,10 +272,10 @@ public class Options {
         String timeoff = options.optString("msecsledoff", null);
 
         if (timeoff == null) {
-            return 100;
+            return 1000;
         }
 
-        return Integer.parseInt(timeoff, 10);
+        return Integer.parseInt(timeoff);
     }
 
     /**
