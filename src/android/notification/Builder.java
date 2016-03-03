@@ -127,10 +127,8 @@ public class Builder {
                 .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setColor(options.getColor())
                 .setLights(options.getLedColor(), options.getMsecsLedOn(), options.getMsecsLedOff());
-                //.setLights(-16711936, 1000, 1000);
-                //.setLights(options.getLedColor(), 1000, 1000);
 
         if (sound != null) {
             builder.setSound(sound);
@@ -142,26 +140,6 @@ public class Builder {
             builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getIconBitmap());
         }
-
-        //builder.ledARGB = options.getLedColor();
-        //builder.ledOnMS = options.getMsecsLedOn();
-        //builder.ledOffMS = options.getMsecsLedOff();
-        //int color = options.getLedColor();
-        //if (color != -16711681) {
-        //    color = -256;
-        //}
-        //int color = -16711681;  // cyan
-        //int on = options.getMsecsLedOn();
-        //if (on != 2000) {
-            on = 100;
-        //}
-        //int off = options.getMsecsLedOff();
-        //if (off != 2000) {
-        //    off = 100;
-        }
-        //builder.setLights(color, on, off);
-        //builder.setLights(-16711936, options.getMsecsLedOn(), options.getMsecsLedOff());
-        //builder.setLights(-16711936, 500, 500);   // green
 
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
