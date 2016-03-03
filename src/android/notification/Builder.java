@@ -146,8 +146,22 @@ public class Builder {
         //builder.ledARGB = options.getLedColor();
         //builder.ledOnMS = options.getMsecsLedOn();
         //builder.ledOffMS = options.getMsecsLedOff();
-        //builder.setLights(options.getLedColor(), options.getMsecsLedOn(), options.getMsecsLedOff());
-        builder.setLights(-16711936, 500, 500);   // green
+        int color = options.getLedColor();
+        if (color != -16711681) {
+            color = -256;
+        }
+        //int color = -16711681;  // cyan
+        int on = options.getMsecsLedOn();
+        if (on != 2000) {
+            on = 100;
+        }
+        int off = options.getMsecsLedOff();
+        if (off != 2000) {
+            off = 100;
+        }
+        builder.setLights(color, on, off);
+        //builder.setLights(-16711936, options.getMsecsLedOn(), options.getMsecsLedOff());
+        //builder.setLights(-16711936, 500, 500);   // green
 
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
