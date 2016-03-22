@@ -164,6 +164,9 @@ exports.convertProperties = function (options) {
         if (typeof options.at == 'object') {
             options.at = options.at.getTime();
         }
+        else{
+            options.at = new Date(options.at).getTime();
+        }
 
         options.at = Math.round(options.at/1000);
     }
