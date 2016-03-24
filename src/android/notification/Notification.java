@@ -67,6 +67,16 @@ public class Notification {
     // Receiver to handle the trigger event
     private Class<?> receiver = defaultReceiver;
 
+    public String getApplicationState() {
+        return applicationState;
+    }
+
+    public void setApplicationState(String applicationState) {
+        this.applicationState = applicationState;
+    }
+
+    private String applicationState;
+
     /**
      * Constructor
      *
@@ -220,8 +230,11 @@ public class Notification {
      * Present the local notification to user.
      */
     public void show () {
-        // TODO Show dialog when in foreground
-        showNotification();
+        // Show notification if the application is in background
+        if(applicationState != null && applicationState.equalsIgnoreCase("background"))
+            showNotification();
+
+        // Otherwise, fire the trigger event
     }
 
     /**
