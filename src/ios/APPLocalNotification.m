@@ -573,8 +573,7 @@
     if ([notification userInfo] == NULL || [notification wasUpdated])
         return;
 
-    NSTimeInterval timeInterval = [notification timeIntervalSinceLastTrigger];
-    NSString* event = timeInterval < 0.2 && deviceready ? @"trigger" : @"click";
+    NSString* event = [self.applicationState isEqualToString:@"foreground"] ? @"trigger" : @"click";
 
     [self fireEvent:event notification:notification];
 
