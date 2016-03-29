@@ -165,7 +165,13 @@ exports.convertProperties = function (options) {
             options.at = options.at.getTime();
         }
         else{
-            options.at = new Date(options.at).getTime();
+            if(isNaN(options.at)){
+               try{
+                  options.at = new Date(options.at).getTime();
+               }
+               catch(err){                  
+               }
+            }
         }
 
         options.at = Math.round(options.at/1000);
