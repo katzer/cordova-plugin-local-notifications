@@ -136,8 +136,8 @@ public class Builder {
 
         if (smallIcon == 0) {
             builder.setSmallIcon(context.getApplicationInfo().icon);
-            Drawable largeIcon = getResources().getDrawable(context.getApplicationInfo().icon);
-            builder.setLargeIcon(((BitmapDrawable)largeIcon).getBitmap());
+           // Drawable largeIcon = getResources().getDrawable(context.getApplicationInfo().icon);
+           // builder.setLargeIcon(((BitmapDrawable)largeIcon).getBitmap());
         } else {
             builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getIconBitmap());
