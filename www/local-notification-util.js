@@ -172,6 +172,11 @@ exports.convertProperties = function (options) {
                catch(err){                  
                }
             }
+            else{
+               if(options.at.length = 10){
+                  options.at = options.at * 1000;
+               }
+            }
         }
 
         options.at = Math.round(options.at/1000);
