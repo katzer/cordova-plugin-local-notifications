@@ -173,7 +173,7 @@ exports.convertProperties = function (options) {
                }
             }
             else{
-               if(options.at.length = 10){
+               if(options.at.length == 10){
                   options.at = options.at * 1000;
                }
             }
