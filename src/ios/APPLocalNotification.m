@@ -569,22 +569,26 @@
 - (void) didReceiveLocalNotification:(NSNotification*)localNotification
 {
     UILocalNotification* notification = [localNotification object];
-
+    
     if ([notification userInfo] == NULL || [notification wasUpdated])
         return;
-
-    NSString* event = [self.applicationState isEqualToString:@"foreground"] ? @"trigger" : @"click";
-
+    
+    BOOL isInBackground = [self.applicationState isEqualToString:@"background"];
+    
+    NSString* event = isInBackground ? @"click" : @"trigger";
+    
     [self fireEvent:event notification:notification];
-
-    if (![event isEqualToString:@"click"])
-        return;
-
-    if ([notification isRepeating]) {
-        [self fireEvent:@"clear" notification:notification];
-    } else {
+    
+    if(isInBackground){
+        if ([notification isRepeating]) {
+            [self fireEvent:@"clear" notification:notification];
+        } else {
+            [self.app cancelLocalNotification:notification];
+            [self fireEvent:@"cancel" notification:notification];
+        }
+    }
+    else{
         [self.app cancelLocalNotification:notification];
-        [self fireEvent:@"cancel" notification:notification];
     }
 }
 
