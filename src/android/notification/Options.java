@@ -242,7 +242,7 @@ public class Options {
         String hex = options.optString("led", null);
 
         if (hex == null) {
-            return NotificationCompat.DEFAULT_LIGHTS;
+            return 0;
         }
 
         int aRGB = Integer.parseInt(hex, 16);
