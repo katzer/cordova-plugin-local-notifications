@@ -265,6 +265,9 @@ public class Options {
      */
     public int getColor() {
         String hex = options.optString("color", null);
+        if (hex.charAt(0) == "#") {
+            hex = hex.substring(1);
+        }
 
         if (hex == null) {
             return NotificationCompat.COLOR_DEFAULT;
