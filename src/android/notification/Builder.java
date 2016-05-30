@@ -130,6 +130,12 @@ public class Builder {
                 .setOngoing(options.isOngoing())
                 .setColor(options.getColor());
 
+        
+        //Set heads-up
+        if(options.getHeadsUp()) {
+            builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        }
+        
         if (ledColor != 0) {
             builder.setLights(ledColor, 100, 100);
         }

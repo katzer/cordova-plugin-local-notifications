@@ -200,6 +200,13 @@ public class Options {
     }
 
     /**
+     *  Boolean to trigger heads-up notification, or normal
+     */
+    public Boolean getHeadsUp() {
+        return options.optBoolean("headsup");
+    }
+    
+    /**
      * ID for the local notification as a string.
      */
     public String getIdStr() {
