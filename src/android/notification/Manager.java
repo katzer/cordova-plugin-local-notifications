@@ -99,7 +99,7 @@ public class Manager {
     }
 
     /**
-     * Clear local notification specified by ID.
+     * Update local notification specified by ID.
      *
      * @param id
      *      The notification ID
@@ -113,9 +113,7 @@ public class Manager {
 
         if (notification == null)
             return null;
-
-        notification.cancel();
-
+        
         JSONObject options = mergeJSONObjects(
                 notification.getOptions().getDict(), updates);
 
