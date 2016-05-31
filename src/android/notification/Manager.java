@@ -93,6 +93,8 @@ public class Manager {
                 .setTriggerReceiver(receiver)
                 .build();
 
+		notification.clear();
+		
         notification.schedule();
 
         return notification;
@@ -120,8 +122,17 @@ public class Manager {
         try {
             options.put("updated", true);
         } catch (JSONException ignore) {}
-
-        return schedule(options, receiver);
+		
+		Options notificationOptions = new Options(context);
+		notificationOptions.parse(options);
+		
+		Notification displayNotification = new Builder(notificationOptions)
+                .setTriggerReceiver(receiver)
+                .build();
+		
+        displayNotification.schedule();
+		
+        return displayNotification;
     }
 
     /**
