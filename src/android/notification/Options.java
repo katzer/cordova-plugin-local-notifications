@@ -249,6 +249,19 @@ public class Options {
 
         return aRGB + 0xFF000000;
     }
+    
+    /**
+     * Priority for the local notification.
+     */
+    public int getPriority() {
+        int priority = options.optInt("priority", null);
+        
+        if (priority == null){
+            return NotificationCompat.PRIORITY_DEFAULT;
+        }
+
+        return priority;
+    }
 
     /**
      * @return
