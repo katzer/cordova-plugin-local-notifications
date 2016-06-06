@@ -254,12 +254,8 @@ public class Options {
      * Priority for the local notification.
      */
     public int getPriority() {
-        int priority = options.optInt("priority", null);
+        int priority = options.optInt("priority", 0);
         
-        if (priority == null){
-            return NotificationCompat.PRIORITY_DEFAULT;
-        }
-
         return priority;
     }
 
