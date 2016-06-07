@@ -31,6 +31,7 @@ import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.Date;
 
@@ -200,6 +201,13 @@ public class Options {
     }
 
     /**
+     *  Notification buttons / actions.
+     */
+    public JSONArray getActions() {
+        return options.optJSONArray("actions");
+    }
+    
+    /**
      * ID for the local notification as a string.
      */
     public String getIdStr() {
@@ -325,6 +333,13 @@ public class Options {
         String icon = options.optString("smallIcon", "");
 
         return assets.getResIdForDrawable(icon);
+    }
+    
+    /**
+     *  Get drawable using a string value.
+     */
+    public int getIconFromString(String iconStr) {
+        return assets.getResIdForDrawable(iconStr);
     }
 
     /**
