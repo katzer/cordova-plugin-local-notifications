@@ -5,12 +5,6 @@
 Cordova Local-Notification Plugin
 =================================
 
-This was forked from Katzer's cordova-plugin-local-notifications and altered to implement the following features on Android:
-- Heads-Up Notifications
-- Action buttons
-- Updating notifications without re-firing the notification
-- Styles (bigtextview and inbox)
-
 The essential purpose of local notifications is to enable an application to inform its users that it has something for them — for example, a message or an upcoming appointment — when the application isn’t running in the foreground.<br>
 They are scheduled by an application and delivered on the same device.
 
@@ -71,6 +65,7 @@ We are proud to announce our newest release version 0.8.x. Beside the hard work 
 
 Find out more informations [here][wiki_changelog] in our wiki.
 
+
 ## Sample
 The sample demonstrates how to schedule a local notification which repeats every week. The listener will be called when the user has clicked on the local notification.
 
@@ -92,50 +87,6 @@ cordova.plugins.notification.local.on("click", function (notification) {
 ```
 
 Find out more informations [here][wiki_samples] in our wiki.
-
-## DavidBriglio updates
-```javascript
-
-//Inbox style
-cordova.plugins.notification.local.schedule({
-    id: 1,
-    style: "inbox",
-    title: "My Messages", //The title of the notification before it is expanded
-    text: "Expand for messages", //The text before expand
-    inbox: {
-        lines: ["Line1", "Line2", "Line3"], //You can add as many lines as the notification allows
-        summary: "2 More", //Optional summary line that shows at the bottom of the notification
-        title: "3 Messages" //Optional title to replace the notification on expand
-    }
-});
-
-//BigTextView with heads-up + action buttons
-cordova.plugins.notification.local.schedule({
-    id: 1,
-    title: "Big Text",
-    style: "bigtextview",
-    text: "Line1 \n Line2 \n Line3", //Lines are seperated by newlines
-    headsup: true,  //If excluded the default is false (as seen above)
-    actions: [
-        { 
-            text: "MAP",
-            icon: 17301571, //The integer value of the R.drawable map icon (Optional)
-            action: 0   //The number that will be passed to the application via "click" event.
-                        //On the click event, this entry in the array will be passed into the handler
-                        //as the notification argument
-        },
-        {
-            text: "Select",
-            action: 1
-        },
-        {
-            text: "Ignore",
-            action: 2
-        }
-        //Note: There can only be up to three actions (enforced by android)
-    ]
-});
-```
 
 
 ## I would like to propose new features
