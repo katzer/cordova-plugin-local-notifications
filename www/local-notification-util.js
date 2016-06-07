@@ -69,6 +69,8 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.autoClear = true;
         defaults.led       = undefined;
         defaults.color     = undefined;
+        defaults.style     = 'default';
+        defaults.inbox     = undefined;
         break;
     }
 
