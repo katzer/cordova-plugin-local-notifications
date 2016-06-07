@@ -93,8 +93,8 @@ public class Manager {
                 .setTriggerReceiver(receiver)
                 .build();
 
-		notification.clear();
-		
+        notification.cancel();
+
         notification.schedule();
 
         return notification;
@@ -115,23 +115,23 @@ public class Manager {
 
         if (notification == null)
             return null;
-        
+
         JSONObject options = mergeJSONObjects(
                 notification.getOptions().getDict(), updates);
 
         try {
             options.put("updated", true);
         } catch (JSONException ignore) {}
-		
-		Options notificationOptions = new Options(context);
-		notificationOptions.parse(options);
-		
-		Notification displayNotification = new Builder(notificationOptions)
+
+        Options notificationOptions = new Options(context);
+        notificationOptions.parse(options);
+
+        Notification displayNotification = new Builder(notificationOptions)
                 .setTriggerReceiver(receiver)
                 .build();
-		
+
         displayNotification.schedule();
-		
+
         return displayNotification;
     }
 
