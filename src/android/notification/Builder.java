@@ -130,6 +130,11 @@ public class Builder {
                 .setOngoing(options.isOngoing())
                 .setColor(options.getColor());
 
+        //Enable/Disable vibration
+        if(!options.getVibration()) {
+            builder.setVibrate(new long[]{0, 0});
+        }
+
         if (ledColor != 0) {
             builder.setLights(ledColor, 100, 100);
         }

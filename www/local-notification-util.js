@@ -69,6 +69,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.autoClear = true;
         defaults.led       = undefined;
         defaults.color     = undefined;
+        defaults.vibration = true;
         break;
     }
 
