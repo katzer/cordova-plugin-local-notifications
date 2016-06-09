@@ -162,9 +162,9 @@ public class Notification {
     /**
      * Schedule the local notification.
      */
-    public void schedule() {
+      public void schedule() {
         long triggerTime = options.getTriggerTime();
-
+        int notiId=options.getId();
         persist();
 
         // Intent gets called when the Notification gets fired
@@ -173,16 +173,22 @@ public class Notification {
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent pi = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, notiId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (isRepeating()) {
             getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
                     triggerTime, options.getRepeatInterval(), pi);
         } else {
-            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+             if (android.os.Build.VERSION.SDK_INT >= 19) {
+            getAlarmMgr().setExact(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+             }
+            else
+            {
+                getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+            }
         }
-    }
 
+    }
     /**
      * Clear the local notification without canceling repeating alarms.
      */
