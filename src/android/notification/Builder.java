@@ -186,9 +186,13 @@ public class Builder {
         if (clickActivity == null)
             return;
 
-        Intent intent = new Intent(context, clickActivity)
-                .putExtra(Options.EXTRA, options.toString())
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        String pkgName  = context.getPackageName();
+
+        Intent intent       = context.getPackageManager().getLaunchIntentForPackage(pkgName);
+
+        // Intent intent = new Intent(context, clickActivity)
+        //         .putExtra(Options.EXTRA, options.toString())
+        //         .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int reqCode = new Random().nextInt();
 
