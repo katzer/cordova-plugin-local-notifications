@@ -117,9 +117,32 @@ class AssetUtil {
             return getUriFromAsset(path);
         } else if (path.startsWith("http")){
             return getUriFromRemote(path);
+        }  else if (path.startsWith("raw://")){
+            return getUriForRaw(path);
         }
 
         return Uri.EMPTY;
+    }
+
+	/**
+     *
+     * URI for raw resource
+     *
+     * @param Raw resource name
+     * @return
+     */
+    private Uri getUriForRaw(String path) {
+        String resourceName = path.replaceFirst("raw://", "");
+        String packageName = context.getPackageName();
+
+        // we are going for this format "android.resource://[package]/[res type]/[res name]"
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("android.resource");
+        builder.authority(packageName);
+        builder.appendPath("raw");
+        builder.appendPath(resourceName);
+
+        return builder.build();
     }
 
     /**
