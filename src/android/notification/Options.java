@@ -327,6 +327,8 @@ public class Options {
         return assets.getResIdForDrawable(icon);
     }
 
+    public boolean isOpenApp() { return options.optBoolean("openApp", true); }
+
     /**
      * JSON object as string.
      */
