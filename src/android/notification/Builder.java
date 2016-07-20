@@ -141,7 +141,7 @@ public class Builder {
         }
         
         if (progress != null) {
-            builder.setProgress(100, 50, false);
+            builder.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
         }
 
         if (removeProgress != null) {
