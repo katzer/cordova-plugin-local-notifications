@@ -139,12 +139,12 @@ public class Builder {
         if (sound != null) {
             builder.setSound(sound);
         }
-
-        if(progress != null) {
-            builder.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
+        
+        if (progress != null) {
+            builder.setProgress(100, 50, false);
         }
 
-        if(removeProgress != null) {
+        if (removeProgress != null) {
             builder.setProgress(0, 0, false);
         }
 
