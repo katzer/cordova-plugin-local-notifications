@@ -139,11 +139,11 @@ public class Builder {
             builder.setSound(sound);
         }
 
-        if(progress != null){
+        if(progress != null) {
             bulter.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
         }
 
-        if(removeProgress != null){
+        if(removeProgress != null) {
             bulter.setProgress(0, 0, false);
         }
 
