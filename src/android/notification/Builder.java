@@ -141,11 +141,13 @@ public class Builder {
         }
         
         if (progress != null) {
-            builder.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
+            if (progress)
+                builder.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
         }
 
         if (removeProgress != null) {
-            builder.setProgress(0, 0, false);
+            if (removeProgress)
+                builder.setProgress(0, 0, false);
         }
 
         if (smallIcon == 0) {
