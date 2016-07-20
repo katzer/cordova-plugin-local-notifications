@@ -242,7 +242,7 @@ public class Notification {
 
                 for (incr = 0; incr <= maxProgress; incr+=1)
                 {
-                    builder.setProgress(option.getMaxProgress(), incr, false);
+                    builder.setProgress(maxProgress, incr, false);
                     getNotMgr().notify(id, builder.build());        
                 }
             }
