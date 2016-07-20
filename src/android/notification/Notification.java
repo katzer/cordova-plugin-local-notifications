@@ -235,8 +235,21 @@ public class Notification {
             // Notification for HoneyComb to ICS
             getNotMgr().notify(id, builder.getNotification());
         } else {
-            // Notification for Jellybean and above
-            getNotMgr().notify(id, builder.build());
+            if (options.getProgress())
+            {
+                int incr;
+                int maxProgress = options.getMaxProgress();
+
+                for (incr = 0; incr <= maxProgress; incr+=1)
+                {
+                    builder.setProgress(option.getMaxProgress(), incr, false);
+                    getNotMgr().notify(id, builder.build());        
+                }
+            }
+            else {
+                // Notification for Jellybean and above
+                getNotMgr().notify(id, builder.build());
+            }
         }
     }
 
