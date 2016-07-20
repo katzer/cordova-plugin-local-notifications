@@ -140,11 +140,11 @@ public class Builder {
         }
 
         if(progress != null) {
-            bulter.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
+            builter.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
         }
 
         if(removeProgress != null) {
-            bulter.setProgress(0, 0, false);
+            builter.setProgress(0, 0, false);
         }
 
         if (smallIcon == 0) {
