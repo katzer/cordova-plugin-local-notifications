@@ -334,4 +334,31 @@ public class Options {
         return options.toString();
     }
 
+    /**
+     * Display progress for the local notification as a number.
+     */
+    public Boolean getProgress() {
+        return options.optBoolean("progress", false);
+    }
+
+    /**
+     * Remove progress for the local notification as a number.
+     */
+    public Boolean getRemoveProgress() {
+        return options.optBoolean("removeProgress", false);
+    }
+
+    /**
+     * Get the max progress for the local notification as a number.
+     */
+    public Integer getMaxProgress() {
+        return options.optInt("maxProgress", 0);
+    }
+
+    /**
+     * Get the current progress for the local notification as a number.
+     */
+    public Integer getCurrentProgress() {
+        return options.optInt("currentProgress", 0);
+    }
 }
