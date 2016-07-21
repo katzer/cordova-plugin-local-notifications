@@ -26,6 +26,7 @@ package de.appplant.cordova.plugin.notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+// import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -110,7 +111,6 @@ public class Manager {
      */
     public void updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
-        NotificationCompat.Builder builder = notification.getBuilder();
 
         if (notification == null)
         {
@@ -121,8 +121,7 @@ public class Manager {
                 options.put("updated", true);
             } catch (JSONException ignore) {}
 
-            builder.setProgress(options.maxProgress, options.currentProgress, false);
-            notification.setBuilder(builder);
+            notification.getBuilder().setProgress(options.opt("maxProgress"), options.opt("currentProgress"), false);
             notification.show();
         }
     }
