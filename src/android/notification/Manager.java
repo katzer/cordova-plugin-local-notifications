@@ -110,7 +110,7 @@ public class Manager {
      */
     public void updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
-        Builder builder = notification.getBuilder();
+        NotificationCompat.Builder builder = notification.getBuilder();
 
         if (notification == null)
         {
