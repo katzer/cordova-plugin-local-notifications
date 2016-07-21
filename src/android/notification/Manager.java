@@ -126,7 +126,12 @@ public class Manager {
                 int currentProgress = Integer.parseInt(updates.getString("currentProgress"));
 
                 notification.getBuilder().setProgress(maxProgress, currentProgress, false);
-                notification.show();
+                if (Build.VERSION.SDK_INT <= 15) {
+                    // Notification for HoneyComb to ICS
+                    notification.getNotMgr().notify(id, notification.getBuilder().getNotification());
+                } else {
+                    notification.getNotMgr().notify(id, notification.getBuilder().build());            
+                }
             } catch (JSONException ignore) {}
         }
     }
