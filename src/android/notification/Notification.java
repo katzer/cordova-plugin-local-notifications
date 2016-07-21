@@ -325,7 +325,7 @@ public class Notification {
     /**
      * Notification manager for the application.
      */
-    private NotificationManager getNotMgr () {
+    public NotificationManager getNotMgr () {
         return (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }

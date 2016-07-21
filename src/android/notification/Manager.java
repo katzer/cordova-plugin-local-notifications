@@ -22,7 +22,7 @@
  */
 
 package de.appplant.cordova.plugin.notification;
-
+import android.os.Build;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
