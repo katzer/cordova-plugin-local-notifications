@@ -121,7 +121,7 @@ public class Manager {
             } catch (JSONException ignore) {}
 
             notification.builder.setProgress(options.maxProgress, options.currentProgress, false);
-            notification.show
+            notification.show();
         }
     }
 
