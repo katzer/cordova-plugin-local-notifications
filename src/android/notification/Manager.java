@@ -108,7 +108,7 @@ public class Manager {
      * @param receiver
      *      Receiver to handle the trigger event
      */
-    public Notification updateProgress (int id, JSONObject updates, Class<?> receiver) {
+    public void updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
 
         if (notification == null)
@@ -121,7 +121,8 @@ public class Manager {
             options.put("updated", true);
         } catch (JSONException ignore) {}
 
-        return schedule(options, receiver);
+        notification.builder.setProgress(options.maxProgress, options.currentProgress, false);
+        notification.show();
     }
 
     /**
