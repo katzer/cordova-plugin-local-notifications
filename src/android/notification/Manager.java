@@ -124,6 +124,9 @@ public class Manager {
             try {
                 int maxProgress = Integer.parseInt(options.getString("maxProgress"));
                 int currentProgress = Integer.parseInt(updates.getString("currentProgress"));
+                
+                System.out.println(maxProgress);
+                System.out.println(currentProgress);
 
                 notification.getBuilder().setProgress(maxProgress, currentProgress, false);
                 if (Build.VERSION.SDK_INT <= 15) {
