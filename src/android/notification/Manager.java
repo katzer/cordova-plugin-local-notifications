@@ -110,6 +110,7 @@ public class Manager {
      */
     public void updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
+        Builder builder = notification.getBuilder();
 
         if (notification == null)
         {
@@ -120,7 +121,8 @@ public class Manager {
                 options.put("updated", true);
             } catch (JSONException ignore) {}
 
-            notification.builder.setProgress(options.maxProgress, options.currentProgress, false);
+            builder.setProgress(options.maxProgress, options.currentProgress, false);
+            notification.setBuilder(builder);
             notification.show();
         }
     }
