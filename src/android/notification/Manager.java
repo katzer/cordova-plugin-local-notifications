@@ -121,8 +121,10 @@ public class Manager {
                 options.put("updated", true);
             } catch (JSONException ignore) {}
 
-            int maxProgress = Integer.parseInt(options.getString("maxProgress"));
-            int currentProgress = Integer.parseInt(updates.getString("currentProgress"));
+            try {
+                int maxProgress = Integer.parseInt(options.getString("maxProgress"));
+                int currentProgress = Integer.parseInt(updates.getString("currentProgress"));
+            } catch (JSONException ignore) {}
 
             notification.getBuilder().setProgress(maxProgress, currentProgress, false);
             notification.show();
