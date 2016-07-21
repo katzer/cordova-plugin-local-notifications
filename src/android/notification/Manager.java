@@ -112,17 +112,17 @@ public class Manager {
         Notification notification = get(id);
 
         if (notification == null)
-            return null;
-
-        JSONObject options = mergeJSONObjects(
+        {
+            JSONObject options = mergeJSONObjects(
                 notification.getOptions().getDict(), updates);
 
-        try {
-            options.put("updated", true);
-        } catch (JSONException ignore) {}
+            try {
+                options.put("updated", true);
+            } catch (JSONException ignore) {}
 
-        notification.builder.setProgress(options.maxProgress, options.currentProgress, false);
-        notification.show();
+            notification.builder.setProgress(options.maxProgress, options.currentProgress, false);
+            notification.show
+        }
     }
 
     /**
