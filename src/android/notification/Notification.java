@@ -109,13 +109,6 @@ public class Notification {
     }
 
     /**
-     * Set notification builder.
-     */
-    public void setBuilder (NotificationCompat.Builder newBuilder) {
-        builder = newBuilder;
-    }
-
-    /**
      * Get notification ID.
      */
     public int getId () {
