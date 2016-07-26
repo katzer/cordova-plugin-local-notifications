@@ -23,6 +23,7 @@
 exports = require('de.appplant.cordova.plugin.local-notification.LocalNotification.Proxy').core;
 
 var channel = require('cordova/channel');
+var scheduledToastsCache = null;
 
 
 /***********
@@ -239,7 +240,22 @@ exports.getToastNotifier = function () {
  * @return Array
  */
 exports.getScheduledToasts = function () {
-    return this.getToastNotifier().getScheduledToastNotifications();
+    // The `getScheduledToastNotifications` method is very slow (~100ms)
+    // when there are a couple of hundred of toasts.
+    // Because `getScheduledToasts` is called by `findToastById`, which
+    // is called many times by `getAll`, the app would became very slow
+    // to start or even crash without some kind of cache.
+    // Here setTimeout(..., 0) is used to use the same toasts when inside
+    // the `getAll` loop, but invalidate as soon as the code finishes.
+    if (scheduledToastsCache == null) {
+        setTimeout(function () {
+            scheduledToastsCache = null;
+        }, 0);
+
+        scheduledToastsCache = this.getToastNotifier().getScheduledToastNotifications();
+    }
+
+    return scheduledToastsCache;
 };
 
 /**
