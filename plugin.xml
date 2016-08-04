@@ -20,7 +20,8 @@
     <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.6.0" />
-        <engine name="cordova-plugman" version=">=4.3.0" />
+        <!-- TODO next version: Probably I meant cordova-lib -->
+        <!-- <engine name="cordova-plugman" version=">=4.3.0" /> -->
         <engine name="cordova-windows" version=">=4.2.0" />
     </engines>
 
