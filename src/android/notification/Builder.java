@@ -161,15 +161,14 @@ public class Builder {
 
                 String text = actionData.optString("text");
 
-                try {
-                    actionData.putOpt("notification", options.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                //Copy options
+                Options tempOptions = new Options(options);
+
+                //Add 'actionClicked' parameter
+                tempOptions.put("actionClicked", actionData);
 
                 Intent intent = new Intent(context, clickActivity)
-                            .putExtra(Options.EXTRA, actionData.toString())
-                            .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            .putExtra(Options.EXTRA, tempOptions.toString());
 
                 int reqCode = new Random().nextInt();
 

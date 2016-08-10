@@ -70,6 +70,23 @@ public class Options {
     }
 
     /**
+     * Constructor that copies an Options object.
+     *
+     * @param originalOptions
+     *      Options to copy.
+     */
+    public Options(Options originalOptions)
+    {
+      this.context = originalOptions.getContext();
+      this.assets  = AssetUtil.getInstance(this.context);
+      try {
+          this.options = new JSONObject(originalOptions.getDict().toString());
+      } catch (JSONException e) {
+          e.printStackTrace();
+      }
+    }
+
+    /**
      * Parse given JSON properties.
      *
      * @param options
@@ -347,6 +364,18 @@ public class Options {
      */
     public String toString() {
         return options.toString();
+    }
+
+    /**
+     * Add a JSONObject with the given name.
+     */
+    public void put(String name, JSONObject obj)
+    {
+      try {
+          options.putOpt(name, obj);
+      } catch (JSONException e) {
+          e.printStackTrace();
+      }
     }
 
 }
