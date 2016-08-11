@@ -25,7 +25,6 @@
 #import "APPLocalNotificationOptions.h"
 #import "UIApplication+APPLocalNotification.h"
 #import "UILocalNotification+APPLocalNotification.h"
-@import UserNotifications;
 
 @interface APPLocalNotification ()
 
@@ -692,53 +691,27 @@
  */
 - (void) fireEvent:(NSString*)event notification:(UILocalNotification*)notification
 {
-    
-    if (IsAtLeastiOSVersion(@"10.0")) {
-        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-        content.title = [NSString localizedUserNotificationStringForKey:notification.alertTitle arguments:nil];
-        content.body = [NSString localizedUserNotificationStringForKey:notification.alertBody
-                                                         arguments:nil];
-        content.sound = [UNNotificationSound defaultSound];
-    
-        /// 4. update application icon badge numberß
-        //content.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
-        // Deliver the notification in five seconds.
-        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
-                                                  triggerWithTimeInterval:1.f repeats:NO];
-        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"FiveSecond"
-                                                                          content:content trigger:trigger];
-        /// 3. schedule localNotification
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-            if (!error) {
-                NSLog(@"add NotificationRequest succeeded!");
-            }
-        }];
-    } else {
-        
-        NSString* js;
-        NSString* params = [NSString stringWithFormat:
-                            @"\"%@\"", self.applicationState];
-        
-        if (notification) {
-            NSString* args = [notification encodeToJSON];
-            
-            params = [NSString stringWithFormat:
-                      @"%@,'%@'",
-                      args, self.applicationState];
-        }
-        
-        js = [NSString stringWithFormat:
-              @"cordova.plugins.notification.local.core.fireEvent('%@', %@)",
-              event, params];
-        
-        if (deviceready) {
-            [self.commandDelegate evalJs:js];
-        } else {
-            [self.eventQueue addObject:js];
-        }
+    NSString* js;
+    NSString* params = [NSString stringWithFormat:
+                        @"\"%@\"", self.applicationState];
+
+    if (notification) {
+        NSString* args = [notification encodeToJSON];
+
+        params = [NSString stringWithFormat:
+                  @"%@,'%@'",
+                  args, self.applicationState];
     }
-    
+
+    js = [NSString stringWithFormat:
+          @"cordova.plugins.notification.local.core.fireEvent('%@', %@)",
+          event, params];
+
+    if (deviceready) {
+        [self.commandDelegate evalJs:js];
+    } else {
+        [self.eventQueue addObject:js];
+    }
 }
 
 @end
