@@ -320,7 +320,13 @@ exports.registerPermission = function (callback, scope) {
     this.core.registerPermission(callback, scope);
 };
 
-
+/**
+ * Inform that webapp is ready, listeneres are registered
+ * and all queued event can be executed
+ */
+exports.deviceReady = function() {
+    this.core.deviceready();
+}
 /****************
  * DEPRECATIONS *
  ****************/

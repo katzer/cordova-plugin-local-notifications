@@ -305,17 +305,13 @@ exports.exec = function (action, args, callback, scope) {
     exec(fn, null, 'LocalNotification', action, params);
 };
 
+exports.deviceready = function() {
+    exec(null, null, 'LocalNotification', 'deviceready', []);
+}
 
 /*********
  * HOOKS *
  *********/
-
-// Called after 'deviceready' event
-channel.deviceready.subscribe(function () {
-    // Device is ready now, the listeners are registered
-    // and all queued events can be executed.
-    exec(null, null, 'LocalNotification', 'deviceready', []);
-});
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
