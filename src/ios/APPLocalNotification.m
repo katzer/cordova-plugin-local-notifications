@@ -717,7 +717,12 @@
         // Deliver the notification at the fire date.
         UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
         
-        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"DefaultNotificationIdentifier" content:content trigger:trigger];
+        NSString *identifier = @"DefaultNotificationIdentifier";
+        if(notification.userInfo!=nil && [notification.userInfo objectForKey:@"id"]!=nil) {
+            identifier = [notification.userInfo objectForKey:@"id"];
+        }
+        
+        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
         
         /// 3. schedule localNotification
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
