@@ -78,6 +78,8 @@
 
             notification = [[UILocalNotification alloc]
                             initWithOptions:options];
+            notification.timeZone = [NSTimeZone defaultTimeZone];
+            notification.repeatInterval = 0;
 
             [self scheduleLocalNotification:[notification copy]];
             [self fireEvent:@"schedule" notification:notification];
@@ -710,6 +712,7 @@
          NSDateComponents *dateComponents = [gregorianCalendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
          | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit
                                                            fromDate:fireDate];
+         [dateComponents setTimeZone:[NSTimeZone defaultTimeZone]];
         
         /// 4. update application icon badge number
         //content.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
