@@ -131,7 +131,7 @@ public class Builder {
                 .setColor(options.getColor());
 
         if (ledColor != 0) {
-            builder.setLights(ledColor, 100, 100);
+            builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
         }
 
         if (sound != null) {
