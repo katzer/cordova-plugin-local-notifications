@@ -736,28 +736,26 @@
         }];
     } 
 
-    if ((IsAtLeastiOSVersion(@"10.0") && [event  isEqual: @"click"]) || !IsAtLeastiOSVersion(@"10.0")) { 
-        NSString* js;
-        NSString* params = [NSString stringWithFormat:
-                            @"\"%@\"", self.applicationState];
+    NSString* js;
+    NSString* params = [NSString stringWithFormat:
+                        @"\"%@\"", self.applicationState];
 
-        if (notification) {
-            NSString* args = [notification encodeToJSON];
+    if (notification) {
+        NSString* args = [notification encodeToJSON];
 
-            params = [NSString stringWithFormat:
-                      @"%@,'%@'",
-                      args, self.applicationState];
-        }
+        params = [NSString stringWithFormat:
+                  @"%@,'%@'",
+                  args, self.applicationState];
+    }
 
-        js = [NSString stringWithFormat:
-              @"cordova.plugins.notification.local.core.fireEvent('%@', %@)",
-              event, params];
+    js = [NSString stringWithFormat:
+          @"cordova.plugins.notification.local.core.fireEvent('%@', %@)",
+          event, params];
 
-        if (deviceready) {
-            [self.commandDelegate evalJs:js];
-        } else {
-            [self.eventQueue addObject:js];
-        }
+    if (deviceready) {
+        [self.commandDelegate evalJs:js];
+    } else {
+        [self.eventQueue addObject:js];
     }
 }
 
