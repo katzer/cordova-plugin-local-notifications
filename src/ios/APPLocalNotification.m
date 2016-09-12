@@ -734,8 +734,9 @@
                 NSLog(@"add NotificationRequest succeeded!");
             }
         }];
-    } else {
+    } 
 
+    if ((IsAtLeastiOSVersion(@"10.0") && [event  isEqual: @"click"]) || !IsAtLeastiOSVersion(@"10.0")) { 
         NSString* js;
         NSString* params = [NSString stringWithFormat:
                             @"\"%@\"", self.applicationState];
