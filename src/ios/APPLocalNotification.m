@@ -76,7 +76,7 @@
 
             notification = [[UILocalNotification alloc]
                             initWithOptions:options];
-
+            
             [self scheduleLocalNotification:[notification copy]];
             [self fireEvent:@"schedule" notification:notification];
 
@@ -588,7 +588,10 @@
         }
     }
     else{
-        [self.app cancelLocalNotification:notification];
+        if (![notification isRepeating]) {
+            [self.app cancelLocalNotification:notification];
+            [self fireEvent:@"cancel" notification:notification];
+        }
     }
 }
 
