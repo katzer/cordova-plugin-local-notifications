@@ -324,9 +324,9 @@
     [self cancelLocalNotification:notification];
 
     if ([notification isRepeating]) {
-        notification.fireDate = notification.options.fireDate;
-
-        [self scheduleLocalNotification:notification];
+        UILocalNotification* newNotification = [notification copy];
+        newNotification.fireDate = [notification.fireDate dateByAddingTimeInterval:[notification repeatInterval]];
+        [self scheduleLocalNotification:newNotification];
     };
 }
 

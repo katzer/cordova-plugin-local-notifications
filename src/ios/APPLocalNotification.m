@@ -591,6 +591,8 @@
         if (![notification isRepeating]) {
             [self.app cancelLocalNotification:notification];
             [self fireEvent:@"cancel" notification:notification];
+        } else {
+            [self.app clearLocalNotification:notification];
         }
     }
 }
