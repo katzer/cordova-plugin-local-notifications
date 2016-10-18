@@ -1,3 +1,4 @@
 {
-    "QuartzCore.framework": 1
+    "QuartzCore.framework": 1,
+    "UserNotifications.framework": 2
 }

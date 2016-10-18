@@ -8,8 +8,6 @@
     <string>${PRODUCT_NAME}</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
-    <key>CFBundleIconFile</key>
-    <string>icon.png</string>
     <key>CFBundleIcons</key>
     <dict/>
     <key>CFBundleIcons~ipad</key>
@@ -36,9 +34,9 @@
       <true/>
     </dict>
     <key>NSMainNibFile</key>
-    <string></string>
+    <string/>
     <key>NSMainNibFile~ipad</key>
-    <string></string>
+    <string/>
     <key>UIRequiresFullScreen</key>
     <true/>
   </dict>

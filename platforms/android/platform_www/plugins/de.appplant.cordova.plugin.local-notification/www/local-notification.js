@@ -373,7 +373,7 @@ exports.on = function (event, callback, scope) {
  *      The function to be exec as callback
  */
 exports.un = function (event, callback) {
-    this.core.un(event, callback, scope);
+    this.core.un(event, callback);
 };
 
 });

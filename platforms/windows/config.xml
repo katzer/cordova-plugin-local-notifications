@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="de.appplant.localnotification.example" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <preference name="WindowsToastCapable" value="true" />
     <name>NotificationExample</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -10,5 +9,6 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <preference name="WindowsToastCapable" value="true" />
     <preference name="windows-target-version" value="10.0" />
 </widget>

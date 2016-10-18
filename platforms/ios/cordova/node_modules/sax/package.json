@@ -1,0 +1,114 @@
+{
+  "_args": [
+    [
+      "sax@0.3.5",
+      "/Users/omefire/Projects/cordova-ios/node_modules/elementtree"
+    ]
+  ],
+  "_defaultsLoaded": true,
+  "_engineSupported": true,
+  "_from": "sax@0.3.5",
+  "_id": "sax@0.3.5",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/sax",
+  "_nodeVersion": "v0.6.7-pre",
+  "_npmUser": {
+    "email": "i@izs.me",
+    "name": "isaacs"
+  },
+  "_npmVersion": "1.1.0-beta-7",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "sax",
+    "raw": "sax@0.3.5",
+    "rawSpec": "0.3.5",
+    "scope": null,
+    "spec": "0.3.5",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/elementtree"
+  ],
+  "_resolved": "https://registry.npmjs.org/sax/-/sax-0.3.5.tgz",
+  "_shasum": "88fcfc1f73c0c8bbd5b7c776b6d3f3501eed073d",
+  "_shrinkwrap": null,
+  "_spec": "sax@0.3.5",
+  "_where": "/Users/omefire/Projects/cordova-ios/node_modules/elementtree",
+  "author": {
+    "email": "i@izs.me",
+    "name": "Isaac Z. Schlueter",
+    "url": "http://blog.izs.me/"
+  },
+  "bugs": {
+    "url": "https://github.com/isaacs/sax-js/issues"
+  },
+  "contributors": [
+    {
+      "email": "i@izs.me",
+      "name": "Isaac Z. Schlueter"
+    },
+    {
+      "email": "stein@hustad.com",
+      "name": "Stein Martin Hustad"
+    },
+    {
+      "email": "mikeal.rogers@gmail.com",
+      "name": "Mikeal Rogers"
+    },
+    {
+      "email": "laurie@holoweb.net",
+      "name": "Laurie Harper"
+    },
+    {
+      "email": "jann@Jann-PC.fritz.box",
+      "name": "Jann Horn"
+    },
+    {
+      "email": "tmpvar@gmail.com",
+      "name": "Elijah Insua"
+    },
+    {
+      "email": "henryr@schakra.com",
+      "name": "Henry Rawas"
+    },
+    {
+      "email": "jmpublic@makeig.com",
+      "name": "Justin Makeig"
+    }
+  ],
+  "dependencies": {},
+  "description": "An evented streaming XML parser in JavaScript",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "88fcfc1f73c0c8bbd5b7c776b6d3f3501eed073d",
+    "tarball": "http://registry.npmjs.org/sax/-/sax-0.3.5.tgz"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "homepage": "https://github.com/isaacs/sax-js#readme",
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.github.com/isaacs/sax-js/master/LICENSE"
+  },
+  "main": "lib/sax.js",
+  "maintainers": [
+    {
+      "email": "i@izs.me",
+      "name": "isaacs"
+    }
+  ],
+  "name": "sax",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/isaacs/sax-js.git"
+  },
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "version": "0.3.5"
+}

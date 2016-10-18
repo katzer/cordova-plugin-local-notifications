@@ -219,6 +219,11 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
             .add_plugin_changes(plugin, installOptions.variables, /*is_top_level=*/true, /*should_increment=*/true)
             .save_all();
 
+        if (plugin.getFrameworks(self.platform).length > 0) {
+            self.events.emit('verbose', 'Updating build files since android plugin contained <framework>');
+            require('./lib/builders/builders').getBuilder('gradle').prepBuildFiles();
+        }
+
         var targetDir = installOptions.usePlatformWww ?
             self.locations.platformWww :
             self.locations.www;
@@ -271,6 +276,11 @@ Api.prototype.removePlugin = function (plugin, uninstallOptions) {
             // anything about managing dependencies - it's responsibility of caller.
             .remove_plugin_changes(plugin, /*is_top_level=*/true)
             .save_all();
+
+        if (plugin.getFrameworks(self.platform).length > 0) {
+            self.events.emit('verbose', 'Updating build files since android plugin contained <framework>');
+            require('./lib/builders/builders').getBuilder('gradle').prepBuildFiles();
+        }
 
         var targetDir = uninstallOptions.usePlatformWww ?
             self.locations.platformWww :
@@ -431,6 +441,11 @@ Api.prototype._addModulesInfo = function(plugin, targetDir) {
     });
 
     this._platformJson.root.modules = installedModules.concat(modulesToInstall);
+    if (!this._platformJson.root.plugin_metadata) {
+        this._platformJson.root.plugin_metadata = {};
+    }
+    this._platformJson.root.plugin_metadata[plugin.id] = plugin.version;
+
     this._writePluginModules(targetDir);
     this._platformJson.save();
 };
@@ -457,6 +472,10 @@ Api.prototype._removeModulesInfo = function(plugin, targetDir) {
     });
 
     this._platformJson.root.modules = updatedModules;
+    if (this._platformJson.root.plugin_metadata) {
+        delete this._platformJson.root.plugin_metadata[plugin.id];
+    }
+
     this._writePluginModules(targetDir);
     this._platformJson.save();
 };
@@ -470,20 +489,13 @@ Api.prototype._removeModulesInfo = function(plugin, targetDir) {
  *   directories.
  */
 Api.prototype._writePluginModules = function (targetDir) {
-    var self = this;
     // Write out moduleObjects as JSON wrapped in a cordova module to cordova_plugins.js
     var final_contents = 'cordova.define(\'cordova/plugin_list\', function(require, exports, module) {\n';
     final_contents += 'module.exports = ' + JSON.stringify(this._platformJson.root.modules, null, '    ') + ';\n';
     final_contents += 'module.exports.metadata = \n';
     final_contents += '// TOP OF METADATA\n';
 
-    var pluginMetadata = Object.keys(this._platformJson.root.installed_plugins)
-    .reduce(function (metadata, plugin) {
-        metadata[plugin] = self._platformJson.root.installed_plugins[plugin].version;
-        return metadata;
-    }, {});
-
-    final_contents += JSON.stringify(pluginMetadata, null, 4) + '\n';
+    final_contents += JSON.stringify(this._platformJson.root.plugin_metadata, null, 4) + ';\n';
     final_contents += '// BOTTOM OF METADATA\n';
     final_contents += '});'; // Close cordova.define.
 

@@ -1,0 +1,96 @@
+{
+  "author": {
+    "name": "Andrew Lunny",
+    "email": "alunny@gmail.com"
+  },
+  "name": "xcode",
+  "description": "parser for xcodeproj/project.pbxproj files",
+  "version": "0.8.4",
+  "main": "index.js",
+  "repository": {
+    "url": "git+https://github.com/alunny/node-xcode.git"
+  },
+  "engines": {
+    "node": ">=0.6.7"
+  },
+  "dependencies": {
+    "node-uuid": "1.3.3",
+    "pegjs": "0.6.2",
+    "simple-plist": "0.0.4"
+  },
+  "devDependencies": {
+    "nodeunit": "0.9.0"
+  },
+  "scripts": {
+    "test": "nodeunit test/parser test"
+  },
+  "contributors": [
+    {
+      "name": "Andrew Lunny",
+      "url": "@alunny"
+    },
+    {
+      "name": "Anis Kadri",
+      "url": "@imhotep"
+    },
+    {
+      "name": "Mike Reinstein",
+      "url": "@mreinstein"
+    },
+    {
+      "name": "Filip Maj",
+      "url": "@filmaj"
+    },
+    {
+      "name": "Brett Rudd",
+      "url": "@goya"
+    },
+    {
+      "name": "Bob Easterday",
+      "url": "@bobeast"
+    }
+  ],
+  "gitHead": "eb0e23e44c451d0e7ea92d881eb8c82f4aa86481",
+  "bugs": {
+    "url": "https://github.com/alunny/node-xcode/issues"
+  },
+  "homepage": "https://github.com/alunny/node-xcode#readme",
+  "_id": "xcode@0.8.4",
+  "_shasum": "e82c64675fcae3cb02e9ceb801d786dd90123604",
+  "_from": "xcode@>=0.8.3 <0.9.0",
+  "_npmVersion": "2.14.12",
+  "_nodeVersion": "4.2.6",
+  "_npmUser": {
+    "name": "anis",
+    "email": "anis.kadri@gmail.com"
+  },
+  "dist": {
+    "shasum": "e82c64675fcae3cb02e9ceb801d786dd90123604",
+    "tarball": "http://visustar.francelab.fr.ibm.com:8081/nexus/content/groups/mobile-npm-all/xcode/-/xcode-0.8.4.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "alunny",
+      "email": "alunny@gmail.com"
+    },
+    {
+      "name": "filmaj",
+      "email": "maj.fil@gmail.com"
+    },
+    {
+      "name": "shepheb",
+      "email": "braden.shepherdson@gmail.com"
+    },
+    {
+      "name": "anis",
+      "email": "anis.kadri@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/xcode-0.8.4.tgz_1457572486508_0.5393483068328351"
+  },
+  "directories": {},
+  "_resolved": "http://visustar.francelab.fr.ibm.com:8081/nexus/content/groups/mobile-npm-all/xcode/-/xcode-0.8.4.tgz",
+  "readme": "ERROR: No README data found!"
+}

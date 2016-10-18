@@ -23,7 +23,6 @@
 
 var retry      = require('./retry');
 var build      = require('./build');
-var check_reqs = require('./check_reqs');
 var path = require('path');
 var Adb = require('./Adb');
 var AndroidManifest = require('./AndroidManifest');
@@ -40,6 +39,7 @@ var ONE_SECOND              = 1000; // in milliseconds
 var ONE_MINUTE              = 60 * ONE_SECOND; // in milliseconds
 var INSTALL_COMMAND_TIMEOUT = 5 * ONE_MINUTE; // in milliseconds
 var NUM_INSTALL_RETRIES     = 3;
+var CHECK_BOOTED_INTERVAL   = 3 * ONE_SECOND; // in milliseconds
 var EXEC_KILL_SIGNAL        = 'SIGKILL';
 
 /**
@@ -104,7 +104,8 @@ module.exports.best_image = function() {
 
         var closest = 9999;
         var best = images[0];
-        var project_target = check_reqs.get_target().replace('android-', '');
+        // Loading check_reqs at run-time to avoid test-time vs run-time directory structure difference issue
+        var project_target = require('./check_reqs').get_target().replace('android-', '');
         for (var i in images) {
             var target = images[i].target;
             if(target) {
@@ -146,10 +147,12 @@ module.exports.list_targets = function() {
  * and returns the started ID of that emulator.
  * If no ID is given it will use the first image available,
  * if no image is available it will error out (maybe create one?).
+ * If no boot timeout is given or the value is negative it will wait forever for
+ * the emulator to boot
  *
  * Returns a promise.
  */
-module.exports.start = function(emulator_ID) {
+module.exports.start = function(emulator_ID, boot_timeout) {
     var self = this;
 
     return Q().then(function() {
@@ -162,7 +165,8 @@ module.exports.start = function(emulator_ID) {
                 return best.name;
             }
 
-            var androidCmd = check_reqs.getAbsoluteAndroidCmd();
+            // Loading check_reqs at run-time to avoid test-time vs run-time directory structure difference issue
+            var androidCmd = require('./check_reqs').getAbsoluteAndroidCmd();
             return Q.reject(new CordovaError('No emulator images (avds) found.\n' +
                 '1. Download desired System Image by running: ' + androidCmd + ' sdk\n' +
                 '2. Create an AVD by running: ' + androidCmd + ' avd\n' +
@@ -186,14 +190,20 @@ module.exports.start = function(emulator_ID) {
 
         //wait for emulator to boot up
         process.stdout.write('Booting up emulator (this may take a while)...');
-        return self.wait_for_boot(emulatorId)
-        .then(function() {
-            events.emit('log','BOOT COMPLETE');
-            //unlock screen
-            return Adb.shell(emulatorId, 'input keyevent 82');
-        }).then(function() {
-            //return the new emulator id for the started emulators
-            return emulatorId;
+        return self.wait_for_boot(emulatorId, boot_timeout)
+        .then(function(success) {
+            if (success) {
+                events.emit('log','BOOT COMPLETE');
+                //unlock screen
+                return Adb.shell(emulatorId, 'input keyevent 82')
+                .then(function() {
+                    //return the new emulator id for the started emulators
+                    return emulatorId;
+                });
+            } else {
+                // We timed out waiting for the boot to happen
+                return null;
+            }
         });
     });
 };
@@ -227,18 +237,25 @@ module.exports.wait_for_emulator = function(uuid) {
 };
 
 /*
- * Waits for the core android process of the emulator to start
+ * Waits for the core android process of the emulator to start. Returns a
+ * promise that resolves to a boolean indicating success. Not specifying a
+ * time_remaining or passing a negative value will cause it to wait forever
  */
-module.exports.wait_for_boot = function(emulator_id) {
+module.exports.wait_for_boot = function(emulator_id, time_remaining) {
     var self = this;
     return Adb.shell(emulator_id, 'ps')
     .then(function(output) {
         if (output.match(/android\.process\.acore/)) {
-            return;
+            return true;
+        } else if (time_remaining === 0) {
+            return false;
         } else {
             process.stdout.write('.');
-            return Q.delay(3000).then(function() {
-                return self.wait_for_boot(emulator_id);
+
+            // Check at regular intervals
+            return Q.delay(time_remaining < CHECK_BOOTED_INTERVAL ? time_remaining : CHECK_BOOTED_INTERVAL).then(function() {
+                var updated_time = time_remaining >= 0 ? Math.max(time_remaining - CHECK_BOOTED_INTERVAL, 0) : time_remaining;
+                return self.wait_for_boot(emulator_id, updated_time);
             });
         }
     });
@@ -321,7 +338,7 @@ module.exports.install = function(givenTarget, buildResults) {
     }).then(function () {
         // This promise is always resolved, even if 'adb uninstall' fails to uninstall app
         // or the app doesn't installed at all, so no error catching needed.
-        return Adb.uninstall(target.target, pkgName)
+        return Q.when()
         .then(function() {
 
             var apk_path = build.findBestApkForArchitecture(buildResults, target.arch);
@@ -334,28 +351,47 @@ module.exports.install = function(givenTarget, buildResults) {
             events.emit('log', 'Using apk: ' + apk_path);
             events.emit('verbose', 'Installing app on emulator...');
 
-            function exec(command, opts) {
+            // A special function to call adb install in specific environment w/ specific options.
+            // Introduced as a part of fix for http://issues.apache.org/jira/browse/CB-9119
+            // to workaround sporadic emulator hangs
+            function adbInstallWithOptions(target, apk, opts) {
+                events.emit('verbose', 'Installing apk ' + apk + ' on ' + target + '...');
+
+                var command = 'adb -s ' + target + ' install -r "' + apk + '"';
                 return Q.promise(function (resolve, reject) {
                     child_process.exec(command, opts, function(err, stdout, stderr) {
                         if (err) reject(new CordovaError('Error executing "' + command + '": ' + stderr));
+                        // adb does not return an error code even if installation fails. Instead it puts a specific
+                        // message to stdout, so we have to use RegExp matching to detect installation failure.
+                        else if (/Failure/.test(stdout)) reject(new CordovaError('Failed to install apk to emulator: ' + stdout));
                         else resolve(stdout);
                     });
                 });
             }
 
-            var retriedInstall = retry.retryPromise(
-                NUM_INSTALL_RETRIES,
-                exec, 'adb -s ' + target.target + ' install -r "' + apk_path + '"', execOptions
-            );
+            function installPromise () {
+                return adbInstallWithOptions(target.target, apk_path, execOptions)
+                .catch(function (error) {
+                    // CB-9557 CB-10157 only uninstall and reinstall app if the one that
+                    // is already installed on device was signed w/different certificate
+                    if (!/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/.test(error.toString()))
+                        throw error;
 
-            return retriedInstall.then(function (output) {
-                if (output.match(/Failure/)) {
-                    return Q.reject(new CordovaError('Failed to install apk to emulator: ' + output));
-                } else {
-                    events.emit('log', 'INSTALL SUCCESS');
-                }
-            }, function (err) {
-                return Q.reject(new CordovaError('Failed to install apk to emulator: ' + err));
+                    events.emit('warn', 'Uninstalling app from device and reinstalling it again because the ' +
+                        'installed app already signed with different key');
+
+                    // This promise is always resolved, even if 'adb uninstall' fails to uninstall app
+                    // or the app doesn't installed at all, so no error catching needed.
+                    return Adb.uninstall(target.target, pkgName)
+                    .then(function() {
+                        return adbInstallWithOptions(target.target, apk_path, execOptions);
+                    });
+                });
+            }
+
+            return retry.retryPromise(NUM_INSTALL_RETRIES, installPromise)
+            .then(function (output) {
+                events.emit('log', 'INSTALL SUCCESS');
             });
         });
     // unlock screen

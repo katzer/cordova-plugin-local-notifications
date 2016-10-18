@@ -64,13 +64,7 @@
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 1
                         }
-                    ],
-                    "application": []
-                }
-            },
-            "res/values/facebookconnect.xml": {
-                "parents": {
-                    "/*": []
+                    ]
                 }
             }
         }
@@ -133,5 +127,8 @@
                 "plugin.notification.local.core"
             ]
         }
-    ]
+    ],
+    "plugin_metadata": {
+        "de.appplant.cordova.plugin.local-notification": "0.8.5-dev"
+    }
 }

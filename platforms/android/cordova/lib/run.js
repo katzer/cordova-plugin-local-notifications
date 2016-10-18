@@ -27,6 +27,19 @@ var path  = require('path'),
     device   = require('./device'),
     Q = require('q');
 
+function getInstallTarget(runOptions) {
+    var install_target;
+    if (runOptions.target) {
+        install_target = runOptions.target;
+    } else if (runOptions.device) {
+        install_target = '--device';
+    } else if (runOptions.emulator) {
+        install_target = '--emulator';
+    }
+
+    return install_target;
+}
+
 /**
  * Runs the application on a device if available. If no device is found, it will
  *   use a started emulator. If no started emulators are found it will attempt
@@ -40,10 +53,7 @@ var path  = require('path'),
  module.exports.run = function(runOptions) {
 
     var self = this;
-
-    var install_target = runOptions.device ? '--device' :
-        runOptions.emulator ? '--emulator' :
-        runOptions.target;
+    var install_target = getInstallTarget(runOptions);
 
     return Q()
     .then(function() {
@@ -116,8 +126,8 @@ var path  = require('path'),
     });
 };
 
-module.exports.help = function(args) {
-    console.log('Usage: ' + path.relative(process.cwd(), args[1]) + ' [options]');
+module.exports.help = function() {
+    console.log('Usage: ' + path.relative(process.cwd(), process.argv[1]) + ' [options]');
     console.log('Build options :');
     console.log('    --debug : Builds project in debug mode');
     console.log('    --release : Builds project in release mode');

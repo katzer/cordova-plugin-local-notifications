@@ -47,10 +47,12 @@ var opts = nopt({
     'provisioningProfile': String,
     'buildConfig' : String,
     'noSign' : Boolean
-}, {}, args);
+}, { 'd' : '--verbose' }, args);
 
 // Make options compatible with PlatformApi build method spec
 opts.argv = opts.argv.remain;
+
+require('./loggingHelper').adjustLoggerLevel(opts);
 
 new Api().run(opts).done(function() {
         console.log('** RUN SUCCEEDED **');

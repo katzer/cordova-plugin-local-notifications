@@ -115,6 +115,12 @@
       "scale" : "2x"
     },
     {
+      "idiom" : "ipad",
+      "size" : "83.5x83.5",
+      "filename" : "icon-83.5@2x.png",
+      "scale" : "2x"
+    },
+    {
       "size" : "24x24",
       "idiom" : "watch",
       "scale" : "2x",

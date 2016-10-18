@@ -45,6 +45,8 @@ module.exports = [
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{}
+{
+    "de.appplant.cordova.plugin.local-notification": "0.8.5-dev"
+};
 // BOTTOM OF METADATA
 });

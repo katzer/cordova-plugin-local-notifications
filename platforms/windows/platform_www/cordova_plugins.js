@@ -86,8 +86,8 @@ module.exports.metadata =
 {
     "cordova-plugin-device": "1.1.0",
     "cordova-plugin-x-toast": "2.3.1",
-    "cordova-plugin-app-event": "1.1.0",
-    "de.appplant.cordova.plugin.local-notification": "0.8.3-dev"
+    "cordova-plugin-app-event": "1.2.0-dev",
+    "de.appplant.cordova.plugin.local-notification": "0.8.5-dev"
 }
 // BOTTOM OF METADATA
 });
