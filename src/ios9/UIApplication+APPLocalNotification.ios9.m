@@ -21,8 +21,8 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UIApplication+APPLocalNotification.h"
-#import "UILocalNotification+APPLocalNotification.h"
+#import "UIApplication+APPLocalNotification.ios9.h"
+#import "UILocalNotification+APPLocalNotification.ios9.h"
 
 @implementation UIApplication (APPLocalNotification)
 
@@ -138,7 +138,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (NSArray*) localNotificationIdsByType:(APPLocalNotificationType)type
+- (NSArray*) localNotificationIdsByType:(APPNotificationType)type
 {
     NSArray* notifications = self.localNotifications;
     NSMutableArray* ids = [[NSMutableArray alloc] init];
@@ -171,7 +171,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (BOOL) localNotificationExist:(NSNumber*)id type:(APPLocalNotificationType)type
+- (BOOL) localNotificationExist:(NSNumber*)id type:(APPNotificationType)type
 {
     return [self localNotificationWithId:id andType:type] != NULL;
 }
@@ -206,7 +206,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPLocalNotificationType)type
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPNotificationType)type
 {
     UILocalNotification* notification = [self localNotificationWithId:id];
 
@@ -238,7 +238,7 @@
  * @param type
  *      Notification life cycle type
  */
-- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type
+- (NSArray*) localNotificationOptionsByType:(APPNotificationType)type
 {
     NSArray* notifications = self.localNotifications;
     NSMutableArray* options = [[NSMutableArray alloc] init];
@@ -284,7 +284,7 @@
  * @param ids
  *      Notification IDs
  */
-- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type andId:(NSArray*)ids
+- (NSArray*) localNotificationOptionsByType:(APPNotificationType)type andId:(NSArray*)ids
 {
     UILocalNotification* notification;
     NSMutableArray* options = [[NSMutableArray alloc] init];
