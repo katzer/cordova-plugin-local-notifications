@@ -653,7 +653,7 @@
 - (void) clearAllNotifications
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-        [self.center clearAllNotifications];
+        [self.center removeAllPendingNotificationRequests];
     } else {
         [self.app clearAllLocalNotifications];
     }
