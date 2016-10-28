@@ -115,12 +115,10 @@ public class Builder {
      * Creates the notification with all its options passed through JS.
      */
     public Notification build() {
-        Uri sound = options.getSoundUri();
-        NotificationCompat.BigTextStyle style;
+        Uri sound     = options.getSoundUri();
+        int smallIcon = options.getSmallIcon();
+        int ledColor  = options.getLedColor();
         NotificationCompat.Builder builder;
-
-        style = new NotificationCompat.BigTextStyle()
-                .bigText(options.getText());
 
         builder = new NotificationCompat.Builder(context)
                 .setDefaults(0)
@@ -128,15 +126,23 @@ public class Builder {
                 .setContentText(options.getText())
                 .setNumber(options.getBadgeNumber())
                 .setTicker(options.getText())
-                .setSmallIcon(options.getSmallIcon())
-                .setLargeIcon(options.getIconBitmap())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setStyle(style)
-                .setLights(options.getLedColor(), 500, 500);
+                .setColor(options.getColor());
+
+        if (ledColor != 0) {
+            builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
+        }
 
         if (sound != null) {
             builder.setSound(sound);
+        }
+
+        if (smallIcon == 0) {
+            builder.setSmallIcon(options.getIcon());
+        } else {
+            builder.setSmallIcon(options.getSmallIcon());
+            builder.setLargeIcon(options.getIconBitmap());
         }
 
         applyDeleteReceiver(builder);
@@ -157,14 +163,14 @@ public class Builder {
         if (clearReceiver == null)
             return;
 
-        Intent deleteIntent = new Intent(context, clearReceiver)
+        Intent intent = new Intent(context, clearReceiver)
                 .setAction(options.getIdStr())
                 .putExtra(Options.EXTRA, options.toString());
 
-        PendingIntent dpi = PendingIntent.getBroadcast(
-                context, 0, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent deleteIntent = PendingIntent.getBroadcast(
+                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        builder.setDeleteIntent(dpi);
+        builder.setDeleteIntent(deleteIntent);
     }
 
     /**
@@ -183,10 +189,10 @@ public class Builder {
                 .putExtra(Options.EXTRA, options.toString())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int requestCode = new Random().nextInt();
+        int reqCode = new Random().nextInt();
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
     }

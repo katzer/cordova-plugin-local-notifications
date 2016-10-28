@@ -27,6 +27,7 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,6 +110,9 @@ public class Options {
         if (every.equals("month")) {
             interval = AlarmManager.INTERVAL_DAY * 31;
         } else
+        if (every.equals("quarter")) {
+            interval = AlarmManager.INTERVAL_HOUR * 2190;
+        } else
         if (every.equals("year")) {
             interval = AlarmManager.INTERVAL_DAY * 365;
         } else {
@@ -125,10 +129,10 @@ public class Options {
      */
     private void parseAssets() {
 
-        if (options.has("iconUri"))
+        if (options.has("iconUri") && !options.optBoolean("updated"))
             return;
 
-        Uri iconUri = assets.parse(options.optString("icon", "icon"));
+        Uri iconUri  = assets.parse(options.optString("icon", "res://icon"));
         Uri soundUri = assets.parseSound(options.optString("sound", null));
 
         try {
@@ -213,10 +217,7 @@ public class Options {
      * Trigger date in milliseconds.
      */
     public long getTriggerTime() {
-        return Math.max(
-                System.currentTimeMillis(),
-                options.optLong("at", 0) * 1000
-        );
+        return options.optLong("at", 0) * 1000;
     }
 
     /**
@@ -238,12 +239,68 @@ public class Options {
      *      The notification color for LED
      */
     public int getLedColor() {
-        String hex = options.optString("led", "000000");
-        int aRGB   = Integer.parseInt(hex,16);
+        String hex = options.optString("led", null);
 
-        aRGB += 0xFF000000;
+        if (hex == null) {
+            return 0;
+        }
 
-        return aRGB;
+        int aRGB = Integer.parseInt(hex, 16);
+
+        return aRGB + 0xFF000000;
+    }
+
+    /**
+     * @return
+     *      The time that the LED should be on (in milliseconds).
+     */
+    public int getLedOnTime() {
+        String timeOn = options.optString("ledOnTime", null);
+
+        if (timeOn == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOn);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+
+    /**
+     * @return
+     *      The time that the LED should be off (in milliseconds).
+     */
+    public int getLedOffTime() {
+        String timeOff = options.optString("ledOffTime", null);
+
+        if (timeOff == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOff);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+
+    /**
+     * @return
+     *      The notification background color for the small icon
+     *      Returns null, if no color is given.
+     */
+    public int getColor() {
+        String hex = options.optString("color", null);
+
+        if (hex == null) {
+            return NotificationCompat.COLOR_DEFAULT;
+        }
+
+        int aRGB = Integer.parseInt(hex, 16);
+
+        return aRGB + 0xFF000000;
     }
 
     /**
@@ -265,17 +322,36 @@ public class Options {
      * Icon bitmap for the local notification.
      */
     public Bitmap getIconBitmap() {
-        String icon = options.optString("icon", "icon");
         Bitmap bmp;
 
-        try{
+        try {
             Uri uri = Uri.parse(options.optString("iconUri"));
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
-            bmp = assets.getIconFromDrawable(icon);
+            e.printStackTrace();
+            bmp = assets.getIconFromDrawable("icon");
         }
 
         return bmp;
+    }
+
+    /**
+     * Icon resource ID for the local notification.
+     */
+    public int getIcon () {
+        String icon = options.optString("icon", "");
+
+        int resId = assets.getResIdForDrawable(icon);
+
+        if (resId == 0) {
+            resId = getSmallIcon();
+        }
+
+        if (resId == 0) {
+            resId = android.R.drawable.ic_popup_reminder;
+        }
+
+        return resId;
     }
 
     /**
@@ -284,13 +360,7 @@ public class Options {
     public int getSmallIcon () {
         String icon = options.optString("smallIcon", "");
 
-        int resId = assets.getResIdForDrawable(icon);
-
-        if (resId == 0) {
-            resId = android.R.drawable.screen_background_dark;
-        }
-
-        return resId;
+        return assets.getResIdForDrawable(icon);
     }
 
     /**

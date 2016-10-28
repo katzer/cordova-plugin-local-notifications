@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.2-dev">
+        version="0.8.4">
 
     <name>LocalNotification</name>
 
@@ -20,11 +20,14 @@
     <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.6.0" />
-        <engine name="cordova" version="<4.0.0" />
+        <!-- TODO next version: Probably I meant cordova-lib -->
+        <!-- <engine name="cordova-plugman" version=">=4.3.0" /> -->
+        <engine name="cordova-windows" version=">=4.2.0" />
     </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
+    <dependency id="cordova-plugin-app-event" />
 
     <!-- info -->
     <info>
@@ -53,8 +56,6 @@
     <!-- ios -->
     <platform name="ios">
 
-        <dependency id="de.appplant.cordova.common.registerusernotificationsettings" />
-
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
                 <param name="ios-package" value="APPLocalNotification" onload="true" />
@@ -79,7 +80,7 @@
     <!-- android -->
     <platform name="android">
 
-        <dependency id="cordova-plugin-android-support-v4" />
+        <framework src="com.android.support:support-v4:+" value="gradle" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
@@ -203,6 +204,10 @@
     <!-- windows -->
     <platform name="windows">
 
+        <config-file target="config.xml" parent="/*" >
+            <preference name="WindowsToastCapable" value="true" />
+        </config-file>
+
         <js-module src="src/windows/LocalNotificationProxy.js" name="LocalNotification.Proxy" >
             <merges target="" />
         </js-module>
@@ -214,14 +219,6 @@
         <js-module src="src/windows/LocalNotificationUtil.js" name="LocalNotification.Proxy.Util" >
             <merges target="" />
         </js-module>
-
-        <!-- Platform Hooks -->
-        <hook type="after_platform_add" src="scripts/windows/setToastCapable.js" />
-        <hook type="after_plugin_install" src="scripts/windows/setToastCapable.js" />
-
-        <hook type="after_platform_add" src="scripts/windows/broadcastActivateEvent.js" />
-        <hook type="after_plugin_install" src="scripts/windows/broadcastActivateEvent.js" />
-        <hook type="after_prepare" src="scripts/windows/broadcastActivateEvent.js" />
 
     </platform>
 
