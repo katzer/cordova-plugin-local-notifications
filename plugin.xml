@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.4">
+        version="0.8.5-dev">
 
     <name>LocalNotification</name>
 
@@ -11,7 +11,7 @@
 
     <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
 
-    <keywords>appplant, notification, local notification</keywords>
+    <keywords>appplant, notification, local notification, user notification</keywords>
 
     <license>Apache 2.0</license>
 
@@ -20,22 +20,14 @@
     <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.6.0" />
-        <!-- TODO next version: Probably I meant cordova-lib -->
-        <!-- <engine name="cordova-plugman" version=">=4.3.0" /> -->
+        <engine name="cordova-plugman" version=">=4.3.0" />
         <engine name="cordova-windows" version=">=4.2.0" />
+        <engine name="apple-ios" version=">=10.0.0" />
     </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
     <dependency id="cordova-plugin-app-event" />
-
-    <!-- info -->
-    <info>
-        Your support is needed. If you use the local-notification plugin please support us in order to ensure further development.
-        https://github.com/katzer/cordova-plugin-local-notifications#supporting
-
-        Thank you!
-    </info>
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -63,17 +55,31 @@
             </feature>
         </config-file>
 
+        <framework src="UserNotifications.framework" />
+
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />
 
         <header-file src="src/ios/APPLocalNotificationOptions.h" />
         <source-file src="src/ios/APPLocalNotificationOptions.m" />
 
-        <header-file src="src/ios/UIApplication+APPLocalNotification.h" />
-        <source-file src="src/ios/UIApplication+APPLocalNotification.m" />
+        <header-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.h" />
+        <source-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.m" />
 
-        <header-file src="src/ios/UILocalNotification+APPLocalNotification.h" />
-        <source-file src="src/ios/UILocalNotification+APPLocalNotification.m" />
+        <header-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.h" />
+        <source-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.m" />
+
+        <header-file src="src/ios/UNNotificationRequest+APPLocalNotification.h" />
+        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" />
+
+        <header-file src="src/ios9/APPLocalNotificationOptions.ios9.h" />
+        <source-file src="src/ios9/APPLocalNotificationOptions.ios9.m" />
+
+        <header-file src="src/ios9/UIApplication+APPLocalNotification.ios9.h" />
+        <source-file src="src/ios9/UIApplication+APPLocalNotification.ios9.m" />
+
+        <header-file src="src/ios9/UILocalNotification+APPLocalNotification.ios9.h" />
+        <source-file src="src/ios9/UILocalNotification+APPLocalNotification.ios9.m" />
 
     </platform>
 
