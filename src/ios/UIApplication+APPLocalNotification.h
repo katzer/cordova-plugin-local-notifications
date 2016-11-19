@@ -21,7 +21,7 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UILocalNotification+APPLocalNotification.ios9.h"
+#import "UILocalNotification+APPLocalNotification.h"
 
 @interface UIApplication (APPLocalNotification)
 
@@ -34,26 +34,26 @@
 - (void) registerPermissionToScheduleLocalNotifications;
 
 // List of all local notification IDs from given type
-- (NSArray*) localNotificationIdsByType:(APPNotificationType)type;
+- (NSArray*) localNotificationIdsByType:(APPLocalNotificationType)type;
 
 // If local notification with ID exists
 - (BOOL) localNotificationExist:(NSNumber*)id;
 // If local notification with ID and type exists
-- (BOOL) localNotificationExist:(NSNumber*)id type:(APPNotificationType)type;
+- (BOOL) localNotificationExist:(NSNumber*)id type:(APPLocalNotificationType)type;
 
 // Local notification by ID
 - (UILocalNotification*) localNotificationWithId:(NSNumber*)id;
 // Local notification by ID and type
-- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPNotificationType)type;
+- (UILocalNotification*) localNotificationWithId:(NSNumber*)id andType:(APPLocalNotificationType)type;
 
 // Property list from all local notifications
 - (NSArray*) localNotificationOptions;
 // Property list from given local notifications
 - (NSArray*) localNotificationOptionsById:(NSArray*)ids;
 // Property list from all local notifications with type constraint
-- (NSArray*) localNotificationOptionsByType:(APPNotificationType)type;
+- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type;
 // Property list from given local notifications with type constraint
-- (NSArray*) localNotificationOptionsByType:(APPNotificationType)type andId:(NSArray*)ids;
+- (NSArray*) localNotificationOptionsByType:(APPLocalNotificationType)type andId:(NSArray*)ids;
 
 // Clear single local notfications
 - (void) clearLocalNotification:(UILocalNotification*)notification;

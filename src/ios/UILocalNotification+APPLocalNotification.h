@@ -23,16 +23,34 @@
 
 #import "APPLocalNotificationOptions.h"
 
-@import UserNotifications;
+typedef NS_ENUM(NSUInteger, APPLocalNotificationType) {
+    NotifcationTypeAll = 0,
+    NotifcationTypeScheduled = 1,
+    NotifcationTypeTriggered = 2
+};
 
-@interface UNMutableNotificationContent (APPLocalNotification)
+@interface UILocalNotification (APPLocalNotification)
 
 // Initialize a new local notification
 - (id) initWithOptions:(NSDictionary*)dict;
 // The options provided by the plug-in
 - (APPLocalNotificationOptions*) options;
-// Fully configured request to add the notification to the notification center
-- (UNNotificationRequest*) request;
+// Timeinterval since last trigger date
+- (double) timeIntervalSinceLastTrigger;
+// Timeinterval since fire date
+- (double) timeIntervalSinceFireDate;
+// If the fire date was in the past
+- (BOOL) wasInThePast;
+// If the notification was already scheduled
+- (BOOL) isScheduled;
+// If the notification was already triggered
+- (BOOL) isTriggered;
+// If the notification was updated
+- (BOOL) wasUpdated;
+// If it's a repeating notification
+- (BOOL) isRepeating;
+// Notifciation type
+- (APPLocalNotificationType) type;
 // Encode the user info dict to JSON
 - (NSString*) encodeToJSON;
 
