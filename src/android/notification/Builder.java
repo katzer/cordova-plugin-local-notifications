@@ -122,6 +122,7 @@ public class Builder {
 
         builder = new NotificationCompat.Builder(context)
                 .setDefaults(0)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setNumber(options.getBadgeNumber())
