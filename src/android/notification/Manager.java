@@ -112,7 +112,7 @@ public class Manager {
     public Notification updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
 
-        if (notification =! null)
+        if (notification != null)
         {
             JSONObject options = mergeJSONObjects(
                 notification.getOptions().getDict(), updates);
