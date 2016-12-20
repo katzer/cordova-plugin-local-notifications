@@ -59,6 +59,22 @@ exports.update = function (success, error, notifications) {
 };
 
 /**
+ * Update a progress of a existing notifications specified by IDs in options.
+ *
+ * @param {Function} success
+ *      Success callback
+ * @param {Function} error
+ *      Error callback
+ * @param {Object[]} notifications
+ *      Array of local notifications
+ */
+exports.updateProgress = function (success, error, notifications) {
+    exports.core.updateProgress(notifications);
+
+    success();
+};
+
+/**
  * Clear the specified notification.
  *
  * @param {Function} success
