@@ -132,6 +132,8 @@ public class Manager {
                 } else {
                     notification.getNotMgr().notify(id, notification.getBuilder().build());            
                 }
+
+            return notification;
             } catch (JSONException ignore) {}
         }
     }
