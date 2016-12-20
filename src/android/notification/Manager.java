@@ -109,7 +109,7 @@ public class Manager {
      * @param receiver
      *      Receiver to handle the trigger event
      */
-    public void updateProgress (int id, JSONObject updates, Class<?> receiver) {
+    public Notification updateProgress (int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
 
         if (notification == null)
@@ -134,6 +134,7 @@ public class Manager {
                 }
 
             return notification;
+            
             } catch (JSONException ignore) {}
         }
     }
