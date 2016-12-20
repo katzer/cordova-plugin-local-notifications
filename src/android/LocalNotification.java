@@ -142,6 +142,10 @@ public class LocalNotification extends CordovaPlugin {
                     update(args);
                     command.success();
                 }
+                else if (action.equals("updateProgress")) {
+                    updateProgress(args);
+                    command.success();
+                }
                 else if (action.equals("cancel")) {
                     cancel(args);
                     command.success();
@@ -238,6 +242,27 @@ public class LocalNotification extends CordovaPlugin {
                 continue;
 
             fireEvent("update", notification);
+        }
+    }
+
+    /**
+     * Update progress local notifications.
+     *
+     * @param updates
+     *      Notification properties including their IDs
+     */
+    private void updateProgress (JSONArray updates) {
+        for (int i = 0; i < updates.length(); i++) {
+            JSONObject update = updates.optJSONObject(i);
+            int id = update.optInt("id", 0);
+
+            Notification notification =
+                    getNotificationMgr().updateProgress(id, update, TriggerReceiver.class);
+
+            if (notification == null)
+                continue;
+
+            fireEvent("updateProgress", notification);
         }
     }
 
