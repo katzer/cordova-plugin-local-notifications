@@ -189,7 +189,8 @@ public class Notification {
             getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
                     triggerTime, options.getRepeatInterval(), pi);
         } else {
-            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+            // Use setExact for strict delivery guarantee on one-time notifications
+            getAlarmMgr().setExact(AlarmManager.RTC_WAKEUP, triggerTime, pi);
         }
     }
 

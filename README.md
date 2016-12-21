@@ -90,6 +90,12 @@ cordova.plugins.notification.local.on("click", function (notification) {
 
 Find out more informations [here][wiki_samples] in our wiki.
 
+:warning: On __Android__, beginning with API 19 (KITKAT) alarm delivery is inexact: the OS will shift alarms in order to minimize wakeups and battery use. Repeating notifications are subjected to these OS shifts by design. However, for one-time notifications, this plugin uses the `setExact()` native API call to make sure they are delivered as close as possible to the requested trigger time. Exercise caution when using one-time notifications as they may cause constant device wakeups, thus increasing battery use.
+
+For more information check [here][android_alarm].
+
+__iOS__ is not affected by this.
+
 
 ## I would like to propose new features
 We appricate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
@@ -132,3 +138,4 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [wiki_next]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Feature-Requests
 [feature_proposal_issue]: https://github.com/katzer/cordova-plugin-local-notifications/issues/451
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
+[android_alarm]: https://developer.android.com/reference/android/app/AlarmManager.html
