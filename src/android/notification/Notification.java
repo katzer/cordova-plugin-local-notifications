@@ -319,7 +319,7 @@ public class Notification {
     /**
      * Notification manager for the application.
      */
-    private NotificationManager getNotMgr () {
+    public NotificationManager getNotMgr () {
         return (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }
@@ -339,6 +339,13 @@ public class Notification {
      */
     public static void setDefaultTriggerReceiver (Class<?> receiver) {
         defaultReceiver = receiver;
+    }
+
+    /**		      
+    * Get notification builder.		
+    */		
+    public NotificationCompat.Builder getBuilder () {		
+        return builder;		
     }
 
 }
