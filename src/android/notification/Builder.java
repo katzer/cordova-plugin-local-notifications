@@ -118,8 +118,6 @@ public class Builder {
         Uri sound     = options.getSoundUri();
         int smallIcon = options.getSmallIcon();
         int ledColor  = options.getLedColor();
-        Boolean progress = options.getProgress(); 
-        Boolean removeProgress = options.getRemoveProgress(); 
         NotificationCompat.Builder builder;
 
         builder = new NotificationCompat.Builder(context)
@@ -133,21 +131,16 @@ public class Builder {
                 .setColor(options.getColor());
 
         if (ledColor != 0) {
-            builder.setLights(ledColor, 100, 100);
+            builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
         }
 
         if (sound != null) {
             builder.setSound(sound);
         }
-        
+
         if (progress != null) {
             if (progress)
                 builder.setProgress(options.getMaxProgress(), options.getCurrentProgress(), false);
-        }
-
-        if (removeProgress != null) {
-            if (removeProgress)
-                builder.setProgress(0, 0, false);
         }
 
         if (smallIcon == 0) {

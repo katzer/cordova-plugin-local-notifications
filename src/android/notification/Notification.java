@@ -102,13 +102,6 @@ public class Notification {
     }
 
     /**
-     * Get notification builder.
-     */
-    public NotificationCompat.Builder getBuilder () {
-        return builder;
-    }
-
-    /**
      * Get notification ID.
      */
     public int getId () {
@@ -242,7 +235,8 @@ public class Notification {
             // Notification for HoneyComb to ICS
             getNotMgr().notify(id, builder.getNotification());
         } else {
-            getNotMgr().notify(id, builder.build());            
+            // Notification for Jellybean and above
+            getNotMgr().notify(id, builder.build());
         }
     }
 
@@ -325,7 +319,7 @@ public class Notification {
     /**
      * Notification manager for the application.
      */
-    public NotificationManager getNotMgr () {
+    private NotificationManager getNotMgr () {
         return (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }

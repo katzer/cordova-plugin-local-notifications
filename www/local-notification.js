@@ -62,23 +62,6 @@ exports.schedule = function (notifications, callback, scope, args) {
 };
 
 /**
- * Update existing notifications specified by IDs in options.
- *
- * @param {Object} notifications
- *      The notification properties to update
- * @param {Function} callback
- *      A function to be called after the notification has been updated
- * @param {Object?} scope
- *      The scope for the callback function
- * @param {Object?} args
- *      skipPermission:true schedules the notifications immediatly without
- *                          registering or checking for permission
- */
-exports.update = function (notifications, callback, scope, args) {
-    this.core.update(notifications, callback, scope, args);
-};
-
-/**
  * Update existing notifications with progress specified by IDs in options.
  *
  * @param {Object} notifications
@@ -93,6 +76,23 @@ exports.update = function (notifications, callback, scope, args) {
  */
 exports.updateProgress = function (notifications, callback, scope, args) {
     this.core.updateProgress(notifications, callback, scope, args);
+};
+
+/**
+ * Update existing notifications specified by IDs in options.
+ *
+ * @param {Object} notifications
+ *      The notification properties to update
+ * @param {Function} callback
+ *      A function to be called after the notification has been updated
+ * @param {Object?} scope
+ *      The scope for the callback function
+ * @param {Object?} args
+ *      skipPermission:true schedules the notifications immediatly without
+ *                          registering or checking for permission
+ */
+exports.update = function (notifications, callback, scope, args) {
+    this.core.update(notifications, callback, scope, args);
 };
 
 /**

@@ -22,11 +22,10 @@
  */
 
 package de.appplant.cordova.plugin.notification;
-import android.os.Build;
+
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-// import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,8 +98,8 @@ public class Manager {
         return notification;
     }
 
-    /**
-     * Clear local notification specified by ID.
+     /**
+     * Update the progress of a local notification 
      *
      * @param id
      *      The notification ID

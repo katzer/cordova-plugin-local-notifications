@@ -156,22 +156,6 @@ proxy.core = {
         }
     },
 
-        /**
-     * Updates progress of existing notifications specified by IDs in options.
-     *
-     * @param {Object[]} notifications
-     *      Array of local notifications
-     */
-    updateProgress: function (notifications) {
-        for (var i = 0; i < notifications.length; i++) {
-            var updates = notifications[i],
-                options = getAll(updates.id || '0')[0];
-
-            this.updateProgressLocalNotification(options, updates);
-            this.fireEvent('update', options);
-        }
-    },
-
     /**
      * Updates a single local notification.
      *
@@ -186,22 +170,6 @@ proxy.core = {
         }
 
         this.cancelLocalNotification(notification.id);
-        this.scheduleLocalNotification(notification);
-    },
-
-        /**
-     * Updates a progress of a single local notification.
-     *
-     * @param {Object} notification
-     *      The local notification
-     * @param {Object} updates
-     *      Updated properties
-     */
-    updateProgressLocalNotification: function (notification, updates) {
-        for (var key in updates) {
-            notification[key] = updates[key];
-        }
-
         this.scheduleLocalNotification(notification);
     },
 

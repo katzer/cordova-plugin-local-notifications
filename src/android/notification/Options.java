@@ -252,6 +252,42 @@ public class Options {
 
     /**
      * @return
+     *      The time that the LED should be on (in milliseconds).
+     */
+    public int getLedOnTime() {
+        String timeOn = options.optString("ledOnTime", null);
+
+        if (timeOn == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOn);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+
+    /**
+     * @return
+     *      The time that the LED should be off (in milliseconds).
+     */
+    public int getLedOffTime() {
+        String timeOff = options.optString("ledOffTime", null);
+
+        if (timeOff == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOff);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+
+    /**
+     * @return
      *      The notification background color for the small icon
      *      Returns null, if no color is given.
      */
@@ -334,7 +370,7 @@ public class Options {
         return options.toString();
     }
 
-    /**
+        /**
      * Display progress for the local notification as a number.
      */
     public Boolean getProgress() {
@@ -361,4 +397,5 @@ public class Options {
     public Integer getCurrentProgress() {
         return options.optInt("currentProgress", 0);
     }
+
 }

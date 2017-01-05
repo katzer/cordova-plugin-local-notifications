@@ -224,6 +224,27 @@ public class LocalNotification extends CordovaPlugin {
         }
     }
 
+     /**
+     * Update progress local notifications.
+     *
+     * @param updates
+     *      Notification properties including their IDs
+     */
+    private void updateProgress (JSONArray updates) {
+        for (int i = 0; i < updates.length(); i++) {
+            JSONObject update = updates.optJSONObject(i);
+            int id = update.optInt("id", 0);
+
+            Notification notification =
+                    getNotificationMgr().updateProgress(id, update, TriggerReceiver.class);
+
+            if (notification == null)
+                continue;
+
+            fireEvent("updateProgress", notification);
+        }
+    }
+
     /**
      * Update multiple local notifications.
      *
@@ -242,27 +263,6 @@ public class LocalNotification extends CordovaPlugin {
                 continue;
 
             fireEvent("update", notification);
-        }
-    }
-
-    /**
-     * Update progress local notifications.
-     *
-     * @param updates
-     *      Notification properties including their IDs
-     */
-    private void updateProgress (JSONArray updates) {
-        for (int i = 0; i < updates.length(); i++) {
-            JSONObject update = updates.optJSONObject(i);
-            int id = update.optInt("id", 0);
-
-            Notification notification =
-                    getNotificationMgr().updateProgress(id, update, TriggerReceiver.class);
-
-            if (notification == null)
-                continue;
-
-            fireEvent("updateProgress", notification);
         }
     }
 

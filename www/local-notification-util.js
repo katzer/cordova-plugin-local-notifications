@@ -38,11 +38,7 @@ exports._defaults = {
     id:    0,
     data:  undefined,
     every: undefined,
-    at:    undefined,
-    progress: false,
-    removeProgress: false,
-    maxProgress: 0,
-    currentProgress: 0,
+    at:    undefined
 };
 
 // listener
@@ -72,6 +68,8 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.ongoing   = false;
         defaults.autoClear = true;
         defaults.led       = undefined;
+        defaults.ledOnTime = undefined;
+        defaults.ledOffTime = undefined;
         defaults.color     = undefined;
         break;
     }
