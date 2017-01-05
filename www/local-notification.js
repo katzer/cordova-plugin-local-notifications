@@ -75,6 +75,7 @@ exports.schedule = function (notifications, callback, scope, args) {
  *                          registering or checking for permission
  */
 exports.updateProgress = function (notifications, callback, scope, args) {
+    console.log("entrou updateprogress 1");
     this.core.updateProgress(notifications, callback, scope, args);
 };
 

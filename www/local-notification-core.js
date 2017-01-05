@@ -103,6 +103,7 @@ exports.schedule = function (msgs, callback, scope, args) {
  *                          registering or checking for permission
  */
 exports.updateProgress = function (msgs, callback, scope, args) {
+    console.log("entrou updateprogress 2");
     var fn = function(granted) {
 
         if (!granted) return;
