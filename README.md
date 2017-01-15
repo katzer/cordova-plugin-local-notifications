@@ -7,7 +7,7 @@
 
 2. For the future I am looking for other opportunities to support and enhance the plugin. That might be a crowdfunding campain or adding other core maintainers. Everyone with an serious interest is welcome to contact me!
 
-3. I am aware of the growing number of open issues and pull. Therefore, there's a new ticket template that can be found [here][ticket_template]. For every new issue please add an filled template. That will help rwillet and me to faster response to your issue. If you ignore this template, we'll ignore your issue.
+3. I am aware of the growing number of open issues and pull. Therefore, there's a new ticket template that can be found [here][ticket_template]. For every new issue please add an filled template. That will help rwillett and me to faster response to your issue. If you ignore this template, we'll ignore your issue.
 
 Thanks for using my plugin and for your support!</br>
 Sebastián Katzer
