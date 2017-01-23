@@ -209,15 +209,15 @@
         </config-file>
 
         <js-module src="src/windows/LocalNotificationProxy.js" name="LocalNotification.Proxy" >
-            <merges target="" />
+            <runs />
         </js-module>
 
         <js-module src="src/windows/LocalNotificationCore.js" name="LocalNotification.Proxy.Core" >
-            <merges target="" />
+            <runs />
         </js-module>
 
         <js-module src="src/windows/LocalNotificationUtil.js" name="LocalNotification.Proxy.Util" >
-            <merges target="" />
+            <runs />
         </js-module>
 
     </platform>
