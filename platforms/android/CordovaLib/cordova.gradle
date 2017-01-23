@@ -61,7 +61,7 @@ String doFindLatestInstalledBuildTools(String minBuildToolsVersion) {
         highestBuildToolsVersion
     } else {
         throw new RuntimeException(
-            "No installed build tools found. Please install the Android build tools version " +
+            "No installed build tools found. Install the Android build tools version " +
             minBuildToolsVersion + " or higher.")
     }
 }
@@ -125,7 +125,7 @@ def doExtractIntFromManifest(name) {
     def pattern = Pattern.compile(name + "=\"(\\d+)\"")
     def matcher = pattern.matcher(manifestFile.getText())
     matcher.find()
-    return Integer.parseInt(matcher.group(1))
+    return new BigInteger(matcher.group(1))
 }
 
 def doExtractStringFromManifest(name) {

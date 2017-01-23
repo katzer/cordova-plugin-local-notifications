@@ -22,7 +22,6 @@ var fs = require('fs');
 var util = require('util');
 var path = require('path');
 var shell = require('shelljs');
-var child_process = require('child_process');
 var spawn = require('cordova-common').superspawn.spawn;
 var CordovaError = require('cordova-common').CordovaError;
 var check_reqs = require('../check_reqs');
@@ -56,6 +55,8 @@ GradleBuilder.prototype.getArgs = function(cmd, opts) {
 
     // 10 seconds -> 6 seconds
     args.push('-Dorg.gradle.daemon=true');
+    // to allow dex in process
+    args.push('-Dorg.gradle.jvmargs=-Xmx2048m');
     // allow NDK to be used - required by Gradle 1.5 plugin
     args.push('-Pandroid.useDeprecatedNdk=true');
     args.push.apply(args, opts.extraArgs);
@@ -70,12 +71,21 @@ GradleBuilder.prototype.prepBuildFiles = function() {
     var pluginBuildGradle = path.join(this.root, 'cordova', 'lib', 'plugin-build.gradle');
     var propertiesObj = this.readProjectProperties();
     var subProjects = propertiesObj.libs;
+    var checkAndCopy = function(subProject, root) {
+      var subProjectGradle = path.join(root, subProject, 'build.gradle');
+      // This is the future-proof way of checking if a file exists
+      // This must be synchronous to satisfy a Travis test
+      try {
+          fs.accessSync(subProjectGradle, fs.F_OK);
+      } catch (e) {
+          shell.cp('-f', pluginBuildGradle, subProjectGradle);
+      }
+    };
     for (var i = 0; i < subProjects.length; ++i) {
         if (subProjects[i] !== 'CordovaLib') {
-            shell.cp('-f', pluginBuildGradle, path.join(this.root, subProjects[i], 'build.gradle'));
+          checkAndCopy(subProjects[i], this.root);
         }
     }
-
     var name = this.extractRealProjectNameFromManifest();
     //Remove the proj.id/name- prefix from projects: https://issues.apache.org/jira/browse/CB-9149
     var settingsGradlePaths =  subProjects.map(function(p){
@@ -94,10 +104,24 @@ GradleBuilder.prototype.prepBuildFiles = function() {
     // Update dependencies within build.gradle.
     var buildGradle = fs.readFileSync(path.join(this.root, 'build.gradle'), 'utf8');
     var depsList = '';
+    var root = this.root;
+    var insertExclude = function(p) {
+          var gradlePath = path.join(root, p, 'build.gradle');
+          var projectGradleFile = fs.readFileSync(gradlePath, 'utf-8');
+          if(projectGradleFile.indexOf('CordovaLib') != -1) {
+            depsList += '{\n        exclude module:("CordovaLib")\n    }\n';
+          }
+          else {
+            depsList +='\n';
+          }
+    };
     subProjects.forEach(function(p) {
+        console.log('Subproject Path: ' + p);
         var libName=p.replace(/[/\\]/g, ':').replace(name+'-','');
-        depsList += '    debugCompile project(path: "' + libName + '", configuration: "debug")\n';
-        depsList += '    releaseCompile project(path: "' + libName + '", configuration: "release")\n';
+        depsList += '    debugCompile(project(path: "' + libName + '", configuration: "debug"))';
+        insertExclude(p);
+        depsList += '    releaseCompile(project(path: "' + libName + '", configuration: "release"))';
+        insertExclude(p);
     });
     // For why we do this mapping: https://issues.apache.org/jira/browse/CB-8390
     var SYSTEM_LIBRARY_MAPPINGS = [
@@ -162,7 +186,7 @@ GradleBuilder.prototype.prepEnv = function(opts) {
         // For some reason, using ^ and $ don't work.  This does the job, though.
         var distributionUrlRegex = /distributionUrl.*zip/;
         /*jshint -W069 */
-        var distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || 'http\\://services.gradle.org/distributions/gradle-2.2.1-all.zip';
+        var distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || 'http\\://services.gradle.org/distributions/gradle-2.14.1-all.zip';
         /*jshint +W069 */
         var gradleWrapperPropertiesPath = path.join(self.root, 'gradle', 'wrapper', 'gradle-wrapper.properties');
         shell.chmod('u+w', gradleWrapperPropertiesPath);
@@ -185,7 +209,35 @@ GradleBuilder.prototype.prepEnv = function(opts) {
 GradleBuilder.prototype.build = function(opts) {
     var wrapper = path.join(this.root, 'gradlew');
     var args = this.getArgs(opts.buildType == 'debug' ? 'debug' : 'release', opts);
-    return spawnAndSuppressJavaOptions(wrapper, args);
+
+    return spawn(wrapper, args, {stdio: 'pipe'})
+    .progress(function (stdio){
+        if (stdio.stderr) {
+            /*
+             * Workaround for the issue with Java printing some unwanted information to
+             * stderr instead of stdout.
+             * This function suppresses 'Picked up _JAVA_OPTIONS' message from being
+             * printed to stderr. See https://issues.apache.org/jira/browse/CB-9971 for
+             * explanation.
+             */
+            var suppressThisLine = /^Picked up _JAVA_OPTIONS: /i.test(stdio.stderr.toString());
+            if (suppressThisLine) {
+                return;
+            }
+            process.stderr.write(stdio.stderr);
+        } else {
+            process.stdout.write(stdio.stdout);
+        }
+    }).catch(function (error) {
+        if (error.toString().indexOf('failed to find target with hash string') >= 0) {
+            return check_reqs.check_android_target(error).then(function() {
+                // If due to some odd reason - check_android_target succeeds
+                // we should still fail here.
+                return Q.reject(error);
+            });
+        }
+        return Q.reject(error);
+    });
 };
 
 GradleBuilder.prototype.clean = function(opts) {
@@ -211,65 +263,4 @@ module.exports = GradleBuilder;
 
 function isAutoGenerated(file) {
     return fs.existsSync(file) && fs.readFileSync(file, 'utf8').indexOf(MARKER) > 0;
-}
-
-/**
- * A special superspawn-like implementation, required to workaround the issue
- *   with Java printing some unwanted information to stderr instead of stdout.
- *   This function suppresses 'Picked up _JAVA_OPTIONS' message from being
- *   printed to stderr. See https://issues.apache.org/jira/browse/CB-9971 for
- *   explanation.
- *
- * This function needed because superspawn does not provide a way to get and
- *   manage spawned process output streams. There is a CB-10052 which describes
- *   an improvements for superspawn, needed to get rid of this.
- * TODO: Once this improvement added to cordova-common, we could remove this functionality.
- *
- * @param   {String}    cmd   A command to spawn
- * @param   {String[]}  args  Command arguments. Note that on Windows arguments
- *   will be concatenated into string and passed to 'cmd.exe' along with '/s'
- *   and '/c' switches for proper space-in-path handling
- *
- * @return  {Promise}        A promise, rejected with error message if
- *   underlying command exits with nonzero exit code, fulfilled otherwise
- */
-function spawnAndSuppressJavaOptions(cmd, args) {
-    var opts = { stdio: 'pipe' };
-
-    if (process.platform === 'win32') {
-        // Work around spawn not being able to find .bat files.
-        var joinedArgs = [cmd]
-            .concat(args)
-            .map(function(a){
-                // Add quotes to arguments which contains whitespaces
-                if (/^[^"].* .*[^"]/.test(a)) return '"' + a + '"';
-                return a;
-            }).join(' ');
-
-        args = ['/s', '/c'].concat('"' + joinedArgs + '"');
-        cmd = 'cmd';
-        opts.windowsVerbatimArguments = true;
-    }
-
-    return Q.Promise(function (resolve, reject) {
-        var proc = child_process.spawn(cmd, args, opts);
-
-        proc.stdout.on('data', process.stdout.write.bind(process.stdout));
-        proc.stderr.on('data', function (data) {
-            var suppressThisLine = /^Picked up _JAVA_OPTIONS: /i.test(data.toString());
-            if (suppressThisLine) {
-                return;
-            }
-
-            process.stderr.write(data);
-        });
-
-        proc.on('exit', function(code) {
-            if (code) {
-                reject('Error code ' + code + ' for command: ' + cmd + ' with args: ' + args);
-            } else {
-                resolve();
-            }
-        });
-    });
 }

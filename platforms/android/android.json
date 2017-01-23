@@ -13,11 +13,15 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
+                            "xml": "<feature name=\"LocalNotification\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.localnotification.LocalNotification\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"LocalNotification\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.localnotification.LocalNotification\" /></feature>",
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -71,64 +75,77 @@
     },
     "installed_plugins": {
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
-        },
-        "cordova-plugin-x-toast": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
+            "PACKAGE_NAME": "io.cordova.hellocordova"
         },
         "cordova-plugin-app-event": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
+            "PACKAGE_NAME": "io.cordova.hellocordova"
         },
         "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
+            "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },
     "dependent_plugins": {},
     "modules": [
         {
-            "file": "plugins/cordova-plugin-device/www/device.js",
             "id": "cordova-plugin-device.device",
+            "file": "plugins/cordova-plugin-device/www/device.js",
+            "pluginId": "cordova-plugin-device",
             "clobbers": [
                 "device"
             ]
         },
         {
-            "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
-            "id": "cordova-plugin-x-toast.Toast",
-            "clobbers": [
-                "window.plugins.toast"
-            ]
-        },
-        {
-            "file": "plugins/cordova-plugin-x-toast/test/tests.js",
-            "id": "cordova-plugin-x-toast.tests"
-        },
-        {
-            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
             "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
             "clobbers": [
                 "cordova.plugins.notification.local",
                 "plugin.notification.local"
             ]
         },
         {
-            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
             "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
             "clobbers": [
                 "cordova.plugins.notification.local.core",
                 "plugin.notification.local.core"
             ]
         },
         {
-            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
             "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
             "merges": [
                 "cordova.plugins.notification.local.core",
                 "plugin.notification.local.core"
             ]
+        },
+        {
+            "id": "cordova-plugin-x-toast.Toast",
+            "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+            "pluginId": "cordova-plugin-x-toast",
+            "clobbers": [
+                "window.plugins.toast"
+            ]
+        },
+        {
+            "id": "cordova-plugin-x-toast.tests",
+            "file": "plugins/cordova-plugin-x-toast/test/tests.js",
+            "pluginId": "cordova-plugin-x-toast"
         }
     ],
     "plugin_metadata": {
-        "de.appplant.cordova.plugin.local-notification": "0.8.5-dev"
+        "cordova-plugin-device": "1.1.4",
+        "cordova-plugin-app-event": "1.2.0",
+        "de.appplant.cordova.plugin.local-notification": "0.8.4",
+        "cordova-plugin-whitelist": "1.3.1",
+        "cordova-plugin-x-toast": "2.5.2"
     }
 }
