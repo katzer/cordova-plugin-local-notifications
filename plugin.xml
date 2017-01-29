@@ -101,7 +101,7 @@
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay"
+                android:theme="@android:style/Theme.Translucent"
                 android:exported="false" />
 
             <receiver
@@ -121,7 +121,7 @@
             <activity
                 android:name="de.appplant.cordova.plugin.notification.ClickActivity"
                 android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.NoDisplay"
+                android:theme="@android:style/Theme.Translucent"
                 android:exported="false" />
 
         </config-file>
