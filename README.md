@@ -51,7 +51,7 @@ Please read the plugin's [README][readme] for further requirements and informati
 
 
 ### iOS8 Permission
-Since iOS8 to use of local noficiations the user has to grant the permission before trying to schedule them. When trying to schedule a notification for the first time, a special system dialog will popup.
+Since iOS8 to use of local notifications the user has to grant the permission before trying to schedule them. When trying to schedule a notification for the first time, a special system dialog will popup.
 
 Note that iOS will only prompt the user only once! Later the user needs to configure the settings manually.
 
