@@ -329,6 +329,14 @@ class AssetUtil {
             resId = (Integer) cls.getDeclaredField(drawable).get(Integer.class);
         } catch (Exception ignore) {}
 
+        if(resId == 0) {
+            try {
+                Class<?> cls  = Class.forName(clsName + ".R$mipmap");
+
+                resId = (Integer) cls.getDeclaredField(drawable).get(Integer.class);
+            } catch (Exception ignore) {}
+        }
+
         return resId;
     }
 
