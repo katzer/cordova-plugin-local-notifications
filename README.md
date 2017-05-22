@@ -9,6 +9,8 @@
 
 3. I am aware of the growing number of open issues and pull. Therefore, there's a new ticket template that can be found [here][ticket_template]. For every new issue please add an filled template. That will help rwillett and me to faster response to your issue. If you ignore this template, we'll ignore your issue.
 
+__UPDATE (22.05.2017)__ I've released v0.8.5 with contains the code from ios10 branch as it is. I will start working on a new major version while dropping support for older SDKs. I will try to include all you PRs.
+
 Thanks for using my plugin and for your support!</br>
 Sebastián Katzer
 
