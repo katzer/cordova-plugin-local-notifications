@@ -21,16 +21,15 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UILocalNotification+APPLocalNotification.h"
+#import "UNMutableNotificationContent+APPLocalNotification.h"
 #import "APPLocalNotificationOptions.h"
 #import <objc/runtime.h>
 
+@import UserNotifications;
+
 static char optionsKey;
 
-NSInteger const APPLocalNotificationTypeScheduled = 1;
-NSInteger const APPLocalNotificationTypeTriggered = 2;
-
-@implementation UILocalNotification (APPLocalNotification)
+@implementation UNMutableNotificationContent (APPLocalNotification)
 
 #pragma mark -
 #pragma mark Init
@@ -58,16 +57,11 @@ NSInteger const APPLocalNotificationTypeTriggered = 2;
 {
     APPLocalNotificationOptions* options = self.options;
 
-    self.fireDate = options.fireDate;
-    self.timeZone = [NSTimeZone defaultTimeZone];
-    self.applicationIconBadgeNumber = options.badgeNumber;
-    self.repeatInterval = options.repeatInterval;
-    self.alertBody = options.alertBody;
-    self.soundName = options.soundName;
-
-    if ([self wasInThePast]) {
-        self.fireDate = [NSDate date];
-    }
+    self.title    = options.title;
+    self.subtitle = options.subtitle;
+    self.body     = options.text;
+    self.sound    = options.sound;
+    self.badge    = options.badge;
 }
 
 #pragma mark -
@@ -108,53 +102,16 @@ NSInteger const APPLocalNotificationTypeTriggered = 2;
 }
 
 /**
- * The repeating interval in seconds.
+ * The notifcations request ready to add to the notification center including
+ * all informations about trigger behavior.
  */
-- (int) repeatIntervalInSeconds
+- (UNNotificationRequest*) request
 {
-    switch (self.repeatInterval) {
-        case NSCalendarUnitMinute:
-            return 60;
+    APPLocalNotificationOptions* opts = [self getOptions];
 
-        case NSCalendarUnitHour:
-            return 60000;
-
-        case NSCalendarUnitDay:
-        case NSCalendarUnitWeekOfYear:
-        case NSCalendarUnitMonth:
-        case NSCalendarUnitYear:
-            return 86400;
-
-        default:
-            return 1;
-    }
-}
-
-/**
- * Timeinterval since fire date.
- */
-- (double) timeIntervalSinceFireDate
-{
-    NSDate* now      = [NSDate date];
-    NSDate* fireDate = self.fireDate;
-
-    int timespan = [now timeIntervalSinceDate:fireDate];
-
-    return timespan;
-}
-
-/**
- * Timeinterval since last trigger date.
- */
-- (double) timeIntervalSinceLastTrigger
-{
-    int timespan = [self timeIntervalSinceFireDate];
-
-    if ([self isRepeating]) {
-        timespan = timespan % [self repeatIntervalInSeconds];
-    }
-
-    return timespan;
+    return [UNNotificationRequest requestWithIdentifier:opts.identifier
+                                                content:self
+                                                trigger:opts.trigger];
 }
 
 /**
@@ -180,68 +137,6 @@ NSInteger const APPLocalNotificationTypeTriggered = 2;
 
     return [json stringByReplacingOccurrencesOfString:@"\n"
                                            withString:@""];
-}
-
-#pragma mark -
-#pragma mark State
-
-/**
- * If the fire date was in the past.
- */
-- (BOOL) wasInThePast
-{
-    return [self timeIntervalSinceLastTrigger] > 0;
-}
-
-// If the notification was already scheduled
-- (BOOL) isScheduled
-{
-    return [self isRepeating] || ![self wasInThePast];
-}
-
-/**
- * If the notification was already triggered.
- */
-- (BOOL) isTriggered
-{
-    NSDate* now      = [NSDate date];
-    NSDate* fireDate = self.fireDate;
-
-    bool isLaterThanFireDate = !([now compare:fireDate] == NSOrderedAscending);
-
-    return isLaterThanFireDate;
-}
-
-/**
- * If the notification was updated.
- */
-- (BOOL) wasUpdated
-{
-    NSDate* now       = [NSDate date];
-    NSDate* updatedAt = [self.userInfo objectForKey:@"updatedAt"];
-
-    if (updatedAt == NULL)
-        return NO;
-
-    int timespan = [now timeIntervalSinceDate:updatedAt];
-
-    return timespan < 1;
-}
-
-/**
- * If it's a repeating notification.
- */
-- (BOOL) isRepeating
-{
-    return [self.options isRepeating];
-}
-
-/**
- * Process state type of the local notification.
- */
-- (APPLocalNotificationType) type
-{
-    return [self isTriggered] ? NotifcationTypeTriggered : NotifcationTypeScheduled;
 }
 
 @end

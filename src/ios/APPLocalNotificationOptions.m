@@ -23,8 +23,7 @@
 
 #import "APPLocalNotificationOptions.h"
 
-// Default sound ressource path
-NSString* const DEFAULT_SOUND = @"res://platform_default";
+@import UserNotifications;
 
 @interface APPLocalNotificationOptions ()
 
@@ -67,11 +66,29 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
 }
 
 /**
+ * The notification's ID as a string.
+ */
+- (NSString*) identifier
+{
+    return [NSString stringWithFormat:@"%@", self.id];
+}
+
+/**
  * The notification's title.
  */
 - (NSString*) title
 {
     return [dict objectForKey:@"title"];
+}
+
+/**
+ * The notification's title.
+ */
+- (NSString*) subtitle
+{
+    NSArray *parts = [self.title componentsSeparatedByString:@"\n"];
+
+    return parts.count < 2 ? @"" : [parts objectAtIndex:1];
 }
 
 /**
@@ -85,53 +102,33 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
 /**
  * The notification's badge number.
  */
-- (NSInteger) badgeNumber
+- (NSNumber*) badge
 {
-    return [[dict objectForKey:@"badge"] intValue];
-}
-
-#pragma mark -
-#pragma mark Complex Attributes
-
-/**
- * The notification's alert body.
- */
-- (NSString*) alertBody
-{
-    NSString* title = [self title];
-    NSString* msg = [self text];
-
-    NSString* alertBody = msg;
-
-    if (![self stringIsNullOrEmpty:title])
-    {
-        alertBody = [NSString stringWithFormat:@"%@\n%@",
-                     title, msg];
-    }
-
-    return alertBody;
+    return [NSNumber numberWithInt:[[dict objectForKey:@"badge"] intValue]];
 }
 
 /**
  * The notification's sound path.
  */
-- (NSString*) soundName
+- (UNNotificationSound*) sound
 {
     NSString* path = [dict objectForKey:@"sound"];
+    NSString* file;
 
     if ([self stringIsNullOrEmpty:path])
         return NULL;
 
-    if ([path isEqualToString:DEFAULT_SOUND])
-        return UILocalNotificationDefaultSoundName;
+    if ([path isEqualToString:@"res://platform_default"])
+        return [UNNotificationSound defaultSound];
 
-    if ([path hasPrefix:@"file:/"])
-        return [self soundNameForAsset:path];
+    if ([path hasPrefix:@"file:/"]) {
+        file = [self soundNameForAsset:path];
+    } else
+    if ([path hasPrefix:@"res:"]) {
+        file = [self soundNameForResource:path];
+    }
 
-    if ([path hasPrefix:@"res:"])
-        return [self soundNameForResource:path];
-
-    return NULL;
+    return [UNNotificationSound soundNamed:file];
 }
 
 /**
@@ -146,45 +143,25 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
 }
 
 /**
- * The notification's repeat interval.
+ * If it's a repeating notification.
  */
-- (NSCalendarUnit) repeatInterval
+- (BOOL) isRepeating
 {
     NSString* interval = [dict objectForKey:@"every"];
 
-    if ([self stringIsNullOrEmpty:interval]) {
-        return NSCalendarUnitEra;
-    }
-    else if ([interval isEqualToString:@"second"]) {
-        return NSCalendarUnitSecond;
-    }
-    else if ([interval isEqualToString:@"minute"]) {
-        return NSCalendarUnitMinute;
-    }
-    else if ([interval isEqualToString:@"hour"]) {
-        return NSCalendarUnitHour;
-    }
-    else if ([interval isEqualToString:@"day"]) {
-        return NSCalendarUnitDay;
-    }
-    else if ([interval isEqualToString:@"week"]) {
-        return NSCalendarUnitWeekOfYear;
-    }
-    else if ([interval isEqualToString:@"month"]) {
-        return NSCalendarUnitMonth;
-    }
-    else if ([interval isEqualToString:@"quarter"]) {
-        return NSCalendarUnitQuarter;
-    }
-    else if ([interval isEqualToString:@"year"]) {
-        return NSCalendarUnitYear;
-    }
-
-    return NSCalendarUnitEra;
+    return ![self stringIsNullOrEmpty:interval];
 }
 
 #pragma mark -
 #pragma mark Methods
+
+/**
+ * Specify how and when to trigger the notification.
+ */
+- (UNNotificationTrigger*) trigger
+{
+    return [self isRepeating] ? [self triggerWithDateMatchingComponents] : [self triggerWithTimeInterval];
+}
 
 /**
  * The notification's user info dict.
@@ -202,18 +179,79 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
     return dict;
 }
 
-/**
- * If it's a repeating notification.
- */
-- (BOOL) isRepeating
-{
-    NSCalendarUnit interval = self.repeatInterval;
+#pragma mark -
+#pragma mark Private
 
-    return !(interval == NSCalendarUnitEra || interval == 0);
+/**
+ * Returns a trigger based on a custom time interval in seconds.
+ */
+- (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
+{
+    return [UNTimeIntervalNotificationTrigger
+            triggerWithTimeInterval:[self timeInterval] repeats:NO];
 }
 
-#pragma mark -
-#pragma mark Helpers
+/**
+ * Returns a trigger based on a calendar time.
+ */
+- (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents
+{
+    NSCalendar* cal = [[NSCalendar alloc]
+                       initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+
+    NSDateComponents *date = [cal components:[self repeatInterval]
+                                    fromDate:[self fireDate]];
+
+    [date setTimeZone:[NSTimeZone defaultTimeZone]];
+
+    return [UNCalendarNotificationTrigger
+            triggerWithDateMatchingComponents:date repeats:YES];
+}
+
+/**
+ * Timeinterval between future fire date and now.
+ */
+- (double) timeInterval
+{
+    return MAX(0.01f, [self.fireDate timeIntervalSinceDate:[NSDate date]]);
+}
+
+/**
+ * The notification's repeat interval.
+ */
+- (NSCalendarUnit) repeatInterval
+{
+    NSString* interval = [dict objectForKey:@"every"];
+    NSCalendarUnit unitFlags = NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
+
+
+    if ([self stringIsNullOrEmpty:interval]) {
+        return unitFlags;
+    }
+    else if ([interval isEqualToString:@"second"]) {
+        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay;
+    }
+    else if ([interval isEqualToString:@"minute"]) {
+        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitSecond;
+    }
+    else if ([interval isEqualToString:@"hour"]) {
+        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitMinute;
+    }
+    else if ([interval isEqualToString:@"day"]) {
+        return NSCalendarUnitHour|NSCalendarUnitMinute;
+    }
+    else if ([interval isEqualToString:@"week"]) {
+        return NSCalendarUnitWeekday|NSCalendarUnitHour|NSCalendarUnitMinute;
+    }
+    else if ([interval isEqualToString:@"month"]) {
+        return NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute;
+    }
+    else if ([interval isEqualToString:@"year"]) {
+        return NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute;
+    }
+
+    return unitFlags;
+}
 
 /**
  * Convert relative path to valid sound name attribute.
@@ -237,13 +275,7 @@ NSString* const DEFAULT_SOUND = @"res://platform_default";
  */
 - (BOOL) stringIsNullOrEmpty:(NSString*)str
 {
-    if (str == (NSString*)[NSNull null])
-        return YES;
-
-    if ([str isEqualToString:@""])
-        return YES;
-
-    return NO;
+    return (!str.length);
 }
 
 @end
