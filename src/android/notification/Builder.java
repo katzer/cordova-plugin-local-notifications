@@ -128,7 +128,8 @@ public class Builder {
                 .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setColor(options.getColor())
+                .setPriority(options.getPriority());
 
         if (ledColor != 0) {
             builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
@@ -185,9 +186,13 @@ public class Builder {
         if (clickActivity == null)
             return;
 
-        Intent intent = new Intent(context, clickActivity)
-                .putExtra(Options.EXTRA, options.toString())
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        String pkgName  = context.getPackageName();
+
+        Intent intent       = context.getPackageManager().getLaunchIntentForPackage(pkgName);
+
+        // Intent intent = new Intent(context, clickActivity)
+        //         .putExtra(Options.EXTRA, options.toString())
+        //         .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int reqCode = new Random().nextInt();
 

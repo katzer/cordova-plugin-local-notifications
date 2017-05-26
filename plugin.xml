@@ -98,11 +98,11 @@
                 android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
                 android:exported="false" />
 
-            <activity
+            <!--<activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
                 android:launchMode="singleInstance"
                 android:theme="@android:style/Theme.NoDisplay"
-                android:exported="false" />
+                android:exported="false" />-->
 
             <receiver
                 android:name="de.appplant.cordova.plugin.notification.TriggerReceiver"
@@ -118,11 +118,11 @@
                 </intent-filter>
             </receiver>
 
-            <activity
+            <!--<activity
                 android:name="de.appplant.cordova.plugin.notification.ClickActivity"
                 android:launchMode="singleInstance"
                 android:theme="@android:style/Theme.NoDisplay"
-                android:exported="false" />
+                android:exported="false" />-->
 
         </config-file>
 
