@@ -90,7 +90,7 @@ Find out more informations [here][wiki_samples] in our wiki.
 
 
 ## I would like to propose new features
-We appricate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
+We appreciate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
 
 Find out more informations [here][wiki_next] in our wiki.
 
