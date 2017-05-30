@@ -226,28 +226,28 @@
 
 
     if ([self stringIsNullOrEmpty:interval]) {
-        return unitFlags;
-    }
-    else if ([interval isEqualToString:@"second"]) {
-        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay;
-    }
+            return unitFlags;
+        }
+//    else if ([interval isEqualToString:@"second"]) { // TODO
+//        return NSCalendarUnitSecond;
+//    }
     else if ([interval isEqualToString:@"minute"]) {
-        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitSecond;
+        return NSCalendarUnitSecond;
     }
     else if ([interval isEqualToString:@"hour"]) {
-        return NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitMinute;
+        return  NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
     else if ([interval isEqualToString:@"day"]) {
-        return NSCalendarUnitHour|NSCalendarUnitMinute;
+        return NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
     else if ([interval isEqualToString:@"week"]) {
-        return NSCalendarUnitWeekday|NSCalendarUnitHour|NSCalendarUnitMinute;
+        return NSCalendarUnitWeekday | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
     else if ([interval isEqualToString:@"month"]) {
-        return NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute;
+        return NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
     else if ([interval isEqualToString:@"year"]) {
-        return NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute;
+        return NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
 
     return unitFlags;
