@@ -906,7 +906,7 @@
 }
 
 /**
- * Called on otification settings registration is completed.
+ * Called on notification settings registration is completed.
  */
 - (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
 {
@@ -917,7 +917,7 @@
 }
 
 /**
- * Clears all single repeating notifications which are older then 5 days
+ * Cancels all single non-repeating notifications which are older then 5 days
  * before the app terminates.
  */
 - (void) onAppTerminate
