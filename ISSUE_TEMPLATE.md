@@ -1,4 +1,4 @@
-**WARNING: If you ignore this template, we'll ignore your issue.**
+**WARNING: IF YOU IGNORE THIS TEMPLATE, WE'LL IGNORE YOUR ISSUE. YOU MUST FILL THIS IN!**
 
 Provide a general summary of the issue.
 
@@ -11,6 +11,7 @@ Provide a general summary of the issue.
 * Cordova version (```cordova -v```):
 * Cordova platform version (```cordova platform ls```):
 * Plugin config
+* Ionic Version
 
 ## Expected Behavior
 
