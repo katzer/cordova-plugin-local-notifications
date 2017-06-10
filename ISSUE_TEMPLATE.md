@@ -11,7 +11,7 @@ Provide a general summary of the issue.
 * Cordova version (```cordova -v```):
 * Cordova platform version (```cordova platform ls```):
 * Plugin config
-* Ionic Version
+* Ionic Version (if using Ionic)
 
 ## Expected Behavior
 
