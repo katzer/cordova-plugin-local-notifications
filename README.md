@@ -42,52 +42,54 @@ The current 0.8 branch supports the following platforms:
 - __Windows Phone 8.1__ _(added with v0.8.2)_
 - __Windows 10__ _(added with v0.8.3)_
 
-Find out more informations [here][wiki_platforms] in our wiki.
+Find out more information [here][wiki_platforms] in our wiki.
 
 
 ## Installation
 The plugin is installable from source and available on Cordova Plugin Registry and PhoneGap Build.
 
-Find out more informations [here][wiki_installation] in our wiki.
+Find out more information [here][wiki_installation] in our wiki.
 
 
 ## I want to get a quick overview
-All wiki pages contain samples, but for a quick overview the sample section may be the fastest way.
+All wiki pages contain samples, but for a quick overview, the sample section may be the fastest way.
 
-Find out more informations [here][wiki_samples] in our wiki.
+Find out more information [here][wiki_samples] in our wiki.
 
 
 ## I want to get a deep overview
 The plugin supports scheduling local notifications in various ways with a single interface. It also allows you to update, clear or cancel them. There are different interfaces to query for local notifications and a complete set of events to hook into the life cycle of local notifications.
 
 Find out more about how to schedule single, multiple, delayed or repeating local notifications [here][wiki_schedule].<br>
-Informations about events like _click_ or _trigger_ can be found [here][wiki_events].
+Information about events like _click_ or _trigger_ can be found [here][wiki_events].
 
 To get a deep overview we recommend to read about all the topics in our [wiki][wiki] and try out the [Kitchen Sink App][wiki_kitchensink]
 
 
 ## I want to see the plugin in action
-The plugin offers a kitchen sink sample app. Check out the cordova project and run the app directly from your command line or preferred IDE.
+The plugin offers a kitchen sink sample app. Check out the Cordova project and run the app directly from your command line or preferred IDE.
 
-Find out more informations [here][wiki_kitchensink] in our wiki.
+Find out more information [here][wiki_kitchensink] in our wiki.
 
 
 ## What's new
-We are proud to announce our newest release version 0.8.x. Beside the hard work at the office and at the weekends it contains a lot of goodies, new features and easy to use APIs.
+We are proud to announce our newest release version 0.8.x. Besides the hard work at the office and at the weekends it contains a lot of goodies, new features and easy to use APIs.
 
-Find out more informations [here][wiki_changelog] in our wiki.
+Find out more information [here][wiki_changelog] in our wiki.
 
 
 ## Sample
 The sample demonstrates how to schedule a local notification which repeats every week. The listener will be called when the user has clicked on the local notification.
 
 ```javascript
+var date = new Date();
+
 cordova.plugins.notification.local.schedule({
     id: 1,
-    title: "Production Jour fixe",
-    text: "Duration 1h",
-    firstAt: monday_9_am,
-    every: "week",
+    title: "Message Title",
+    message: "Message Text",
+    firstAt: date, // firstAt and at properties must be an IETF-compliant RFC 2822 timestamp
+    every: "week", // this also could be minutes i.e. 25 (int)
     sound: "file://sounds/reminder.mp3",
     icon: "http://icons.com/?cal_id=1",
     data: { meetingId:"123#fg8" }
@@ -98,13 +100,13 @@ cordova.plugins.notification.local.on("click", function (notification) {
 });
 ```
 
-Find out more informations [here][wiki_samples] in our wiki.
+Find out more information [here][wiki_samples] in our wiki.
 
 
 ## I would like to propose new features
-We appricate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
+We appreciate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
 
-Find out more informations [here][wiki_next] in our wiki.
+Find out more information [here][wiki_next] in our wiki.
 
 ## Supporting
 Your support is needed. If you use the plugin please send us a drop through the donation button.
