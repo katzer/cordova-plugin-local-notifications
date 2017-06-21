@@ -200,6 +200,13 @@ public class Options {
     }
 
     /**
+     *  Vibration enable/disable.
+     */
+     public boolean getVibration() {
+         return options.optBoolean("vibration",true);
+     }
+
+    /**
      * ID for the local notification as a string.
      */
     public String getIdStr() {
