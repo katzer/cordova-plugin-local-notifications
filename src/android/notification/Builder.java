@@ -28,8 +28,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.R;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.Random;
 
@@ -143,6 +146,37 @@ public class Builder {
         } else {
             builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getIconBitmap());
+        }
+
+        //Add actions to the notification
+
+        JSONArray actions = options.getActions();
+
+        if(actions != null && actions.length() > 0) {
+            for(int i = 0 ; i < actions.length(); i++) {
+                JSONObject actionData = actions.optJSONObject(i);
+
+                String iconStr = actionData.optString("icon");
+                int icon = options.getIconFromString(iconStr);
+
+                String text = actionData.optString("text");
+
+                //Copy options
+                Options tempOptions = new Options(options);
+
+                //Add 'actionClicked' parameter
+                tempOptions.put("actionClicked", actionData);
+
+                Intent intent = new Intent(context, clickActivity)
+                            .putExtra(Options.EXTRA, tempOptions.toString());
+
+                int reqCode = new Random().nextInt();
+
+                PendingIntent actionPi = PendingIntent.getActivity(
+                        context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                builder.addAction(icon, text, actionPi);
+            }
         }
 
         applyDeleteReceiver(builder);

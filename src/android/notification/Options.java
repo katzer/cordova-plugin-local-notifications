@@ -31,6 +31,7 @@ import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.Date;
 
@@ -66,6 +67,23 @@ public class Options {
     public Options(Context context){
     	this.context = context;
         this.assets  = AssetUtil.getInstance(context);
+    }
+
+    /**
+     * Constructor that copies an Options object.
+     *
+     * @param originalOptions
+     *      Options to copy.
+     */
+    public Options(Options originalOptions)
+    {
+      this.context = originalOptions.getContext();
+      this.assets  = AssetUtil.getInstance(this.context);
+      try {
+          this.options = new JSONObject(originalOptions.getDict().toString());
+      } catch (JSONException e) {
+          e.printStackTrace();
+      }
     }
 
     /**
@@ -199,6 +217,13 @@ public class Options {
         return options.optInt("id", 0);
     }
 
+    /**
+     *  Notification buttons / actions.
+     */
+    public JSONArray getActions() {
+        return options.optJSONArray("actions");
+    }
+    
     /**
      * ID for the local notification as a string.
      */
@@ -362,12 +387,31 @@ public class Options {
 
         return assets.getResIdForDrawable(icon);
     }
+    
+    /**
+     *  Get drawable using a string value.
+     */
+    public int getIconFromString(String iconStr) {
+        return assets.getResIdForDrawable(iconStr);
+    }
 
     /**
      * JSON object as string.
      */
     public String toString() {
         return options.toString();
+    }
+
+    /**
+     * Add a JSONObject with the given name.
+     */
+    public void put(String name, JSONObject obj)
+    {
+      try {
+          options.putOpt(name, obj);
+      } catch (JSONException e) {
+          e.printStackTrace();
+      }
     }
 
 }
