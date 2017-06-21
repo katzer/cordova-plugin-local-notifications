@@ -31,6 +31,7 @@ import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.Date;
 
@@ -197,6 +198,20 @@ public class Options {
      */
     public Integer getId() {
         return options.optInt("id", 0);
+    }
+
+    /**
+     *  String to set the style of the notification.
+     */
+    public String getStyle() {
+        return options.optString("style");
+    }
+    
+    /**
+     *  Inbox object for inbox style notification.
+     */
+    public JSONObject getInbox() {
+        return options.optJSONObject("inbox");
     }
 
     /**
