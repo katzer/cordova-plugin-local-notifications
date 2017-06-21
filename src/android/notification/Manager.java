@@ -22,7 +22,7 @@
  */
 
 package de.appplant.cordova.plugin.notification;
-
+import android.os.Build;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -94,6 +94,46 @@ public class Manager {
                 .build();
 
         notification.schedule();
+
+        return notification;
+    }
+
+     /**
+     * Update the progress of a local notification 
+     *
+     * @param id
+     *      The notification ID
+     * @param updates
+     *      JSON object with notification options
+     * @param receiver
+     *      Receiver to handle the trigger event
+     */
+    public Notification updateProgress (int id, JSONObject updates, Class<?> receiver) {
+        Notification notification = get(id);
+
+        if (notification != null)
+        {
+            JSONObject options = mergeJSONObjects(
+                notification.getOptions().getDict(), updates);
+
+            try {
+                options.put("updated", true);
+            } catch (JSONException ignore) {}
+
+            try {
+                int maxProgress = Integer.parseInt(options.getString("maxProgress"));
+                int currentProgress = Integer.parseInt(updates.getString("currentProgress"));
+                
+                notification.getBuilder().setProgress(maxProgress, currentProgress, false);
+                if (Build.VERSION.SDK_INT <= 15) {
+                    // Notification for HoneyComb to ICS
+                    notification.getNotMgr().notify(id, notification.getBuilder().getNotification());
+                } else {
+                    notification.getNotMgr().notify(id, notification.getBuilder().build());            
+                }
+
+            } catch (JSONException ignore) {}
+        }
 
         return notification;
     }

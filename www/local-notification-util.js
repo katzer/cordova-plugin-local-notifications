@@ -38,7 +38,11 @@ exports._defaults = {
     id:    0,
     data:  undefined,
     every: undefined,
-    at:    undefined
+    at:    undefined,
+    progress: false,
+    removeProgress: false,
+    maxProgress: 0,
+    currentProgress: 0,
 };
 
 // listener
