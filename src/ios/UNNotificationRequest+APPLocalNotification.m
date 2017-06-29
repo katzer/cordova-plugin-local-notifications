@@ -21,9 +21,9 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationOptions.h"
 #import "UNNotificationRequest+APPLocalNotification.h"
-#import "UNMutableNotificationContent+APPLocalNotification.h"
+#import "APPNotificationContent.h"
 #import <objc/runtime.h>
 
 @import UserNotifications;
@@ -35,7 +35,7 @@ static char optionsKey;
 /**
  * Get associated option object
  */
-- (APPLocalNotificationOptions*) getOptions
+- (APPNotificationOptions*) getOptions
 {
     return objc_getAssociatedObject(self, &optionsKey);
 }
@@ -43,7 +43,7 @@ static char optionsKey;
 /**
  * Set associated option object
  */
-- (void) setOptions:(APPLocalNotificationOptions*)options
+- (void) setOptions:(APPNotificationOptions*)options
 {
     objc_setAssociatedObject(self, &optionsKey,
                              options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -52,12 +52,12 @@ static char optionsKey;
 /**
  * The options provided by the plug-in.
  */
-- (APPLocalNotificationOptions*) options
+- (APPNotificationOptions*) options
 {
-    APPLocalNotificationOptions* options = [self getOptions];
+    APPNotificationOptions* options = [self getOptions];
 
     if (!options) {
-        options = [[APPLocalNotificationOptions alloc]
+        options = [[APPNotificationOptions alloc]
                    initWithDict:[self.content userInfo]];
 
         [self setOptions:options];

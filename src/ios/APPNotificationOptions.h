@@ -23,7 +23,7 @@
 
 @import UserNotifications;
 
-@interface APPLocalNotificationOptions : NSObject
+@interface APPNotificationOptions : NSObject
 
 @property (readonly, getter=id)         NSNumber*            id;
 @property (readonly, getter=identifier) NSString*            identifier;

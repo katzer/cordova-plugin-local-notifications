@@ -21,18 +21,18 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationOptions.h"
 
 @import UserNotifications;
 
-@interface APPLocalNotificationOptions ()
+@interface APPNotificationOptions ()
 
 // The dictionary which contains all notification properties
 @property(nonatomic, retain) NSDictionary* dict;
 
 @end
 
-@implementation APPLocalNotificationOptions
+@implementation APPNotificationOptions : NSObject
 
 @synthesize dict;
 
@@ -44,7 +44,7 @@
  *
  * @param [ NSDictionary* ] dict A key-value property map.
  *
- * @return [ APPLocalNotificationOptions ]
+ * @return [ APPNotificationOptions ]
  */
 - (id) initWithDict:(NSDictionary*)dictionary
 {

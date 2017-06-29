@@ -22,10 +22,10 @@
  */
 
 #import "APPLocalNotification.h"
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationOptions.h"
 #import "UNUserNotificationCenter+APPLocalNotification.h"
 #import "UNNotificationRequest+APPLocalNotification.h"
-#import "UNMutableNotificationContent+APPLocalNotification.h"
+#import "APPNotificationContent.h"
 
 @interface APPLocalNotification ()
 
@@ -72,9 +72,9 @@
 
     [self.commandDelegate runInBackground:^{
         for (NSDictionary* options in notifications) {
-            UNMutableNotificationContent* notification;
+            APPNotificationContent* notification;
 
-            notification = [[UNMutableNotificationContent alloc]
+            notification = [[APPNotificationContent alloc]
                             initWithOptions:options];
 
             [self scheduleNotification:notification];
@@ -547,9 +547,9 @@
 /**
  * Schedule the local notification.
  */
-- (void) scheduleNotification:(UNMutableNotificationContent*)notification
+- (void) scheduleNotification:(APPNotificationContent*)notification
 {
-    __weak APPLocalNotification* weakSelf = self;
+    __weak APPLocalNotification* weakSelf  = self;
     UNNotificationRequest* request = notification.request;
 
     [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
@@ -563,7 +563,7 @@
 // */
 //- (void) updateNotification:(UILocalNotification*)notification
 //                withOptions:(NSDictionary*)newOptions
-//{
+//{APPNotificationRequest*
 //    NSMutableDictionary* options = [notification.userInfo mutableCopy];
 //
 //    [options addEntriesFromDictionary:newOptions];
@@ -686,6 +686,10 @@
 
 /**
  * Fire general event.
+ *
+ * @param [ NSString* ] event The name of the event to fire.
+ *
+ * @return [ Void ]
  */
 - (void) fireEvent:(NSString*)event
 {
@@ -693,17 +697,22 @@
 }
 
 /**
- * Fire event for local notification.
+ * Fire event for about a local notification.
+ *
+ * @param [ NSString* ] event The name of the event to fire.
+ * @param [ APPNotificationRequest* ] notification The local notification.
+ *
+ * @return [ Void ]
  */
 - (void) fireEvent:(NSString*)event
-      notification:(UNNotificationRequest*)notification
+      notification:(UNNotificationRequest*)request
 {
     NSString* js;
     NSString* appState = [self applicationState];
     NSString* params   = [NSString stringWithFormat:@"\"%@\"", appState];
 
-    if (notification) {
-        NSString* args = [notification encodeToJSON];
+    if (request) {
+        NSString* args = [request encodeToJSON];
         params = [NSString stringWithFormat:@"%@,'%@'", args, appState];
     }
 

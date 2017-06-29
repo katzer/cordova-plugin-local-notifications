@@ -21,15 +21,14 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationOptions.h"
 
 @import UserNotifications;
 
-@interface UNMutableNotificationContent (APPLocalNotification)
+@interface APPNotificationContent : UNMutableNotificationContent
 
 - (id) initWithOptions:(NSDictionary*)dict;
-- (APPLocalNotificationOptions*) options;
+- (APPNotificationOptions*) options;
 - (UNNotificationRequest*) request;
-- (NSString*) encodeToJSON;
 
 @end

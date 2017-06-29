@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-var exec = require('cordova/exec');
-
 /**
  * Request permission to show notifications.
  *
@@ -26,14 +24,7 @@ var exec = require('cordova/exec');
  * @return [ Void ]
  */
 exports.hasPermission = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
-
-    exec(fn, null, 'LocalNotification', 'check', []);
+    this.core.hasPermission(callback, scope);
 };
 
 /**
@@ -45,14 +36,7 @@ exports.hasPermission = function (callback, scope) {
  * @return [ Void ]
  */
 exports.requestPermission = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
-
-    exec(fn, null, 'LocalNotification', 'request', []);
+    this.core.requestPermission(callback, scope);
 };
 
 /**
@@ -65,28 +49,8 @@ exports.requestPermission = function (callback, scope) {
  *
  * @return [ Void ]
  */
-exports.schedule = function (msgs, callback, scope, args) {
-    var fn = function (granted) {
-
-        if (!granted) return;
-
-        var notifications = Array.isArray(msgs) ? msgs : [msgs];
-
-        for (var i = 0; i < notifications.length; i++) {
-            var notification = notifications[i];
-
-            this.mergeWithDefaults(notification);
-            this.convertProperties(notification);
-        }
-
-        this.exec('schedule', notifications, callback, scope);
-    };
-
-    if (args && args.skipPermission) {
-        fn.call(this, true);
-    } else {
-        this.requestPermission(fn, this);
-    }
+exports.schedule = function (notifications, callback, scope, args) {
+    this.core.schedule(notifications, callback, scope, args);
 };
 
 // /**
@@ -102,27 +66,8 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      skipPermission:true schedules the notifications immediatly without
 //  *                          registering or checking for permission
 //  */
-// exports.update = function (msgs, callback, scope, args) {
-//     var fn = function(granted) {
-
-//         if (!granted) return;
-
-//         var notifications = Array.isArray(msgs) ? msgs : [msgs];
-
-//         for (var i = 0; i < notifications.length; i++) {
-//             var notification = notifications[i];
-
-//             this.convertProperties(notification);
-//         }
-
-//         this.exec('update', notifications, callback, scope);
-//     };
-
-//     if (args && args.skipPermission) {
-//         fn.call(this, true);
-//     } else {
-//         this.registerPermission(fn, this);
-//     }
+// exports.update = function (notifications, callback, scope, args) {
+//     this.core.update(notifications, callback, scope, args);
 // };
 
 // /**
@@ -136,10 +81,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.clear = function (ids, callback, scope) {
-//     ids = Array.isArray(ids) ? ids : [ids];
-//     ids = this.convertIds(ids);
-
-//     this.exec('clear', ids, callback, scope);
+//     this.core.clear(ids, callback, scope);
 // };
 
 // /**
@@ -151,7 +93,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.clearAll = function (callback, scope) {
-//     this.exec('clearAll', null, callback, scope);
+//     this.core.clearAll(callback, scope);
 // };
 
 // /**
@@ -165,10 +107,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.cancel = function (ids, callback, scope) {
-//     ids = Array.isArray(ids) ? ids : [ids];
-//     ids = this.convertIds(ids);
-
-//     this.exec('cancel', ids, callback, scope);
+//     this.core.cancel(ids, callback, scope);
 // };
 
 // /**
@@ -180,7 +119,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.cancelAll = function (callback, scope) {
-//     this.exec('cancelAll', null, callback, scope);
+//     this.core.cancelAll(callback, scope);
 // };
 
 // /**
@@ -194,7 +133,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.isPresent = function (id, callback, scope) {
-//     this.exec('isPresent', id || 0, callback, scope);
+//     this.core.isPresent(id, callback, scope);
 // };
 
 // /**
@@ -208,10 +147,10 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.isScheduled = function (id, callback, scope) {
-//     this.exec('isScheduled', id || 0, callback, scope);
+//     this.core.isScheduled(id, callback, scope);
 // };
 
-// /**
+// *
 //  * Check if a notification with an ID was triggered.
 //  *
 //  * @param {String} id
@@ -220,21 +159,21 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      A callback function to be called with the list
 //  * @param {Object?} scope
 //  *      The scope for the callback function
-//  */
+
 // exports.isTriggered = function (id, callback, scope) {
-//     this.exec('isTriggered', id || 0, callback, scope);
+//     this.core.isTriggered(id, callback, scope);
 // };
 
-// *
+// /**
 //  * List all local notification IDs.
 //  *
 //  * @param {Function} callback
 //  *      A callback function to be called with the list
 //  * @param {Object?} scope
 //  *      The scope for the callback function
-
+//  */
 // exports.getAllIds = function (callback, scope) {
-//     this.exec('getAllIds', null, callback, scope);
+//     this.core.getAllIds(callback, scope);
 // };
 
 // /**
@@ -253,7 +192,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getScheduledIds = function (callback, scope) {
-//     this.exec('getScheduledIds', null, callback, scope);
+//     this.core.getScheduledIds(callback, scope);
 // };
 
 // /**
@@ -265,7 +204,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getTriggeredIds = function (callback, scope) {
-//     this.exec('getTriggeredIds', null, callback, scope);
+//     this.core.getTriggeredIds(callback, scope);
 // };
 
 // /**
@@ -280,24 +219,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.get = function () {
-//     var args = Array.apply(null, arguments);
-
-//     if (typeof args[0] == 'function') {
-//         args.unshift([]);
-//     }
-
-//     var ids      = args[0],
-//         callback = args[1],
-//         scope    = args[2];
-
-//     if (!Array.isArray(ids)) {
-//         this.exec('getSingle', Number(ids), callback, scope);
-//         return;
-//     }
-
-//     ids = this.convertIds(ids);
-
-//     this.exec('getAll', ids, callback, scope);
+//     this.core.get.apply(this.core, arguments);
 // };
 
 // /**
@@ -309,7 +231,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getAll = function (callback, scope) {
-//     this.exec('getAll', null, callback, scope);
+//     this.core.getAll(callback, scope);
 // };
 
 // /**
@@ -324,28 +246,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getScheduled = function () {
-//     var args = Array.apply(null, arguments);
-
-//     if (typeof args[0] == 'function') {
-//         args.unshift([]);
-//     }
-
-//     var ids      = args[0],
-//         callback = args[1],
-//         scope    = args[2];
-
-//     if (!Array.isArray(ids)) {
-//         ids = [ids];
-//     }
-
-//     if (!Array.isArray(ids)) {
-//         this.exec('getSingleScheduled', Number(ids), callback, scope);
-//         return;
-//     }
-
-//     ids = this.convertIds(ids);
-
-//     this.exec('getScheduled', ids, callback, scope);
+//     this.core.getScheduled.apply(this.core, arguments);
 // };
 
 // /**
@@ -357,7 +258,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getAllScheduled = function (callback, scope) {
-//     this.exec('getScheduled', null, callback, scope);
+//     this.core.getAllScheduled(callback, scope);
 // };
 
 // /**
@@ -372,28 +273,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getTriggered = function () {
-//     var args = Array.apply(null, arguments);
-
-//     if (typeof args[0] == 'function') {
-//         args.unshift([]);
-//     }
-
-//     var ids      = args[0],
-//         callback = args[1],
-//         scope    = args[2];
-
-//     if (!Array.isArray(ids)) {
-//         ids = [ids];
-//     }
-
-//     if (!Array.isArray(ids)) {
-//         this.exec('getSingleTriggered', Number(ids), callback, scope);
-//         return;
-//     }
-
-//     ids = this.convertIds(ids);
-
-//     this.exec('getTriggered', ids, callback, scope);
+//     this.core.getTriggered.apply(this.core, arguments);
 // };
 
 // /**
@@ -405,7 +285,7 @@ exports.schedule = function (msgs, callback, scope, args) {
 //  *      The scope for the callback function
 //  */
 // exports.getAllTriggered = function (callback, scope) {
-//     this.exec('getTriggered', null, callback, scope);
+//     this.core.getAllTriggered(callback, scope);
 // };
 
 /**
@@ -414,7 +294,7 @@ exports.schedule = function (msgs, callback, scope, args) {
  * @return [ Object ]
  */
 exports.getDefaults = function () {
-    return this._defaults;
+    return this.core.getDefaults();
 };
 
 /**
@@ -424,14 +304,8 @@ exports.getDefaults = function () {
  *
  * @return [ Void ]
  */
-exports.setDefaults = function (newDefaults) {
-    var defaults = this.getDefaults();
-
-    for (var key in defaults) {
-        if (newDefaults.hasOwnProperty(key)) {
-            defaults[key] = newDefaults[key];
-        }
-    }
+exports.setDefaults = function (defaults) {
+    this.core.setDefaults(defaults);
 };
 
 /**
@@ -444,17 +318,7 @@ exports.setDefaults = function (newDefaults) {
  * @return [ Void ]
  */
 exports.on = function (event, callback, scope) {
-
-    if (typeof callback !== "function")
-        return;
-
-    if (!this._listener[event]) {
-        this._listener[event] = [];
-    }
-
-    var item = [callback, scope || window];
-
-    this._listener[event].push(item);
+    this.core.on(event, callback, scope);
 };
 
 /**
@@ -466,17 +330,5 @@ exports.on = function (event, callback, scope) {
  * @return [ Void ]
  */
 exports.un = function (event, callback) {
-    var listener = this._listener[event];
-
-    if (!listener)
-        return;
-
-    for (var i = 0; i < listener.length; i++) {
-        var fn = listener[i][0];
-
-        if (fn == callback) {
-            listener.splice(i, 1);
-            break;
-        }
-    }
+    this.core.un(event, callback);
 };

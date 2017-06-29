@@ -21,15 +21,15 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UNMutableNotificationContent+APPLocalNotification.h"
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationContent.h"
+#import "APPNotificationOptions.h"
 #import <objc/runtime.h>
 
 @import UserNotifications;
 
 static char optionsKey;
 
-@implementation UNMutableNotificationContent (APPLocalNotification)
+@implementation APPNotificationContent : UNMutableNotificationContent
 
 #pragma mark -
 #pragma mark Init
@@ -58,7 +58,7 @@ static char optionsKey;
  */
 - (void) __init
 {
-    APPLocalNotificationOptions* options = self.options;
+    APPNotificationOptions* options = self.options;
 
     self.title    = options.title;
     self.subtitle = options.subtitle;
@@ -73,14 +73,14 @@ static char optionsKey;
 /**
  * The options used to initialize the notification.
  *
- * @return [ APPLocalNotificationOptions* ] options
+ * @return [ APPNotificationOptions* ] options
  */
-- (APPLocalNotificationOptions*) options
+- (APPNotificationOptions*) options
 {
-    APPLocalNotificationOptions* options = [self getOptions];
+    APPNotificationOptions* options = [self getOptions];
 
     if (!options) {
-        options = [[APPLocalNotificationOptions alloc]
+        options = [[APPNotificationOptions alloc]
                    initWithDict:[self userInfo]];
 
         [self setOptions:options];
@@ -97,38 +97,11 @@ static char optionsKey;
  */
 - (UNNotificationRequest*) request
 {
-    APPLocalNotificationOptions* opts = [self getOptions];
-    
+    APPNotificationOptions* opts = [self getOptions];
+
     return [UNNotificationRequest requestWithIdentifier:opts.identifier
                                                 content:self
                                                 trigger:opts.trigger];
-}
-
-/**
- * Encode the user info dict to JSON.
- *
- * @return [ NSString* ]
- */
-- (NSString*) encodeToJSON
-{
-    NSString* json;
-    NSData* data;
-    NSMutableDictionary* obj = [self.userInfo mutableCopy];
-    
-    [obj removeObjectForKey:@"updatedAt"];
-    
-    if (obj == NULL || obj.count == 0)
-        return json;
-    
-    data = [NSJSONSerialization dataWithJSONObject:obj
-                                           options:NSJSONWritingPrettyPrinted
-                                             error:NULL];
-    
-    json = [[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding];
-    
-    return [json stringByReplacingOccurrencesOfString:@"\n"
-                                           withString:@""];
 }
 
 #pragma mark -
@@ -137,9 +110,9 @@ static char optionsKey;
 /**
  * The options used to initialize the notification.
  *
- * @return [ APPLocalNotificationOptions* ]
+ * @return [ APPNotificationOptions* ]
  */
-- (APPLocalNotificationOptions*) getOptions
+- (APPNotificationOptions*) getOptions
 {
     return objc_getAssociatedObject(self, &optionsKey);
 }
@@ -151,7 +124,7 @@ static char optionsKey;
  *
  * @return [ Void ]
  */
-- (void) setOptions:(APPLocalNotificationOptions*)options
+- (void) setOptions:(APPNotificationOptions*)options
 {
     objc_setAssociatedObject(self, &optionsKey,
                              options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

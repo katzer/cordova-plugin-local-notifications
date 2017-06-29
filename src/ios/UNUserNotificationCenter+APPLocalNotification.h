@@ -21,7 +21,7 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UNMutableNotificationContent+APPLocalNotification.h"
+#import "APPNotificationContent.h"
 
 @interface UNUserNotificationCenter (APPLocalNotification)
 
