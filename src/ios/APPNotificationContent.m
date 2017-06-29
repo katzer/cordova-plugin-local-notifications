@@ -65,6 +65,7 @@ static char optionsKey;
     self.body     = options.text;
     self.sound    = options.sound;
     self.badge    = options.badge;
+    self.categoryIdentifier = @"GENERAL";
 }
 
 #pragma mark -

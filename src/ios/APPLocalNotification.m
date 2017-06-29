@@ -626,16 +626,18 @@
           withCompletionHandler:(void (^)())completionHandler
 {
     UNNotificationRequest* notification = response.notification.request;
+    NSString* action = response.actionIdentifier;
+    NSString* event  = action;
 
-    [self fireEvent:@"click" notification:notification];
+    if ([action isEqualToString:UNNotificationDefaultActionIdentifier]) {
+        event = @"click";
+    }
+    
+    if ([action isEqualToString:UNNotificationDismissActionIdentifier]) {
+        event = @"clear";
+    }
 
-//    if ([notification.options isRepeating]) {
-//        [_center clearNotification:notification];
-//        [self fireEvent:@"clear" notification:notification];
-//    } else {
-//        [_center cancelNotification:notification];
-//        [self fireEvent:@"cancel" notification:notification];
-//    }
+    [self fireEvent:event notification:notification];
 
     completionHandler();
 }
@@ -653,6 +655,15 @@
     _center    = [UNUserNotificationCenter currentNotificationCenter];
 
     _center.delegate = self;
+    
+    UNNotificationCategory* generalCategory = [UNNotificationCategory
+                                               categoryWithIdentifier:@"GENERAL"
+                                               actions:@[]
+                                               intentIdentifiers:@[]
+                                               options:UNNotificationCategoryOptionCustomDismissAction];
+    
+    // Register the notification categories.
+    [_center setNotificationCategories:[NSSet setWithObjects:generalCategory, nil]];
 }
 
 #pragma mark -
