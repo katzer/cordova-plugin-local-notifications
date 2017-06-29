@@ -2,8 +2,8 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.5">
+        id="cordova-plugin-local-notifications"
+        version="0.0.0">
 
     <name>LocalNotification</name>
 
@@ -27,12 +27,11 @@
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-app-event" />
+    <!-- <dependency id="cordova-plugin-app-event" /> -->
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
         <clobbers target="cordova.plugins.notification.local" />
-        <clobbers target="plugin.notification.local" />
     </js-module>
 
     <js-module src="www/local-notification-core.js" name="LocalNotification.Core">
@@ -60,7 +59,7 @@
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />
 
-        <header-file src="src/ios/APPLocalNotificationOptions.h" />
+        <!-- <header-file src="src/ios/APPLocalNotificationOptions.h" />
         <source-file src="src/ios/APPLocalNotificationOptions.m" />
 
         <header-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.h" />
@@ -70,21 +69,12 @@
         <source-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.m" />
 
         <header-file src="src/ios/UNNotificationRequest+APPLocalNotification.h" />
-        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" />
-
-        <header-file src="src/ios9/APPLocalNotificationOptions.ios9.h" />
-        <source-file src="src/ios9/APPLocalNotificationOptions.ios9.m" />
-
-        <header-file src="src/ios9/UIApplication+APPLocalNotification.ios9.h" />
-        <source-file src="src/ios9/UIApplication+APPLocalNotification.ios9.m" />
-
-        <header-file src="src/ios9/UILocalNotification+APPLocalNotification.ios9.h" />
-        <source-file src="src/ios9/UILocalNotification+APPLocalNotification.ios9.m" />
+        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" /> -->
 
     </platform>
 
     <!-- android -->
-    <platform name="android">
+    <!-- <platform name="android">
 
         <framework src="com.android.support:support-v4:+" value="gradle" />
 
@@ -205,10 +195,10 @@
             src="src/android/notification/TriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
-    </platform>
+    </platform> -->
 
     <!-- windows -->
-    <platform name="windows">
+    <!-- <platform name="windows">
 
         <config-file target="config.xml" parent="/*" >
             <preference name="WindowsToastCapable" value="true" />
@@ -226,6 +216,6 @@
             <merges target="" />
         </js-module>
 
-    </platform>
+    </platform> -->
 
 </plugin>
