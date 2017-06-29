@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.cordova.hellocordova" ios-CFBundleIdentifier="io.cordova.hellocordova.ios" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Hello Cordova</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+
+    <access origin="*" />
+
+    <platform name="ios">
+        <resource-file src="image-8888.png" />
+        <resource-file src="image-5678.png" target="image-5678.png" />
+        <resource-file src="image-1234.png" target="images/image-3456.png" />
+    </platform>
+
+
+
+</widget>

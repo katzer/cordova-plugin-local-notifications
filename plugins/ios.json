@@ -7,19 +7,15 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-app-event": {
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "de.appplant.localnotification.example"
         },
-        "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
+        "cordova-plugin-local-notifications": {
+            "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
         }
     },
-    "dependent_plugins": {
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "de.appplant.localnotification.example"
-        }
-    }
+    "dependent_plugins": {}
 }

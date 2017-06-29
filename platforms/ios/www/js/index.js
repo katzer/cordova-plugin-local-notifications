@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -34,6 +35,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        app.pluginInitialize();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -45,7 +47,55 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
+    },
+    // Initialize plugin
+    pluginInitialize: function() {
+        document.getElementById('granted').onclick      = app.hasPermission;
+        document.getElementById('request').onclick      = app.askPermission;
+    },
+    // Check permissions to read accounts
+    hasPermission: function () {
+        cordova.plugins.notification.local.hasPermission(showToast);
+    },
+    // Request permissions to read accounts
+    askPermission: function () {
+        cordova.plugins.notification.local.requestPermission(showToast);
     }
 };
+
+var dialog;
+
+showToast = function (text) {
+    var isMac = navigator.userAgent.toLowerCase().includes('macintosh');
+
+    setTimeout(function () {
+        if (window.Windows !== undefined) {
+            showWinDialog(text);
+        } else
+        if (!isMac && window.plugins && window.plugins.toast) {
+            window.plugins.toast.showShortBottom(String(text));
+        }
+        else {
+            alert(text);
+        }
+    }, 500);
+};
+
+showWinDialog = function (text) {
+    if (dialog) {
+        dialog.content = text;
+        return;
+    }
+
+    dialog = new Windows.UI.Popups.MessageDialog(text);
+
+    dialog.showAsync().done(function () {
+        dialog = null;
+    });
+};
+
+if (window.hasOwnProperty('Windows')) {
+    alert = function (msg) { new Windows.UI.Popups.MessageDialog(msg).showAsync(); };
+}
 
 app.initialize();

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>98C9766F-4C4F-444E-8FA9-C08C9A9BD59C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>cordova-ios</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>BCEF5DF91F385AC4047CEAF9627D88E4C774D4FA</key>
+		<string>https://git-wip-us.apache.org/repos/asf/cordova-ios.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>tests/cordova-ios.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>BCEF5DF91F385AC4047CEAF9627D88E4C774D4FA</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://git-wip-us.apache.org/repos/asf/cordova-ios.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>BCEF5DF91F385AC4047CEAF9627D88E4C774D4FA</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>BCEF5DF91F385AC4047CEAF9627D88E4C774D4FA</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cordova-ios</string>
+		</dict>
+	</array>
+</dict>
+</plist>

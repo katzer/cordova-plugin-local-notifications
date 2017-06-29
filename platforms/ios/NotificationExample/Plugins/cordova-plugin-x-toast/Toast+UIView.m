@@ -53,6 +53,7 @@ static id commandDelegate;
 static id callbackId;
 static id msg;
 static id data;
+static id styling;
 
 @interface UIView (ToastPrivate)
 
@@ -79,13 +80,22 @@ static id data;
     [self showToast:toast duration:duration position:position];
 }
 
-- (void)makeToast:(NSString *)message duration:(NSTimeInterval)duration position:(id)position addPixelsY:(int)addPixelsY data:(NSDictionary*)_data commandDelegate:(id <CDVCommandDelegate>)_commandDelegate callbackId:(NSString *)_callbackId {
-  commandDelegate = _commandDelegate;
-  callbackId = _callbackId;
-  msg = message;
-  data = _data;
-  UIView *toast = [self viewForMessage:message title:nil image:nil];
-  [self showToast:toast duration:duration position:position addedPixelsY:addPixelsY];
+- (void)makeToast:(NSString *)message
+         duration:(NSTimeInterval)duration
+         position:(id)position addPixelsY:(int)addPixelsY
+             data:(NSDictionary*)_data
+          styling:(NSDictionary*)_styling
+  commandDelegate:(id <CDVCommandDelegate>)_commandDelegate
+       callbackId:(NSString *)_callbackId {
+
+    commandDelegate = _commandDelegate;
+    callbackId = _callbackId;
+    msg = message;
+    data = _data;
+    styling = _styling;
+
+    UIView *toast = [self viewForMessage:message title:nil image:nil];
+    [self showToast:toast duration:duration position:position addedPixelsY:addPixelsY];
 }
 
 - (void)makeToast:(NSString *)message duration:(NSTimeInterval)duration position:(id)position title:(NSString *)title {
@@ -130,11 +140,14 @@ static id data;
     UIView *v = [vc view];
     [v addSubview:toast];
 
+    NSNumber * opacity = styling[@"opacity"];
+    CGFloat theOpacity = opacity == nil ? CSToastOpacity : [opacity floatValue];
+
     [UIView animateWithDuration:CSToastFadeDuration
                           delay:0.0
                         options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction)
                      animations:^{
-                         toast.alpha = CSToastOpacity;
+                         toast.alpha = theOpacity;
                      } completion:^(BOOL finished) {
                          NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(toastTimerDidFinish:) userInfo:toast repeats:NO];
                          // associate the timer with the toast view
@@ -172,6 +185,15 @@ static id data;
 
 - (void)toastTimerDidFinish:(NSTimer *)timer {
     [self hideToast:(UIView *)timer.userInfo];
+    
+    // also send an event back to JS
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:msg, @"message", @"hide", @"event", nil];
+    if (data != nil) {
+        [dict setObject:data forKey:@"data"];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+    [commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
 - (void)handleToastTapped:(UITapGestureRecognizer *)recognizer {
@@ -295,7 +317,9 @@ static id data;
     // create the parent view
     UIView *wrapperView = [[UIView alloc] init];
     wrapperView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
-    wrapperView.layer.cornerRadius = CSToastCornerRadius;
+
+    NSNumber * cornerRadius = styling[@"cornerRadius"];
+    wrapperView.layer.cornerRadius = cornerRadius == nil ? CSToastCornerRadius : [cornerRadius floatValue];
     
     if (CSToastDisplayShadow) {
         wrapperView.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -304,12 +328,24 @@ static id data;
         wrapperView.layer.shadowOffset = CSToastShadowOffset;
     }
 
-    wrapperView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:CSToastOpacity];
+    NSString * backgroundColor = styling[@"backgroundColor"];
+    UIColor *theColor = backgroundColor == nil ? [UIColor blackColor] : [self colorFromHexString:backgroundColor];
+
+    NSNumber * horizontalPadding = styling[@"horizontalPadding"];
+    CGFloat theHorizontalPadding = horizontalPadding == nil ? CSToastHorizontalPadding : [horizontalPadding floatValue];
+
+    NSNumber * verticalPadding = styling[@"verticalPadding"];
+    CGFloat theVerticalPadding = verticalPadding == nil ? CSToastVerticalPadding : [verticalPadding floatValue];
     
+    NSNumber * textSize = styling[@"textSize"];
+    CGFloat theTextSize = textSize == nil ? CSToastFontSize : [textSize floatValue];
+
+    wrapperView.backgroundColor = theColor;
+
     if(image != nil) {
         imageView = [[UIImageView alloc] initWithImage:image];
         imageView.contentMode = UIViewContentModeScaleAspectFit;
-        imageView.frame = CGRectMake(CSToastHorizontalPadding, CSToastVerticalPadding, CSToastImageViewWidth, CSToastImageViewHeight);
+        imageView.frame = CGRectMake(theHorizontalPadding, theVerticalPadding, CSToastImageViewWidth, CSToastImageViewHeight);
     }
     
     CGFloat imageWidth, imageHeight, imageLeft;
@@ -318,18 +354,21 @@ static id data;
     if(imageView != nil) {
         imageWidth = imageView.bounds.size.width;
         imageHeight = imageView.bounds.size.height;
-        imageLeft = CSToastHorizontalPadding;
+        imageLeft = theHorizontalPadding;
     } else {
         imageWidth = imageHeight = imageLeft = 0.0;
     }
     
     if (title != nil) {
+        NSString * titleLabelTextColor = styling[@"textColor"];
+        UIColor *theTitleLabelTextColor = titleLabelTextColor == nil ? [UIColor whiteColor] : [self colorFromHexString:titleLabelTextColor];
+
         titleLabel = [[UILabel alloc] init];
         titleLabel.numberOfLines = CSToastMaxTitleLines;
-        titleLabel.font = [UIFont boldSystemFontOfSize:CSToastFontSize];
-        titleLabel.textAlignment = NSTextAlignmentLeft;
+        titleLabel.font = [UIFont boldSystemFontOfSize:theTextSize];
+        titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        titleLabel.textColor = [UIColor whiteColor];
+        titleLabel.textColor = theTitleLabelTextColor;
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.alpha = 1.0;
         titleLabel.text = title;
@@ -341,11 +380,15 @@ static id data;
     }
     
     if (message != nil) {
+        NSString * messageLabelTextColor = styling[@"textColor"];
+        UIColor *theMessageLabelTextColor = messageLabelTextColor == nil ? [UIColor whiteColor] : [self colorFromHexString:messageLabelTextColor];
+
         messageLabel = [[UILabel alloc] init];
         messageLabel.numberOfLines = CSToastMaxMessageLines;
-        messageLabel.font = [UIFont systemFontOfSize:CSToastFontSize];
+        messageLabel.font = [UIFont systemFontOfSize:theTextSize];
         messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        messageLabel.textColor = [UIColor whiteColor];
+        messageLabel.textAlignment = NSTextAlignmentCenter;
+        messageLabel.textColor = theMessageLabelTextColor;
         messageLabel.backgroundColor = [UIColor clearColor];
         messageLabel.alpha = 1.0;
         messageLabel.text = message;
@@ -362,8 +405,8 @@ static id data;
     if(titleLabel != nil) {
         titleWidth = titleLabel.bounds.size.width;
         titleHeight = titleLabel.bounds.size.height;
-        titleTop = CSToastVerticalPadding;
-        titleLeft = imageLeft + imageWidth + CSToastHorizontalPadding;
+        titleTop = theVerticalPadding;
+        titleLeft = imageLeft + imageWidth + theHorizontalPadding;
     } else {
         titleWidth = titleHeight = titleTop = titleLeft = 0.0;
     }
@@ -374,8 +417,8 @@ static id data;
     if(messageLabel != nil) {
         messageWidth = messageLabel.bounds.size.width;
         messageHeight = messageLabel.bounds.size.height;
-        messageLeft = imageLeft + imageWidth + CSToastHorizontalPadding;
-        messageTop = titleTop + titleHeight + CSToastVerticalPadding;
+        messageLeft = imageLeft + imageWidth + theHorizontalPadding;
+        messageTop = titleTop + titleHeight + theVerticalPadding;
     } else {
         messageWidth = messageHeight = messageLeft = messageTop = 0.0;
     }
@@ -384,8 +427,8 @@ static id data;
     CGFloat longerLeft = MAX(titleLeft, messageLeft);
     
     // wrapper width uses the longerWidth or the image width, whatever is larger. same logic applies to the wrapper height
-    CGFloat wrapperWidth = MAX((imageWidth + (CSToastHorizontalPadding * 2)), (longerLeft + longerWidth + CSToastHorizontalPadding));    
-    CGFloat wrapperHeight = MAX((messageTop + messageHeight + CSToastVerticalPadding), (imageHeight + (CSToastVerticalPadding * 2)));
+    CGFloat wrapperWidth = MAX((imageWidth + (theHorizontalPadding * 2)), (longerLeft + longerWidth + theHorizontalPadding));
+    CGFloat wrapperHeight = MAX((messageTop + messageHeight + theVerticalPadding), (imageHeight + (theVerticalPadding * 2)));
                          
     wrapperView.frame = CGRectMake(0.0, 0.0, wrapperWidth, wrapperHeight);
     
@@ -404,6 +447,15 @@ static id data;
     }
         
     return wrapperView;
+}
+
+// Assumes input like "#00FF00" (#RRGGBB)
+- (UIColor*) colorFromHexString:(NSString*) hexString {
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner scanHexInt:&rgbValue];
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0 green:((rgbValue & 0xFF00) >> 8) / 255.0 blue:(rgbValue & 0xFF) / 255.0 alpha:1.0];
 }
 
 @end

@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.cordova.hellocordova" ios-CFBundleIdentifier="io.cordova.hellocordova.ios" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Hello Cordova</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+
+    <!--
+        <access> tests
+
+        Test wildcard allow all. Note in ATS you can open up all, and have restrictions for certain domains.
+        This is to allow for example, an in-app-browser (*) but your own server communications must be https, for example.
+     -->
+    <access origin="*" />
+    <!-- https, with subdomain wildcard, with attribute differences -->
+    <access origin="https://*.server01.com" /> <!-- equivalent to the next line -->
+    <access origin="https://*.server01.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="https://*.server02.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="https://*.server02-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="https://*.server02-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <access origin="https://*.server03.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="https://*.server04.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="https://*.server04-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="https://*.server04-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- http, no subdomain wildcard, with attribute differences -->
+    <access origin="http://server05.com" /> <!-- equivalent to the next line -->
+    <access origin="http://server05.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="http://server06.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="http://server06-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="http://server06-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <access origin="http://server07.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="http://server08.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="http://server08-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="http://server08-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- https, no subdomain wildcard, with attribute differences -->
+    <access origin="https://server09.com" /> <!-- equivalent to the next line -->
+    <access origin="https://server09.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="https://server10.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="https://server10-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="https://server10-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <access origin="https://server11.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <access origin="https://server12.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <access origin="https://server12-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <access origin="https://server12-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!--
+        <allow-navigation> tests
+
+        Test wildcard allow all. Note in ATS you can open up all, and have restrictions for certain domains.
+        This is to allow for example, an in-app-browser (*) but your own server communications must be https, for example.
+     -->
+    <allow-navigation href="*" />
+    <!-- https, with subdomain wildcard, attribute differences -->
+    <allow-navigation href="https://*.server21.com" /> <!-- equivalent to the next line -->
+    <allow-navigation href="https://*.server21.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://*.server22.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://*.server22-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="https://*.server22-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <allow-navigation href="https://*.server23.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://*.server24.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://*.server24-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true" />
+    <allow-navigation href="https://*.server24-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- http, no subdomain, with attribute differences -->
+    <allow-navigation href="http://server25.com" /> <!-- equivalent to the next line -->
+    <allow-navigation href="http://server25.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="http://server26.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="http://server26-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="http://server26-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <allow-navigation href="http://server27.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="http://server28.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="http://server28-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="http://server28-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- https, no subdomain, with attribute differences -->
+    <allow-navigation href="https://server29.com" /> <!-- equivalent to the next line -->
+    <allow-navigation href="https://server29.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://server30.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://server30-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="https://server30-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <allow-navigation href="https://server31.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://server32.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="https://server32-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="https://server32-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- wildcard scheme, with subdomain wildcard, with attribute differences -->
+    <allow-navigation href="*://*.server33.com" /> <!-- equivalent to the next line -->
+    <allow-navigation href="*://*.server33.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://*.server34.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://*.server34-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="*://*.server34-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <allow-navigation href="*://*.server35.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://*.server36.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://*.server36-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="*://*.server36-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- wildcard scheme, no subdomain, with attribute differences -->
+    <allow-navigation href="*://server37.com" /> <!-- equivalent to the next line -->
+    <allow-navigation href="*://server37.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://server38.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://server38-1.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="*://server38-2.com" minimum-tls-version="TLSv1.2" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+    
+    <allow-navigation href="*://server39.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://server40.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="false"/>
+    <allow-navigation href="*://server40-1.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="true" requires-certificate-transparency="true"/>
+    <allow-navigation href="*://server40-2.com" minimum-tls-version="TLSv1.1" requires-forward-secrecy="false" requires-certificate-transparency="true"/>
+
+    <!-- https://issues.apache.org/jira/browse/CB-9758 Mobilespec crashes adding plugins on OS X -->
+    <allow-navigation href="data:*" />
+    <allow-navigation href="http:*" />
+    <allow-navigation href="https:*" />
+    <allow-navigation href="http://*" />
+    <allow-navigation href="https://*" />
+
+    <preference name="fullscreen" value="true" />
+    <preference name="webviewbounce" value="true" />
+    <preference name="orientation" value="portrait" />
+    <icon id="icon" src="icon.png" />
+    <icon height="255" id="logo" src="logo.png" width="255" />
+    <plugin name="org.apache.cordova.pluginwithvars">
+        <variable name="var" value="varvalue" />
+    </plugin>
+    <plugin name="org.apache.cordova.pluginwithurl" src="http://cordova.apache.org/pluginwithurl" />
+    <plugin name="org.apache.cordova.pluginwithversion" version="1.1.1" />
+    <plugin name="org.apache.cordova.pluginwithurlandversion" src="http://cordova.apache.org/pluginwithurlandversion" version="1.1.1" />
+    <plugin name="org.apache.cordova.justaplugin" />
+    <feature name="Legacy plugin entry with version">
+        <param name="id" value="org.apache.cordova.legacyfeatureversion" />
+        <param name="version" value="1.2.3" />
+        <param name="aVar" value="aValue" />
+    </feature>
+    <feature name="Legacy plugin entry with url">
+        <param name="id" value="org.apache.cordova.legacyfeatureurl" />
+        <param name="url" value="http://cordova.apache.org/legacyfeatureurl" />
+    </feature>
+    <feature name="Legacy plugin entry with version and url">
+        <param name="id" value="org.apache.cordova.legacyfeatureversionandurl" />
+        <param name="version" value="1.2.3" />
+        <param name="url" value="http://cordova.apache.org/legacyfeatureversionandurl" />
+    </feature>
+</widget>

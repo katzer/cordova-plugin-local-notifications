@@ -1,0 +1,5 @@
+instrumentation:
+    root: "bin/templates/scripts"
+    include-all-sources: true
+reporting:
+    print: "detail"

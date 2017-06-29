@@ -1,4 +1,5 @@
 {
+    "libz.tbd": 1,
     "QuartzCore.framework": 1,
-    "UserNotifications.framework": 2
+    "UserNotifications.framework": 1
 }

@@ -1,1 +1,0 @@
-../../../../../../cordova-plugin-local-notifications/src/ios9/APPLocalNotificationOptions.ios9.m

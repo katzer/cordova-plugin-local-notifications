@@ -1,0 +1,16 @@
+language: node_js
+sudo: false
+git:
+  depth: 10
+node_js:
+- '0.10'
+- '0.12'
+- '4'
+- '6'
+install:
+- npm install
+script:
+- npm test
+notifications:
+  slack:
+    secure: gn0YH0MCFOYR3Dd8Vsx3K/J9G0aazhnRjQVfqbeRKN3f6vToKif1CxhiDLXI6cxEB5DBiAtpK58jkoDYrXoNLGuSbiTHBJ+ankU8aG3s0OTIHa/8I0TjRKjBRc0PrMV7n7EiLC6LQxNe0x0mMSE1gdOUeS1UrZ5ZiVrS1u0eHHs=

@@ -1,0 +1,19 @@
+language: objective-c
+osx_image: xcode7.3
+sudo: false
+before_install:
+    - npm cache clean -f
+    - npm install -g n
+    - node --version
+install:
+    - npm install
+    - npm install ios-deploy
+    - npm install -g codecov
+script:
+    - npm run jshint
+    - npm run unit-tests
+    - npm run e2e-tests
+    - open -b com.apple.iphonesimulator    
+    - npm run objc-tests
+    - npm run cover
+after_script: codecov

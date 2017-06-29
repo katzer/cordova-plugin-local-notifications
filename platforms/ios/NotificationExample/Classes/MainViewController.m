@@ -84,18 +84,32 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
 /* Comment out the block below to over-ride */
 
 /*
 - (UIWebView*) newCordovaViewWithFrame:(CGRect)bounds
 {
     return[super newCordovaViewWithFrame:bounds];
+}
+
+// CB-12098
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000  
+- (NSUInteger)supportedInterfaceOrientations
+#else  
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#endif
+{
+    return [super supportedInterfaceOrientations];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation 
+{
+    return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+- (BOOL)shouldAutorotate 
+{
+    return [super shouldAutorotate];
 }
 */
 

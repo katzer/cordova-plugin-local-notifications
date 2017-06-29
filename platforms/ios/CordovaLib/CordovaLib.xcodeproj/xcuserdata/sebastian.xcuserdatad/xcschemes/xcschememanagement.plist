@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Cordova.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>CordovaLib.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -12,6 +17,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>C0C01EB11E3911D50056E6CB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>D2AAC07D0554694100DB518D</key>
 		<dict>
 			<key>primary</key>

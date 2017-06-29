@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget android-packageName="io.cordova.hellocordova.android" id="io.cordova.hellocordova" ios-CFBundleIdentifier="io.cordova.hellocordova.ios" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Hello Cordova</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+
+    <platform name="ios">
+        <preference name="orientation" value="all" />
+        <preference name="target-device" value="handset" />
+        <preference name="deployment-target" value="8.0" />
+
+        <splash src="res/screen/ios/Default@2x~universal~anyany.png" />
+        <splash src="res/screen/ios/Default@2x~universal~comany.png" />
+        <splash src="res/screen/ios/Default@2x~universal~comcom.png" />
+        <splash src="res/screen/ios/Default@3x~universal~anyany.png" />
+        <splash src="res/screen/ios/Default@3x~universal~anycom.png" />
+        <splash src="res/screen/ios/Default@3x~universal~comany.png" />
+    </platform>
+
+    <access origin="http://*.apache.org" />
+    <access origin="https://*.apache.org" />
+
+    <allow-navigation href="http://*.apache.org" />
+    <allow-navigation href="https://*.apache.org" />
+     
+</widget>
+

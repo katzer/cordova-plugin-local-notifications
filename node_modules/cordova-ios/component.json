@@ -1,0 +1,10 @@
+{
+  "name": "cordova-ios",
+  "version": "3.7.0-dev",
+  "repository": "apache/cordova-ios",
+  "main": "CordovaLib/cordova.js",
+  "scripts": [
+    "CordovaLib/cordova.js"
+  ],
+  "license": "Apache Version 2.0"
+}

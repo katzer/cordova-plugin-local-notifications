@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2013 Anis Kadri
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.test.plugins.weblessplugin"
+    version="0.6.0">
+
+    <name>Webless Plugin</name>
+
+    <config-file target="config.xml" parent="/*">
+        <access origin="build.phonegap.com" />
+        <access origin="s3.amazonaws.com" />
+    </config-file>
+
+    <!-- ios -->
+    <platform name="ios">
+        <!-- CDV 2.4 had a /cordova/plugins instead of /widget/plugins so ignored! -->
+        <!-- CDV 2.5+ -->
+        <config-file target="config.xml" parent="/widget/plugins">
+            <plugin name="org.test.plugins.weblessplugin"
+                value="WeblessPluginCommand"/>
+        </config-file>
+
+        <resource-file src="src/ios/WeblessPlugin.bundle" />
+        <resource-file src="src/ios/WeblessPluginViewController.xib" />
+
+        <header-file src="src/ios/WeblessPluginCommand.h" />
+        <header-file src="src/ios/WeblessPluginViewController.h" />
+
+        <source-file src="src/ios/WeblessPluginCommand.m" />
+        <source-file src="src/ios/WeblessPluginViewController.m" />
+
+        <!-- framework for testing (not actual dependency of org.test.plugins.weblessplugin -->
+        <framework src="libsqlite3.dylib" />
+    </platform>
+</plugin>
