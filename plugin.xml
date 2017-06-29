@@ -59,7 +59,7 @@
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />
 
-        <!-- <header-file src="src/ios/APPLocalNotificationOptions.h" />
+        <header-file src="src/ios/APPLocalNotificationOptions.h" />
         <source-file src="src/ios/APPLocalNotificationOptions.m" />
 
         <header-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.h" />
@@ -69,7 +69,7 @@
         <source-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.m" />
 
         <header-file src="src/ios/UNNotificationRequest+APPLocalNotification.h" />
-        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" /> -->
+        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" />
 
     </platform>
 

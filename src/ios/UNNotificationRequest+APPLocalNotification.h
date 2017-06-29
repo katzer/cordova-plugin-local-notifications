@@ -21,6 +21,8 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
+#import "APPLocalNotificationOptions.h"
+
 @import UserNotifications;
 
 @interface UNNotificationRequest (APPLocalNotification)

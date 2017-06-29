@@ -35,8 +35,8 @@
 // Request permission to show notifications
 - (void) request:(CDVInvokedUrlCommand*)command;
 
-//// Schedule set of notifications
-//- (void) schedule:(CDVInvokedUrlCommand*)command;
+// Schedule notifications
+- (void) schedule:(CDVInvokedUrlCommand*)command;
 //// Update set of notifications
 //- (void) update:(CDVInvokedUrlCommand*)command;
 //// Cancel set of notifications

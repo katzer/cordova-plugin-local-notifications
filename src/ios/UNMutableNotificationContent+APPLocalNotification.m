@@ -35,8 +35,11 @@ static char optionsKey;
 #pragma mark Init
 
 /**
- * Initialize a local notification with the given options when calling on JS side:
- * notification.local.add(options)
+ * Initialize a notification with the given options.
+ *
+ * @param [ NSDictionary* ] dict A key-value property map.
+ *
+ * @return [ UNMutableNotificationContent ]
  */
 - (id) initWithOptions:(NSDictionary*)dict
 {
@@ -49,9 +52,9 @@ static char optionsKey;
 }
 
 /**
- * Applies the given options when calling on JS side:
- * notification.local.add(options)
-
+ * Initialize a notification by using the options found under userInfo.
+ *
+ * @return [ Void ]
  */
 - (void) __init
 {
@@ -65,10 +68,12 @@ static char optionsKey;
 }
 
 #pragma mark -
-#pragma mark Methods
+#pragma mark Public
 
 /**
- * The options provided by the plug-in.
+ * The options used to initialize the notification.
+ *
+ * @return [ APPLocalNotificationOptions* ] options
  */
 - (APPLocalNotificationOptions*) options
 {
@@ -85,30 +90,15 @@ static char optionsKey;
 }
 
 /**
- * Get associated option object
- */
-- (APPLocalNotificationOptions*) getOptions
-{
-    return objc_getAssociatedObject(self, &optionsKey);
-}
-
-/**
- * Set associated option object
- */
-- (void) setOptions:(APPLocalNotificationOptions*)options
-{
-    objc_setAssociatedObject(self, &optionsKey,
-                             options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-/**
  * The notifcations request ready to add to the notification center including
  * all informations about trigger behavior.
+ *
+ * @return [ UNNotificationRequest* ]
  */
 - (UNNotificationRequest*) request
 {
     APPLocalNotificationOptions* opts = [self getOptions];
-
+    
     return [UNNotificationRequest requestWithIdentifier:opts.identifier
                                                 content:self
                                                 trigger:opts.trigger];
@@ -116,27 +106,55 @@ static char optionsKey;
 
 /**
  * Encode the user info dict to JSON.
+ *
+ * @return [ NSString* ]
  */
 - (NSString*) encodeToJSON
 {
     NSString* json;
     NSData* data;
     NSMutableDictionary* obj = [self.userInfo mutableCopy];
-
+    
     [obj removeObjectForKey:@"updatedAt"];
-
+    
     if (obj == NULL || obj.count == 0)
         return json;
-
+    
     data = [NSJSONSerialization dataWithJSONObject:obj
                                            options:NSJSONWritingPrettyPrinted
                                              error:NULL];
-
+    
     json = [[NSString alloc] initWithData:data
                                  encoding:NSUTF8StringEncoding];
-
+    
     return [json stringByReplacingOccurrencesOfString:@"\n"
                                            withString:@""];
+}
+
+#pragma mark -
+#pragma mark Private
+
+/**
+ * The options used to initialize the notification.
+ *
+ * @return [ APPLocalNotificationOptions* ]
+ */
+- (APPLocalNotificationOptions*) getOptions
+{
+    return objc_getAssociatedObject(self, &optionsKey);
+}
+
+/**
+ * Set the options used to initialize the notification.
+ *
+ * @param [ NSDictionary* ] dict A key-value property map.
+ *
+ * @return [ Void ]
+ */
+- (void) setOptions:(APPLocalNotificationOptions*)options
+{
+    objc_setAssociatedObject(self, &optionsKey,
+                             options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

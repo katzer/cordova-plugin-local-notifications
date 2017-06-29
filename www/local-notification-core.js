@@ -55,66 +55,39 @@ exports.requestPermission = function (callback, scope) {
     exec(fn, null, 'LocalNotification', 'request', []);
 };
 
-// /**
-//  * Returns the default settings.
-//  *
-//  * @return {Object}
-//  */
-// exports.getDefaults = function () {
-//     return this._defaults;
-// };
+/**
+ * Schedule notifications.
+ *
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
+ */
+exports.schedule = function (msgs, callback, scope, args) {
+    var fn = function (granted) {
 
-// /**
-//  * Overwrite default settings.
-//  *
-//  * @param {Object} defaults
-//  */
-// exports.setDefaults = function (newDefaults) {
-//     var defaults = this.getDefaults();
+        if (!granted) return;
 
-//     for (var key in defaults) {
-//         if (newDefaults.hasOwnProperty(key)) {
-//             defaults[key] = newDefaults[key];
-//         }
-//     }
-// };
+        var notifications = Array.isArray(msgs) ? msgs : [msgs];
 
-// /**
-//  * Schedule a new local notification.
-//  *
-//  * @param {Object} msgs
-//  *      The notification properties
-//  * @param {Function} callback
-//  *      A function to be called after the notification has been canceled
-//  * @param {Object?} scope
-//  *      The scope for the callback function
-//  * @param {Object?} args
-//  *      skipPermission:true schedules the notifications immediatly without
-//  *                          registering or checking for permission
-//  */
-// exports.schedule = function (msgs, callback, scope, args) {
-//     var fn = function(granted) {
+        for (var i = 0; i < notifications.length; i++) {
+            var notification = notifications[i];
 
-//         if (!granted) return;
+            this.mergeWithDefaults(notification);
+            this.convertProperties(notification);
+        }
 
-//         var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        this.exec('schedule', notifications, callback, scope);
+    };
 
-//         for (var i = 0; i < notifications.length; i++) {
-//             var notification = notifications[i];
-
-//             this.mergeWithDefaults(notification);
-//             this.convertProperties(notification);
-//         }
-
-//         this.exec('schedule', notifications, callback, scope);
-//     };
-
-//     if (args && args.skipPermission) {
-//         fn.call(this, true);
-//     } else {
-//         this.registerPermission(fn, this);
-//     }
-// };
+    if (args && args.skipPermission) {
+        fn.call(this, true);
+    } else {
+        this.requestPermission(fn, this);
+    }
+};
 
 // /**
 //  * Update existing notifications specified by IDs in options.
@@ -435,55 +408,75 @@ exports.requestPermission = function (callback, scope) {
 //     this.exec('getTriggered', null, callback, scope);
 // };
 
+/**
+ * The (platform specific) default settings.
+ *
+ * @return [ Object ]
+ */
+exports.getDefaults = function () {
+    return this._defaults;
+};
 
-// /**********
-//  * EVENTS *
-//  **********/
+/**
+ * Overwrite default settings.
+ *
+ * @param [ Object ] newDefaults New default values.
+ *
+ * @return [ Void ]
+ */
+exports.setDefaults = function (newDefaults) {
+    var defaults = this.getDefaults();
 
-// /**
-//  * Register callback for given event.
-//  *
-//  * @param {String} event
-//  *      The event's name
-//  * @param {Function} callback
-//  *      The function to be exec as callback
-//  * @param {Object?} scope
-//  *      The callback function's scope
-//  */
-// exports.on = function (event, callback, scope) {
+    for (var key in defaults) {
+        if (newDefaults.hasOwnProperty(key)) {
+            defaults[key] = newDefaults[key];
+        }
+    }
+};
 
-//     if (typeof callback !== "function")
-//         return;
+/**
+ * Register callback for given event.
+ *
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.on = function (event, callback, scope) {
 
-//     if (!this._listener[event]) {
-//         this._listener[event] = [];
-//     }
+    if (typeof callback !== "function")
+        return;
 
-//     var item = [callback, scope || window];
+    if (!this._listener[event]) {
+        this._listener[event] = [];
+    }
 
-//     this._listener[event].push(item);
-// };
+    var item = [callback, scope || window];
 
-// /**
-//  * Unregister callback for given event.
-//  *
-//  * @param {String} event
-//  *      The event's name
-//  * @param {Function} callback
-//  *      The function to be exec as callback
-//  */
-// exports.un = function (event, callback) {
-//     var listener = this._listener[event];
+    this._listener[event].push(item);
+};
 
-//     if (!listener)
-//         return;
+/**
+ * Unregister callback for given event.
+ *
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ *
+ * @return [ Void ]
+ */
+exports.un = function (event, callback) {
+    var listener = this._listener[event];
 
-//     for (var i = 0; i < listener.length; i++) {
-//         var fn = listener[i][0];
+    if (!listener)
+        return;
 
-//         if (fn == callback) {
-//             listener.splice(i, 1);
-//             break;
-//         }
-//     }
-// };
+    for (var i = 0; i < listener.length; i++) {
+        var fn = listener[i][0];
+
+        if (fn == callback) {
+            listener.splice(i, 1);
+            break;
+        }
+    }
+};
