@@ -25,6 +25,8 @@
 
 @interface UNUserNotificationCenter (APPLocalNotification)
 
+extern NSString * const kAPPGeneralCategory;
+
 typedef NS_ENUM(NSUInteger, APPNotificationType) {
     NotifcationTypeAll = 0,
     NotifcationTypeScheduled = 1,
@@ -35,6 +37,8 @@ typedef NS_ENUM(NSUInteger, APPNotificationType) {
 
 @property (readonly, getter=getNotifications) NSArray* localNotifications;
 @property (readonly, getter=getNotificationIds) NSArray* localNotificationIds;
+
+- (void) registerGeneralNotificationCategory;
 
 // List of all notification IDs from given type
 - (NSArray*) getNotificationIdsByType:(APPNotificationType)type;

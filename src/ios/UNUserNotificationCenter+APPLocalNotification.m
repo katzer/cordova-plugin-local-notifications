@@ -26,7 +26,30 @@
 
 @import UserNotifications;
 
+NSString * const kAPPGeneralCategory = @"GENERAL";
+
 @implementation UNUserNotificationCenter (APPLocalNotification)
+
+#pragma mark -
+#pragma mark NotificationCategory
+
+/**
+ * Register general notification category to listen for dismiss actions.
+ *
+ * @return [ Void ]
+ */
+- (void) registerGeneralNotificationCategory
+{
+    UNNotificationCategory* category;
+
+    category = [UNNotificationCategory
+                categoryWithIdentifier:@"GENERAL"
+                actions:@[]
+                intentIdentifiers:@[]
+                options:UNNotificationCategoryOptionCustomDismissAction];
+
+    [self setNotificationCategories:[NSSet setWithObjects:category, nil]];
+}
 
 #pragma mark -
 #pragma mark LocalNotifications

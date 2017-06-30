@@ -631,8 +631,7 @@
 
     if ([action isEqualToString:UNNotificationDefaultActionIdentifier]) {
         event = @"click";
-    }
-    
+    } else
     if ([action isEqualToString:UNNotificationDismissActionIdentifier]) {
         event = @"clear";
     }
@@ -655,15 +654,7 @@
     _center    = [UNUserNotificationCenter currentNotificationCenter];
 
     _center.delegate = self;
-    
-    UNNotificationCategory* generalCategory = [UNNotificationCategory
-                                               categoryWithIdentifier:@"GENERAL"
-                                               actions:@[]
-                                               intentIdentifiers:@[]
-                                               options:UNNotificationCategoryOptionCustomDismissAction];
-    
-    // Register the notification categories.
-    [_center setNotificationCategories:[NSSet setWithObjects:generalCategory, nil]];
+    [_center registerGeneralNotificationCategory];
 }
 
 #pragma mark -
