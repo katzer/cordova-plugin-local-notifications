@@ -43,7 +43,7 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
     UNNotificationCategory* category;
 
     category = [UNNotificationCategory
-                categoryWithIdentifier:@"GENERAL"
+                categoryWithIdentifier:kAPPGeneralCategory
                 actions:@[]
                 intentIdentifiers:@[]
                 options:UNNotificationCategoryOptionCustomDismissAction];

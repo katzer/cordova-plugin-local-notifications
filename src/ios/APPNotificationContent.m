@@ -23,6 +23,7 @@
 
 #import "APPNotificationContent.h"
 #import "APPNotificationOptions.h"
+#import "UNUserNotificationCenter+APPLocalNotification.h"
 #import <objc/runtime.h>
 
 @import UserNotifications;
@@ -65,7 +66,7 @@ static char optionsKey;
     self.body     = options.text;
     self.sound    = options.sound;
     self.badge    = options.badge;
-    self.categoryIdentifier = @"GENERAL";
+    self.categoryIdentifier = kAPPGeneralCategory;
 }
 
 #pragma mark -
