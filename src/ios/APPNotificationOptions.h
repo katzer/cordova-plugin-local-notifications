@@ -35,7 +35,6 @@
 @property (readonly, getter=userInfo)   NSDictionary*        userInfo;
 
 - (id) initWithDict:(NSDictionary*)dict;
-- (BOOL) isRepeating;
 - (UNNotificationTrigger*) trigger;
 
 @end

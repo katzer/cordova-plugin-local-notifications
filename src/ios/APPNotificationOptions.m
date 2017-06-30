@@ -165,21 +165,6 @@
 #pragma mark Public
 
 /**
- * If the notification shall be repeating.
- *
- * @return [ BOOL ]
- */
-- (BOOL) isRepeating
-{
-    id every = [dict objectForKey:@"every"];
-
-    if ([every isKindOfClass:NSString.class])
-        return ((NSString*) every).length > 0;
-
-    return every > 0;
-}
-
-/**
  * Specify how and when to trigger the notification.
  *
  * @return [ UNNotificationTrigger* ]
@@ -214,6 +199,24 @@
 #pragma mark Private
 
 /**
+ * If the notification shall be repeating.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) isRepeating
+{
+    id every = [dict objectForKey:@"every"];
+
+    if ([every isKindOfClass:NSString.class])
+        return ((NSString*) every).length > 0;
+
+    if ([every isKindOfClass:NSDictionary.class])
+        return ((NSDictionary*) every).count > 0;
+
+    return every > 0;
+}
+
+/**
  * Non repeating trigger.
  *
  * @return [ UNTimeIntervalNotificationTrigger* ]
@@ -235,6 +238,9 @@
 
     if ([every isKindOfClass:NSString.class])
         return [self repeatingTriggerWithDateMatchingComponents];
+
+    if ([every isKindOfClass:NSDictionary.class])
+        return [self repeatingTriggerWithCustomDateMatchingComponents];
 
     return [self repeatingTriggerWithTimeInterval];
 }
@@ -258,7 +264,7 @@
 }
 
 /**
- * A repeating trigger based on a calendar time defined by the user.
+ * A repeating trigger based on a calendar time intervals defined by the plugin.
  *
  * @return [ UNCalendarNotificationTrigger* ]
  */
@@ -269,8 +275,27 @@
 
     NSDateComponents *date = [cal components:[self repeatInterval]
                                     fromDate:[self fireDate]];
+    
+    date.timeZone = [NSTimeZone defaultTimeZone];
 
-    [date setTimeZone:[NSTimeZone defaultTimeZone]];
+    return [UNCalendarNotificationTrigger
+            triggerWithDateMatchingComponents:date repeats:YES];
+}
+
+/**
+ * A repeating trigger based on a calendar time intervals defined by the user.
+ *
+ * @return [ UNCalendarNotificationTrigger* ]
+ */
+- (UNCalendarNotificationTrigger*) repeatingTriggerWithCustomDateMatchingComponents
+{
+    NSCalendar* cal = [[NSCalendar alloc]
+                       initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+
+    NSDateComponents *date = [self customDateComponents];
+
+    date.calendar = cal;
+    date.timeZone = [NSTimeZone defaultTimeZone];
 
     return [UNCalendarNotificationTrigger
             triggerWithDateMatchingComponents:date repeats:YES];
@@ -296,32 +321,76 @@
     NSString* interval = [dict objectForKey:@"every"];
     NSCalendarUnit units = NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
-
-    if (!interval.length)
-        return units;
-
-    if ([interval isEqualToString:@"second"])
-        return NSCalendarUnitNanosecond;
-
     if ([interval isEqualToString:@"minute"])
         return NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"hour"])
-        return NSCalendarUnitMinute;
+        return NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"day"])
-        return NSCalendarUnitHour|NSCalendarUnitMinute;
+        return NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"week"])
-        return NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitWeekday;
+        return NSCalendarUnitWeekday|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"month"])
-        return NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitDay;
+        return NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"year"])
-        return NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitDay|NSCalendarUnitMonth;
+        return NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     return units;
+}
+
+/**
+ * The repeat interval for the notification.
+ *
+ * @return [ NSDateComponents* ]
+ */
+- (NSDateComponents*) customDateComponents
+{
+    NSDateComponents* date  = [[NSDateComponents alloc] init];
+    NSDictionary* every     = [dict objectForKey:@"every"];
+
+    for (NSString* key in every) {
+        long value = [[every valueForKey:key] longValue];
+        
+        if ([key isEqualToString:@"second"]) {
+            date.second = value;
+        } else
+        if ([key isEqualToString:@"minute"]) {
+            date.minute = value;
+        } else
+        if ([key isEqualToString:@"hour"]) {
+            date.hour = value;
+        } else
+        if ([key isEqualToString:@"day"]) {
+            date.day = value;
+        } else
+        if ([key isEqualToString:@"weekday"]) {
+            date.weekday = value;
+        } else
+        if ([key isEqualToString:@"weekdayOrdinal"]) {
+            date.weekdayOrdinal = value;
+        } else
+        if ([key isEqualToString:@"week"]) {
+            date.weekOfYear = value;
+        } else
+        if ([key isEqualToString:@"weekOfMonth"]) {
+            date.weekOfMonth = value;
+        } else
+        if ([key isEqualToString:@"month"]) {
+            date.month = value;
+        } else
+        if ([key isEqualToString:@"quarter"]) {
+            date.quarter = value;
+        } else
+        if ([key isEqualToString:@"year"]) {
+            date.year = value;
+        }
+    }
+
+    return date;
 }
 
 /**
