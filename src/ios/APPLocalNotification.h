@@ -39,41 +39,41 @@
 - (void) schedule:(CDVInvokedUrlCommand*)command;
 //// Update set of notifications
 //- (void) update:(CDVInvokedUrlCommand*)command;
-//// Cancel set of notifications
-//- (void) cancel:(CDVInvokedUrlCommand*)command;
-//// Cancel all notifications
-//- (void) cancelAll:(CDVInvokedUrlCommand*)command;
-//// Clear set of notifications
-//- (void) clear:(CDVInvokedUrlCommand*)command;
-//// Clear all notifications
-//- (void) clearAll:(CDVInvokedUrlCommand*)command;
-//
-//// If a notification with an ID is present
-//- (void) isPresent:(CDVInvokedUrlCommand*)command;
-//// If a notification with an ID is scheduled
-//- (void) isScheduled:(CDVInvokedUrlCommand*)command;
-//// If a notification with an ID is triggered
-//- (void) isTriggered:(CDVInvokedUrlCommand*)command;
-//
-//// List all ids from all local notifications
-//- (void) getAllIds:(CDVInvokedUrlCommand*)command;
-//// List all ids from all pending notifications
-//- (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
-//// List all ids from all triggered notifications
-//- (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
-//
-//// Propertys for given local notification
-//- (void) getSingle:(CDVInvokedUrlCommand*)command;
-//// Propertya for given scheduled notification
-//- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command;
-//// Propertys for given triggered notification
-//- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command;
-//
-//// Property list for given local notifications
-//- (void) getAll:(CDVInvokedUrlCommand*)command;
-//// Property list for given scheduled notifications
-//- (void) getScheduled:(CDVInvokedUrlCommand*)command;
-//// Property list for given triggered notifications
-//- (void) getTriggered:(CDVInvokedUrlCommand*)command;
+// Clear notifications by id
+- (void) clear:(CDVInvokedUrlCommand*)command;
+// Clear all notifications
+- (void) clearAll:(CDVInvokedUrlCommand*)command;
+// Cancel notifications by id
+- (void) cancel:(CDVInvokedUrlCommand*)command;
+// Cancel all notifications
+- (void) cancelAll:(CDVInvokedUrlCommand*)command;
+
+// If a notification with an ID is present
+- (void) isPresent:(CDVInvokedUrlCommand*)command;
+// If a notification with an ID is scheduled
+- (void) isScheduled:(CDVInvokedUrlCommand*)command;
+// If a notification with an ID is triggered
+- (void) isTriggered:(CDVInvokedUrlCommand*)command;
+
+// List of all notification IDs
+- (void) ids:(CDVInvokedUrlCommand*)command;
+// List of all scheduled notification IDs
+- (void) scheduledIds:(CDVInvokedUrlCommand*)command;
+// List of all triggered notification IDs
+- (void) triggeredIds:(CDVInvokedUrlCommand*)command;
+
+// Notification by id
+- (void) notification:(CDVInvokedUrlCommand*)command;
+// Scheduled notification by id
+- (void) scheduledNotification:(CDVInvokedUrlCommand*)command;
+// Triggered notification by id
+- (void) triggeredNotification:(CDVInvokedUrlCommand*)command;
+
+// List of notifications by id
+- (void) notifications:(CDVInvokedUrlCommand*)command;
+// List of scheduled notifications by id
+- (void) scheduledNotifications:(CDVInvokedUrlCommand*)command;
+// List of triggered notifications by id
+- (void) triggeredNotifications:(CDVInvokedUrlCommand*)command;
 
 @end

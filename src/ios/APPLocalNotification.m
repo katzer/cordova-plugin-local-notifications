@@ -138,379 +138,338 @@
 //        [self execCallback:command];
 //    }];
 //}
-//
-///**
-// * Cancel a set of notifications.
-// *
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) cancel:(CDVInvokedUrlCommand*)command
-//{
-//    [self.commandDelegate runInBackground:^{
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            for (NSNumber* id in command.arguments) {
-//                UNNotificationRequest* notification;
-//
-//                notification = [self.center getNotificationWithId:id];
-//
-//                if (!notification)
-//                    continue;
-//
-//                [self.center cancelNotification:notification];
-//                [self fireEvent:@"cancel" notification:notification];
-//            }
-//        } else {
-//            for (NSNumber* id in command.arguments) {
-//                UILocalNotification* notification;
-//
-//                notification = [self.app localNotificationWithId:id];
-//
-//                if (!notification)
-//                    continue;
-//
-//                [self.app cancelLocalNotification:notification];
-//                [self fireEvent:@"cancel" localnotification:notification];
-//            }
-//        }
-//
-//        [self execCallback:command];
-//    }];
-//}
-//
-///**
-// * Cancel all local notifications.
-// */
-//- (void) cancelAll:(CDVInvokedUrlCommand*)command
-//{
-//    [self.commandDelegate runInBackground:^{
-//        [self cancelAllNotifications];
-//        [self fireEvent:@"cancelall"];
-//        [self execCallback:command];
-//    }];
-//}
-//
-///**
-// * Clear a set of notifications.
-// *
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) clear:(CDVInvokedUrlCommand*)command
-//{
-//    [self.commandDelegate runInBackground:^{
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            for (NSNumber* id in command.arguments) {
-//                UNNotificationRequest* notification;
-//
-//                notification = [self.center getNotificationWithId:id];
-//
-//                if (!notification)
-//                    continue;
-//
-//                [self.center clearNotification:notification];
-//                [self fireEvent:@"clear" notification:notification];
-//            }
-//        } else {
-//            for (NSNumber* id in command.arguments) {
-//                UILocalNotification* notification;
-//
-//                notification = [self.app localNotificationWithId:id];
-//
-//                if (!notification)
-//                    continue;
-//
-//                [self.app clearLocalNotification:notification];
-//                [self fireEvent:@"clear" localnotification:notification];
-//            }
-//        }
-//
-//        [self execCallback:command];
-//    }];
-//}
-//
-///**
-// * Clear all local notifications.
-// */
-//- (void) clearAll:(CDVInvokedUrlCommand*)command
-//{
-//    [self.commandDelegate runInBackground:^{
-//        [self clearAllNotifications];
-//        [self fireEvent:@"clearall"];
-//        [self execCallback:command];
-//    }];
-//}
-//
-///**
-// * If a notification by ID is present.
-// *
-// * @param id
-// *      The ID of the notification
-// */
-//- (void) isPresent:(CDVInvokedUrlCommand *)command
-//{
-//    [self isPresent:command type:NotifcationTypeAll];
-//}
-//
-///**
-// * If a notification by ID is scheduled.
-// *
-// * @param id
-// *      The ID of the notification
-// */
-//- (void) isScheduled:(CDVInvokedUrlCommand*)command
-//{
-//    [self isPresent:command type:NotifcationTypeScheduled];
-//}
-//
-///**
-// * Check if a notification with an ID is triggered.
-// *
-// * @param id
-// *      The ID of the notification
-// */
-//- (void) isTriggered:(CDVInvokedUrlCommand*)command
-//{
-//    [self isPresent:command type:NotifcationTypeTriggered];
-//}
-//
-///**
-// * Check if a notification with an ID exists.
-// *
-// * @param type
-// *      The notification life cycle type
-// */
-//- (void) isPresent:(CDVInvokedUrlCommand*)command
-//              type:(APPNotificationType)type;
-//{
-//    [self.commandDelegate runInBackground:^{
-//        NSNumber* id = [command argumentAtIndex:0];
-//        BOOL exist;
-//
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            exist = [self.center notificationExist:id type:type];
-//        } else {
-//            if (type == NotifcationTypeAll) {
-//                exist = [self.app localNotificationExist:id];
-//            } else {
-//                exist = [self.app localNotificationExist:id type:type];
-//            }
-//        }
-//
-//        CDVPluginResult* result;
-//        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-//                                     messageAsBool:exist];
-//
-//        [self.commandDelegate sendPluginResult:result
-//                                    callbackId:command.callbackId];
-//    }];
-//}
-//
-///**
-// * List all ids from all local notifications.
-// */
-//- (void) getAllIds:(CDVInvokedUrlCommand*)command
-//{
-//    [self getIds:command byType:NotifcationTypeAll];
-//}
-//
-///**
-// * List all ids from all pending notifications.
-// */
-//- (void) getScheduledIds:(CDVInvokedUrlCommand*)command
-//{
-//    [self getIds:command byType:NotifcationTypeScheduled];
-//}
-//
-///**
-// * List all ids from all triggered notifications.
-// */
-//- (void) getTriggeredIds:(CDVInvokedUrlCommand*)command
-//{
-//    [self getIds:command byType:NotifcationTypeTriggered];
-//}
-//
-///**
-// * List of ids for given local notifications.
-// *
-// * @param type
-// *      Notification life cycle type
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) getIds:(CDVInvokedUrlCommand*)command
-//         byType:(APPNotificationType)type;
-//{
-//    [self.commandDelegate runInBackground:^{
-//        NSArray* ids;
-//
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            ids = [self.center getNotificationIdsByType:type];
-//        } else {
-//            if (type == NotifcationTypeAll) {
-//                ids = [self.app localNotificationIds];
-//            } else {
-//                ids = [self.app localNotificationIdsByType:type];
-//            }
-//        }
-//
-//        CDVPluginResult* result;
-//        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-//                                    messageAsArray:ids];
-//
-//        [self.commandDelegate sendPluginResult:result
-//                                    callbackId:command.callbackId];
-//    }];
-//}
-//
-///**
-// * Propertys for given local notification.
-// */
-//- (void) getSingle:(CDVInvokedUrlCommand*)command
-//{
-//    [self getOption:command byType:NotifcationTypeAll];
-//}
-//
-///**
-// * Propertya for given scheduled notification.
-// */
-//- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command
-//{
-//    [self getOption:command byType:NotifcationTypeScheduled];
-//}
-//
-//// Propertys for given triggered notification
-//- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command
-//{
-//    [self getOption:command byType:NotifcationTypeTriggered];
-//}
-//
-///**
-// * Property list for given local notifications.
-// *
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) getAll:(CDVInvokedUrlCommand*)command
-//{
-//    [self getOptions:command byType:NotifcationTypeAll];
-//}
-//
-///**
-// * Property list for given scheduled notifications.
-// *
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) getScheduled:(CDVInvokedUrlCommand*)command
-//{
-//    [self getOptions:command byType:NotifcationTypeScheduled];
-//}
-//
-///**
-// * Property list for given triggered notifications.
-// *
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) getTriggered:(CDVInvokedUrlCommand *)command
-//{
-//    [self getOptions:command byType:NotifcationTypeTriggered];
-//}
-//
-///**
-// * Propertys for given triggered notification.
-// *
-// * @param type
-// *      Notification life cycle type
-// * @param ids
-// *      The ID of the notification
-// */
-//- (void) getOption:(CDVInvokedUrlCommand*)command
-//            byType:(APPNotificationType)type;
-//{
-//    [self.commandDelegate runInBackground:^{
-//        NSArray* ids = command.arguments;
-//        NSArray* notifications;
-//
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            notifications = [self.center getNotificationOptionsByType:type
-//                                                                andId:ids];
-//        } else {
-//            if (type == NotifcationTypeAll) {
-//                notifications = [self.app localNotificationOptionsById:ids];
-//            }
-//            else {
-//                notifications = [self.app localNotificationOptionsByType:type
-//                                                                   andId:ids];
-//            }
-//        }
-//
-//        CDVPluginResult* result;
-//        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-//                               messageAsDictionary:[notifications firstObject]];
-//
-//        [self.commandDelegate sendPluginResult:result
-//                                    callbackId:command.callbackId];
-//    }];
-//}
-//
-///**
-// * Property list for given triggered notifications.
-// *
-// * @param type
-// *      Notification life cycle type
-// * @param ids
-// *      The IDs of the notifications
-// */
-//- (void) getOptions:(CDVInvokedUrlCommand*)command
-//             byType:(APPNotificationType)type;
-//{
-//    [self.commandDelegate runInBackground:^{
-//        NSArray* ids = command.arguments;
-//        NSArray* notifications;
-//
-//        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//            if (type == NotifcationTypeAll && ids.count == 0) {
-//                notifications = [self.center getNotificationOptions];
-//            }
-//            else if (type == NotifcationTypeAll) {
-//                notifications = [self.center getNotificationOptionsById:ids];
-//            }
-//            else if (ids.count == 0) {
-//                notifications = [self.center getNotificationOptionsByType:type];
-//            }
-//            else {
-//                notifications = [self.center getNotificationOptionsByType:type
-//                                                                    andId:ids];
-//            }
-//        } else {
-//            if (type == NotifcationTypeAll && ids.count == 0) {
-//                notifications = [self.app localNotificationOptions];
-//            }
-//            else if (type == NotifcationTypeAll) {
-//                notifications = [self.app localNotificationOptionsById:ids];
-//            }
-//            else if (ids.count == 0) {
-//                notifications = [self.app localNotificationOptionsByType:type];
-//            }
-//            else {
-//                notifications = [self.app localNotificationOptionsByType:type
-//                                                                   andId:ids];
-//            }
-//        }
-//
-//        CDVPluginResult* result;
-//        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-//                                    messageAsArray:notifications];
-//
-//        [self.commandDelegate sendPluginResult:result
-//                                    callbackId:command.callbackId];
-//    }];
-//}
+
+/**
+ * Clear notifications by id.
+ *
+ * @param [ Array<Int> ] The IDs of the notifications to clear.
+ *
+ * @return [ Void ]
+ */
+- (void) clear:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        for (NSNumber* id in command.arguments) {
+            UNNotificationRequest* notification;
+            
+            notification = [self.center getNotificationWithId:id];
+            
+            if (!notification)
+                continue;
+            
+            [self.center clearNotification:notification];
+            [self fireEvent:@"clear" notification:notification];
+        }
+        
+        [self execCallback:command];
+    }];
+}
+
+/**
+ * Clear all local notifications.
+ *
+ * @return [ Void ]
+ */
+- (void) clearAll:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        [self.center clearAllNotifications];
+        [self.app setApplicationIconBadgeNumber:0];
+        [self fireEvent:@"clearall"];
+        [self execCallback:command];
+    }];
+}
+
+/**
+ * Cancel notifications by id.
+ *
+ * @param [ Array<Int> ] The IDs of the notifications to clear.
+ *
+ * @return [ Void ]
+ */
+- (void) cancel:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        for (NSNumber* id in command.arguments) {
+            UNNotificationRequest* notification;
+            
+            notification = [self.center getNotificationWithId:id];
+            
+            if (!notification)
+                continue;
+            
+            [self.center cancelNotification:notification];
+            [self fireEvent:@"cancel" notification:notification];
+        }
+
+        [self execCallback:command];
+    }];
+}
+
+/**
+ * Cancel all local notifications.
+ *
+ * @return [ Void ]
+ */
+- (void) cancelAll:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        [self.center cancelAllNotifications];
+        [self.app setApplicationIconBadgeNumber:0];
+        [self fireEvent:@"cancelall"];
+        [self execCallback:command];
+    }];
+}
+
+/**
+ * If a notification by ID is present.
+ *
+ * @param [ Number ]id The ID of the notification.
+ *
+ * @return [ Void ]
+ */
+- (void) isPresent:(CDVInvokedUrlCommand *)command
+{
+    [self exist:command byType:NotifcationTypeAll];
+}
+
+/**
+ * If a notification by ID is scheduled.
+ *
+ * @param [ Number ]id The ID of the notification.
+ *
+ * @return [ Void ]
+ */
+- (void) isScheduled:(CDVInvokedUrlCommand*)command
+{
+    [self exist:command byType:NotifcationTypeScheduled];
+}
+
+/**
+ * Check if a notification with an ID is triggered.
+ *
+ * @param [ Number ]id The ID of the notification.
+ *
+ * @return [ Void ]
+ */
+- (void) isTriggered:(CDVInvokedUrlCommand*)command
+{
+    [self exist:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * Check if a notification exists by ID and type.
+ *
+ * @param [ APPNotificationType ] type The type of notifications to look for.
+ *
+ * @return [ Void ]
+ */
+- (void) exist:(CDVInvokedUrlCommand*)command
+        byType:(APPNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSNumber* id = [command argumentAtIndex:0];
+        BOOL exist   = [_center notificationExist:id type:type];
+
+        CDVPluginResult* result;
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsBool:exist];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * List of all notification IDs.
+ *
+ * @return [ Void ]
+ */
+- (void) ids:(CDVInvokedUrlCommand*)command
+{
+    [self ids:command byType:NotifcationTypeAll];
+}
+
+/**
+ * List of all scheduled notification IDs.
+ *
+ * @return [ Void ]
+ */
+- (void) scheduledIds:(CDVInvokedUrlCommand*)command
+{
+    [self ids:command byType:NotifcationTypeScheduled];
+}
+
+/**
+ * List of all triggered notification IDs.
+ *
+ * @return [ Void ]
+ */
+- (void) triggeredIds:(CDVInvokedUrlCommand*)command
+{
+    [self ids:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * List of ids for given local notifications.
+ *
+ * @param [ APPNotificationType ] type The type of notifications to look for.
+ *
+ * @return [ Void ]
+ */
+- (void) ids:(CDVInvokedUrlCommand*)command
+      byType:(APPNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = [self.center getNotificationIdsByType:type];
+        
+        CDVPluginResult* result;
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:ids];
+        
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * Notification by id.
+ *
+ * @param [ Number ] id The id of the notification to return.
+ *
+ * @return [ Void ]
+ */
+- (void) notification:(CDVInvokedUrlCommand*)command
+{
+    [self notification:command byType:NotifcationTypeAll];
+}
+
+/**
+ * Scheduled notification by id.
+ *
+ * @param [ Number ] id The id of the notification to return.
+ *
+ * @return [ Void ]
+ */
+- (void) scheduledNotification:(CDVInvokedUrlCommand*)command
+{
+    [self notification:command byType:NotifcationTypeScheduled];
+}
+
+/**
+ * Triggered notification by id.
+ *
+ * @param [ Number ] id The id of the notification to return.
+ *
+ * @return [ Void ]
+ */
+- (void) triggeredNotification:(CDVInvokedUrlCommand*)command
+{
+    [self notification:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * Notification by type and id.
+ *
+ * @param [ APPNotificationType ] type The type of notifications to look for.
+ *
+ * @return [ Void ]
+ */
+- (void) notification:(CDVInvokedUrlCommand*)command
+               byType:(APPNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+
+        NSArray* notifications;
+        notifications = [_center getNotificationOptionsByType:type andId:ids];
+        
+        CDVPluginResult* result;
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                               messageAsDictionary:[notifications firstObject]];
+        
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
+
+/**
+ * List of notifications by id.
+ *
+ * @param [ Array<Number> ] ids The ids of the notifications to return.
+ *
+ * @return [ Void ]
+ */
+- (void) notifications:(CDVInvokedUrlCommand*)command
+{
+    [self notifications:command byType:NotifcationTypeAll];
+}
+
+/**
+ * List of scheduled notifications by id.
+ *
+ * @param [ Array<Number> ] ids The ids of the notifications to return.
+ *
+ * @return [ Void ]
+ */
+- (void) scheduledNotifications:(CDVInvokedUrlCommand*)command
+{
+    [self notifications:command byType:NotifcationTypeScheduled];
+}
+
+/**
+ * List of triggered notifications by id.
+ *
+ * @param [ Array<Number> ] ids The ids of the notifications to return.
+ *
+ * @return [ Void ]
+ */
+- (void) triggeredNotifications:(CDVInvokedUrlCommand *)command
+{
+    [self notifications:command byType:NotifcationTypeTriggered];
+}
+
+/**
+ * List of notifications by type and id.
+ *
+ * @param [ APPNotificationType ] type The type of notifications to look for.
+ *
+ * @return [ Void ]
+ */
+- (void) notifications:(CDVInvokedUrlCommand*)command
+                byType:(APPNotificationType)type;
+{
+    [self.commandDelegate runInBackground:^{
+        NSArray* ids = command.arguments;
+        NSArray* notifications;
+
+        if (type == NotifcationTypeAll && ids.count == 0) {
+            notifications = [_center getNotificationOptions];
+        }
+        else if (type == NotifcationTypeAll) {
+            notifications = [_center getNotificationOptionsById:ids];
+        }
+        else if (ids.count == 0) {
+            notifications = [_center getNotificationOptionsByType:type];
+        }
+        else {
+            notifications = [_center getNotificationOptionsByType:type
+                                                            andId:ids];
+        }
+
+        CDVPluginResult* result;
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                    messageAsArray:notifications];
+
+        [self.commandDelegate sendPluginResult:result
+                                    callbackId:command.callbackId];
+    }];
+}
 
 /**
  * Check for permission to show notifications.
+ *
+ * @return [ Void ]
  */
 - (void) check:(CDVInvokedUrlCommand*)command
 {
@@ -530,6 +489,8 @@
 
 /**
  * Request for permission to show notifcations.
+ *
+ * @return [ Void ]
  */
 - (void) request:(CDVInvokedUrlCommand*)command
 {
@@ -573,34 +534,6 @@
 ////                    initWithOptions:options];
 ////
 ////    [self scheduleLocalNotification:notification];
-//}
-//
-///**
-// * Cancel all local notifications.
-// */
-//- (void) cancelAllNotifications
-//{
-//    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//        [self.center cancelAllNotifications];
-//    } else {
-//        [self.app cancelAllLocalNotifications];
-//    }
-//
-//    [self.app setApplicationIconBadgeNumber:0];
-//}
-//
-///**
-// * Clear all local notifications.
-// */
-//- (void) clearAllNotifications
-//{
-//    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-//        [self.center clearAllNotifications];
-//    } else {
-//        [self.app clearAllLocalNotifications];
-//    }
-//
-//    [self.app setApplicationIconBadgeNumber:0];
 //}
 
 #pragma mark -
