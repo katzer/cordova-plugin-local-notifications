@@ -62,13 +62,18 @@ module.exports.list_images = function() {
             var img_obj = {};
             if (response[i].match(/Name:\s/)) {
                 img_obj['name'] = response[i].split('Name: ')[1].replace('\r', '');
+                if (response[i + 1].match(/Device:\s/)) {
+                    i++;
+                    img_obj['device'] = response[i].split('Device: ')[1].replace('\r', '');
+                }
                 if (response[i + 1].match(/Path:\s/)) {
                     i++;
                     img_obj['path'] = response[i].split('Path: ')[1].replace('\r', '');
                 }
-                if (response[i + 1].match(/\(API\slevel\s/)) {
+                if (response[i + 1].match(/\(API\slevel\s/) || (response[i + 2] && response[i + 2].match(/\(API\slevel\s/))) {
                     i++;
-                    img_obj['target'] = response[i].replace('\r', '');
+                    var secondLine = response[i + 1].match(/\(API\slevel\s/) ? response[i + 1] : '';
+                    img_obj['target'] = (response[i] + secondLine).split('Target: ')[1].replace('\r', '');
                 }
                 if (response[i + 1].match(/ABI:\s/)) {
                     i++;
@@ -143,6 +148,25 @@ module.exports.list_targets = function() {
 };
 
 /*
+ * Gets unused port for android emulator, between 5554 and 5584
+ * Returns a promise.
+ */
+module.exports.get_available_port = function () {
+    var self = this;
+
+    return self.list_started()
+    .then(function (emulators) {
+        for (var p = 5584; p >= 5554; p-=2) {
+            if (emulators.indexOf('emulator-' + p) === -1) {
+                events.emit('verbose', 'Found available port: ' + p);
+                return p;
+            }
+        }
+        throw new CordovaError('Could not find an available avd port');
+    });
+};
+
+/*
  * Starts an emulator with the given ID,
  * and returns the started ID of that emulator.
  * If no ID is given it will use the first image available,
@@ -173,23 +197,24 @@ module.exports.start = function(emulator_ID, boot_timeout) {
                 'HINT: For a faster emulator, use an Intel System Image and install the HAXM device driver\n'));
         });
     }).then(function(emulatorId) {
-        var uuid = 'cordova_emulator_' + new Date().getTime();
-        var uuidProp = 'emu.uuid=' + uuid;
-        var args = ['-avd', emulatorId, '-prop', uuidProp];
-        // Don't wait for it to finish, since the emulator will probably keep running for a long time.
-        child_process
-            .spawn('emulator', args, { stdio: 'inherit', detached: true })
-            .unref();
+        return self.get_available_port()
+        .then(function (port) {
+            var args = ['-avd', emulatorId, '-port', port];
+            // Don't wait for it to finish, since the emulator will probably keep running for a long time.
+            child_process
+                .spawn('emulator', args, { stdio: 'inherit', detached: true })
+                .unref();
 
-        // wait for emulator to start
-        events.emit('log', 'Waiting for emulator...');
-        return self.wait_for_emulator(uuid);
+            // wait for emulator to start
+            events.emit('log', 'Waiting for emulator to start...');
+            return self.wait_for_emulator(port);
+        });
     }).then(function(emulatorId) {
         if (!emulatorId)
             return Q.reject(new CordovaError('Failed to start emulator'));
 
         //wait for emulator to boot up
-        process.stdout.write('Booting up emulator (this may take a while)...');
+        process.stdout.write('Waiting for emulator to boot (this may take a while)...');
         return self.wait_for_boot(emulatorId, boot_timeout)
         .then(function(success) {
             if (success) {
@@ -209,29 +234,29 @@ module.exports.start = function(emulator_ID, boot_timeout) {
 };
 
 /*
- * Waits for an emulator with given uuid to apear on the started-emulator list.
- * Returns a promise with this emulator's ID.
+ * Waits for an emulator to boot on a given port.
+ * Returns this emulator's ID in a promise.
  */
-module.exports.wait_for_emulator = function(uuid) {
+module.exports.wait_for_emulator = function(port) {
     var self = this;
-    return self.list_started()
-    .then(function(new_started) {
-        var emulator_id = null;
-        var promises = [];
-
-        new_started.forEach(function (emulator) {
-            promises.push(
-                Adb.shell(emulator, 'getprop emu.uuid')
-                .then(function (output) {
-                    if (output.indexOf(uuid) >= 0) {
-                        emulator_id = emulator;
-                    }
-                })
-            );
-        });
-
-        return Q.all(promises).then(function () {
-            return emulator_id || self.wait_for_emulator(uuid);
+    return Q().then(function() {
+        var emulator_id = 'emulator-' + port;
+        return Adb.shell(emulator_id, 'getprop dev.bootcomplete')
+        .then(function (output) {
+            if (output.indexOf('1') >= 0) {
+                return emulator_id;
+            }
+            return self.wait_for_emulator(port);
+        }, function (error) {
+            if (error && error.message &&
+            (error.message.indexOf('not found') > -1) ||
+            error.message.indexOf('device offline') > -1) {
+                // emulator not yet started, continue waiting
+                return self.wait_for_emulator(port);
+            } else {
+                // something unexpected has happened
+                throw error;
+            }
         });
      });
 };
@@ -267,7 +292,7 @@ module.exports.wait_for_boot = function(emulator_id, time_remaining) {
  * Returns a promise.
  */
 module.exports.create_image = function(name, target) {
-    console.log('Creating avd named ' + name);
+    console.log('Creating new avd named ' + name);
     if (target) {
         return spawn('android', ['create', 'avd', '--name', name, '--target', target])
         .then(null, function(error) {
@@ -281,7 +306,7 @@ module.exports.create_image = function(name, target) {
         .then(function() {
             // TODO: This seems like another error case, even though it always happens.
             console.error('ERROR : Unable to create an avd emulator, no targets found.');
-            console.error('Please insure you have targets available by running the "android" command');
+            console.error('Ensure you have targets available by running the "android" command');
             return Q.reject();
         }, function(error) {
             console.error('ERROR : Failed to create emulator image : ');
@@ -294,7 +319,7 @@ module.exports.resolveTarget = function(target) {
     return this.list_started()
     .then(function(emulator_list) {
         if (emulator_list.length < 1) {
-            return Q.reject('No started emulators found, please start an emultor before deploying your project.');
+            return Q.reject('No running Android emulators found, please start an emulator before deploying your project.');
         }
 
         // default emulator
@@ -349,6 +374,7 @@ module.exports.install = function(givenTarget, buildResults) {
             };
 
             events.emit('log', 'Using apk: ' + apk_path);
+            events.emit('log', 'Package name: ' + pkgName);
             events.emit('verbose', 'Installing app on emulator...');
 
             // A special function to call adb install in specific environment w/ specific options.
@@ -363,8 +389,17 @@ module.exports.install = function(givenTarget, buildResults) {
                         if (err) reject(new CordovaError('Error executing "' + command + '": ' + stderr));
                         // adb does not return an error code even if installation fails. Instead it puts a specific
                         // message to stdout, so we have to use RegExp matching to detect installation failure.
-                        else if (/Failure/.test(stdout)) reject(new CordovaError('Failed to install apk to emulator: ' + stdout));
-                        else resolve(stdout);
+                        else if (/Failure/.test(stdout)) {
+                            if (stdout.match(/INSTALL_PARSE_FAILED_NO_CERTIFICATES/)) {
+                                stdout += 'Sign the build using \'-- --keystore\' or \'--buildConfig\'' +
+                                    ' or sign and deploy the unsigned apk manually using Android tools.';
+                            } else if (stdout.match(/INSTALL_FAILED_VERSION_DOWNGRADE/)) {
+                                stdout += 'You\'re trying to install apk with a lower versionCode that is already installed.' +
+                                    '\nEither uninstall an app or increment the versionCode.';
+                            }
+
+                            reject(new CordovaError('Failed to install apk to emulator: ' + stdout));
+                        } else resolve(stdout);
                     });
                 });
             }
@@ -377,8 +412,8 @@ module.exports.install = function(givenTarget, buildResults) {
                     if (!/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/.test(error.toString()))
                         throw error;
 
-                    events.emit('warn', 'Uninstalling app from device and reinstalling it again because the ' +
-                        'installed app already signed with different key');
+                    events.emit('warn', 'Uninstalling app from device and reinstalling it because the ' +
+                        'currently installed app was signed with different key');
 
                     // This promise is always resolved, even if 'adb uninstall' fails to uninstall app
                     // or the app doesn't installed at all, so no error catching needed.

@@ -1,4 +1,5 @@
 /out
 /gen
 /platforms/android/CordovaLib/build
+platforms/android/.gradle
 /platforms/windows/build

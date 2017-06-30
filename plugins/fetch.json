@@ -1,23 +1,9 @@
 {
-    "org.apache.cordova.device": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.device"
-        },
-        "is_top_level": false,
-        "variables": {}
-    },
-    "de.appplant.cordova.common.RegisterUserNotificationSettings": {
+    "de.appplant.cordova.plugin.local-notification": {
         "source": {
             "type": "git",
-            "url": "https://github.com/katzer/cordova-common-RegisterUserNotificationSettings",
+            "url": "https://github.com/katzer/cordova-plugin-local-notifications.git",
             "subdir": "."
-        }
-    },
-    "cordova-plugin-x-toast": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-x-toast"
         },
         "is_top_level": true,
         "variables": {}
@@ -30,26 +16,26 @@
         "is_top_level": false,
         "variables": {}
     },
-    "cordova-plugin-registerusernotificationsettings": {
+    "cordova-plugin-app-event": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-registerusernotificationsettings"
+            "id": "cordova-plugin-app-event"
         },
         "is_top_level": false,
         "variables": {}
     },
-    "cordova-plugin-app-event": {
+    "cordova-plugin-whitelist": {
         "source": {
-            "type": "local",
-            "path": "/Users/sebastian/Documents/github/cordova-plugin-app-event"
+            "type": "registry",
+            "id": "cordova-plugin-whitelist@1"
         },
         "is_top_level": true,
         "variables": {}
     },
-    "de.appplant.cordova.plugin.local-notification": {
+    "cordova-plugin-x-toast": {
         "source": {
-            "type": "local",
-            "path": "/Users/sebastian/Documents/github/cordova-plugin-local-notifications"
+            "type": "registry",
+            "id": "cordova-plugin-x-toast"
         },
         "is_top_level": true,
         "variables": {}

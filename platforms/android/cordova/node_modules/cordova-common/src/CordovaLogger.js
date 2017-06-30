@@ -89,7 +89,7 @@ CordovaLogger.prototype.log = function (logLevel, message) {
     var isVerbose = this.logLevel === 'verbose';
     var cursor = this.stdoutCursor;
 
-    if(message instanceof Error || logLevel === CordovaLogger.ERROR) {
+    if (message instanceof Error || logLevel === CordovaLogger.ERROR) {
         message = formatError(message, isVerbose);
         cursor = this.stderrCursor;
     }
@@ -153,6 +153,23 @@ CordovaLogger.prototype.setLevel = function (logLevel) {
 };
 
 /**
+ * Adjusts the current logger level according to the passed options.
+ *
+ * @param   {Object|Array}  opts  An object or args array with options
+ *
+ * @return  {CordovaLogger}     Current instance, to allow calls chaining.
+ */
+CordovaLogger.prototype.adjustLevel = function (opts) {
+    if (opts.verbose || (Array.isArray(opts) && opts.indexOf('--verbose') !== -1)) {
+        this.setLevel('verbose');
+    } else if (opts.silent || (Array.isArray(opts) && opts.indexOf('--silent') !== -1)) {
+        this.setLevel('error');
+    }
+
+    return this;
+};
+
+/**
  * Attaches logger to EventEmitter instance provided.
  *
  * @param   {EventEmitter}  eventEmitter  An EventEmitter instance to attach
@@ -179,10 +196,10 @@ CordovaLogger.prototype.subscribe = function (eventEmitter) {
 function formatError(error, isVerbose) {
     var message = '';
 
-    if(error instanceof CordovaError) {
+    if (error instanceof CordovaError) {
         message = error.toString(isVerbose);
-    } else if(error instanceof Error) {
-        if(isVerbose) {
+    } else if (error instanceof Error) {
+        if (isVerbose) {
             message = error.stack;
         } else {
             message = error.message;
@@ -192,7 +209,7 @@ function formatError(error, isVerbose) {
         message = error;
     }
 
-    if(message.toUpperCase().indexOf('ERROR:') !== 0) {
+    if (typeof message === 'string' && message.toUpperCase().indexOf('ERROR:') !== 0) {
         // Needed for backward compatibility with external tools
         message = 'Error: ' + message;
     }

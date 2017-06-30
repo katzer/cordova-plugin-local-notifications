@@ -39,7 +39,7 @@ function parseOpts(options, resolvedTarget, projectRoot) {
         prepenv: Boolean,
         versionCode: String,
         minSdkVersion: String,
-        gradleArg: String,
+        gradleArg: [String, Array],
         keystore: path,
         alias: String,
         storePassword: String,
@@ -66,8 +66,9 @@ function parseOpts(options, resolvedTarget, projectRoot) {
     if (options.argv.minSdkVersion)
         ret.extraArgs.push('-PcdvMinSdkVersion=' + options.argv.minSdkVersion);
 
-    if (options.argv.gradleArg)
-        ret.extraArgs.push(options.argv.gradleArg);
+    if (options.argv.gradleArg) {
+        ret.extraArgs = ret.extraArgs.concat(options.argv.gradleArg);
+    }
 
     var packageArgs = {};
 
@@ -89,8 +90,7 @@ function parseOpts(options, resolvedTarget, projectRoot) {
         }
         events.emit('log', 'Reading build config file: '+ path.resolve(buildConfig));
         var buildjson = fs.readFileSync(buildConfig, 'utf8');
-        //var config = JSON.parse(fs.readFileSync(buildConfig, 'utf8'));
-        var config = JSON.parse(buildjson);
+        var config = JSON.parse(buildjson.replace(/^\ufeff/, '')); // Remove BOM
         if (config.android && config.android[ret.buildType]) {
             var androidInfo = config.android[ret.buildType];
             if(androidInfo.keystore && !packageArgs.keystore) {
@@ -149,17 +149,16 @@ module.exports.runClean = function(options) {
 module.exports.run = function(options, optResolvedTarget) {
     var opts = parseOpts(options, optResolvedTarget, this.root);
     var builder = builders.getBuilder(opts.buildMethod);
-    var self = this;
     return builder.prepEnv(opts)
     .then(function() {
         if (opts.prepEnv) {
-            self.events.emit('verbose', 'Build file successfully prepared.');
+            events.emit('verbose', 'Build file successfully prepared.');
             return;
         }
         return builder.build(opts)
         .then(function() {
             var apkPaths = builder.findOutputApks(opts.buildType, opts.arch);
-            self.events.emit('log', 'Built the following apk(s): \n\t' + apkPaths.join('\n\t'));
+            events.emit('log', 'Built the following apk(s): \n\t' + apkPaths.join('\n\t'));
             return {
                 apkPaths: apkPaths,
                 buildType: opts.buildType,
@@ -189,18 +188,18 @@ module.exports.detectArchitecture = function(target) {
             // adb kill-server doesn't seem to do the trick.
             // Could probably find a x-platform version of killall, but I'm not actually
             // sure that this scenario even happens on non-OSX machines.
+            events.emit('verbose', 'adb timed out while detecting device/emulator architecture. Killing adb and trying again.');
             return spawn('killall', ['adb'])
             .then(function() {
-                events.emit('verbose', 'adb seems hung. retrying.');
                 return helper()
                 .then(null, function() {
                     // The double kill is sadly often necessary, at least on mac.
-                    events.emit('warn', 'Now device not found... restarting adb again.');
+                    events.emit('warn', 'adb timed out a second time while detecting device/emulator architecture. Killing adb and trying again.');
                     return spawn('killall', ['adb'])
                     .then(function() {
                         return helper()
                         .then(null, function() {
-                            return Q.reject(new CordovaError('USB is flakey. Try unplugging & replugging the device.'));
+                            return Q.reject(new CordovaError('adb timed out a third time while detecting device/emulator architecture. Try unplugging & replugging the device.'));
                         });
                     });
                 });

@@ -2,6 +2,9 @@
 
 for Android, iOS and WP8, by [Eddy Verbruggen](http://www.x-services.nl/phonegap-toast-plugin/796)
 
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eddyverbruggen%40gmail%2ecom&lc=US&item_name=cordova%2dplugin%2dtoast&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
+If you like this plugin and want to say thanks please send a PR or donation. Both are equally appreciated!
+
 
 <table width="100%">
     <tr>
@@ -19,9 +22,9 @@ for Android, iOS and WP8, by [Eddy Verbruggen](http://www.x-services.nl/phonegap
 	3. [Manually](#manually)
 	3. [PhoneGap Build](#phonegap-build)
 4. [Usage](#4-usage)
+  4. [Styling](#styling)
 5. [Credits](#5-credits)
 6. [Changelog](#6-changelog)
-7. [License](#7-license)
 
 ## 1. Description
 
@@ -48,9 +51,17 @@ iOS
 
 ![ScreenShot](screenshots/screenshot-ios-toast.png)
 
+A few styling options
+
+![ScreenShot](screenshots/styling-green.png)
+
+![ScreenShot](screenshots/styling-red.png)
+
+
 Android
 
 ![ScreenShot](screenshots/screenshot-android-toast.png)
+
 
 Windows Phone 8
 
@@ -129,7 +140,7 @@ Toast.js is brought in automatically. There is no need to change or add anything
 ### Showing a Toast
 You have two choices to make when showing a Toast: where to show it and for how long.
 * show(message, duration, position)
-* duration: 'short', 'long'
+* duration: 'short', 'long', '3000', 900 (the latter are milliseconds)
 * position: 'top', 'center', 'bottom'
 
 You can also use any of these convenience methods:
@@ -155,7 +166,7 @@ function showBottom() {
   window.plugins.toast.showWithOptions(
     {
       message: "hey there",
-      duration: "short",
+      duration: "short", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself.
       position: "bottom",
       addPixelsY: -40  // added a negative value to move it up a bit (default 0)
     },
@@ -184,10 +195,10 @@ called again. You can distinguish between those events of course:
   window.plugins.toast.showWithOptions(
     {
       message: "hey there",
-      duration: "short",
+      duration: 1500, // ms
       position: "bottom",
       addPixelsY: -40,  // (optional) added a negative value to move it up a bit (default 0)
-      data: {'foo','bar'} // (optional) pass in a JSON object here (it will be sent back in the success callback below)
+      data: {'foo':'bar'} // (optional) pass in a JSON object here (it will be sent back in the success callback below)
     },
     // implement the success callback
     function(result) {
@@ -203,6 +214,32 @@ called again. You can distinguish between those events of course:
   );
 ```
 
+### Styling
+Since version 2.4.0 you can pass an optional `styling` object to the plugin.
+The defaults make sure the Toast looks the same as when you would not pass in the `styling` object at all.
+
+Note that on WP this object is currently ignored.
+
+```js
+  window.plugins.toast.showWithOptions({
+    message: "hey there",
+    duration: "short", // 2000 ms
+    position: "bottom",
+    styling: {
+      opacity: 0.75, // 0.0 (transparent) to 1.0 (opaque). Default 0.8
+      backgroundColor: '#FF0000', // make sure you use #RRGGBB. Default #333333
+      textColor: '#FFFF00', // Ditto. Default #FFFFFF
+      textSize: 20.5, // Default is approx. 13.
+      cornerRadius: 16, // minimum is 0 (square). iOS default 20, Android default 100
+      horizontalPadding: 20, // iOS default 16, Android default 50
+      verticalPadding: 16 // iOS default 12, Android default 30
+    }
+  });
+```
+
+Tip: if you need to pass different values for iOS and Android you can use fi. the device plugin
+to determine the platform and pass `opacity: isAndroid() ? 0.7 : 0.9`.
+
 ### WP8 quirks
 The WP8 implementation needs a little more work, but it's perfectly useable when you keep this in mind:
 * You can't show two Toasts simultaneously.
@@ -217,32 +254,13 @@ The Android code was entirely created by me.
 For iOS most credits go to this excellent [Toast for iOS project by Charles Scalesse] (https://github.com/scalessec/Toast).
 
 ## 6. CHANGELOG
-2.3.0: The plugin will now report back to JS if Toasts were tapped by the user.
-
-2.0.1: iOS messages are hidden when another one is shown. [Thanks Richie Min!](https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin/pull/13)
-
-2.0: WP8 support
-
-1.0: initial version supporting Android and iOS
-
-## 7. License
-
-[The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.html)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+- 2.5.1: You can now specify the `textSize` used in the font for iOS and Android.
+- 2.5.0: By popular demand: Specify the duration of the Toast on iOS and Android. Pass in `short` (2000ms), `long` (4000ms), or any nr of milliseconds: `900`.
+- 2.4.2: You can now also set the Toast `opacity` for iOS.
+- 2.4.1: As an addition to 2.4.0, [Sino](https://github.com/SinoBoeckmann) added the option to change the text color!
+- 2.4.0: You can now style the Toast with a number of properties. See
+- 2.3.2: The click event introduced with 2.3.0 did not work with Android 5+.
+- 2.3.0: The plugin will now report back to JS if Toasts were tapped by the user.
+- 2.0.1: iOS messages are hidden when another one is shown. [Thanks Richie Min!](https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin/pull/13)
+- 2.0: WP8 support
+- 1.0: initial version supporting Android and iOS

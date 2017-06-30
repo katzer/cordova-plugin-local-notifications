@@ -79,7 +79,7 @@ AntBuilder.prototype.prepEnv = function(opts) {
             writeBuildXml(path.join(self.root, subProjects[i]));
         }
         if (propertiesObj.systemLibs.length > 0) {
-            throw new CordovaError('Project contains at least one plugin that requires a system library. This is not supported with ANT. Please build using gradle.');
+            throw new CordovaError('Project contains at least one plugin that requires a system library. This is not supported with ANT. Use gradle instead.');
         }
 
         var propertiesFile = opts.buildType + SIGNING_PROPERTIES;
@@ -107,7 +107,22 @@ AntBuilder.prototype.build = function(opts) {
     var args = this.getArgs(opts.buildType == 'debug' ? 'debug' : 'release', opts);
     return check_reqs.check_ant()
     .then(function() {
-        return spawn('ant', args, {stdio: 'inherit'});
+        return spawn('ant', args, {stdio: 'pipe'});
+    }).progress(function (stdio){
+        if (stdio.stderr) {
+            process.stderr.write(stdio.stderr);
+        } else {
+            process.stdout.write(stdio.stdout);
+        }
+    }).catch(function (error) {
+        if (error.toString().indexOf('Unable to resolve project target') >= 0) {
+            return check_reqs.check_android_target(error).then(function() {
+                // If due to some odd reason - check_android_target succeeds
+                // we should still fail here.
+                return Q.reject(error);
+            });
+        }
+        return Q.reject(error);
     });
 };
 
