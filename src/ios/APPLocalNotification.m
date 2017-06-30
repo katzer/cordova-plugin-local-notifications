@@ -119,7 +119,7 @@
 //                NSNumber* id = [options objectForKey:@"id"];
 //                UILocalNotification* notification;
 //
-//                notification = [self.app localNotificationWithId:id];
+//                notification = [_app localNotificationWithId:id];
 //
 //                if (!notification)
 //                    continue;
@@ -174,7 +174,7 @@
 {
     [self.commandDelegate runInBackground:^{
         [_center clearAllNotifications];
-        [self.app setApplicationIconBadgeNumber:0];
+        [_app setApplicationIconBadgeNumber:0];
         [self fireEvent:@"clearall"];
         [self execCallback:command];
     }];
@@ -215,7 +215,7 @@
 {
     [self.commandDelegate runInBackground:^{
         [_center cancelAllNotifications];
-        [self.app setApplicationIconBadgeNumber:0];
+        [_app setApplicationIconBadgeNumber:0];
         [self fireEvent:@"cancelall"];
         [self execCallback:command];
     }];
