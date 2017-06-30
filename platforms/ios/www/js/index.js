@@ -36,6 +36,7 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
         app.pluginInitialize();
+        app.bindNotificationEvents();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -50,16 +51,240 @@ var app = {
     },
     // Initialize plugin
     pluginInitialize: function() {
-        document.getElementById('granted').onclick      = app.hasPermission;
-        document.getElementById('request').onclick      = app.askPermission;
+        document.getElementById('granted').onclick        = app.hasPermission;
+        document.getElementById('request').onclick        = app.askPermission;
+        document.getElementById('sched_single').onclick   = app.scheduleSingle;
+        document.getElementById('sched_multi').onclick    = app.scheduleMultiple;
+        document.getElementById('sched_delayed').onclick  = app.scheduleDelayed;
+        document.getElementById('sched_interval').onclick = app.scheduleInterval;
+        document.getElementById('clear_single').onclick   = app.clearSingle;
+        document.getElementById('clear_multi').onclick    = app.clearMulti;
+        document.getElementById('clear_all').onclick      = app.clearAll;
+        document.getElementById('cancel_single').onclick  = app.cancelSingle;
+        document.getElementById('cancel_multi').onclick   = app.cancelMulti;
+        document.getElementById('cancel_all').onclick     = app.cancelAll;
+        document.getElementById('present?').onclick       = app.isPresent;
+        document.getElementById('scheduled?').onclick     = app.isScheduled;
+        document.getElementById('triggered?').onclick     = app.isTriggered;
+        document.getElementById('ids').onclick            = app.ids;
+        document.getElementById('scheduled_ids').onclick  = app.scheduledIds;
+        document.getElementById('triggered_ids').onclick  = app.triggeredIds;
+        document.getElementById('scheduled_nots').onclick = app.scheduledNots;
+        document.getElementById('triggered_nots').onclick = app.triggeredNots;
+        document.getElementById('notification').onclick   = app.notification;
+        document.getElementById('multiple_nots').onclick  = app.multipleNots;
+        document.getElementById('notifications').onclick  = app.notifications;
+        document.getElementById('defaults').onclick       = app.setDefaultTitle;
     },
     // Check permissions to read accounts
     hasPermission: function () {
-        cordova.plugins.notification.local.hasPermission(showToast);
+        cordova.plugins.notification.local.hasPermission(function (granted) {
+            showToast(granted ? 'Yes' : 'No');
+        });
     },
     // Request permissions to read accounts
     askPermission: function () {
-        cordova.plugins.notification.local.requestPermission(showToast);
+        cordova.plugins.notification.local.requestPermission(function (granted) {
+            showToast(granted ? 'Yes' : 'No');
+        });
+    },
+    // Schedule a single notification
+    scheduleSingle: function () {
+        cordova.plugins.notification.local.schedule({
+            id: 1,
+            text: 'Test Message 1',
+            icon: 'http://3.bp.blogspot.com/-Qdsy-GpempY/UU_BN9LTqSI/AAAAAAAAAMA/LkwLW2yNBJ4/s1600/supersu.png',
+            smallIcon: 'res://cordova',
+            attachments: ['file://img/logo.png'],
+            sound: null,
+            badge: 1,
+            data: { test: 1 }
+        });
+    },
+    // Schedule multiple notifications at once
+    scheduleMultiple: function () {
+        cordova.plugins.notification.local.schedule([{
+            id: 1,
+            text: 'Multi Message 1',
+            icon: 'res://cordova'
+        }, {
+            id: 2,
+            text: 'Multi Message 2',
+            icon: 'res://icon',
+            smallIcon: 'ic_media_play'
+        }, {
+            id: 3,
+            text: 'Multi Message 3',
+            icon: 'res://icon',
+            smallIcon: 'ic_media_pause'
+        }]);
+    },
+    // Schedule a delayed notification
+    scheduleDelayed: function () {
+        var now             = new Date().getTime(),
+            _5_sec_from_now = new Date(now + 5 * 1000);
+
+        var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+
+        cordova.plugins.notification.local.schedule({
+            id: 1,
+            title: 'Scheduled with delay',
+            text: 'Test Message 1',
+            at: _5_sec_from_now,
+            sound: sound,
+            badge: 12
+        });
+    },
+    // Schedule a repeating notification
+    scheduleInterval: function () {
+        var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+
+        cordova.plugins.notification.local.schedule({
+            id: 1,
+            text: 'Scheduled every minute',
+            every: 'minute',
+            sound: sound,
+            icon: 'res://icon',
+            smallIcon: 'res://ic_popup_sync'
+        });
+    },
+    // Clear a single notification
+    clearSingle: function () {
+        cordova.plugins.notification.local.clear(1, app.ids);
+    },
+    // Clear multiple notifications
+    clearMulti: function () {
+        cordova.plugins.notification.local.clear([2, 3], app.ids);
+    },
+    // Clear all notifications
+    clearAll: function () {
+        cordova.plugins.notification.local.clearAll(app.ids);
+    },
+    // Clear a single notification
+    cancelSingle: function () {
+        cordova.plugins.notification.local.cancel(1, app.ids);
+    },
+    // Clear multiple notifications
+    cancelMulti: function () {
+        cordova.plugins.notification.local.cancel([2, 3], app.ids);
+    },
+    // Cancel all notifications
+    cancelAll: function () {
+        cordova.plugins.notification.local.cancelAll(app.ids);
+    },
+    // If the notifcation is scheduled or triggered
+    isPresent: function () {
+        cordova.plugins.notification.local.isPresent(1, function (present) {
+            showToast(present ? 'Yes' : 'No');
+        });
+    },
+    // If the notifcation is scheduled
+    isScheduled: function () {
+        cordova.plugins.notification.local.isScheduled(1, function (scheduled) {
+            showToast(scheduled ? 'Yes' : 'No');
+        });
+    },
+    // If the notifcation is triggered
+    isTriggered: function () {
+        cordova.plugins.notification.local.isTriggered(1, function (triggered) {
+            showToast(triggered ? 'Yes' : 'No');
+        });
+    },
+    // Get all notification ids
+    ids: function () {
+        cordova.plugins.notification.local.getIds(function (ids) {
+            console.log(ids);
+            showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
+        });
+    },
+    // Get all notification ids
+    scheduledIds: function () {
+        cordova.plugins.notification.local.getScheduledIds(function (ids) {
+            console.log(ids);
+            showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
+        });
+    },
+    // Get all notification ids
+    triggeredIds: function () {
+        cordova.plugins.notification.local.getTriggeredIds(function (ids) {
+            console.log(ids);
+            showToast(ids.length === 0 ? '- none -' : ids.join(' ,'));
+        });
+    },
+    // Get all scheduled notifications
+    scheduledNots: function () {
+        cordova.plugins.notification.local.getAllScheduled(function (nots) {
+            console.log(nots);
+            showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
+        });
+    },
+    // Get all triggered notifications
+    triggeredNots: function () {
+        cordova.plugins.notification.local.getAllTriggered(function (nots) {
+            console.log(nots);
+            showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
+        });
+    },
+    // Get a single notification
+    notification: function () {
+        cordova.plugins.notification.local.get(1, function (obj) {
+            console.log(obj);
+            showToast(obj ? obj.toString() : '- none -');
+        });
+    },
+    // Get multiple notifications
+    multipleNots: function () {
+        cordova.plugins.notification.local.get([1, 2], function (nots) {
+            console.log(nots);
+            showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
+        });
+    },
+    // Get all notifications
+    notifications: function () {
+        cordova.plugins.notification.local.getAll(function (nots) {
+            console.log(nots);
+            showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
+        });
+    },
+    // Set another default title
+    setDefaultTitle: function () {
+        cordova.plugins.notification.local.setDefaults({ title: 'New Default Title' });
+        showToast('New Default Title');
+    },
+    // Listen for events
+    bindNotificationEvents: function () {
+        cordova.plugins.notification.local.on('schedule', function (obj) {
+            console.log('onschedule', arguments);
+            // showToast('scheduled: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('update', function (obj) {
+            console.log('onupdate', arguments);
+            // showToast('updated: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('trigger', function (obj) {
+            console.log('ontrigger', arguments);
+            showToast('triggered: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('click', function (obj) {
+            console.log('onclick', arguments);
+            showToast('clicked: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('cancel', function (obj) {
+            console.log('oncancel', arguments);
+            // showToast('canceled: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('clear', function (obj) {
+            console.log('onclear', arguments);
+            showToast('cleared: ' + obj.id);
+        });
+        cordova.plugins.notification.local.on('cancelall', function () {
+            console.log('oncancelall', arguments);
+            // showToast('canceled all');
+        });
+        cordova.plugins.notification.local.on('clearall', function () {
+            console.log('onclearall', arguments);
+            // showToast('cleared all');
+        });
     }
 };
 

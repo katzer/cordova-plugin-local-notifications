@@ -1,8 +1,4 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
- *
- * @APPPLANT_LICENSE_HEADER_START@
- *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -17,17 +13,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 var exec    = require('cordova/exec'),
     channel = require('cordova/channel');
-
-
-/***********
- * MEMBERS *
- ***********/
 
 // Default values
 exports._defaults = {
@@ -41,48 +30,38 @@ exports._defaults = {
     at:    undefined
 };
 
-// listener
+// Listener
 exports._listener = {};
-
-// Registered permission flag
-exports._registered = false;
-
-
-/********
- * UTIL *
- ********/
 
 /**
  * Merge platform specific properties into the default ones.
  *
- * @return {Object}
- *      The default properties for the platform
+ * @return [ Void ]
  */
 exports.applyPlatformSpecificOptions = function () {
     var defaults = this._defaults;
 
     switch (device.platform) {
     case 'Android':
-        defaults.icon      = 'res://ic_popup_reminder';
-        defaults.smallIcon = undefined;
-        defaults.ongoing   = false;
-        defaults.autoClear = true;
-        defaults.led       = undefined;
-        defaults.color     = undefined;
+        defaults.icon        = 'res://ic_popup_reminder';
+        defaults.smallIcon   = undefined;
+        defaults.ongoing     = false;
+        defaults.autoClear   = true;
+        defaults.led         = undefined;
+        defaults.color       = undefined;
+        break;
+    case 'iOS':
+        defaults.attachments = undefined;
         break;
     }
-
-    return defaults;
 };
 
 /**
  * Merge custom properties with the default values.
  *
- * @param {Object} options
- *      Set of custom values
+ * @param [ Object ] options Set of custom values.
  *
- * @retrun {Object}
- *      The merged property list
+ * @retrun [ Object ]
  */
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
@@ -126,11 +105,9 @@ exports.mergeWithDefaults = function (options) {
 /**
  * Convert the passed values to their required type.
  *
- * @param {Object} options
- *      Set of custom values
+ * @param [ Object ] options Properties to convert for.
  *
- * @retrun {Object}
- *      The converted property list
+ * @return [ Object ] The converted property list
  */
 exports.convertProperties = function (options) {
 
@@ -172,46 +149,33 @@ exports.convertProperties = function (options) {
         options.data = JSON.stringify(options.data);
     }
 
-    if (options.every) {
-        if (device.platform == 'iOS' && typeof options.every != 'string') {
-            options.every = this.getDefaults().every;
-            var warning = 'Every option is not a string: ' + options.id;
-            warning += '. Expects one of: second, minute, hour, day, week, ';
-            warning += 'month, year on iOS.';
-            console.warn(warning);
-        }
-    }
-
     return options;
 };
 
 /**
- * Create callback, which will be executed within a specific scope.
+ * Create a callback function to get executed within a specific scope.
  *
- * @param {Function} callbackFn
- *      The callback function
- * @param {Object} scope
- *      The scope for the function
+ * @param [ Function ] fn    The function to be exec as the callback.
+ * @param [ Object ]   scope The callback function's scope.
  *
- * @return {Function}
- *      The new callback function
+ * @return [ Function ]
  */
-exports.createCallbackFn = function (callbackFn, scope) {
+exports.createCallbackFn = function (fn, scope) {
 
-    if (typeof callbackFn != 'function')
+    if (typeof fn != 'function')
         return;
 
     return function () {
-        callbackFn.apply(scope || this, arguments);
+        fn.apply(scope || this, arguments);
     };
 };
 
 /**
  * Convert the IDs to numbers.
  *
- * @param {String/Number[]} ids
+ * @param [ Array ] ids
  *
- * @return Array of Numbers
+ * @return [ Array<Number> ]
  */
 exports.convertIds = function (ids) {
     var convertedIds = [];
@@ -226,10 +190,10 @@ exports.convertIds = function (ids) {
 /**
  * First found value for the given keys.
  *
- * @param {Object} options
- *      Object with key-value properties
- * @param {String[]} keys*
- *      Key list
+ * @param [ Object ]         options Object with key-value properties.
+ * @param [ *Array<String> ] keys    List of keys.
+ *
+ * @return [ Object ]
  */
 exports.getValueFor = function (options) {
     var keys = Array.apply(null, arguments).slice(1);
@@ -244,12 +208,12 @@ exports.getValueFor = function (options) {
 };
 
 /**
- * Fire event with given arguments.
+ * Fire the event with given arguments.
  *
- * @param {String} event
- *      The event's name
- * @param {args*}
- *      The callback's arguments
+ * @param [ String ] event The event's name.
+ * @param [ *Array]  args  The callback's arguments.
+ *
+ * @return [ Void]
  */
 exports.fireEvent = function (event) {
     var args     = Array.apply(null, arguments).slice(1),
@@ -269,14 +233,12 @@ exports.fireEvent = function (event) {
 /**
  * Execute the native counterpart.
  *
- * @param {String} action
- *      The name of the action
- * @param args[]
- *      Array of arguments
- * @param {Function} callback
- *      The callback function
- * @param {Object} scope
- *      The scope for the function
+ * @param [ String ]  action   The name of the action.
+ * @param [ Array ]   args     Array of arguments.
+ * @param [ Function] callback The callback function.
+ * @param [ Object ] scope     The scope for the function.
+ *
+ * @return [ Void ]
  */
 exports.exec = function (action, args, callback, scope) {
     var fn = this.createCallbackFn(callback, scope),
@@ -290,11 +252,6 @@ exports.exec = function (action, args, callback, scope) {
 
     exec(fn, null, 'LocalNotification', action, params);
 };
-
-
-/*********
- * HOOKS *
- *********/
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {

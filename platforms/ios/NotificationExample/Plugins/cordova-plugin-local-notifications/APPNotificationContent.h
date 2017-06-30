@@ -20,23 +20,15 @@
  *
  * @APPPLANT_LICENSE_HEADER_END@
  */
-    
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
-@interface APPLocalNotificationOptions9 : NSObject
+#import "APPNotificationOptions.h"
 
-- (id) initWithDict:(NSDictionary*)dict;
+@import UserNotifications;
 
-@property (readonly, getter=id) NSNumber* id;
-@property (readonly, getter=badgeNumber) NSInteger badgeNumber;
-@property (readonly, getter=alertBody) NSString* alertBody;
-@property (readonly, getter=soundName) NSString* soundName;
-@property (readonly, getter=fireDate) NSDate* fireDate;
-@property (readonly, getter=repeatInterval) NSCalendarUnit repeatInterval;
-@property (readonly, getter=userInfo) NSDictionary* userInfo;
+@interface APPNotificationContent : UNMutableNotificationContent
 
-// If it's a repeating notification
-- (BOOL) isRepeating;
+- (id) initWithOptions:(NSDictionary*)dict;
+- (APPNotificationOptions*) options;
+- (UNNotificationRequest*) request;
 
 @end

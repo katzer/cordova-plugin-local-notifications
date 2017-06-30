@@ -21,27 +21,21 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import <UserNotifications/UNNotificationSound.h>
-#import <UserNotifications/UNNotificationRequest.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+@import UserNotifications;
 
-@interface APPLocalNotificationOptions : NSObject
+@interface APPNotificationOptions : NSObject
+
+@property (readonly, getter=id)          NSNumber*            id;
+@property (readonly, getter=identifier)  NSString*            identifier;
+@property (readonly, getter=title)       NSString*            title;
+@property (readonly, getter=subtitle)    NSString*            subtitle;
+@property (readonly, getter=badge)       NSNumber*            badge;
+@property (readonly, getter=text)        NSString*            text;
+@property (readonly, getter=sound)       UNNotificationSound* sound;
+@property (readonly, getter=attachments) NSArray<UNNotificationAttachment *> * attachments;
+@property (readonly, getter=userInfo)    NSDictionary*        userInfo;
 
 - (id) initWithDict:(NSDictionary*)dict;
-
-@property (readonly, getter=id) NSNumber* id;
-@property (readonly, getter=identifier) NSString* identifier;
-@property (readonly, getter=title) NSString* title;
-@property (readonly, getter=subtitle) NSString* subtitle;
-@property (readonly, getter=badge) NSNumber* badge;
-@property (readonly, getter=text) NSString* text;
-@property (readonly, getter=sound) UNNotificationSound* sound;
-@property (readonly, getter=userInfo) NSDictionary* userInfo;
-
-// If it's a repeating notification
-- (BOOL) isRepeating;
-// how and when to trigger the notification
 - (UNNotificationTrigger*) trigger;
 
 @end

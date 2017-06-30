@@ -27,7 +27,6 @@
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <!-- <dependency id="cordova-plugin-app-event" /> -->
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -59,17 +58,17 @@
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />
 
-        <!-- <header-file src="src/ios/APPLocalNotificationOptions.h" />
-        <source-file src="src/ios/APPLocalNotificationOptions.m" />
+        <header-file src="src/ios/APPNotificationContent.h" />
+        <source-file src="src/ios/APPNotificationContent.m" />
+
+        <header-file src="src/ios/APPNotificationOptions.h" />
+        <source-file src="src/ios/APPNotificationOptions.m" />
 
         <header-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.h" />
         <source-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.m" />
 
-        <header-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.h" />
-        <source-file src="src/ios/UNMutableNotificationContent+APPLocalNotification.m" />
-
         <header-file src="src/ios/UNNotificationRequest+APPLocalNotification.h" />
-        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" /> -->
+        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" />
 
     </platform>
 
