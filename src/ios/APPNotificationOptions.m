@@ -161,6 +161,31 @@
     return [NSDate dateWithTimeIntervalSince1970:timestamp];
 }
 
+- (NSArray<UNNotificationAttachment *> *) attachments
+{
+    NSArray* paths              = [dict objectForKey:@"attachments"];
+    NSMutableArray* attachments = [[NSMutableArray alloc] init];
+    
+    if (!paths)
+        return attachments;
+    
+    for (NSString* path in paths) {
+        NSURL* url = [self urlForAttachmentPath:path];
+
+        UNNotificationAttachment* attachment;
+        attachment = [UNNotificationAttachment attachmentWithIdentifier:path
+                                                                    URL:url
+                                                                options:NULL
+                                                                  error:NULL];
+        
+        if (attachment) {
+            [attachments addObject:attachment];
+        }
+    }
+    
+    return attachments;
+}
+
 #pragma mark -
 #pragma mark Public
 
@@ -275,7 +300,7 @@
 
     NSDateComponents *date = [cal components:[self repeatInterval]
                                     fromDate:[self fireDate]];
-    
+
     date.timeZone = [NSTimeZone defaultTimeZone];
 
     return [UNCalendarNotificationTrigger
@@ -354,7 +379,7 @@
 
     for (NSString* key in every) {
         long value = [[every valueForKey:key] longValue];
-        
+
         if ([key isEqualToString:@"second"]) {
             date.second = value;
         } else
@@ -416,6 +441,223 @@
 - (NSString*) soundNameForResource:(NSString*)path
 {
     return [path pathComponents].lastObject;
+}
+
+/**
+ * URL for the specified attachment path.
+ *
+ * @param [ NSString* ] path Absolute/relative path or a base64 data.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForAttachmentPath:(NSString*)path
+{
+    if ([path hasPrefix:@"file:///"])
+    {
+        return [self urlForFile:path];
+    }
+    else if ([path hasPrefix:@"res:"])
+    {
+        return [self urlForResource:path];
+    }
+    else if ([path hasPrefix:@"file://"])
+    {
+        return [self urlForAsset:path];
+    }
+    else if ([path hasPrefix:@"app://"])
+    {
+        return [self urlForAppInternalPath:path];
+    }
+    else if ([path hasPrefix:@"base64:"])
+    {
+        return [self urlFromBase64:path];
+    }
+
+    NSFileManager* fm = [NSFileManager defaultManager];
+
+    if (![fm fileExistsAtPath:path]){
+        NSLog(@"File not found: %@", path);
+    }
+
+    return [NSURL fileURLWithPath:path];
+}
+
+/**
+ * URL to an absolute file path.
+ *
+ * @param [ NSString* ] path An absolute file path.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForFile:(NSString*)path
+{
+    NSFileManager* fm = [NSFileManager defaultManager];
+
+    NSString* absPath;
+    absPath = [path stringByReplacingOccurrencesOfString:@"file://"
+                                              withString:@""];
+
+    if (![fm fileExistsAtPath:absPath]) {
+        NSLog(@"File not found: %@", absPath);
+    }
+
+    return [NSURL fileURLWithPath:absPath];
+}
+
+/**
+ * URL to a resource file.
+ *
+ * @param [ NSString* ] path A relative file path.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForResource:(NSString*)path
+{
+    NSFileManager* fm    = [NSFileManager defaultManager];
+    NSBundle* mainBundle = [NSBundle mainBundle];
+    NSString* bundlePath = [mainBundle bundlePath];
+
+    if ([path isEqualToString:@"res://icon"]) {
+        path = @"res://AppIcon60x60@3x.png";
+    }
+    
+    NSString* absPath;
+    absPath = [path stringByReplacingOccurrencesOfString:@"res:/"
+                                              withString:@""];
+
+    absPath = [bundlePath stringByAppendingString:absPath];
+
+    if (![fm fileExistsAtPath:absPath]) {
+        NSLog(@"File not found: %@", absPath);
+    }
+
+    return [NSURL fileURLWithPath:absPath];
+}
+
+/**
+ * URL to an asset file.
+ *
+ * @param path A relative www file path.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForAsset:(NSString*)path
+{
+    NSFileManager* fm    = [NSFileManager defaultManager];
+    NSBundle* mainBundle = [NSBundle mainBundle];
+    NSString* bundlePath = [mainBundle bundlePath];
+    
+    NSString* absPath;
+    absPath = [path stringByReplacingOccurrencesOfString:@"file:/"
+                                              withString:@"/www"];
+
+    absPath = [bundlePath stringByAppendingString:absPath];
+
+    if (![fm fileExistsAtPath:absPath]) {
+        NSLog(@"File not found: %@", absPath);
+    }
+
+    return [NSURL fileURLWithPath:absPath];
+}
+
+/**
+ * URL for an internal app path.
+ *
+ * @param [ NSString* ] path A relative file path from main bundle dir.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForAppInternalPath:(NSString*)path
+{
+    NSFileManager* fm    = [NSFileManager defaultManager];
+    NSBundle* mainBundle = [NSBundle mainBundle];
+    NSString* absPath    = [mainBundle bundlePath];
+
+    if (![fm fileExistsAtPath:absPath]) {
+        NSLog(@"File not found: %@", absPath);
+    }
+
+    return [NSURL fileURLWithPath:absPath];
+}
+
+/**
+ * URL for a base64 encoded string.
+ *
+ * @param [ NSString* ] base64String Base64 encoded string.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlFromBase64:(NSString*)base64String
+{
+    NSString *filename = [self getBasenameFromAttachmentPath:base64String];
+    NSUInteger length = [base64String length];
+    NSRegularExpression *regex;
+    NSString *dataString;
+
+    regex = [NSRegularExpression regularExpressionWithPattern:@"^base64:[^/]+.."
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:Nil];
+
+    dataString = [regex stringByReplacingMatchesInString:base64String
+                                                 options:0
+                                                   range:NSMakeRange(0, length)
+                                            withTemplate:@""];
+
+    NSData* data = [[NSData alloc] initWithBase64EncodedString:dataString
+                                                       options:0];
+
+
+    return [self urlForData:data withFileName:filename];
+}
+
+/**
+ * Extract the attachments basename.
+ *
+ * @param [ NSString* ] path The file path or base64 data.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) getBasenameFromAttachmentPath:(NSString*)path
+{
+    if ([path hasPrefix:@"base64:"]) {
+        NSString* pathWithoutPrefix;
+        pathWithoutPrefix = [path stringByReplacingOccurrencesOfString:@"base64:"
+                                                            withString:@""];
+
+        return [pathWithoutPrefix substringToIndex:
+                [pathWithoutPrefix rangeOfString:@"//"].location];
+    }
+
+    return path;
+}
+
+/**
+ * Write the data into a temp file.
+ *
+ * @param [ NSData* ]   data The data to save to file.
+ * @param [ NSString* ] name The name of the file.
+ *
+ * @return [ NSURL* ]
+ */
+- (NSURL*) urlForData:(NSData*)data withFileName:(NSString*) filename
+{
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSString* tempDir = NSTemporaryDirectory();
+
+    [fm createDirectoryAtPath:tempDir withIntermediateDirectories:YES
+                   attributes:NULL
+                        error:NULL];
+
+    NSString* absPath = [tempDir stringByAppendingPathComponent:filename];
+
+    NSURL* url = [NSURL fileURLWithPath:absPath];
+    [data writeToURL:url atomically:NO];
+
+    if (![fm fileExistsAtPath:absPath]) {
+        NSLog(@"File not found: %@", absPath);
+    }
+
+    return url;
 }
 
 @end

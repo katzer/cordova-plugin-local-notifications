@@ -25,14 +25,15 @@
 
 @interface APPNotificationOptions : NSObject
 
-@property (readonly, getter=id)         NSNumber*            id;
-@property (readonly, getter=identifier) NSString*            identifier;
-@property (readonly, getter=title)      NSString*            title;
-@property (readonly, getter=subtitle)   NSString*            subtitle;
-@property (readonly, getter=badge)      NSNumber*            badge;
-@property (readonly, getter=text)       NSString*            text;
-@property (readonly, getter=sound)      UNNotificationSound* sound;
-@property (readonly, getter=userInfo)   NSDictionary*        userInfo;
+@property (readonly, getter=id)          NSNumber*            id;
+@property (readonly, getter=identifier)  NSString*            identifier;
+@property (readonly, getter=title)       NSString*            title;
+@property (readonly, getter=subtitle)    NSString*            subtitle;
+@property (readonly, getter=badge)       NSNumber*            badge;
+@property (readonly, getter=text)        NSString*            text;
+@property (readonly, getter=sound)       UNNotificationSound* sound;
+@property (readonly, getter=attachments) NSArray<UNNotificationAttachment *> * attachments;
+@property (readonly, getter=userInfo)    NSDictionary*        userInfo;
 
 - (id) initWithDict:(NSDictionary*)dict;
 - (UNNotificationTrigger*) trigger;

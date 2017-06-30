@@ -61,11 +61,12 @@ static char optionsKey;
 {
     APPNotificationOptions* options = self.options;
 
-    self.title    = options.title;
-    self.subtitle = options.subtitle;
-    self.body     = options.text;
-    self.sound    = options.sound;
-    self.badge    = options.badge;
+    self.title              = options.title;
+    self.subtitle           = options.subtitle;
+    self.body               = options.text;
+    self.sound              = options.sound;
+    self.badge              = options.badge;
+    self.attachments        = options.attachments;
     self.categoryIdentifier = kAPPGeneralCategory;
 }
 
