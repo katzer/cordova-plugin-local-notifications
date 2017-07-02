@@ -466,10 +466,6 @@
     {
         return [self urlForAsset:path];
     }
-    else if ([path hasPrefix:@"app://"])
-    {
-        return [self urlForAppInternalPath:path];
-    }
     else if ([path hasPrefix:@"base64:"])
     {
         return [self urlFromBase64:path];
@@ -517,7 +513,7 @@
 {
     NSFileManager* fm    = [NSFileManager defaultManager];
     NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* bundlePath = [mainBundle bundlePath];
+    NSString* bundlePath = [mainBundle resourcePath];
 
     if ([path isEqualToString:@"res://icon"]) {
         path = @"res://AppIcon60x60@3x.png";
@@ -554,26 +550,6 @@
                                               withString:@"/www"];
 
     absPath = [bundlePath stringByAppendingString:absPath];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
-    }
-
-    return [NSURL fileURLWithPath:absPath];
-}
-
-/**
- * URL for an internal app path.
- *
- * @param [ NSString* ] path A relative file path from main bundle dir.
- *
- * @return [ NSURL* ]
- */
-- (NSURL*) urlForAppInternalPath:(NSString*)path
-{
-    NSFileManager* fm    = [NSFileManager defaultManager];
-    NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* absPath    = [mainBundle bundlePath];
 
     if (![fm fileExistsAtPath:absPath]) {
         NSLog(@"File not found: %@", absPath);
