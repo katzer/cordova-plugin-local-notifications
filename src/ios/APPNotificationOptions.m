@@ -119,7 +119,9 @@
  */
 - (NSNumber*) badge
 {
-    return [NSNumber numberWithInt:[[dict objectForKey:@"badge"] intValue]];
+    id value = [dict objectForKey:@"badge"];
+    
+    return (value == NULL) ? NULL : [NSNumber numberWithInt:[value intValue]];
 }
 
 /**

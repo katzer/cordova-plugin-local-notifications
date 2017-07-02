@@ -23,7 +23,7 @@ exports._defaults = {
     text:  '',
     title: '',
     sound: 'res://platform_default',
-    badge: 0,
+    badge: undefined,
     id:    0,
     data:  undefined,
     every: undefined,
