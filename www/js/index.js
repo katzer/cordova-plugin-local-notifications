@@ -57,6 +57,7 @@ var app = {
         document.getElementById('sched_multi').onclick    = app.scheduleMultiple;
         document.getElementById('sched_delayed').onclick  = app.scheduleDelayed;
         document.getElementById('sched_interval').onclick = app.scheduleInterval;
+        document.getElementById('sched_actions').onclick  = app.scheduleActions;
         document.getElementById('clear_single').onclick   = app.clearSingle;
         document.getElementById('clear_multi').onclick    = app.clearMulti;
         document.getElementById('clear_all').onclick      = app.clearAll;
@@ -95,7 +96,6 @@ var app = {
             text: 'Test Message 1',
             icon: 'http://3.bp.blogspot.com/-Qdsy-GpempY/UU_BN9LTqSI/AAAAAAAAAMA/LkwLW2yNBJ4/s1600/supersu.png',
             smallIcon: 'res://cordova',
-            attachments: ['file://img/logo.png'],
             sound: null,
             badge: 1,
             data: { test: 1 }
@@ -146,6 +146,24 @@ var app = {
             sound: sound,
             icon: 'res://icon',
             smallIcon: 'res://ic_popup_sync'
+        });
+    },
+    // Schedule with actions
+    scheduleActions: function () {
+        cordova.plugins.notification.local.schedule({
+            title: 'Local Notification Plugin',
+            text: 'Made by appPlant from Leipzig/Germany',
+            attachments: ['file://img/logo.png'],
+            actionGroupId: 'like-dislike',
+            actions: [{
+                id: 'like',
+                title: 'Like',
+                launch: true
+            },{
+                id: 'dislike',
+                title: 'Dislike',
+                ui: 'decline'
+            }]
         });
     },
     // Clear a single notification

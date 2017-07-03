@@ -100,7 +100,7 @@
 //                NSNumber* id = [options objectForKey:@"id"];
 //                UNNotificationRequest* notification;
 //
-//                notification = [self.center getNotificationWithId:id];
+//                notification = [_center getNotificationWithId:id];
 //
 //                if (!notification)
 //                    continue;
@@ -119,7 +119,7 @@
 //                NSNumber* id = [options objectForKey:@"id"];
 //                UILocalNotification* notification;
 //
-//                notification = [self.app localNotificationWithId:id];
+//                notification = [_app localNotificationWithId:id];
 //
 //                if (!notification)
 //                    continue;
@@ -151,16 +151,16 @@
     [self.commandDelegate runInBackground:^{
         for (NSNumber* id in command.arguments) {
             UNNotificationRequest* notification;
-            
-            notification = [self.center getNotificationWithId:id];
-            
+
+            notification = [_center getNotificationWithId:id];
+
             if (!notification)
                 continue;
-            
-            [self.center clearNotification:notification];
+
+            [_center clearNotification:notification];
             [self fireEvent:@"clear" notification:notification];
         }
-        
+
         [self execCallback:command];
     }];
 }
@@ -173,8 +173,8 @@
 - (void) clearAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        [self.center clearAllNotifications];
-        [self.app setApplicationIconBadgeNumber:0];
+        [_center clearAllNotifications];
+        [_app setApplicationIconBadgeNumber:0];
         [self fireEvent:@"clearall"];
         [self execCallback:command];
     }];
@@ -192,13 +192,13 @@
     [self.commandDelegate runInBackground:^{
         for (NSNumber* id in command.arguments) {
             UNNotificationRequest* notification;
-            
-            notification = [self.center getNotificationWithId:id];
-            
+
+            notification = [_center getNotificationWithId:id];
+
             if (!notification)
                 continue;
-            
-            [self.center cancelNotification:notification];
+
+            [_center cancelNotification:notification];
             [self fireEvent:@"cancel" notification:notification];
         }
 
@@ -214,8 +214,8 @@
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        [self.center cancelAllNotifications];
-        [self.app setApplicationIconBadgeNumber:0];
+        [_center cancelAllNotifications];
+        [_app setApplicationIconBadgeNumber:0];
         [self fireEvent:@"cancelall"];
         [self execCallback:command];
     }];
@@ -321,12 +321,12 @@
       byType:(APPNotificationType)type;
 {
     [self.commandDelegate runInBackground:^{
-        NSArray* ids = [self.center getNotificationIdsByType:type];
-        
+        NSArray* ids = [_center getNotificationIdsByType:type];
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:ids];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -383,11 +383,11 @@
 
         NSArray* notifications;
         notifications = [_center getNotificationOptionsByType:type andId:ids];
-        
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                messageAsDictionary:[notifications firstObject]];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -497,8 +497,27 @@
     UNAuthorizationOptions options =
     (UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert);
 
-    [self.center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError* e) {
+    [_center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError* e) {
         [self check:command];
+    }];
+}
+
+/**
+ * Register/update an action group.
+ *
+ * @return [ Void ]
+ */
+- (void) registerCategory:(CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSDictionary* options = command.arguments[0];
+        APPNotificationContent* notification;
+        
+        notification = [[APPNotificationContent alloc]
+                        initWithOptions:options];
+        
+        [_center addNotificationCategory:notification.category];
+        [self execCallback:command];
     }];
 }
 
@@ -513,6 +532,8 @@
     __weak APPLocalNotification* weakSelf  = self;
     UNNotificationRequest* request = notification.request;
 
+    [_center addNotificationCategory:notification.category];
+    
     [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
         __strong APPLocalNotification* strongSelf = weakSelf;
         [strongSelf fireEvent:@"add" notification:request];

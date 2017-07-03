@@ -48,7 +48,34 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
                 intentIdentifiers:@[]
                 options:UNNotificationCategoryOptionCustomDismissAction];
 
-    [self setNotificationCategories:[NSSet setWithObjects:category, nil]];
+    [self setNotificationCategories:[NSSet setWithObject:category]];
+}
+
+/**
+ * Add the specified category to the list of categories.
+ *
+ * @param [ UNNotificationCategory* ] category The category to add.
+ *
+ * @return [ Void ]
+ */
+- (void) addNotificationCategory:(UNNotificationCategory*)category
+{
+    if (!category)
+        return;
+    
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
+        NSMutableSet* categories = [NSMutableSet setWithSet:set];
+        
+        for (UNNotificationCategory* item in categories) {
+            if ([category.identifier isEqualToString:item.identifier]) {
+                [categories removeObject:item];
+                break;
+            }
+        }
+        
+        [categories addObject:category];
+        [self setNotificationCategories:categories];
+    }];
 }
 
 #pragma mark -

@@ -22,6 +22,7 @@
  */
 
 #import "APPNotificationOptions.h"
+#import "UNUserNotificationCenter+APPLocalNotification.h"
 
 @import UserNotifications;
 
@@ -51,6 +52,8 @@
     self = [self init];
 
     self.dict = dictionary;
+    
+    [self actions];
 
     return self;
 }
@@ -119,7 +122,21 @@
  */
 - (NSNumber*) badge
 {
-    return [NSNumber numberWithInt:[[dict objectForKey:@"badge"] intValue]];
+    id value = [dict objectForKey:@"badge"];
+    
+    return (value == NULL) ? NULL : [NSNumber numberWithInt:[value intValue]];
+}
+
+/**
+ * The category of the notification.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) categoryId
+{
+    NSString* value = [dict objectForKey:@"actionGroupId"];
+    
+    return value.length ? value : kAPPGeneralCategory;
 }
 
 /**
@@ -148,19 +165,12 @@
     return [UNNotificationSound soundNamed:file];
 }
 
+
 /**
- * The date when to fire the notification.
+ * Additional content to attach.
  *
- * @return [ NSDate* ]
+ * @return [ UNNotificationSound* ]
  */
-- (NSDate*) fireDate
-{
-    double timestamp = [[dict objectForKey:@"at"]
-                        doubleValue];
-
-    return [NSDate dateWithTimeIntervalSince1970:timestamp];
-}
-
 - (NSArray<UNNotificationAttachment *> *) attachments
 {
     NSArray* paths              = [dict objectForKey:@"attachments"];
@@ -184,6 +194,47 @@
     }
     
     return attachments;
+}
+
+/**
+ * Additional actions for the notification.
+ *
+ * @return [ NSArray* ]
+ */
+- (NSArray<UNNotificationAction *> *) actions
+{
+    NSArray* items          = [dict objectForKey:@"actions"];
+    NSMutableArray* actions = [[NSMutableArray alloc] init];
+    
+    if (!items)
+        return actions;
+    
+    for (NSDictionary* item in items) {
+        NSString* id    = [item objectForKey:@"id"];
+        NSString* title = [item objectForKey:@"title"];
+        UNNotificationActionOptions options = UNNotificationActionOptionNone;
+        
+        if ([[item objectForKey:@"launch"] boolValue]) {
+            options = UNNotificationActionOptionForeground;
+        }
+        
+        if ([[item objectForKey:@"ui"] isEqualToString:@"decline"]) {
+            options = options | UNNotificationActionOptionDestructive;
+        }
+        
+        if ([[item objectForKey:@"needsAuth"] boolValue]) {
+            options = options | UNNotificationActionOptionAuthenticationRequired;
+        }
+        
+        UNNotificationAction* action;
+        action = [UNNotificationAction actionWithIdentifier:id
+                                                      title:title
+                                                    options:options];
+        
+        [actions addObject:action];
+    }
+    
+    return actions;
 }
 
 #pragma mark -
@@ -222,6 +273,19 @@
 
 #pragma mark -
 #pragma mark Private
+
+/**
+ * The date when to fire the notification.
+ *
+ * @return [ NSDate* ]
+ */
+- (NSDate*) triggerDate
+{
+    double timestamp = [[dict objectForKey:@"at"]
+                        doubleValue];
+    
+    return [NSDate dateWithTimeIntervalSince1970:timestamp];
+}
 
 /**
  * If the notification shall be repeating.
@@ -299,7 +363,7 @@
                        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 
     NSDateComponents *date = [cal components:[self repeatInterval]
-                                    fromDate:[self fireDate]];
+                                    fromDate:[self triggerDate]];
 
     date.timeZone = [NSTimeZone defaultTimeZone];
 
@@ -333,7 +397,7 @@
  */
 - (double) timeInterval
 {
-    return MAX(0.01f, [self.fireDate timeIntervalSinceDate:[NSDate date]]);
+    return MAX(0.01f, [self.triggerDate timeIntervalSinceDate:[NSDate date]]);
 }
 
 /**
@@ -464,10 +528,6 @@
     {
         return [self urlForAsset:path];
     }
-    else if ([path hasPrefix:@"app://"])
-    {
-        return [self urlForAppInternalPath:path];
-    }
     else if ([path hasPrefix:@"base64:"])
     {
         return [self urlFromBase64:path];
@@ -515,7 +575,7 @@
 {
     NSFileManager* fm    = [NSFileManager defaultManager];
     NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* bundlePath = [mainBundle bundlePath];
+    NSString* bundlePath = [mainBundle resourcePath];
 
     if ([path isEqualToString:@"res://icon"]) {
         path = @"res://AppIcon60x60@3x.png";
@@ -552,26 +612,6 @@
                                               withString:@"/www"];
 
     absPath = [bundlePath stringByAppendingString:absPath];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
-    }
-
-    return [NSURL fileURLWithPath:absPath];
-}
-
-/**
- * URL for an internal app path.
- *
- * @param [ NSString* ] path A relative file path from main bundle dir.
- *
- * @return [ NSURL* ]
- */
-- (NSURL*) urlForAppInternalPath:(NSString*)path
-{
-    NSFileManager* fm    = [NSFileManager defaultManager];
-    NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* absPath    = [mainBundle bundlePath];
 
     if (![fm fileExistsAtPath:absPath]) {
         NSLog(@"File not found: %@", absPath);

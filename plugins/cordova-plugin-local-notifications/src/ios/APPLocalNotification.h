@@ -35,6 +35,9 @@
 // Request permission to show notifications
 - (void) request:(CDVInvokedUrlCommand*)command;
 
+// Register/update an action group
+- (void) registerCategory:(CDVInvokedUrlCommand*)command;
+
 // Schedule notifications
 - (void) schedule:(CDVInvokedUrlCommand*)command;
 //// Update set of notifications

@@ -21,14 +21,16 @@ var exec    = require('cordova/exec'),
 
 // Default values
 exports._defaults = {
-    text:  '',
-    title: '',
-    sound: 'res://platform_default',
-    badge: 0,
-    id:    0,
-    data:  undefined,
-    every: undefined,
-    at:    undefined
+    id:      0,
+    text:    '',
+    title:   '',
+    sound:   'res://platform_default',
+    badge:   undefined,
+    data:    undefined,
+    every:   undefined,
+    at:      undefined,
+    actions: undefined,
+    actionGroupId: undefined
 };
 
 // Listener
@@ -150,7 +152,50 @@ exports.convertProperties = function (options) {
         options.data = JSON.stringify(options.data);
     }
 
+    if (options.actions) {
+        this.convertActions(options);
+    }
+
     return options;
+};
+
+/**
+ * Convert the passed values to their required type, modifying them
+ * directly for Android and passing the converted list back for iOS.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with category & actions.
+ */
+exports.convertActions = function (options) {
+
+    if (!options.actions)
+        return null;
+
+    var MAX_ACTIONS = (device.platform === 'iOS') ? 4 : 3,
+        actions     = [];
+
+    if (options.actions.length > MAX_ACTIONS)
+        console.warn('Count of actions exceeded count of ' + MAX_ACTIONS);
+
+    for (var i = 0; i < options.actions.length && MAX_ACTIONS > 0; i++) {
+        var action = options.actions[i];
+
+        if (!action.id) {
+            console.warn(
+                'Action with title ' + action.title + ' has no id and will not be added.');
+            continue;
+        }
+
+        action.id    = action.id.toString();
+        action.title = (action.title || action.id).toString();
+
+        actions.push(action);
+        MAX_ACTIONS--;
+    }
+
+    options.category = (options.category || 'DEFAULT_GROUP').toString();
+    options.actions  = actions;
 };
 
 /**
