@@ -22,6 +22,7 @@
  */
 
 #import "APPNotificationOptions.h"
+#import "UNUserNotificationCenter+APPLocalNotification.h"
 
 @import UserNotifications;
 
@@ -51,6 +52,8 @@
     self = [self init];
 
     self.dict = dictionary;
+    
+    [self actions];
 
     return self;
 }
@@ -125,6 +128,18 @@
 }
 
 /**
+ * The category of the notification.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) categoryId
+{
+    NSString* value = [dict objectForKey:@"actionGroupId"];
+    
+    return value.length ? value : kAPPGeneralCategory;
+}
+
+/**
  * The sound file for the notification.
  *
  * @return [ UNNotificationSound* ]
@@ -150,19 +165,12 @@
     return [UNNotificationSound soundNamed:file];
 }
 
+
 /**
- * The date when to fire the notification.
+ * Additional content to attach.
  *
- * @return [ NSDate* ]
+ * @return [ UNNotificationSound* ]
  */
-- (NSDate*) fireDate
-{
-    double timestamp = [[dict objectForKey:@"at"]
-                        doubleValue];
-
-    return [NSDate dateWithTimeIntervalSince1970:timestamp];
-}
-
 - (NSArray<UNNotificationAttachment *> *) attachments
 {
     NSArray* paths              = [dict objectForKey:@"attachments"];
@@ -186,6 +194,47 @@
     }
     
     return attachments;
+}
+
+/**
+ * Additional actions for the notification.
+ *
+ * @return [ NSArray* ]
+ */
+- (NSArray<UNNotificationAction *> *) actions
+{
+    NSArray* items          = [dict objectForKey:@"actions"];
+    NSMutableArray* actions = [[NSMutableArray alloc] init];
+    
+    if (!items)
+        return actions;
+    
+    for (NSDictionary* item in items) {
+        NSString* id    = [item objectForKey:@"id"];
+        NSString* title = [item objectForKey:@"title"];
+        UNNotificationActionOptions options = UNNotificationActionOptionNone;
+        
+        if ([[item objectForKey:@"launch"] boolValue]) {
+            options = UNNotificationActionOptionForeground;
+        }
+        
+        if ([[item objectForKey:@"ui"] isEqualToString:@"decline"]) {
+            options = options | UNNotificationActionOptionDestructive;
+        }
+        
+        if ([[item objectForKey:@"needsAuth"] boolValue]) {
+            options = options | UNNotificationActionOptionAuthenticationRequired;
+        }
+        
+        UNNotificationAction* action;
+        action = [UNNotificationAction actionWithIdentifier:id
+                                                      title:title
+                                                    options:options];
+        
+        [actions addObject:action];
+    }
+    
+    return actions;
 }
 
 #pragma mark -
@@ -224,6 +273,19 @@
 
 #pragma mark -
 #pragma mark Private
+
+/**
+ * The date when to fire the notification.
+ *
+ * @return [ NSDate* ]
+ */
+- (NSDate*) triggerDate
+{
+    double timestamp = [[dict objectForKey:@"at"]
+                        doubleValue];
+    
+    return [NSDate dateWithTimeIntervalSince1970:timestamp];
+}
 
 /**
  * If the notification shall be repeating.
@@ -301,7 +363,7 @@
                        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 
     NSDateComponents *date = [cal components:[self repeatInterval]
-                                    fromDate:[self fireDate]];
+                                    fromDate:[self triggerDate]];
 
     date.timeZone = [NSTimeZone defaultTimeZone];
 
@@ -335,7 +397,7 @@
  */
 - (double) timeInterval
 {
-    return MAX(0.01f, [self.fireDate timeIntervalSinceDate:[NSDate date]]);
+    return MAX(0.01f, [self.triggerDate timeIntervalSinceDate:[NSDate date]]);
 }
 
 /**

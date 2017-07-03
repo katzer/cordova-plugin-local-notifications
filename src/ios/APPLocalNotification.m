@@ -502,6 +502,25 @@
     }];
 }
 
+/**
+ * Register/update an action group.
+ *
+ * @return [ Void ]
+ */
+- (void) registerCategory:(CDVInvokedUrlCommand *)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSDictionary* options = command.arguments[0];
+        APPNotificationContent* notification;
+        
+        notification = [[APPNotificationContent alloc]
+                        initWithOptions:options];
+        
+        [_center addNotificationCategory:notification.category];
+        [self execCallback:command];
+    }];
+}
+
 #pragma mark -
 #pragma mark Private
 
@@ -513,6 +532,8 @@
     __weak APPLocalNotification* weakSelf  = self;
     UNNotificationRequest* request = notification.request;
 
+    [_center addNotificationCategory:notification.category];
+    
     [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
         __strong APPLocalNotification* strongSelf = weakSelf;
         [strongSelf fireEvent:@"add" notification:request];

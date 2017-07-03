@@ -277,6 +277,20 @@ exports.getAllTriggered = function (callback, scope) {
 };
 
 /**
+ * Register an group of actions by id.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Array]     actions  The action config settings.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.addActionGroup = function (id, actions, callback, scope) {
+    this.core.registerActionGroup(id, actions, callback, scope);
+};
+
+/**
  * The (platform specific) default settings.
  *
  * @return [ Object ]
