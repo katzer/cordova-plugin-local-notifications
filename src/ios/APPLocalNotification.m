@@ -582,6 +582,8 @@
     UNNotificationRequest* notification = response.notification.request;
     NSString* action = response.actionIdentifier;
     NSString* event  = action;
+    
+    completionHandler();
 
     if ([action isEqualToString:UNNotificationDefaultActionIdentifier]) {
         event = @"click";
@@ -589,10 +591,12 @@
     if ([action isEqualToString:UNNotificationDismissActionIdentifier]) {
         event = @"clear";
     }
-
+    
+    if (![event isEqualToString:@"clear"]) {
+        [self fireEvent:@"clear" notification:notification];
+    }
+    
     [self fireEvent:event notification:notification];
-
-    completionHandler();
 }
 
 #pragma mark -
