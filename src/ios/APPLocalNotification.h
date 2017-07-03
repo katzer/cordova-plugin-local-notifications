@@ -27,6 +27,8 @@
 
 @interface APPLocalNotification : CDVPlugin <UNUserNotificationCenterDelegate>
 
+// Set launchDetails object
+- (void) launchDetails:(CDVInvokedUrlCommand*)command;
 // Execute all queued events
 - (void) deviceready:(CDVInvokedUrlCommand*)command;
 

@@ -302,11 +302,13 @@ exports.exec = function (action, args, callback, scope) {
 channel.deviceready.subscribe(function () {
     // Device is ready now, the listeners are registered
     // and all queued events can be executed.
-    exec(null, null, 'LocalNotification', 'deviceready', []);
+    exports.exec('deviceready');
 });
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
+    // Store launchedBy notification
+    exports.exec('launchDetails');
     // Device plugin is ready now
     channel.onCordovaInfoReady.subscribe(function () {
         // Merge platform specifics into defaults
