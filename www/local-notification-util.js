@@ -54,9 +54,11 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.color       = undefined;
         break;
     case 'iOS':
-        defaults.attachments = undefined;
-        defaults.region      = undefined;
-        defaults.radius      = undefined;
+        defaults.attachments   = undefined;
+        defaults.region        = undefined;
+        defaults.radius        = undefined;
+        defaults.notifyOnEntry = true;
+        defaults.notifyOnExit  = false;
         break;
     }
 };
