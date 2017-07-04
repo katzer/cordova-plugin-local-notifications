@@ -1,8 +1,4 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
- *
- * @APPPLANT_LICENSE_HEADER_START@
- *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -17,13 +13,12 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 #import "APPNotificationOptions.h"
 #import "UNUserNotificationCenter+APPLocalNotification.h"
 
+@import CoreLocation;
 @import UserNotifications;
 
 @interface APPNotificationOptions ()
@@ -52,7 +47,7 @@
     self = [self init];
 
     self.dict = dictionary;
-    
+
     [self actions];
 
     return self;
@@ -60,6 +55,18 @@
 
 #pragma mark -
 #pragma mark Properties
+
+/**
+ * The type for the notification.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) type
+{
+    NSString* type = [dict objectForKey:@"type"];
+
+    return type.length ? type : @"normal";
+}
 
 /**
  * The ID for the notification.
@@ -123,7 +130,7 @@
 - (NSNumber*) badge
 {
     id value = [dict objectForKey:@"badge"];
-    
+
     return (value == NULL) ? NULL : [NSNumber numberWithInt:[value intValue]];
 }
 
@@ -135,7 +142,7 @@
 - (NSString*) categoryId
 {
     NSString* value = [dict objectForKey:@"actionGroupId"];
-    
+
     return value.length ? value : kAPPGeneralCategory;
 }
 
@@ -175,10 +182,10 @@
 {
     NSArray* paths              = [dict objectForKey:@"attachments"];
     NSMutableArray* attachments = [[NSMutableArray alloc] init];
-    
+
     if (!paths)
         return attachments;
-    
+
     for (NSString* path in paths) {
         NSURL* url = [self urlForAttachmentPath:path];
 
@@ -187,12 +194,12 @@
                                                                     URL:url
                                                                 options:NULL
                                                                   error:NULL];
-        
+
         if (attachment) {
             [attachments addObject:attachment];
         }
     }
-    
+
     return attachments;
 }
 
@@ -205,10 +212,10 @@
 {
     NSArray* items          = [dict objectForKey:@"actions"];
     NSMutableArray* actions = [[NSMutableArray alloc] init];
-    
+
     if (!items)
         return actions;
-    
+
     for (NSDictionary* item in items) {
         NSString* id    = [item objectForKey:@"id"];
         NSString* title = [item objectForKey:@"title"];
@@ -216,27 +223,27 @@
 
         UNNotificationActionOptions options = UNNotificationActionOptionNone;
         UNNotificationAction* action;
-        
+
         if ([[item objectForKey:@"launch"] boolValue]) {
             options = UNNotificationActionOptionForeground;
         }
-        
+
         if ([[item objectForKey:@"ui"] isEqualToString:@"decline"]) {
             options = options | UNNotificationActionOptionDestructive;
         }
-        
+
         if ([[item objectForKey:@"needsAuth"] boolValue]) {
             options = options | UNNotificationActionOptionAuthenticationRequired;
         }
-        
+
         if ([type isEqualToString:@"input"]) {
             NSString* submitTitle = [item objectForKey:@"submitTitle"];
             NSString* placeholder = [item objectForKey:@"emptyText"];
-            
+
             if (!submitTitle.length) {
                 submitTitle = @"Submit";
             }
-            
+
             action = [UNTextInputNotificationAction actionWithIdentifier:id
                                                                    title:title
                                                                  options:options
@@ -250,12 +257,12 @@
         } else {
             NSLog(@"Unknown action type: %@", type);
         }
-        
+
         if (action) {
             [actions addObject:action];
         }
     }
-    
+
     return actions;
 }
 
@@ -269,6 +276,14 @@
  */
 - (UNNotificationTrigger*) trigger
 {
+    NSString* type = [self type];
+
+    if ([type isEqualToString:@"location"])
+        return [self triggerWithRegion];
+
+    if (![type isEqualToString:@"normal"])
+        NSLog(@"Unknown type: %@", type);
+
     if ([self isRepeating])
         return [self repeatingTrigger];
 
@@ -305,7 +320,7 @@
 {
     double timestamp = [[dict objectForKey:@"at"]
                         doubleValue];
-    
+
     return [NSDate dateWithTimeIntervalSince1970:timestamp];
 }
 
@@ -348,12 +363,12 @@
     id every = [dict objectForKey:@"every"];
 
     if ([every isKindOfClass:NSString.class])
-        return [self repeatingTriggerWithDateMatchingComponents];
+        return [self triggerWithDateMatchingComponents];
 
     if ([every isKindOfClass:NSDictionary.class])
-        return [self repeatingTriggerWithCustomDateMatchingComponents];
+        return [self triggerWithCustomDateMatchingComponents];
 
-    return [self repeatingTriggerWithTimeInterval];
+    return [self triggerWithTimeInterval];
 }
 
 /**
@@ -361,7 +376,7 @@
  *
  * @return [ UNTimeIntervalNotificationTrigger* ]
  */
-- (UNTimeIntervalNotificationTrigger*) repeatingTriggerWithTimeInterval
+- (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
 {
     long interval = [[dict objectForKey:@"every"] longValue];
 
@@ -379,7 +394,7 @@
  *
  * @return [ UNCalendarNotificationTrigger* ]
  */
-- (UNCalendarNotificationTrigger*) repeatingTriggerWithDateMatchingComponents
+- (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents
 {
     NSCalendar* cal = [[NSCalendar alloc]
                        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -398,7 +413,7 @@
  *
  * @return [ UNCalendarNotificationTrigger* ]
  */
-- (UNCalendarNotificationTrigger*) repeatingTriggerWithCustomDateMatchingComponents
+- (UNCalendarNotificationTrigger*) triggerWithCustomDateMatchingComponents
 {
     NSCalendar* cal = [[NSCalendar alloc]
                        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -410,6 +425,30 @@
 
     return [UNCalendarNotificationTrigger
             triggerWithDateMatchingComponents:date repeats:YES];
+}
+
+/**
+ * A repeating trigger based on a location region.
+ *
+ * @return [ UNLocationNotificationTrigger* ]
+ */
+- (UNLocationNotificationTrigger*) triggerWithRegion
+{
+    NSArray* center = [dict objectForKey:@"center"];
+    double radius = [[dict objectForKey:@"radius"] doubleValue];
+
+    CLLocationCoordinate2D coord =
+    CLLocationCoordinate2DMake([center[0] doubleValue], [center[1] doubleValue]);
+
+    CLCircularRegion* region =
+    [[CLCircularRegion alloc] initWithCenter:coord
+                                      radius:radius
+                                  identifier:self.identifier];
+
+    region.notifyOnEntry = [[dict objectForKey:@"notifyOnEntry"] boolValue];
+    region.notifyOnExit  = [[dict objectForKey:@"notifyOnExit"] boolValue];
+
+    return [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
 }
 
 /**
@@ -602,7 +641,7 @@
     if ([path isEqualToString:@"res://icon"]) {
         path = @"res://AppIcon60x60@3x.png";
     }
-    
+
     NSString* absPath;
     absPath = [path stringByReplacingOccurrencesOfString:@"res:/"
                                               withString:@""];
@@ -628,7 +667,7 @@
     NSFileManager* fm    = [NSFileManager defaultManager];
     NSBundle* mainBundle = [NSBundle mainBundle];
     NSString* bundlePath = [mainBundle bundlePath];
-    
+
     NSString* absPath;
     absPath = [path stringByReplacingOccurrencesOfString:@"file:/"
                                               withString:@"/www"];

@@ -21,6 +21,7 @@ var exec    = require('cordova/exec'),
 // Default values
 exports._defaults = {
     id:      0,
+    type:    'normal',
     text:    '',
     title:   '',
     sound:   'res://platform_default',
@@ -54,6 +55,8 @@ exports.applyPlatformSpecificOptions = function () {
         break;
     case 'iOS':
         defaults.attachments = undefined;
+        defaults.region      = undefined;
+        defaults.radius      = undefined;
         break;
     }
 };
@@ -307,7 +310,7 @@ channel.deviceready.subscribe(function () {
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
-    // Store launchedBy notification
+    // Set launchDetails object
     exports.exec('launchDetails');
     // Device plugin is ready now
     channel.onCordovaInfoReady.subscribe(function () {
