@@ -212,7 +212,10 @@
     for (NSDictionary* item in items) {
         NSString* id    = [item objectForKey:@"id"];
         NSString* title = [item objectForKey:@"title"];
+        NSString* type  = [item objectForKey:@"type"];
+
         UNNotificationActionOptions options = UNNotificationActionOptionNone;
+        UNNotificationAction* action;
         
         if ([[item objectForKey:@"launch"] boolValue]) {
             options = UNNotificationActionOptionForeground;
@@ -226,12 +229,31 @@
             options = options | UNNotificationActionOptionAuthenticationRequired;
         }
         
-        UNNotificationAction* action;
-        action = [UNNotificationAction actionWithIdentifier:id
-                                                      title:title
-                                                    options:options];
+        if ([type isEqualToString:@"input"]) {
+            NSString* submitTitle = [item objectForKey:@"submitTitle"];
+            NSString* placeholder = [item objectForKey:@"emptyText"];
+            
+            if (!submitTitle.length) {
+                submitTitle = @"Submit";
+            }
+            
+            action = [UNTextInputNotificationAction actionWithIdentifier:id
+                                                                   title:title
+                                                                 options:options
+                                                    textInputButtonTitle:submitTitle
+                                                    textInputPlaceholder:placeholder];
+        } else
+        if (!type.length || [type isEqualToString:@"button"]) {
+            action = [UNNotificationAction actionWithIdentifier:id
+                                                          title:title
+                                                        options:options];
+        } else {
+            NSLog(@"Unknown action type: %@", type);
+        }
         
-        [actions addObject:action];
+        if (action) {
+            [actions addObject:action];
+        }
     }
     
     return actions;

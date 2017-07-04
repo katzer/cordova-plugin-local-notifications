@@ -693,12 +693,12 @@
 - (void) fireEvent:(NSString*)event
       notification:(UNNotificationRequest*)request
 {
-    NSString *js, *args;
+    NSString *js;
     NSString *appState = [self applicationState];
     NSString *params   = [NSString stringWithFormat:@"\"%@\"", appState];
 
     if (request) {
-        args   = [request encodeToJSON];
+        NSString *args = [request encodeToJSON];
         params = [NSString stringWithFormat:@"%@,'%@'", args, appState];
     }
 
