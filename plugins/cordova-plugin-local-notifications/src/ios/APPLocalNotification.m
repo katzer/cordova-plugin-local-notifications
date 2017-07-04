@@ -1,8 +1,4 @@
 /*
- * Copyright (c) 2013 by appPlant GmbH. All rights reserved.
- *
- * @APPPLANT_LICENSE_HEADER_START@
- *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -17,8 +13,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 #import "APPLocalNotification.h"
@@ -32,6 +26,7 @@
 @property (strong, nonatomic) UIApplication* app;
 @property (strong, nonatomic) UNUserNotificationCenter* center;
 @property (readwrite, assign) BOOL deviceready;
+@property (readonly, nonatomic, retain) NSArray* launchDetails;
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
 
 @end
@@ -42,6 +37,27 @@
 
 #pragma mark -
 #pragma mark Interface
+
+/**
+ * Set launchDetails object.
+ *
+ * @return [ Void ]
+ */
+- (void) launchDetails:(CDVInvokedUrlCommand*)command
+{
+    if (!_launchDetails)
+        return;
+
+    NSString* js;
+
+    js = [NSString stringWithFormat:
+          @"cordova.plugins.notification.local.launchDetails = {id:%@, action:'%@'}",
+          _launchDetails[0], _launchDetails[1]];
+
+    [self.commandDelegate evalJs:js];
+
+    _launchDetails = NULL;
+}
 
 /**
  * Execute all queued events.
@@ -512,10 +528,10 @@
     [self.commandDelegate runInBackground:^{
         NSDictionary* options = command.arguments[0];
         APPNotificationContent* notification;
-        
+
         notification = [[APPNotificationContent alloc]
                         initWithOptions:options];
-        
+
         [_center addNotificationCategory:notification.category];
         [self execCallback:command];
     }];
@@ -533,7 +549,7 @@
     UNNotificationRequest* request = notification.request;
 
     [_center addNotificationCategory:notification.category];
-    
+
     [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
         __strong APPLocalNotification* strongSelf = weakSelf;
         [strongSelf fireEvent:@"add" notification:request];
@@ -583,6 +599,8 @@
     NSString* action = response.actionIdentifier;
     NSString* event  = action;
 
+    completionHandler();
+
     if ([action isEqualToString:UNNotificationDefaultActionIdentifier]) {
         event = @"click";
     } else
@@ -590,9 +608,15 @@
         event = @"clear";
     }
 
-    [self fireEvent:event notification:notification];
+    if (!deviceready && [event isEqualToString:@"click"]) {
+        _launchDetails = @[notification.options.id, event];
+    }
 
-    completionHandler();
+    if (![event isEqualToString:@"clear"]) {
+        [self fireEvent:@"clear" notification:notification];
+    }
+
+    [self fireEvent:event notification:notification];
 }
 
 #pragma mark -
@@ -663,12 +687,12 @@
 - (void) fireEvent:(NSString*)event
       notification:(UNNotificationRequest*)request
 {
-    NSString* js;
-    NSString* appState = [self applicationState];
-    NSString* params   = [NSString stringWithFormat:@"\"%@\"", appState];
+    NSString *js;
+    NSString *appState = [self applicationState];
+    NSString *params   = [NSString stringWithFormat:@"\"%@\"", appState];
 
     if (request) {
-        NSString* args = [request encodeToJSON];
+        NSString *args = [request encodeToJSON];
         params = [NSString stringWithFormat:@"%@,'%@'", args, appState];
     }
 

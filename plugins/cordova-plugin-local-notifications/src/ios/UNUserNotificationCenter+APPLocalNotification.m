@@ -1,8 +1,4 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
- *
- * @APPPLANT_LICENSE_HEADER_START@
- *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -17,8 +13,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 #import "UNUserNotificationCenter+APPLocalNotification.h"
@@ -62,17 +56,17 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
 {
     if (!category)
         return;
-    
+
     [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
         NSMutableSet* categories = [NSMutableSet setWithSet:set];
-        
+
         for (UNNotificationCategory* item in categories) {
             if ([category.identifier isEqualToString:item.identifier]) {
                 [categories removeObject:item];
                 break;
             }
         }
-        
+
         [categories addObject:category];
         [self setNotificationCategories:categories];
     }];

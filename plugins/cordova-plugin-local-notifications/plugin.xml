@@ -54,6 +54,7 @@
         </config-file>
 
         <framework src="UserNotifications.framework" />
+        <framework src="CoreLocation.framework" />
 
         <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" />

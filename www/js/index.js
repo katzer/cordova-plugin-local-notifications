@@ -76,6 +76,12 @@ var app = {
         document.getElementById('multiple_nots').onclick  = app.multipleNots;
         document.getElementById('notifications').onclick  = app.notifications;
         document.getElementById('defaults').onclick       = app.setDefaultTitle;
+
+        var details = cordova.plugins.notification.local.launchDetails;
+
+        if (details) {
+            alert('Launched by notification with ID ' + details.id);
+        }
     },
     // Check permissions to read accounts
     hasPermission: function () {
@@ -157,12 +163,20 @@ var app = {
             actionGroupId: 'like-dislike',
             actions: [{
                 id: 'like',
+                type: 'button',
                 title: 'Like',
                 launch: true
             },{
                 id: 'dislike',
+                type: 'button',
                 title: 'Dislike',
                 ui: 'decline'
+            },{
+                id: 'feedback',
+                type: 'input',
+                title: 'Feedback',
+                emptyText: 'Enter feedback',
+                submitTitle: 'Send'
             }]
         });
     },
@@ -272,36 +286,44 @@ var app = {
     // Listen for events
     bindNotificationEvents: function () {
         cordova.plugins.notification.local.on('schedule', function (obj) {
-            console.log('onschedule', arguments);
+            console.log('schedule', arguments);
             // showToast('scheduled: ' + obj.id);
         });
         cordova.plugins.notification.local.on('update', function (obj) {
-            console.log('onupdate', arguments);
+            console.log('update', arguments);
             // showToast('updated: ' + obj.id);
         });
         cordova.plugins.notification.local.on('trigger', function (obj) {
-            console.log('ontrigger', arguments);
+            console.log('trigger', arguments);
             showToast('triggered: ' + obj.id);
         });
         cordova.plugins.notification.local.on('click', function (obj) {
-            console.log('onclick', arguments);
+            console.log('click', arguments);
             showToast('clicked: ' + obj.id);
         });
         cordova.plugins.notification.local.on('cancel', function (obj) {
-            console.log('oncancel', arguments);
+            console.log('cancel', arguments);
             // showToast('canceled: ' + obj.id);
         });
         cordova.plugins.notification.local.on('clear', function (obj) {
-            console.log('onclear', arguments);
+            console.log('clear', arguments);
             showToast('cleared: ' + obj.id);
         });
         cordova.plugins.notification.local.on('cancelall', function () {
-            console.log('oncancelall', arguments);
+            console.log('cancelall', arguments);
             // showToast('canceled all');
         });
         cordova.plugins.notification.local.on('clearall', function () {
-            console.log('onclearall', arguments);
+            console.log('clearall', arguments);
             // showToast('cleared all');
+        });
+        cordova.plugins.notification.local.on('like', function () {
+            console.log('like', arguments);
+            showToast('liked');
+        });
+        cordova.plugins.notification.local.on('dislike', function () {
+            console.log('dislike', arguments);
+            showToast('disliked');
         });
     }
 };

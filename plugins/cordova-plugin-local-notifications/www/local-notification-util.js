@@ -21,6 +21,7 @@ var exec    = require('cordova/exec'),
 // Default values
 exports._defaults = {
     id:      0,
+    type:    'normal',
     text:    '',
     title:   '',
     sound:   'res://platform_default',
@@ -54,6 +55,8 @@ exports.applyPlatformSpecificOptions = function () {
         break;
     case 'iOS':
         defaults.attachments = undefined;
+        defaults.region      = undefined;
+        defaults.radius      = undefined;
         break;
     }
 };
@@ -302,11 +305,13 @@ exports.exec = function (action, args, callback, scope) {
 channel.deviceready.subscribe(function () {
     // Device is ready now, the listeners are registered
     // and all queued events can be executed.
-    exec(null, null, 'LocalNotification', 'deviceready', []);
+    exports.exec('deviceready');
 });
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
+    // Set launchDetails object
+    exports.exec('launchDetails');
     // Device plugin is ready now
     channel.onCordovaInfoReady.subscribe(function () {
         // Merge platform specifics into defaults
