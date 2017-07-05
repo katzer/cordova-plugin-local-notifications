@@ -596,8 +596,9 @@
           withCompletionHandler:(void (^)())completionHandler
 {
     UNNotificationRequest* notification = response.notification.request;
-    NSString* action = response.actionIdentifier;
-    NSString* event  = action;
+    NSMutableDictionary* data           = [[NSMutableDictionary alloc] init];
+    NSString* action                    = response.actionIdentifier;
+    NSString* event                     = action;
 
     completionHandler();
 
@@ -611,12 +612,17 @@
     if (!deviceready && [event isEqualToString:@"click"]) {
         _launchDetails = @[notification.options.id, event];
     }
-
+    
     if (![event isEqualToString:@"clear"]) {
         [self fireEvent:@"clear" notification:notification];
     }
+    
+    if ([response isKindOfClass:UNTextInputNotificationResponse.class]) {
+        [data setObject:((UNTextInputNotificationResponse*) response).userText
+                 forKey:@"text"];
+    }
 
-    [self fireEvent:event notification:notification];
+    [self fireEvent:event notification:notification data:data];
 }
 
 #pragma mark -
@@ -639,20 +645,6 @@
 #pragma mark Helper
 
 /**
- * Retrieve the state of the application.
- *
- * @return "background" or "foreground"
- */
-- (NSString*) applicationState
-{
-    UIApplicationState state = [_app applicationState];
-
-    bool isActive = state == UIApplicationStateActive;
-
-    return isActive ? @"foreground" : @"background";
-}
-
-/**
  * Simply invokes the callback without any parameter.
  */
 - (void) execCallback:(CDVInvokedUrlCommand*)command
@@ -673,7 +665,9 @@
  */
 - (void) fireEvent:(NSString*)event
 {
-    [self fireEvent:event notification:NULL];
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+
+    [self fireEvent:event notification:NULL data:data];
 }
 
 /**
@@ -685,15 +679,48 @@
  * @return [ Void ]
  */
 - (void) fireEvent:(NSString*)event
-      notification:(UNNotificationRequest*)request
+      notification:(UNNotificationRequest*)notitification
 {
-    NSString *js;
-    NSString *appState = [self applicationState];
-    NSString *params   = [NSString stringWithFormat:@"\"%@\"", appState];
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+
+    [self fireEvent:event notification:notitification data:data];
+}
+
+/**
+ * Fire event for about a local notification.
+ *
+ * @param [ NSString* ] event The name of the event to fire.
+ * @param [ APPNotificationRequest* ] notification The local notification.
+ * @param [ NSMutableDictionary* ] data Event object with additional data.
+ *
+ * @return [ Void ]
+ */
+- (void) fireEvent:(NSString*)event
+      notification:(UNNotificationRequest*)request
+              data:(NSMutableDictionary*)data
+{
+    BOOL isActive = [_app applicationState] == UIApplicationStateActive;
+    NSString *js, *params, *notiAsJSON, *dataAsJSON;
+    NSData* dataAsData;
+
+    [data setObject:event       forKey:@"event"];
+    [data setObject:@(isActive) forKey:@"foreground"];
 
     if (request) {
-        NSString *args = [request encodeToJSON];
-        params = [NSString stringWithFormat:@"%@,'%@'", args, appState];
+        notiAsJSON = [request encodeToJSON];
+        [data setObject:request.options.id forKey:@"notification"];
+    }
+    
+    dataAsData =
+    [NSJSONSerialization dataWithJSONObject:data options:0 error:NULL];
+
+    dataAsJSON =
+    [[NSString alloc] initWithData:dataAsData encoding:NSUTF8StringEncoding];
+    
+    if (request) {
+        params = [NSString stringWithFormat:@"%@,%@", notiAsJSON, dataAsJSON];
+    } else {
+        params = [NSString stringWithFormat:@"%@", dataAsJSON];
     }
 
     js = [NSString stringWithFormat:
