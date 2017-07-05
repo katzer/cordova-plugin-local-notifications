@@ -325,6 +325,10 @@ var app = {
             console.log('dislike', arguments);
             showToast('disliked');
         });
+        cordova.plugins.notification.local.on('feedback', function (obj, e) {
+            console.log('feedback', arguments);
+            showToast('Feedback: ' + e.text);
+        });
     }
 };
 

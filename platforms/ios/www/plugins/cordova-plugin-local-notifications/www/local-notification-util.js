@@ -22,16 +22,16 @@ var exec    = require('cordova/exec'),
 // Default values
 exports._defaults = {
     id:      0,
-    type:    'normal',
     text:    '',
     title:   '',
     sound:   'res://platform_default',
+    trigger: 'date',
     badge:   undefined,
     data:    undefined,
     every:   undefined,
     at:      undefined,
     actions: undefined,
-    actionGroupId: undefined
+    actionGroupId: undefined,
 };
 
 // Listener
@@ -55,9 +55,11 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.color       = undefined;
         break;
     case 'iOS':
-        defaults.attachments = undefined;
-        defaults.region      = undefined;
-        defaults.radius      = undefined;
+        defaults.attachments   = undefined;
+        defaults.region        = undefined;
+        defaults.radius        = undefined;
+        defaults.notifyOnEntry = true;
+        defaults.notifyOnExit  = false;
         break;
     }
 };

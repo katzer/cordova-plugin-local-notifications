@@ -61,9 +61,9 @@
  *
  * @return [ NSString* ]
  */
-- (NSString*) type
+- (NSString*) triggerType
 {
-    NSString* type = [dict objectForKey:@"type"];
+    NSString* type = [dict objectForKey:@"trigger"];
 
     return type.length ? type : @"normal";
 }
@@ -276,12 +276,12 @@
  */
 - (UNNotificationTrigger*) trigger
 {
-    NSString* type = [self type];
+    NSString* type = [self triggerType];
 
     if ([type isEqualToString:@"location"])
         return [self triggerWithRegion];
 
-    if (![type isEqualToString:@"normal"])
+    if (![type isEqualToString:@"date"])
         NSLog(@"Unknown type: %@", type);
 
     if ([self isRepeating])
