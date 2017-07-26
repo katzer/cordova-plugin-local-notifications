@@ -1,4 +1,8 @@
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -18,7 +22,7 @@
 var exec = require('cordova/exec');
 
 /**
- * Request permission to show notifications.
+ * Check permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
  * @param [ Object ]   scope    The callback function's scope.
@@ -27,11 +31,6 @@ var exec = require('cordova/exec');
  */
 exports.hasPermission = function (callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
 
     exec(fn, null, 'LocalNotification', 'check', []);
 };
@@ -46,11 +45,6 @@ exports.hasPermission = function (callback, scope) {
  */
 exports.requestPermission = function (callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
 
     exec(fn, null, 'LocalNotification', 'request', []);
 };

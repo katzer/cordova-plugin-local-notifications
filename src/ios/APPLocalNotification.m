@@ -1,4 +1,8 @@
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -612,11 +616,11 @@
     if (!deviceready && [event isEqualToString:@"click"]) {
         _launchDetails = @[notification.options.id, event];
     }
-    
+
     if (![event isEqualToString:@"clear"]) {
         [self fireEvent:@"clear" notification:notification];
     }
-    
+
     if ([response isKindOfClass:UNTextInputNotificationResponse.class]) {
         [data setObject:((UNTextInputNotificationResponse*) response).userText
                  forKey:@"text"];
@@ -710,13 +714,13 @@
         notiAsJSON = [request encodeToJSON];
         [data setObject:request.options.id forKey:@"notification"];
     }
-    
+
     dataAsData =
     [NSJSONSerialization dataWithJSONObject:data options:0 error:NULL];
 
     dataAsJSON =
     [[NSString alloc] initWithData:dataAsData encoding:NSUTF8StringEncoding];
-    
+
     if (request) {
         params = [NSString stringWithFormat:@"%@,%@", notiAsJSON, dataAsJSON];
     } else {
