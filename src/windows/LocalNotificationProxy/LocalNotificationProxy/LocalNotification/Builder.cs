@@ -75,12 +75,22 @@ namespace LocalNotificationProxy.LocalNotification
 
                         AppLogoOverride = this.Options.ToastLogo
                     }
+                },
+
+                Actions = new ToastActionsCustom()
+                {
+                    Buttons = { }
                 }
             };
 
             foreach (var image in this.Options.ImageAttachments)
             {
                 toast.Visual.BindingGeneric.Children.Add(image);
+            }
+
+            foreach (var btn in this.Options.ToastButtons)
+            {
+                (toast.Actions as ToastActionsCustom).Buttons.Add(btn);
             }
 
             var xml = toast.GetXml();

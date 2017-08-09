@@ -60,7 +60,7 @@ exports.request = function (success, error) {
  * @return [ Void ]
  */
 exports.schedule = function (success, error, args) {
-    var options = [];
+    var options = [], buttons = [];
 
     for (var i = 0, props, opts; i < args.length; i++) {
         props = args[i];
@@ -71,6 +71,22 @@ exports.schedule = function (success, error, args) {
                 opts[prop] = props[prop];
             }
         }
+
+        for (var j = 0, action; j < props.actions.length; j++) {
+            action = props.actions[j];
+
+            if (!action.type || action.type == 'button') {
+                var button = new LocalNotification.Button();
+
+                button.id     = action.id;
+                button.title  = action.title;
+                button.launch = action.launch;
+
+                buttons.push(button);
+            }
+        }
+
+        opts.buttons = buttons;
 
         options.push(opts);
     }

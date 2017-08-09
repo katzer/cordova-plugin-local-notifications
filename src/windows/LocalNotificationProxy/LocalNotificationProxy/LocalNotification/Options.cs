@@ -22,14 +22,12 @@
 namespace LocalNotificationProxy.LocalNotification
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.Toolkit.Uwp.Notifications;
     using Windows.Data.Xml.Dom;
-    using System.Collections;
-    using System.Collections.Generic;
 
     public sealed class Options
     {
-
         /// <summary>
         /// Gets or sets notification ID.
         /// </summary>
@@ -79,6 +77,11 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets the notification attachments.
         /// </summary>
         public string[] Attachments { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification buttons.
+        /// </summary>
+        public Button[] Buttons { get; set; }
 
         /// <summary>
         /// Gets the date when to trigger the notification.
@@ -300,6 +303,24 @@ namespace LocalNotificationProxy.LocalNotification
                 }
 
                 return images;
+            }
+        }
+
+        /// <summary>
+        /// Gets all toast buttons.
+        /// </summary>
+        internal List<ToastButton> ToastButtons
+        {
+            get
+            {
+                var buttons = new List<ToastButton>();
+
+                foreach (var action in this.Buttons)
+                {
+                    buttons.Add(action.ToastButton);
+                }
+
+                return buttons;
             }
         }
 

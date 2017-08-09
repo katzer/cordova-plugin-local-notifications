@@ -33,7 +33,7 @@ exports._defaults = {
     data:    undefined,
     every:   undefined,
     at:      undefined,
-    actions: undefined,
+    actions: [],
     actionGroupId: undefined,
     attachments: []
 };
