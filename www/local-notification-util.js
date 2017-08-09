@@ -35,6 +35,7 @@ exports._defaults = {
     at:      undefined,
     actions: undefined,
     actionGroupId: undefined,
+    attachments: []
 };
 
 // Listener
@@ -58,7 +59,6 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.color       = undefined;
         break;
     case 'iOS':
-        defaults.attachments   = undefined;
         defaults.region        = undefined;
         defaults.radius        = undefined;
         defaults.notifyOnEntry = true;

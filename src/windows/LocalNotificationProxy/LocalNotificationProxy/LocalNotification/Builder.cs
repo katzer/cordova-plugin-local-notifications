@@ -78,6 +78,11 @@ namespace LocalNotificationProxy.LocalNotification
                 }
             };
 
+            foreach (var image in this.Options.ImageAttachments)
+            {
+                toast.Visual.BindingGeneric.Children.Add(image);
+            }
+
             var xml = toast.GetXml();
             var at = this.Options.TriggerDate;
             ScheduledToastNotification notification;

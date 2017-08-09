@@ -24,6 +24,8 @@ namespace LocalNotificationProxy.LocalNotification
     using System;
     using Microsoft.Toolkit.Uwp.Notifications;
     using Windows.Data.Xml.Dom;
+    using System.Collections;
+    using System.Collections.Generic;
 
     public sealed class Options
     {
@@ -72,6 +74,11 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets the notification user data.
         /// </summary>
         public string Data { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification attachments.
+        /// </summary>
+        public string[] Attachments { get; set; }
 
         /// <summary>
         /// Gets the date when to trigger the notification.
@@ -245,6 +252,54 @@ namespace LocalNotificationProxy.LocalNotification
                 }
 
                 return node.GetXml();
+            }
+        }
+
+        /// <summary>
+        /// Gets the parsed image attachments.
+        /// </summary>
+        internal List<AdaptiveImage> ImageAttachments
+        {
+            get
+            {
+                var images = new List<AdaptiveImage>();
+
+                if (this.Attachments == null)
+                {
+                    return images;
+                }
+
+                foreach (string path in this.Attachments)
+                {
+                    var image = new AdaptiveImage();
+
+                    if (path.StartsWith("file:///") || path.StartsWith("http"))
+                    {
+                        image.Source = path;
+                    }
+                    else
+                    if (path.StartsWith("file://"))
+                    {
+                        image.Source = path.Replace("file:/", "ms-appx:///www");
+                    }
+                    else
+                    if (path.StartsWith("res://"))
+                    {
+                        image.Source = path.Replace("res://", "ms-appx:///images");
+                    }
+                    else
+                    if (path.StartsWith("app://"))
+                    {
+                        image.Source = path.Replace("app:/", "ms-appdata://local");
+                    }
+
+                    if (image.Source != null)
+                    {
+                        images.Add(image);
+                    }
+                }
+
+                return images;
             }
         }
 
