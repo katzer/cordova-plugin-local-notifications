@@ -113,6 +113,7 @@
     <Compile Include="LocalNotificationProxy.cs" />
     <Compile Include="LocalNotification\Builder.cs" />
     <Compile Include="LocalNotification\Button.cs" />
+    <Compile Include="LocalNotification\Content.cs" />
     <Compile Include="LocalNotification\Options.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

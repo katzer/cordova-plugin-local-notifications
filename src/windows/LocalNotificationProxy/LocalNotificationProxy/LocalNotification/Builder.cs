@@ -27,23 +27,23 @@ namespace LocalNotificationProxy.LocalNotification
     internal class Builder
     {
         /// <summary>
-        /// Notification properties
-        /// </summary>
-        private Options options;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Builder"/> class.
         /// </summary>
         /// <param name="options">Notification properties to set.</param>
         internal Builder(Options options)
         {
-            this.options = options;
+            this.Content = new Content(options);
         }
+
+        /// <summary>
+        /// Gets content
+        /// </summary>
+        public Content Content { get; private set; }
 
         /// <summary>
         /// Gets options
         /// </summary>
-        public Options Options { get => this.options; }
+        private Options Options { get => this.Content.Options; }
 
         /// <summary>
         /// Build a toast notification specified by the options.
@@ -51,10 +51,24 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>A fully configured toast notification instance.</returns>
         public ScheduledToastNotification Build()
         {
-            var toast = new ToastContent()
+            var toast = this.InitToast();
+
+            this.AddAttachments(toast);
+            this.AddActions(toast);
+
+            return this.GetNotification(toast);
+        }
+
+        /// <summary>
+        /// Gets the initialize skeleton for a toast notification.
+        /// </summary>
+        /// <returns>Basic skeleton with sound, image and text.</returns>
+        private ToastContent InitToast()
+        {
+            return new ToastContent()
             {
-                Launch = this.Options.Identifier,
-                Audio = this.Options.ToastAudio,
+                Launch = this.Content.GetXml(),
+                Audio = this.Content.Sound,
 
                 Visual = new ToastVisual()
                 {
@@ -73,33 +87,56 @@ namespace LocalNotificationProxy.LocalNotification
                             }
                         },
 
-                        AppLogoOverride = this.Options.ToastLogo
+                        AppLogoOverride = this.Content.Image
                     }
                 },
 
                 Actions = new ToastActionsCustom()
                 {
-                    Buttons = { }
+                    Buttons = { },
+                    Inputs = { }
                 }
             };
+        }
 
-            foreach (var image in this.Options.ImageAttachments)
+        /// <summary>
+        /// Adds attachments to the toast.
+        /// </summary>
+        /// <param name="toast">Tho toast to extend for.</param>
+        private void AddAttachments(ToastContent toast)
+        {
+            foreach (var image in this.Content.Attachments)
             {
                 toast.Visual.BindingGeneric.Children.Add(image);
             }
+        }
 
-            foreach (var btn in this.Options.ToastButtons)
+        /// <summary>
+        /// Adds buttons and input fields to the toast.
+        /// </summary>
+        /// <param name="toast">Tho toast to extend for.</param>
+        private void AddActions(ToastContent toast)
+        {
+            foreach (var btn in this.Content.Buttons)
             {
                 (toast.Actions as ToastActionsCustom).Buttons.Add(btn);
             }
+        }
 
+        /// <summary>
+        /// Converts the toast into a notification.
+        /// </summary>
+        /// <param name="toast">The toast to convert.</param>
+        /// <returns>A notification ready to schedule.</returns>
+        private ScheduledToastNotification GetNotification(ToastContent toast)
+        {
             var xml = toast.GetXml();
-            var at = this.Options.TriggerDate;
+            var at = this.Content.Date;
             ScheduledToastNotification notification;
 
-            if (this.Options.IsRepeating())
+            if (this.Content.IsRepeating())
             {
-                var interval = this.Options.RepeatInterval;
+                var interval = this.Content.Interval;
                 notification = new ScheduledToastNotification(xml, at, interval, 5);
             }
             else

@@ -84,247 +84,6 @@ namespace LocalNotificationProxy.LocalNotification
         public Button[] Buttons { get; set; }
 
         /// <summary>
-        /// Gets the date when to trigger the notification.
-        /// </summary>
-        internal DateTime TriggerDate
-        {
-            get
-            {
-                var date = DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
-                var minDate = DateTime.Now.AddSeconds(0.1);
-
-                return (date < minDate) ? minDate : date;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parsed repeat interval.
-        /// </summary>
-        internal TimeSpan RepeatInterval
-        {
-            get
-            {
-                switch (this.Every)
-                {
-                    case "minute":
-                        return new TimeSpan(TimeSpan.TicksPerMinute);
-                    case "hour":
-                        return new TimeSpan(TimeSpan.TicksPerHour);
-                    case "day":
-                        return new TimeSpan(TimeSpan.TicksPerDay);
-                    default:
-                        return TimeSpan.Zero;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets a ToastAudio object based on the specified sound uri.
-        /// </summary>
-        internal ToastAudio ToastAudio
-        {
-            get
-            {
-                var sound = new ToastAudio();
-                string path = this.Sound;
-
-                if (path == null || path.Length == 0 || path.Equals("false"))
-                {
-                    sound.Silent = true;
-                }
-                else
-                if (path.StartsWith("file:///") || path.StartsWith("http"))
-                {
-                    sound.Src = new System.Uri(path, System.UriKind.Absolute);
-                }
-                else
-                if (path.StartsWith("file://"))
-                {
-                    sound.Src = new System.Uri(path.Replace("file:/", "ms-appx:///www"));
-                }
-                else
-                if (path.StartsWith("res://"))
-                {
-                    sound.Src = new System.Uri(path.Replace("res://", "ms-winsoundevent:notification."));
-                }
-                else
-                if (path.StartsWith("app://"))
-                {
-                    sound.Src = new System.Uri(path.Replace("app:/", "ms-appdata://"));
-                }
-
-                return sound;
-            }
-        }
-
-        /// <summary>
-        /// Gets a GenericAppLogo object based on the specified icon uri.
-        /// </summary>
-        internal ToastGenericAppLogo ToastLogo
-        {
-            get
-            {
-                var image = new ToastGenericAppLogo();
-                string path = this.Image;
-
-                if (path == null || path.StartsWith("res://logo"))
-                {
-                    image.Source = string.Empty;
-                }
-                else
-                if (path.StartsWith("file:///") || path.StartsWith("http"))
-                {
-                    image.Source = path;
-                }
-                else
-                if (path.StartsWith("file://"))
-                {
-                    image.Source = path.Replace("file:/", "ms-appx:///www");
-                }
-                else
-                if (path.StartsWith("res://"))
-                {
-                    image.Source = path.Replace("res://", "ms-appx:///images");
-                }
-                else
-                if (path.StartsWith("app://"))
-                {
-                    image.Source = path.Replace("app:/", "ms-appdata://local");
-                }
-                else
-                {
-                    image.Source = string.Empty;
-                }
-
-                if (image.Source.EndsWith("?crop=none"))
-                {
-                    image.HintCrop = ToastGenericAppLogoCrop.None;
-                }
-                else
-                if (image.Source.EndsWith("?crop=cirlce"))
-                {
-                    image.HintCrop = ToastGenericAppLogoCrop.Circle;
-                }
-
-                return image;
-            }
-        }
-
-        /// <summary>
-        /// Gets the instance as an serialized xml element.
-        /// </summary>
-        /// <returns>Element with all property values set as attributes.</returns>
-        internal string Identifier
-        {
-            get
-            {
-                var node = new XmlDocument().CreateElement("options");
-
-                node.SetAttribute("id", this.ID.ToString());
-                node.SetAttribute("badge", this.Badge.ToString());
-                node.SetAttribute("at", this.At.ToString());
-
-                if (this.Title != null)
-                {
-                    node.SetAttribute("title", this.Title);
-                }
-
-                if (this.Text != null)
-                {
-                    node.SetAttribute("text", this.Text);
-                }
-
-                if (this.Sound != null)
-                {
-                    node.SetAttribute("sound", this.Sound);
-                }
-
-                if (this.Image != null)
-                {
-                    node.SetAttribute("image", this.Image);
-                }
-
-                if (this.Every != null)
-                {
-                    node.SetAttribute("every", this.Every);
-                }
-
-                if (this.Data != null)
-                {
-                    node.SetAttribute("data", this.Data);
-                }
-
-                return node.GetXml();
-            }
-        }
-
-        /// <summary>
-        /// Gets the parsed image attachments.
-        /// </summary>
-        internal List<AdaptiveImage> ImageAttachments
-        {
-            get
-            {
-                var images = new List<AdaptiveImage>();
-
-                if (this.Attachments == null)
-                {
-                    return images;
-                }
-
-                foreach (string path in this.Attachments)
-                {
-                    var image = new AdaptiveImage();
-
-                    if (path.StartsWith("file:///") || path.StartsWith("http"))
-                    {
-                        image.Source = path;
-                    }
-                    else
-                    if (path.StartsWith("file://"))
-                    {
-                        image.Source = path.Replace("file:/", "ms-appx:///www");
-                    }
-                    else
-                    if (path.StartsWith("res://"))
-                    {
-                        image.Source = path.Replace("res://", "ms-appx:///images");
-                    }
-                    else
-                    if (path.StartsWith("app://"))
-                    {
-                        image.Source = path.Replace("app:/", "ms-appdata://local");
-                    }
-
-                    if (image.Source != null)
-                    {
-                        images.Add(image);
-                    }
-                }
-
-                return images;
-            }
-        }
-
-        /// <summary>
-        /// Gets all toast buttons.
-        /// </summary>
-        internal List<ToastButton> ToastButtons
-        {
-            get
-            {
-                var buttons = new List<ToastButton>();
-
-                foreach (var action in this.Buttons)
-                {
-                    buttons.Add(action.ToastButton);
-                }
-
-                return buttons;
-            }
-        }
-
-        /// <summary>
         /// Deserializes the XML string into an instance of Options.
         /// </summary>
         /// <param name="identifier">The serialized instance of Options as an xml string.</param>
@@ -375,12 +134,48 @@ namespace LocalNotificationProxy.LocalNotification
         }
 
         /// <summary>
-        /// If the notification shall be repeating.
+        /// Gets the instance as an serialized xml element.
         /// </summary>
-        /// <returns>True if the Every property has some value.</returns>
-        internal bool IsRepeating()
+        /// <returns>Element with all property values set as attributes.</returns>
+        public string GetXml()
         {
-            return this.Every != null && this.Every.Length > 0 && !this.Every.Equals("0");
+            var node = new XmlDocument().CreateElement("options");
+
+            node.SetAttribute("id", this.ID.ToString());
+            node.SetAttribute("badge", this.Badge.ToString());
+            node.SetAttribute("at", this.At.ToString());
+
+            if (this.Title != null)
+            {
+                node.SetAttribute("title", this.Title);
+            }
+
+            if (this.Text != null)
+            {
+                node.SetAttribute("text", this.Text);
+            }
+
+            if (this.Sound != null)
+            {
+                node.SetAttribute("sound", this.Sound);
+            }
+
+            if (this.Image != null)
+            {
+                node.SetAttribute("image", this.Image);
+            }
+
+            if (this.Every != null)
+            {
+                node.SetAttribute("every", this.Every);
+            }
+
+            if (this.Data != null)
+            {
+                node.SetAttribute("data", this.Data);
+            }
+
+            return node.GetXml();
         }
     }
 }
