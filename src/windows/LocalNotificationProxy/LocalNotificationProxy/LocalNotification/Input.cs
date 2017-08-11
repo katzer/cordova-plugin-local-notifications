@@ -21,7 +21,7 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
-    public sealed class Button : IAction
+    public sealed class Input : IAction
     {
         /// <summary>
         /// Gets or sets the ID.
@@ -32,6 +32,21 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets the title.
         /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the title of the submit button.
+        /// </summary>
+        public string SubmitTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets placeholder text.
+        /// </summary>
+        public string EmptyText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default text.
+        /// </summary>
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to launch the app.

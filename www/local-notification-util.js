@@ -180,14 +180,10 @@ exports.convertActions = function (options) {
     if (!options.actions)
         return null;
 
-    var MAX_ACTIONS = (device.platform === 'iOS') ? 4 : 3,
-        actions     = [];
+    var actions = [];
 
-    if (options.actions.length > MAX_ACTIONS)
-        console.warn('Count of actions exceeded count of ' + MAX_ACTIONS);
-
-    for (var i = 0; i < options.actions.length && MAX_ACTIONS > 0; i++) {
-        var action = options.actions[i];
+    for (var i = 0, action; i < options.actions.length; i++) {
+        action = options.actions[i];
 
         if (!action.id) {
             console.warn(
@@ -195,11 +191,9 @@ exports.convertActions = function (options) {
             continue;
         }
 
-        action.id    = action.id.toString();
-        action.title = (action.title || action.id).toString();
+        action.id = action.id.toString();
 
         actions.push(action);
-        MAX_ACTIONS--;
     }
 
     options.category = (options.category || 'DEFAULT_GROUP').toString();

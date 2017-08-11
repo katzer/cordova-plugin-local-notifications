@@ -21,21 +21,21 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
-    public sealed class Button : IAction
+    public interface IAction
     {
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
-        public string ID { get; set; }
+        string ID { get; set; }
 
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
-        public string Title { get; set; }
+        string Title { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to launch the app.
         /// </summary>
-        public bool Launch { get; set; } = true;
+        bool Launch { get; set; }
     }
 }

@@ -60,33 +60,34 @@ exports.request = function (success, error) {
  * @return [ Void ]
  */
 exports.schedule = function (success, error, args) {
-    var options = [], buttons = [];
+    var options = [], actions = [];
 
     for (var i = 0, props, opts; i < args.length; i++) {
         props = args[i];
         opts  = new LocalNotification.Options();
 
         for (var prop in opts) {
-            if (props[prop]) {
-                opts[prop] = props[prop];
-            }
+            if (prop != 'actions' && props[prop]) opts[prop] = props[prop];
         }
 
-        for (var j = 0, action; j < props.actions.length; j++) {
+        for (var j = 0, action, btn; j < props.actions.length; j++) {
             action = props.actions[j];
 
             if (!action.type || action.type == 'button') {
-                var button = new LocalNotification.Button();
-
-                button.id     = action.id;
-                button.title  = action.title;
-                button.launch = action.launch;
-
-                buttons.push(button);
+                btn = new LocalNotification.Button();
+            } else
+            if (action.type == 'input') {
+                btn = new LocalNotification.Input();
             }
+
+            for (prop in btn) {
+                if (action[prop]) btn[prop] = action[prop];
+            }
+
+            actions.push(btn);
         }
 
-        opts.buttons = buttons;
+        opts.actions = actions;
 
         options.push(opts);
     }
@@ -103,17 +104,29 @@ exports.schedule = function (success, error, args) {
  *
  * @return [ Void ]
  */
-exports.clicked = function (xml) {
+exports.clicked = function (xml, input) {
     var toast = LocalNotification.Options.parse(xml),
-        event = toast.action || 'click';
+        event = toast.action || 'click',
+        e     = { event: event };
 
-    cordova.plugins.notification.local.core.fireEvent(event, toast);
+    if (input && input.size > 0) {
+        var it = input.first();
+
+        e.text = it.current.value;
+
+        while (it.hasCurrent) {
+            e[it.current.key] = it.current.value;
+            it.moveNext();
+        }
+    }
+
+    cordova.plugins.notification.local.core.fireEvent(event, toast, e);
 };
 
 // Handle onclick event
 document.addEventListener('activated', function (e) {
     if (e.kind == ActivationKind.toastNotification) {
-        exports.clicked(e.raw.argument);
+        exports.clicked(e.raw.argument, e.raw.userInput);
     }
 }, false);
 

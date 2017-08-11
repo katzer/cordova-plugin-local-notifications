@@ -81,9 +81,9 @@ namespace LocalNotificationProxy.LocalNotification
         public string[] Attachments { get; set; }
 
         /// <summary>
-        /// Gets or sets the notification buttons.
+        /// Gets or sets the notification actions.
         /// </summary>
-        public Button[] Buttons { get; set; }
+        public IAction[] Actions { get; set; }
 
         /// <summary>
         /// Deserializes the XML string into an instance of Options.

@@ -176,16 +176,56 @@
             {
                 var buttons = new List<ToastButton>();
 
-                foreach (var action in this.Options.Buttons)
+                foreach (var action in this.Options.Actions)
                 {
-                    buttons.Add(
-                        new ToastButton(action.Title, this.Options.GetXml(action.ID))
+                    if (action is Button)
+                    {
+                        buttons.Add(new ToastButton(action.Title, this.Options.GetXml(action.ID))
                         {
                             ActivationType = action.Launch ? ToastActivationType.Foreground : ToastActivationType.Background
                         });
+                    }
+                    else if (action is Input && (action as Input).SubmitTitle != null)
+                    {
+                        var input = action as Input;
+
+                        buttons.Add(new ToastButton(input.SubmitTitle, this.Options.GetXml(input.ID))
+                        {
+                            ActivationType = input.Launch ? ToastActivationType.Foreground : ToastActivationType.Background,
+                            TextBoxId = input.ID
+                        });
+                    }
                 }
 
                 return buttons;
+            }
+        }
+
+        /// <summary>
+        /// Gets all toast inputs.
+        /// </summary>
+        public List<ToastTextBox> Inputs
+        {
+            get
+            {
+                var inputs = new List<ToastTextBox>();
+
+                foreach (var action in this.Options.Actions)
+                {
+                    if (!(action is Input))
+                    {
+                        continue;
+                    }
+
+                    inputs.Add(new ToastTextBox(action.ID)
+                    {
+                        Title = action.Title,
+                        PlaceholderContent = (action as Input).EmptyText,
+                        DefaultInput = (action as Input).DefaultValue
+                    });
+                }
+
+                return inputs;
             }
         }
 

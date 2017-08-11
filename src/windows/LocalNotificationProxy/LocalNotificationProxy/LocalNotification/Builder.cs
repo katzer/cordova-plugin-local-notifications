@@ -117,6 +117,11 @@ namespace LocalNotificationProxy.LocalNotification
         /// <param name="toast">Tho toast to extend for.</param>
         private void AddActions(ToastContent toast)
         {
+            foreach (var btn in this.Content.Inputs)
+            {
+                (toast.Actions as ToastActionsCustom).Inputs.Add(btn);
+            }
+
             foreach (var btn in this.Content.Buttons)
             {
                 (toast.Actions as ToastActionsCustom).Buttons.Add(btn);

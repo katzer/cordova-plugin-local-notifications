@@ -114,6 +114,8 @@
     <Compile Include="LocalNotification\Builder.cs" />
     <Compile Include="LocalNotification\Button.cs" />
     <Compile Include="LocalNotification\Content.cs" />
+    <Compile Include="LocalNotification\IAction.cs" />
+    <Compile Include="LocalNotification\Input.cs" />
     <Compile Include="LocalNotification\Options.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
