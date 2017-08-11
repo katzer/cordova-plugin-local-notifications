@@ -21,13 +21,15 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Toolkit.Uwp.Notifications;
     using Windows.Data.Xml.Dom;
 
     public sealed class Options
     {
+        /// <summary>
+        /// Gets notification event.
+        /// </summary>
+        public string Action { get; private set; } = "click";
+
         /// <summary>
         /// Gets or sets notification ID.
         /// </summary>
@@ -130,6 +132,11 @@ namespace LocalNotificationProxy.LocalNotification
                 options.Data = node.GetAttribute("data");
             }
 
+            if (node.GetAttributeNode("action") != null)
+            {
+                options.Action = node.GetAttribute("action");
+            }
+
             return options;
         }
 
@@ -138,6 +145,16 @@ namespace LocalNotificationProxy.LocalNotification
         /// </summary>
         /// <returns>Element with all property values set as attributes.</returns>
         public string GetXml()
+        {
+            return this.GetXml(null);
+        }
+
+        /// <summary>
+        /// Gets the instance as an serialized xml element.
+        /// </summary>
+        /// <param name="action">Optional (internal) event name.</param>
+        /// <returns>Element with all property values set as attributes.</returns>
+        internal string GetXml(string action)
         {
             var node = new XmlDocument().CreateElement("options");
 
@@ -173,6 +190,11 @@ namespace LocalNotificationProxy.LocalNotification
             if (this.Data != null)
             {
                 node.SetAttribute("data", this.Data);
+            }
+
+            if (action != null)
+            {
+                node.SetAttribute("action", action);
             }
 
             return node.GetXml();

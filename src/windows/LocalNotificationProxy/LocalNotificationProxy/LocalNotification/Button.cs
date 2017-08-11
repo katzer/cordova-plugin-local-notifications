@@ -39,19 +39,5 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets a value indicating whether to launch the app.
         /// </summary>
         public bool Launch { get; set; }
-
-        /// <summary>
-        /// Gets the parsed toast button.
-        /// </summary>
-        internal ToastButton ToastButton
-        {
-            get
-            {
-                return new ToastButton(this.Title, this.ID)
-                {
-                    ActivationType = this.Launch ? ToastActivationType.Foreground : ToastActivationType.Background
-                };
-            }
-        }
     }
 }

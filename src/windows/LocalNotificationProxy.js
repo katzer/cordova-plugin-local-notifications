@@ -104,8 +104,10 @@ exports.schedule = function (success, error, args) {
  * @return [ Void ]
  */
 exports.clicked = function (xml) {
-    var notification = LocalNotification.Options.parse(xml);
-    cordova.plugins.notification.local.core.fireEvent('click', notification);
+    var toast = LocalNotification.Options.parse(xml),
+        event = toast.action || 'click';
+
+    cordova.plugins.notification.local.core.fireEvent(event, toast);
 };
 
 // Handle onclick event

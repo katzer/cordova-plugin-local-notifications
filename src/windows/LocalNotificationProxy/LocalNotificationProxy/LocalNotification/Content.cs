@@ -178,7 +178,11 @@
 
                 foreach (var action in this.Options.Buttons)
                 {
-                    buttons.Add(action.ToastButton);
+                    buttons.Add(
+                        new ToastButton(action.Title, this.Options.GetXml(action.ID))
+                        {
+                            ActivationType = action.Launch ? ToastActivationType.Foreground : ToastActivationType.Background
+                        });
                 }
 
                 return buttons;
