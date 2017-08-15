@@ -98,6 +98,48 @@ exports.schedule = function (success, error, args) {
 };
 
 /**
+ * List of all notification ids.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.ids = function (success, error) {
+    var ids = impl.ids() || [];
+
+    success(ids);
+};
+
+/**
+ * List of all scheduled notification ids.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.scheduledIds = function (success, error) {
+    var ids = impl.scheduledIds() || [];
+
+    success(ids);
+};
+
+/**
+ * List of all triggered notification ids.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.triggeredIds = function (success, error) {
+    var ids = impl.triggeredIds() || [];
+
+    success(ids);
+};
+
+/**
  * Inform the user through the click event that a notification was clicked.
  *
  * @param [ String ] xml The launch identifier.

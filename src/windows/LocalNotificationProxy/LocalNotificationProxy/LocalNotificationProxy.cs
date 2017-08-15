@@ -23,19 +23,18 @@ namespace LocalNotificationProxy
 {
     using System.Runtime.InteropServices.WindowsRuntime;
     using LocalNotification;
-    using Windows.UI.Notifications;
-    using Windows.UI.WebUI;
 
     public sealed class LocalNotificationProxy
     {
+        private Manager manager = new Manager();
+
         /// <summary>
         /// Check permission to schedule notifications.
         /// </summary>
         /// <returns>True if settings are enabled</returns>
         public bool HasPermission()
         {
-            NotificationSetting settings = ToastNotificationManager.CreateToastNotifier().Setting;
-            return settings == NotificationSetting.Enabled;
+            return this.manager.Enabled;
         }
 
         /// <summary>
@@ -44,11 +43,34 @@ namespace LocalNotificationProxy
         /// <param name="notifications">List of key-value properties</param>
         public void Schedule([ReadOnlyArray] Options[] notifications)
         {
-            foreach (Options options in notifications)
-            {
-                ScheduledToastNotification notification = new Builder(options).Build();
-                ToastNotificationManager.CreateToastNotifier().AddToSchedule(notification);
-            }
+            this.manager.Schedule(notifications);
+        }
+
+        /// <summary>
+        /// List of all notifiation by id.
+        /// </summary>
+        /// <returns>List of numbers</returns>
+        public int[] Ids()
+        {
+            return this.manager.GetIds().ToArray();
+        }
+
+        /// <summary>
+        /// List of all scheduled notifiation by id.
+        /// </summary>
+        /// <returns>List of numbers</returns>
+        public int[] ScheduledIds()
+        {
+            return this.manager.GetIdsByType(Notification.Type.Scheduled).ToArray();
+        }
+
+        /// <summary>
+        /// List of all triggered notifiation by id.
+        /// </summary>
+        /// <returns>List of numbers</returns>
+        public int[] TriggeredIds()
+        {
+            return this.manager.GetIdsByType(Notification.Type.Triggered).ToArray();
         }
     }
 }

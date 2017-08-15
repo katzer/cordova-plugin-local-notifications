@@ -32,13 +32,13 @@ namespace LocalNotificationProxy.LocalNotification
         /// <param name="options">Notification properties to set.</param>
         internal Builder(Options options)
         {
-            this.Content = new Content(options);
+            this.Content = new Notification(options);
         }
 
         /// <summary>
         /// Gets content
         /// </summary>
-        public Content Content { get; private set; }
+        public Notification Content { get; private set; }
 
         /// <summary>
         /// Gets options
@@ -53,10 +53,10 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var toast = this.InitToast();
 
-            this.AddAttachments(toast);
-            this.AddActions(toast);
+            this.AddAttachmentsToToast(toast);
+            this.AddActionsToToast(toast);
 
-            return this.GetNotification(toast);
+            return this.ConvertToastToNotification(toast);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// Adds attachments to the toast.
         /// </summary>
         /// <param name="toast">Tho toast to extend for.</param>
-        private void AddAttachments(ToastContent toast)
+        private void AddAttachmentsToToast(ToastContent toast)
         {
             foreach (var image in this.Content.Attachments)
             {
@@ -115,7 +115,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// Adds buttons and input fields to the toast.
         /// </summary>
         /// <param name="toast">Tho toast to extend for.</param>
-        private void AddActions(ToastContent toast)
+        private void AddActionsToToast(ToastContent toast)
         {
             foreach (var btn in this.Content.Inputs)
             {
@@ -133,7 +133,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// </summary>
         /// <param name="toast">The toast to convert.</param>
         /// <returns>A notification ready to schedule.</returns>
-        private ScheduledToastNotification GetNotification(ToastContent toast)
+        private ScheduledToastNotification ConvertToastToNotification(ToastContent toast)
         {
             var xml = toast.GetXml();
             var at = this.Content.Date;

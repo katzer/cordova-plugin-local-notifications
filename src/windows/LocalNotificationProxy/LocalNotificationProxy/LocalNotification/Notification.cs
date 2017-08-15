@@ -3,26 +3,40 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.Toolkit.Uwp.Notifications;
-    using Windows.Data.Xml.Dom;
+    using Windows.UI.Notifications;
 
-    internal class Content
+    internal class Notification
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Content"/> class.
+        /// Initializes a new instance of the <see cref="Notification"/> class.
         /// </summary>
         /// <param name="options">The options hash map from JS side.</param>
-        public Content(Options options)
+        public Notification(Options options)
         {
             this.Options = options;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Content"/> class.
+        /// Initializes a new instance of the <see cref="Notification"/> class.
         /// </summary>
         /// <param name="xml">The options as a xml string.</param>
-        public Content(string xml)
+        public Notification(string xml)
         {
             this.Options = Options.Parse(xml);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Notification"/> class.
+        /// </summary>
+        /// <param name="toast">The options as a toast object.</param>
+        public Notification(ScheduledToastNotification toast)
+        {
+            this.Options = Options.Parse(toast.Content.GetXml());
+        }
+
+        public enum Type
+        {
+            All, Scheduled, Triggered
         }
 
         public Options Options { get; private set; }
