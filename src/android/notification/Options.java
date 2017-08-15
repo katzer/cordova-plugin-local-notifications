@@ -31,6 +31,7 @@ import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.Date;
 
@@ -316,6 +317,21 @@ public class Options {
         }
 
         return uri;
+    }
+
+    public long[] getVibrate() {
+        JSONArray array = options.optJSONArray("vibrate");
+
+        if (array == null)
+            return null;
+
+        long[] rv = new long[array.length()];
+
+        for (int i = 0; i < array.length(); i++) {
+            rv[i] = array.optInt(i);
+        }
+
+        return rv;
     }
 
     /**
