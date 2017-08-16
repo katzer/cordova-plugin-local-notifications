@@ -34,6 +34,16 @@
             this.Options = Options.Parse(toast.Content.GetXml());
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Notification"/> class.
+        /// </summary>
+        /// <param name="toast">The options as a toast object.</param>
+        public Notification(ToastNotification toast)
+        {
+            var xml = toast.Content.DocumentElement.GetAttribute("launch");
+            this.Options = Options.Parse(xml);
+        }
+
         public enum Type
         {
             All, Scheduled, Triggered

@@ -20,7 +20,7 @@
  */
 
 var LocalNotification = LocalNotificationProxy.LocalNotification,
-    ActivationKind    = Windows.ApplicationModel.Activation.ActivationKind;
+       ActivationKind = Windows.ApplicationModel.Activation.ActivationKind;
 
 var impl  = new LocalNotificationProxy.LocalNotificationProxy();
 
@@ -108,7 +108,7 @@ exports.schedule = function (success, error, args) {
 exports.ids = function (success, error) {
     var ids = impl.ids() || [];
 
-    success(ids);
+    success(Array.from(ids));
 };
 
 /**
@@ -122,7 +122,7 @@ exports.ids = function (success, error) {
 exports.scheduledIds = function (success, error) {
     var ids = impl.scheduledIds() || [];
 
-    success(ids);
+    success(Array.from(ids));
 };
 
 /**
@@ -136,7 +136,65 @@ exports.scheduledIds = function (success, error) {
 exports.triggeredIds = function (success, error) {
     var ids = impl.triggeredIds() || [];
 
-    success(ids);
+    success(Array.from(ids));
+};
+
+/**
+ * Get a single notification by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.notification = function (success, error, args) {
+    var obj = impl.notification(args[0]);
+
+    success(obj);
+};
+
+/**
+ * List of (all) notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.notifications = function (success, error, args) {
+    var objs = impl.notifications(args) || [];
+
+    success(Array.from(objs));
+};
+
+/**
+ * List of all scheduled notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.scheduledNotifications = function (success, error) {
+    var objs = impl.scheduledNotifications() || [];
+
+    success(Array.from(objs));
+};
+
+/**
+ * List of all triggered notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.triggeredNotifications = function (success, error) {
+    var objs = impl.triggeredNotifications() || [];
+
+    success(Array.from(objs));
 };
 
 /**

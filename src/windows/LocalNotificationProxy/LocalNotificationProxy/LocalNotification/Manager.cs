@@ -93,15 +93,144 @@ namespace LocalNotificationProxy.LocalNotification
         }
 
         /// <summary>
+        /// Gets all notifications.
+        /// </summary>
+        /// <returns>A list of all triggered and scheduled notifications.</returns>
+        public List<Notification> GetAll()
+        {
+            return this.GetByType(Notification.Type.All);
+        }
+
+        /// <summary>
+        /// Gets all notifications of given type.
+        /// </summary>
+        /// <param name="type">The type of notification.</param>
+        /// <returns>A list of notifications.</returns>
+        public List<Notification> GetByType(Notification.Type type)
+        {
+            var notifications = new List<Notification>();
+
+            if (type == Notification.Type.All || type == Notification.Type.Scheduled)
+            {
+                var toasts = ToastNotifier.GetScheduledToastNotifications();
+
+                foreach (var toast in toasts)
+                {
+                    notifications.Add(new Notification(toast));
+                }
+            }
+
+            if (type == Notification.Type.All || type == Notification.Type.Triggered)
+            {
+                var toasts = ToastNotificationManager.History.GetHistory();
+
+                foreach (var toast in toasts)
+                {
+                    notifications.Add(new Notification(toast));
+                }
+            }
+
+            return notifications;
+        }
+
+        /// <summary>
+        /// Gets all notifications.
+        /// </summary>
+        /// <returns>A list of notification options instances.</returns>
+        public List<Options> GetOptions()
+        {
+            return this.GetOptionsByType(Notification.Type.All);
+        }
+
+        /// <summary>
+        /// Gets notifications specified by ID.
+        /// </summary>
+        /// <param name="ids">Optional list of IDs to find.</param>
+        /// <returns>A list of notification options instances.</returns>
+        public List<Options> GetOptions(int[] ids)
+        {
+            var options = new List<Options>();
+
+            foreach (var toast in this.Get(ids))
+            {
+                options.Add(toast.Options);
+            }
+
+            return options;
+        }
+
+        /// <summary>
+        /// Gets all notifications for given type.
+        /// </summary>
+        /// <param name="type">The type of notification.</param>
+        /// <returns>A list of notification options instances.</returns>
+        public List<Options> GetOptionsByType(Notification.Type type)
+        {
+            var options = new List<Options>();
+            var toasts = this.GetByType(type);
+
+            foreach (var toast in toasts)
+            {
+                options.Add(toast.Options);
+            }
+
+            return options;
+        }
+
+        /// <summary>
+        /// Gets the notifications specified by ID.
+        /// </summary>
+        /// <param name="ids">List of IDs to find.</param>
+        /// <returns>List of found notifications.</returns>
+        public List<Notification> Get(int[] ids)
+        {
+            var toasts = new List<Notification>();
+
+            foreach (var id in ids)
+            {
+                var toast = this.Get(id);
+
+                if (toast != null)
+                {
+                    toasts.Add(toast);
+                }
+            }
+
+            return toasts;
+        }
+
+        /// <summary>
         /// Gets the notification by ID.
         /// </summary>
         /// <param name="id">The ID of the notification to find.</param>
         /// <returns>The found instance or null.</returns>
-        private Notification Get(string id)
+        public Notification Get(int id)
         {
-            foreach (var toast in ToastNotifier.GetScheduledToastNotifications())
+            return this.Get(id.ToString());
+        }
+
+        /// <summary>
+        /// Gets the notification by ID.
+        /// </summary>
+        /// <param name="id">The ID of the notification to find.</param>
+        /// <returns>The found instance or null.</returns>
+        public Notification Get(string id)
+        {
+            var scheduled = ToastNotifier.GetScheduledToastNotifications();
+
+            foreach (var toast in scheduled)
             {
-                if (toast.Id == id)
+                if (toast.Tag == id)
+                {
+                    return new Notification(toast);
+                }
+            }
+
+            var triggered = ToastNotificationManager.History.GetHistory();
+
+            foreach (var toast in triggered)
+            {
+                if (toast.Tag == id)
                 {
                     return new Notification(toast);
                 }

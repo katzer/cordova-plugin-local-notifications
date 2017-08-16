@@ -26,6 +26,9 @@ namespace LocalNotificationProxy
 
     public sealed class LocalNotificationProxy
     {
+        /// <summary>
+        /// Manager wrapps the native SDK methods.
+        /// </summary>
         private Manager manager = new Manager();
 
         /// <summary>
@@ -71,6 +74,53 @@ namespace LocalNotificationProxy
         public int[] TriggeredIds()
         {
             return this.manager.GetIdsByType(Notification.Type.Triggered).ToArray();
+        }
+
+#pragma warning disable SA1300 // Element must begin with upper-case letter
+        /// <summary>
+        /// Gets a single notifiation specified by id.
+        /// </summary>
+        /// <param name="id">The ID of the notification to find.</param>
+        /// <returns>List of options instances</returns>
+        public Options notification(int id)
+        {
+            var toast = this.manager.Get(id);
+
+            return toast != null ? toast.Options : null;
+        }
+#pragma warning restore SA1300 // Element must begin with upper-case letter
+
+        /// <summary>
+        /// List of (all) notifiation specified by id.
+        /// </summary>
+        /// <param name="ids">Optional list of IDs to find.</param>
+        /// <returns>List of options instances</returns>
+        public Options[] Notifications([ReadOnlyArray] int[] ids)
+        {
+            if (ids == null || ids.Length == 0)
+            {
+                return this.manager.GetOptions().ToArray();
+            }
+
+            return this.manager.GetOptions(ids).ToArray();
+        }
+
+        /// <summary>
+        /// List of all scheduled notifiation.
+        /// </summary>
+        /// <returns>List of options instances</returns>
+        public Options[] ScheduledNotifications()
+        {
+            return this.manager.GetOptionsByType(Notification.Type.Scheduled).ToArray();
+        }
+
+        /// <summary>
+        /// List of all triggered notifiation.
+        /// </summary>
+        /// <returns>List of options instances</returns>
+        public Options[] TriggeredNotifications()
+        {
+            return this.manager.GetOptionsByType(Notification.Type.Triggered).ToArray();
         }
     }
 }
