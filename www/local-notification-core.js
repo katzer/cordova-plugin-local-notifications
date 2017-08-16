@@ -222,15 +222,8 @@ exports.isTriggered = function (id, callback, scope) {
  *
  * @return [ Void ]
  */
-exports.getAllIds = function (callback, scope) {
+exports.getIds = function (callback, scope) {
     this.exec('ids', null, callback, scope);
-};
-
-/**
- * Alias for `getAllIds`.
- */
-exports.getIds = function () {
-    this.getAllIds.apply(this, arguments);
 };
 
 /**
@@ -301,83 +294,13 @@ exports.getAll = function (callback, scope) {
 };
 
 /**
- * List of scheduled notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getScheduled = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('scheduledNotification', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('scheduledNotifications', ids, callback, scope);
-};
-
-/**
  * List of all scheduled notifications.
  *
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllScheduled = function (callback, scope) {
+exports.getScheduled = function (callback, scope) {
     this.exec('scheduledNotifications', null, callback, scope);
-};
-
-/**
- * List of triggered notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getTriggered = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('triggeredNotification', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('triggeredNotifications', ids, callback, scope);
 };
 
 /**
@@ -386,7 +309,7 @@ exports.getTriggered = function () {
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllTriggered = function (callback, scope) {
+exports.getTriggered = function (callback, scope) {
     this.exec('triggeredNotifications', null, callback, scope);
 };
 
