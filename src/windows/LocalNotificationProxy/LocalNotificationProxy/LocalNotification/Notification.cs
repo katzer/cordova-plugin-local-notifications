@@ -46,7 +46,7 @@
 
         public enum Type
         {
-            All, Scheduled, Triggered
+            All, Scheduled, Triggered, Unknown
         }
 
         public Options Options { get; private set; }

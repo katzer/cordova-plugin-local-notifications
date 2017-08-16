@@ -51,12 +51,8 @@
 // Cancel all notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
 
-// If a notification with an ID is present
-- (void) isPresent:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is scheduled
-- (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is triggered
-- (void) isTriggered:(CDVInvokedUrlCommand*)command;
+// Notification type
+- (void) type:(CDVInvokedUrlCommand*)command;
 
 // List of all notification IDs
 - (void) ids:(CDVInvokedUrlCommand*)command;
@@ -67,10 +63,6 @@
 
 // Notification by id
 - (void) notification:(CDVInvokedUrlCommand*)command;
-// Scheduled notification by id
-- (void) scheduledNotification:(CDVInvokedUrlCommand*)command;
-// Triggered notification by id
-- (void) triggeredNotification:(CDVInvokedUrlCommand*)command;
 
 // List of notifications by id
 - (void) notifications:(CDVInvokedUrlCommand*)command;

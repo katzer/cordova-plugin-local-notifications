@@ -185,11 +185,33 @@ exports.cancelAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.isPresent = function (id, callback, scope) {
-    this.exec('isPresent', id, callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type) {
+        fn(type != 'unknown');
+    });
 };
 
 /**
- * Check if a notification is scheduled.
+ * Check if a notification has a given type.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ String ]   type     The type of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.hasType = function (id, type, callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type2) {
+        fn(type == type2);
+    });
+};
+
+/**
+ * Get the type (triggered, scheduled) for the notification.
  *
  * @param [ Int ]      id       The ID of the notification.
  * @param [ Function ] callback The function to be exec as the callback.
@@ -197,21 +219,8 @@ exports.isPresent = function (id, callback, scope) {
  *
  * @return [ Void ]
  */
-exports.isScheduled = function (id, callback, scope) {
-    this.exec('isScheduled', id, callback, scope);
-};
-
-/**
- * Check if a notification was triggered.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.isTriggered = function (id, callback, scope) {
-    this.exec('isTriggered', id, callback, scope);
+exports.getType = function (id, callback, scope) {
+    this.exec('type', id, callback, scope);
 };
 
 /**

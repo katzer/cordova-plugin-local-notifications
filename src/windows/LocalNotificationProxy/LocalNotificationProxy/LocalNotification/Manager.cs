@@ -238,5 +238,35 @@ namespace LocalNotificationProxy.LocalNotification
 
             return null;
         }
+
+        /// <summary>
+        /// Gets the type (scheduled, triggered or unknown).
+        /// </summary>
+        /// <param name="id">The ID of the notification to find for.</param>
+        /// <returns>The type of the notification or unknown type.</returns>
+        public Notification.Type GetType(string id)
+        {
+            var scheduled = ToastNotifier.GetScheduledToastNotifications();
+
+            foreach (var toast in scheduled)
+            {
+                if (toast.Tag == id)
+                {
+                    return Notification.Type.Scheduled;
+                }
+            }
+
+            var triggered = ToastNotificationManager.History.GetHistory();
+
+            foreach (var toast in triggered)
+            {
+                if (toast.Tag == id)
+                {
+                    return Notification.Type.Triggered;
+                }
+            }
+
+            return Notification.Type.Unknown;
+        }
     }
 }

@@ -147,7 +147,7 @@ exports.isPresent = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isScheduled = function (id, callback, scope) {
-    this.core.isScheduled(id, callback, scope);
+    this.core.hasType(id, 'scheduled', callback, scope);
 };
 
 /**
@@ -160,7 +160,20 @@ exports.isScheduled = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isTriggered = function (id, callback, scope) {
-    this.core.isTriggered(id, callback, scope);
+    this.core.hasType(id, 'triggered', callback, scope);
+};
+
+/**
+ * Get the type (triggered, scheduled) for the notification.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getType = function (id, callback, scope) {
+    this.core.getType(id, callback, scope);
 };
 
 /**

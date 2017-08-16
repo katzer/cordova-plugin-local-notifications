@@ -185,29 +185,6 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
     return ids;
 }
 
-/*
- * If the notification with the specified ID does exists.
- *
- * @param id
- *      Notification ID
- */
-- (BOOL) notificationExist:(NSNumber*)id
-{
-    return [self getNotificationWithId:id] != NULL;
-}
-
-/* If the notification with specified ID and type exists.
- *
- * @param id
- *      Notification ID
- * @param type
- *      Notification life cycle type
- */
-- (BOOL) notificationExist:(NSNumber*)id type:(APPNotificationType)type
-{
-    return [self getNotificationWithId:id andType:type] != NULL;
-}
-
 /**
  * Find notification by ID.
  *
@@ -216,31 +193,36 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
  */
 - (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id
 {
-    return [self getNotificationWithId:id andType:NotifcationTypeAll];
-}
-
-/*
- * Find notification by ID and type.
- *
- * @param id
- *      Notification ID
- * @param type
- *      Notification life cycle type
- */
-- (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id andType:(APPNotificationType)type
-{
-    NSArray* notifications = [self getNotificationsByType:type];
+    NSArray* notifications = [self getNotifications];
 
     for (UNNotificationRequest* notification in notifications)
     {
         NSString* fid = [NSString stringWithFormat:@"%@", notification.options.id];
-
+        
         if ([fid isEqualToString:[id stringValue]]) {
             return notification;
         }
     }
-
+    
     return NULL;
+}
+
+/**
+ * Find notification type by ID
+ */
+- (APPNotificationType) getTypeOfNotificationWithId:(NSNumber*)id
+{
+    NSArray* ids = [self getNotificationIdsByType:NotifcationTypeTriggered];
+    
+    if ([ids containsObject:id])
+        return NotifcationTypeTriggered;
+
+    ids = [self getNotificationIdsByType:NotifcationTypeScheduled];
+    
+    if ([ids containsObject:id])
+        return NotifcationTypeScheduled;
+    
+    return NotifcationTypeUnknown;
 }
 
 /**
@@ -278,29 +260,16 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
  */
 - (NSArray*) getNotificationOptionsById:(NSArray*)ids
 {
-    return [self getNotificationOptionsByType:NotifcationTypeAll andId:ids];
-}
-
-/**
- * List of properties from given local notifications.
- *
- * @param type
- *      Notification life cycle type
- * @param ids
- *      Notification IDs
- */
-- (NSArray*) getNotificationOptionsByType:(APPNotificationType)type andId:(NSArray*)ids
-{
-    NSArray* notifications  = [self getNotificationsByType:type];
+    NSArray* notifications  = [self getNotifications];
     NSMutableArray* options = [[NSMutableArray alloc] init];
-
+    
     for (UNNotificationRequest* notification in notifications)
     {
         if ([ids containsObject:notification.options.id]) {
             [options addObject:notification.options.userInfo];
         }
     }
-
+    
     return options;
 }
 

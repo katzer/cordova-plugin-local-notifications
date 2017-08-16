@@ -242,58 +242,32 @@
 }
 
 /**
- * If a notification by ID is present.
+ * Get type of notification.
  *
- * @param [ Number ]id The ID of the notification.
- *
- * @return [ Void ]
- */
-- (void) isPresent:(CDVInvokedUrlCommand *)command
-{
-    [self exist:command byType:NotifcationTypeAll];
-}
-
-/**
- * If a notification by ID is scheduled.
- *
- * @param [ Number ]id The ID of the notification.
+ * @param [ Int ] id The ID of the notification.
  *
  * @return [ Void ]
  */
-- (void) isScheduled:(CDVInvokedUrlCommand*)command
-{
-    [self exist:command byType:NotifcationTypeScheduled];
-}
-
-/**
- * Check if a notification with an ID is triggered.
- *
- * @param [ Number ]id The ID of the notification.
- *
- * @return [ Void ]
- */
-- (void) isTriggered:(CDVInvokedUrlCommand*)command
-{
-    [self exist:command byType:NotifcationTypeTriggered];
-}
-
-/**
- * Check if a notification exists by ID and type.
- *
- * @param [ APPNotificationType ] type The type of notifications to look for.
- *
- * @return [ Void ]
- */
-- (void) exist:(CDVInvokedUrlCommand*)command
-        byType:(APPNotificationType)type;
+- (void) type:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
         NSNumber* id = [command argumentAtIndex:0];
-        BOOL exist   = [_center notificationExist:id type:type];
+        NSString* type;
 
+        switch ([_center getTypeOfNotificationWithId:id]) {
+            case NotifcationTypeScheduled:
+                type = @"scheduled";
+                break;
+            case NotifcationTypeTriggered:
+                type = @"triggered";
+                break;
+            default:
+                type = @"unknown";
+        }
+        
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                     messageAsBool:exist];
+                                     messageAsString:type];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
@@ -361,53 +335,16 @@
  */
 - (void) notification:(CDVInvokedUrlCommand*)command
 {
-    [self notification:command byType:NotifcationTypeAll];
-}
-
-/**
- * Scheduled notification by id.
- *
- * @param [ Number ] id The id of the notification to return.
- *
- * @return [ Void ]
- */
-- (void) scheduledNotification:(CDVInvokedUrlCommand*)command
-{
-    [self notification:command byType:NotifcationTypeScheduled];
-}
-
-/**
- * Triggered notification by id.
- *
- * @param [ Number ] id The id of the notification to return.
- *
- * @return [ Void ]
- */
-- (void) triggeredNotification:(CDVInvokedUrlCommand*)command
-{
-    [self notification:command byType:NotifcationTypeTriggered];
-}
-
-/**
- * Notification by type and id.
- *
- * @param [ APPNotificationType ] type The type of notifications to look for.
- *
- * @return [ Void ]
- */
-- (void) notification:(CDVInvokedUrlCommand*)command
-               byType:(APPNotificationType)type;
-{
     [self.commandDelegate runInBackground:^{
         NSArray* ids = command.arguments;
 
         NSArray* notifications;
-        notifications = [_center getNotificationOptionsByType:type andId:ids];
-
+        notifications = [_center getNotificationOptionsById:ids];
+        
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                messageAsDictionary:[notifications firstObject]];
-
+        
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -450,7 +387,7 @@
 }
 
 /**
- * List of notifications by type and id.
+ * List of notifications by type or id.
  *
  * @param [ APPNotificationType ] type The type of notifications to look for.
  *
@@ -463,18 +400,11 @@
         NSArray* ids = command.arguments;
         NSArray* notifications;
 
-        if (type == NotifcationTypeAll && ids.count == 0) {
-            notifications = [_center getNotificationOptions];
-        }
-        else if (type == NotifcationTypeAll) {
+        if (ids.count > 0) {
             notifications = [_center getNotificationOptionsById:ids];
         }
-        else if (ids.count == 0) {
-            notifications = [_center getNotificationOptionsByType:type];
-        }
         else {
-            notifications = [_center getNotificationOptionsByType:type
-                                                            andId:ids];
+            notifications = [_center getNotificationOptionsByType:type];
         }
 
         CDVPluginResult* result;

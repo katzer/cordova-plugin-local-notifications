@@ -98,6 +98,21 @@ exports.schedule = function (success, error, args) {
 };
 
 /**
+ * Get the type of notification.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.type = function (success, error, args) {
+    var type = impl.type(args[0]);
+
+    success(type);
+};
+
+/**
  * List of all notification ids.
  *
  * @param [ Function ] success Success callback

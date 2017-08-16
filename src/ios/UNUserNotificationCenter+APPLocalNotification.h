@@ -28,7 +28,8 @@ extern NSString * const kAPPGeneralCategory;
 typedef NS_ENUM(NSUInteger, APPNotificationType) {
     NotifcationTypeAll = 0,
     NotifcationTypeScheduled = 1,
-    NotifcationTypeTriggered = 2
+    NotifcationTypeTriggered = 2,
+    NotifcationTypeUnknown = 3
 };
 
 #define APPNotificationType_DEFINED
@@ -44,15 +45,10 @@ typedef NS_ENUM(NSUInteger, APPNotificationType) {
 // List of all notification IDs from given type
 - (NSArray*) getNotificationIdsByType:(APPNotificationType)type;
 
-// Find out if notification with ID exists
-- (BOOL) notificationExist:(NSNumber*)id;
-// Find out if notification with ID and type exists
-- (BOOL) notificationExist:(NSNumber*)id type:(APPNotificationType)type;
-
 // Find notification by ID
 - (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id;
-// Find notification by ID and type
-- (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id andType:(APPNotificationType)type;
+// Find notification type by ID
+- (APPNotificationType) getTypeOfNotificationWithId:(NSNumber*)id;
 
 // Property list from all local notifications
 - (NSArray*) getNotificationOptions;
@@ -60,8 +56,6 @@ typedef NS_ENUM(NSUInteger, APPNotificationType) {
 - (NSArray*) getNotificationOptionsById:(NSArray*)ids;
 // Property list from all local notifications with type constraint
 - (NSArray*) getNotificationOptionsByType:(APPNotificationType)type;
-// Property list from given local notifications with type constraint
-- (NSArray*) getNotificationOptionsByType:(APPNotificationType)type andId:(NSArray*)ids;
 
 // Clear specified notfication
 - (void) clearNotification:(UNNotificationRequest*)notification;

@@ -50,6 +50,16 @@ namespace LocalNotificationProxy
         }
 
         /// <summary>
+        /// Gets the type of the notification specified by ID.
+        /// </summary>
+        /// <param name="id">The ID of the notification to find for.</param>
+        /// <returns>The type (scheduled, triggered or unknown).</returns>
+        public string Type(int id)
+        {
+            return this.manager.GetType(id.ToString()).ToString().ToLower();
+        }
+
+        /// <summary>
         /// List of all notifiation by id.
         /// </summary>
         /// <returns>List of numbers</returns>
