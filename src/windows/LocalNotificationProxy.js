@@ -22,7 +22,7 @@
 var LocalNotification = LocalNotificationProxy.LocalNotification,
        ActivationKind = Windows.ApplicationModel.Activation.ActivationKind;
 
-var impl  = new LocalNotificationProxy.LocalNotificationProxy();
+var impl = new LocalNotificationProxy.LocalNotificationProxy();
 
 /**
  * Check permission to show notifications.
@@ -166,7 +166,7 @@ exports.triggeredIds = function (success, error) {
 exports.notification = function (success, error, args) {
     var obj = impl.notification(args[0]);
 
-    success(obj);
+    success(exports.clone(obj));
 };
 
 /**
@@ -181,7 +181,7 @@ exports.notification = function (success, error, args) {
 exports.notifications = function (success, error, args) {
     var objs = impl.notifications(args) || [];
 
-    success(Array.from(objs));
+    success(exports.cloneAll(objs));
 };
 
 /**
@@ -195,7 +195,7 @@ exports.notifications = function (success, error, args) {
 exports.scheduledNotifications = function (success, error) {
     var objs = impl.scheduledNotifications() || [];
 
-    success(Array.from(objs));
+    success(exports.cloneAll(objs));
 };
 
 /**
@@ -209,7 +209,7 @@ exports.scheduledNotifications = function (success, error) {
 exports.triggeredNotifications = function (success, error) {
     var objs = impl.triggeredNotifications() || [];
 
-    success(Array.from(objs));
+    success(exports.cloneAll(objs));
 };
 
 /**
@@ -222,20 +222,75 @@ exports.triggeredNotifications = function (success, error) {
 exports.clicked = function (xml, input) {
     var toast = LocalNotification.Options.parse(xml),
         event = toast.action || 'click',
-        e     = { event: event };
+        meta  = Object.assign({}, input);
 
     if (input && input.size > 0) {
-        var it = input.first();
+        meta.text = input.first().current.value;
+    }
 
-        e.text = it.current.value;
+    exports.fireEvent(event, toast, meta);
+};
 
-        while (it.hasCurrent) {
-            e[it.current.key] = it.current.value;
-            it.moveNext();
+/**
+ * Invoke listeners for the given event.
+ *
+ * @param [ String ] event The name of the event.
+ * @param [ Object ] toast Optional notification object.
+ * @param [ Object ] data  Optional meta data about the event.
+ *
+ * @return [ Void ]
+ */
+exports.fireEvent = function (event, toast, data) {
+    var meta   = Object.assign({ event: event }, data),
+        plugin = cordova.plugins.notification.local.core;
+
+    if (toast) {
+        plugin.fireEvent(event, exports.clone(toast), meta);
+    } else {
+        plugin.fireEvent(event, meta);
+    }
+};
+
+/**
+ * Clone the objects and delete internal properties.
+ *
+ * @param [ Array<Object> ] objs The objects to clone for.
+ *
+ * @return [ Array<Object> ]
+ */
+exports.cloneAll = function (objs) {
+    var clones = [];
+
+    for (var i = 0; i < objs.length; i++) {
+        clones.push(exports.clone(objs[i]));
+    }
+
+    return clones;
+};
+
+/**
+ * Clone the object and delete internal properties.
+ *
+ * @param [ Object ] obj The object to clone for.
+ *
+ * @return [ Object ]
+ */
+exports.clone = function (obj) {
+    var ignore = ['action'],
+        clone  = {};
+
+    for (var prop in obj) {
+        if (ignore.includes(prop) || typeof obj[prop] === 'function')
+            continue;
+
+        try {
+            clone[prop] = obj[prop];
+        } catch (e) {
+            clone[prop] = null;
         }
     }
 
-    cordova.plugins.notification.local.core.fireEvent(event, toast, e);
+    return clone;
 };
 
 // Handle onclick event
