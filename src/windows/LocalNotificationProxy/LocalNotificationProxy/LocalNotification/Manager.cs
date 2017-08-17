@@ -52,6 +52,96 @@ namespace LocalNotificationProxy.LocalNotification
         }
 
         /// <summary>
+        /// Clear the notifications specified by id.
+        /// </summary>
+        /// <param name="ids">The IDs of the notification to clear.</param>
+        /// <returns>The cleared notifications.</returns>
+        public List<Options> Clear(int[] ids)
+        {
+            var triggered = ToastNotificationManager.History.GetHistory();
+            var tags = new List<int>(ids);
+            var toasts = new List<Options>();
+
+            foreach (var toast in triggered)
+            {
+                var id = int.Parse(toast.Tag);
+
+                if (tags.Contains(id))
+                {
+                    tags.Remove(id);
+                    toasts.Add(new Notification(toast).Options);
+                    ToastNotificationManager.History.Remove(toast.Tag);
+                }
+
+                if (tags.Count == 0)
+                {
+                    break;
+                }
+            }
+
+            return toasts;
+        }
+
+        /// <summary>
+        /// Clear all notifications.
+        /// </summary>
+        public void ClearAll()
+        {
+            ToastNotificationManager.History.Clear();
+        }
+
+        /// <summary>
+        /// Cancel the notifications specified by id.
+        /// </summary>
+        /// <param name="ids">The IDs of the notification to clear.</param>
+        /// <returns>The cleared notifications.</returns>
+        public List<Options> Cancel(int[] ids)
+        {
+            var scheduled = ToastNotifier.GetScheduledToastNotifications();
+            var tags = new List<int>(ids);
+            var toasts = new List<Options>();
+
+            foreach (var toast in scheduled)
+            {
+                var id = int.Parse(toast.Tag);
+
+                if (tags.Contains(id))
+                {
+                    tags.Remove(id);
+                    toasts.Add(new Notification(toast).Options);
+                    ToastNotifier.RemoveFromSchedule(toast);
+                }
+
+                if (tags.Count == 0)
+                {
+                    break;
+                }
+            }
+
+            if (tags.Count > 0)
+            {
+                toasts.AddRange(this.Clear(tags.ToArray()));
+            }
+
+            return toasts;
+        }
+
+        /// <summary>
+        /// Cancel all notifications.
+        /// </summary>
+        public void CancelAll()
+        {
+            var toasts = ToastNotifier.GetScheduledToastNotifications();
+
+            foreach (var toast in toasts)
+            {
+                ToastNotifier.RemoveFromSchedule(toast);
+            }
+
+            this.ClearAll();
+        }
+
+        /// <summary>
         /// Gets all notifications by id.
         /// </summary>
         /// <returns>List of ids</returns>

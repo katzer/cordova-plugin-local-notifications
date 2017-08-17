@@ -102,6 +102,25 @@ exports.schedule = function (success, error, args) {
 };
 
 /**
+ * Clear the notifications specified by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.clear = function (success, error, args) {
+    var toasts = impl.clear(args) || [];
+
+    for (var i = 0; i < toasts.length; i++) {
+        exports.fireEvent('clear', toasts[i]);
+    }
+
+    success();
+};
+
+/**
  * Clear all notifications.
  *
  * @param [ Function ] success Success callback
@@ -112,6 +131,25 @@ exports.schedule = function (success, error, args) {
 exports.clearAll = function (success, error) {
     impl.clearAll();
     exports.fireEvent('clearall');
+    success();
+};
+
+/**
+ * Cancel the notifications specified by id.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.cancel = function (success, error, args) {
+    var toasts = impl.cancel(args) || [];
+
+    for (var i = 0; i < toasts.length; i++) {
+        exports.fireEvent('cancel', toasts[i]);
+    }
+
     success();
 };
 

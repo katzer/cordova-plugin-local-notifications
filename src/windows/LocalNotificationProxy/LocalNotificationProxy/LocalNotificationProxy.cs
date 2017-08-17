@@ -50,6 +50,42 @@ namespace LocalNotificationProxy
         }
 
         /// <summary>
+        /// Clear the notifications specified by id.
+        /// </summary>
+        /// <param name="ids">The IDs of the notification to clear.</param>
+        /// <returns>The cleared notifications.</returns>
+        public Options[] Clear([ReadOnlyArray] int[] ids)
+        {
+            return this.manager.Clear(ids).ToArray();
+        }
+
+        /// <summary>
+        /// Clear all notifications.
+        /// </summary>
+        public void ClearAll()
+        {
+            this.manager.ClearAll();
+        }
+
+        /// <summary>
+        /// Cancel the notifications specified by id.
+        /// </summary>
+        /// <param name="ids">The IDs of the notification to clear.</param>
+        /// <returns>The cleared notifications.</returns>
+        public Options[] Cancel([ReadOnlyArray] int[] ids)
+        {
+            return this.manager.Cancel(ids).ToArray();
+        }
+
+        /// <summary>
+        /// Cancel all notifications.
+        /// </summary>
+        public void CancelAll()
+        {
+            this.manager.CancelAll();
+        }
+
+        /// <summary>
         /// Gets the type of the notification specified by ID.
         /// </summary>
         /// <param name="id">The ID of the notification to find for.</param>
