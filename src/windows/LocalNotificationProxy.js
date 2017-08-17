@@ -102,6 +102,34 @@ exports.schedule = function (success, error, args) {
 };
 
 /**
+ * Clear all notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.clearAll = function (success, error) {
+    impl.clearAll();
+    exports.fireEvent('clearall');
+    success();
+};
+
+/**
+ * Cancel all notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.cancelAll = function (success, error) {
+    impl.cancelAll();
+    exports.fireEvent('cancelall');
+    success();
+};
+
+/**
  * Get the type of notification.
  *
  * @param [ Function ] success Success callback
