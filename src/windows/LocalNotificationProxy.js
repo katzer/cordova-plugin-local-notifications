@@ -94,6 +94,10 @@ exports.schedule = function (success, error, args) {
 
     impl.schedule(options);
 
+    for (i = 0; i < options.length; i++) {
+        exports.fireEvent('add', options[i]);
+    }
+
     success();
 };
 
