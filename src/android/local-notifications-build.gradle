@@ -1,0 +1,9 @@
+repositories {
+    maven {
+        url "https://maven.google.com"
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-core-utils:26.0.1'
+}
