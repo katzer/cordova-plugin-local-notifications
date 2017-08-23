@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+
+/*
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+*/
+
+var Api = require('./Api');
+var nopt = require('nopt');
+var path = require('path');
+
+// Support basic help commands
+if(['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(process.argv[2]) >= 0) {
+    console.log('');
+    console.log('Usage: build [--debug | --release] [--phone | --win] [--bundle]');
+    console.log('             [--archs="<list of architectures...>"');
+    console.log('             [--packageCertificateKeyFile="key path"]');
+    console.log('             [--packageThumbprint="thumbprint"] [--publisherId]');
+    console.log('             [--buildConfig="file path"]');
+    console.log('    --help                      : Displays this dialog.');
+    console.log('    --debug                     : Builds project in debug mode. (Default).');
+    console.log('    --release  (-r)             : Builds project in release mode.');
+    console.log('    --phone, --win              : Specifies, what type of project to build.');
+    console.log('    --bundle                    : Tells the compiler to create a .appxbundle.');
+    console.log('                                  Bundling is disabled when `anycpu` is built.');
+    console.log('    --archs                     : Builds project binaries for specific chip');
+    console.log('                                  architectures (`anycpu`, `arm`, `x86`, `x64`).');
+    console.log('                                  Separate multiple choices with spaces and if');
+    console.log('                                  passing multiple choices, enclose with " ".');
+    console.log('    --appx=<8.1-win|8.1-phone|uap>');
+    console.log('                                : Overrides windows-target-version to build');
+    console.log('                                  Windows 8.1, Windows Phone 8.1, or');
+    console.log('                                  Windows 10 Universal.');
+    console.log('    --packageCertificateKeyFile : Builds the project using provided certificate.');
+    console.log('    --packageThumbprint         : Thumbprint associated with the certificate.');
+    console.log('    --publisherId               : Sets publisher id field in manifest.');
+    console.log('    --buildConfig               : Sets build settings from configuration file.');
+    console.log('    --buildFlag                 : Sets build flag to pass to MSBuild (can be specified multiple times)');
+    console.log('');
+    console.log('examples:');
+    console.log('    build ');
+    console.log('    build --debug');
+    console.log('    build --release');
+    console.log('    build --release --archs="arm x86" --bundle');
+    console.log('    build --appx=8.1-phone -r');
+    console.log('    build --packageCertificateKeyFile="CordovaApp_TemporaryKey.pfx"');
+    console.log('    build --publisherId="CN=FakeCorp, C=US"');
+    console.log('    build --buildConfig="build.json"');
+    console.log('    build --buildFlag="/clp:Verbosity=normal" --buildFlag="/p:myBuildProperty=Foo"');
+    console.log('');
+
+    process.exit(0);
+}
+
+// Do some basic argument parsing
+var buildOpts = nopt({
+    'silent' : Boolean,
+    'verbose' : Boolean,
+    'debug' : Boolean,
+    'release' : Boolean,
+    'nobuild': Boolean,
+    'buildConfig' : path,
+    'buildFlag': [String, Array]
+}, { d : '--verbose', r: '--release' });
+
+// Make buildOptions compatible with PlatformApi build method spec
+buildOpts.argv = buildOpts.argv.original;
+
+require('./lib/loggingHelper').adjustLoggerLevel(buildOpts);
+
+new Api().build(buildOpts).done();

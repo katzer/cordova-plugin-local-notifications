@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com ws://echo.websocket.org 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Notification Example</title>
+    </head>
+    <body>
+        <div>
+            <div class="app">
+                <h1>Notification Example</h1>
+                <div id="deviceready" class="blink">
+                    <p class="event listening">Connecting to Device</p>
+                    <p class="event received">Device is Ready</p>
+                </div>
+            </div>
+            <h2 class="section">Permissions</h2>
+            <div class="container">
+                <a id="granted"            class="button">Granted?</a>
+                <a id="request"            class="button grey">Request</a>
+            </div>
+            <h2 class="section">Schedule</h2>
+            <div class="container">
+                <a id="sched_single"       class="button orange">Single</a>
+                <a id="sched_multi"        class="button orange">Multiple</a>
+            </div>
+            <div class="container">
+                <a id="sched_delayed"      class="button orange">Delayed</a>
+                <a id="sched_interval"     class="button orange">Interval</a>
+            </div>
+            <div class="container">
+                <a id="sched_actions"      class="button orange">Actions</a>
+            </div>
+            <h2 class="section">Update</h2>
+            <div class="container">
+                <a id="update_text"        class="button orange">Text</a>
+                <a id="update_interval"    class="button orange">Interval</a>
+            </div>
+            <h2 class="section">Clear</h2>
+            <div class="container">
+                <a id="clear_single"       class="button orange">Single</a>
+                <a id="clear_multi"        class="button orange">Multiple</a>
+            </div>
+            <div class="container">
+                <a id="clear_all"          class="button orange">All</a>
+            </div>
+            <h2 class="section">Cancel</h2>
+            <div class="container">
+                <a id="cancel_single"      class="button orange">Single</a>
+                <a id="cancel_multi"       class="button orange">Multiple</a>
+            </div>
+            <div class="container">
+                <a id="cancel_all"         class="button orange">All</a>
+            </div>
+            <h2 class="section">Presence</h2>
+            <div class="container">
+                <a id="scheduled?"         class="button">Scheduled?</a>
+                <a id="triggered?"         class="button">Triggered?</a>
+            </div>
+            <div class="container">
+                <a id="present?"           class="button">Present?</a>
+                <a id="type"               class="button orange">Type</a>
+            </div>
+            <h2 class="section">ID's</h2>
+            <div class="container">
+                <a id="scheduled_ids"      class="button grey">Scheduled</a>
+                <a id="triggered_ids"      class="button grey">Triggered</a>
+            </div>
+            <div class="container">
+                <a id="ids"                class="button grey">All</a>
+            </div>
+            <h2 class="section">Notifications</h2>
+            <div class="container">
+                <a id="scheduled_nots"     class="button grey">Scheduled</a>
+                <a id="triggered_nots"     class="button grey">Triggered</a>
+            </div>
+            <div class="container">
+                <a id="notification"       class="button grey">Single</a>
+                <a id="multiple_nots"      class="button grey">Multiple</a>
+            </div>
+            <div class="container">
+                <a id="notifications"      class="button grey">All</a>
+            </div>
+            <h2 class="section">Defaults</h2>
+            <div class="container">
+                <a id="defaults"           class="button orange">Title</a>
+            </div>
+            <div class="copyright">
+                © 2013 appPlant<br/>
+                Made with <g-emoji alias="yum" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f60b.png">😋</g-emoji> from Leipzig
+            </div>
+        </div>
+        <script type="text/javascript" src="/www/WinJS/js/base.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>

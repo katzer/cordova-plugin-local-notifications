@@ -67,6 +67,7 @@ var app = {
         document.getElementById('present?').onclick       = app.isPresent;
         document.getElementById('scheduled?').onclick     = app.isScheduled;
         document.getElementById('triggered?').onclick     = app.isTriggered;
+        document.getElementById('type').onclick           = app.type;
         document.getElementById('ids').onclick            = app.ids;
         document.getElementById('scheduled_ids').onclick  = app.scheduledIds;
         document.getElementById('triggered_ids').onclick  = app.triggeredIds;
@@ -174,7 +175,7 @@ var app = {
             },{
                 id: 'feedback',
                 type: 'input',
-                title: 'Feedback',
+                title: device.platform != 'windows' ? 'Feedback' : '',
                 emptyText: 'Enter feedback',
                 submitTitle: 'Send'
             }]
@@ -222,6 +223,12 @@ var app = {
             showToast(triggered ? 'Yes' : 'No');
         });
     },
+    // Get the type of the notification
+    type: function () {
+        cordova.plugins.notification.local.getType(1, function (type) {
+            showToast(type);
+        });
+    },
     // Get all notification ids
     ids: function () {
         cordova.plugins.notification.local.getIds(function (ids) {
@@ -245,14 +252,14 @@ var app = {
     },
     // Get all scheduled notifications
     scheduledNots: function () {
-        cordova.plugins.notification.local.getAllScheduled(function (nots) {
+        cordova.plugins.notification.local.getScheduled(function (nots) {
             console.log(nots);
             showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
         });
     },
     // Get all triggered notifications
     triggeredNots: function () {
-        cordova.plugins.notification.local.getAllTriggered(function (nots) {
+        cordova.plugins.notification.local.getTriggered(function (nots) {
             console.log(nots);
             showToast(nots.length === 0 ? '- none -' : nots.join(' ,'));
         });

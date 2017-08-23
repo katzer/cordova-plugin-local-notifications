@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="testPlugin" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>testPlugin</name>
+    <js-module name="testPlugin" src="www/testPlugin.js">
+        <clobbers target="cordova.plugins.testPlugin" />
+    </js-module>
+    <platform name="windows">
+        <framework src="src/deps/x86/x86.winmd" target-dir="x86" arch="x86" custom="true" versions="10.*" implementation="src/deps/x86/x86.dll"/>
+        <framework src="src/deps/x64/x64.winmd" target-dir="x64" arch="x64" custom="true" versions="10.*" implementation="src/deps/x64/x64.UWP.dll" />
+        <framework src="src/deps/ARM/arm.winmd" target-dir="ARM" arch="ARM" custom="true" versions="10.*" implementation="src/deps/ARM/arm.dll"/>
+    </platform>
+</plugin>

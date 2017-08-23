@@ -1,0 +1,22 @@
+{
+    "name": "de.appplant.localnotification.example",
+    "version": "0.0.1",
+    "displayName": "NotificationExample",
+    "cordova": {
+        "platforms": [
+            "ios",
+            "windows"
+        ],
+        "plugins": {
+            "cordova-plugin-device": {},
+            "cordova-plugin-x-toast": {},
+            "cordova-plugin-local-notifications": {}
+        }
+    },
+    "dependencies": {
+        "cordova-ios": "latest",
+        "cordova-plugin-device": "~1.1.6",
+        "cordova-plugin-x-toast": "~2.6.0",
+        "cordova-windows": "^5.0.0"
+    }
+}

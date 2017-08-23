@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="de.appplant.localnotification.example" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="Toast" value="Toast" />
+    <name>NotificationExample</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="WindowsToastCapable" value="true" />
+    <preference name="windows-target-version" value="UAP" />
+    <preference name="uap-target-min-version" value="10.0.15063.0" />
+    <preference name="Windows.Universal-MinVersion" value="10.0.15063.0" />
+    <preference name="Windows.Universal" value="10.0.15063.0" />
+</widget>

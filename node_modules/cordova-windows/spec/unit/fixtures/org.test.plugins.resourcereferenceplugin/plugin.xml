@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="org.test.plugins.resourcereferenceplugin" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>org.test.plugins.resourcereferenceplugin</name>
+    <platform name="windows">
+        <resource-file src="src/windows/dummy1.json" target="dummy.json" arch="x86" reference="true" />
+        <resource-file src="src/windows/dummy2.json" target="dummy.json" versions="&gt;=8.1" reference="true" />
+        <resource-file src="src/windows/dummy3.json" target="dummy.json" device-target="phone" reference="true"/>
+        <resource-file src="src/windows/dummy4.json" target="dummy.json" device-target="windows" versions="8.0" arch="x64" reference="true" />
+    </platform>
+</plugin>

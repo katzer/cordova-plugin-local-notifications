@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+-->
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+  <Identity Name="d409db80-9793-11e4-8ffa-f71ca5ee087f" Version="1.0.0.0" Publisher="CN=$username$" />
+  <mp:PhoneIdentity PhoneProductId="d409db80-9793-11e4-8ffa-f71ca5ee087f" PhonePublisherId="db093ed5-53b1-45f7-af72-751e8f36ab80" />
+  <Properties>
+    <DisplayName>CordovaApp</DisplayName>
+    <PublisherDisplayName>$username$</PublisherDisplayName>
+    <Logo>images\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.1</OSMinVersion>
+    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="io.cordova.cordovaapp" StartPage="www/index.html">
+      <m3:VisualElements DisplayName="CordovaApp"
+                         Square150x150Logo="images\Square150x150Logo.png"
+                         Square44x44Logo="images\Square44x44Logo.png"
+                         Description="CordovaApp"
+                         ForegroundText="light"
+                         BackgroundColor="transparent">
+        <m3:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png"
+                        Square71x71Logo="images\Square71x71Logo.png">
+          <m3:ShowNameOnTiles>
+            <m3:ShowOn Tile="square150x150Logo" />
+            <m3:ShowOn Tile="wide310x150Logo" />
+          </m3:ShowNameOnTiles>
+        </m3:DefaultTile>
+        <m3:SplashScreen Image="images\SplashScreenPhone.png" />
+      </m3:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClientServer" />
+  </Capabilities>
+</Package>

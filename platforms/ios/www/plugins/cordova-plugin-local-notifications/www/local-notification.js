@@ -1,5 +1,9 @@
 cordova.define("cordova-plugin-local-notifications.LocalNotification", function(require, exports, module) {
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -144,7 +148,7 @@ exports.isPresent = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isScheduled = function (id, callback, scope) {
-    this.core.isScheduled(id, callback, scope);
+    this.core.hasType(id, 'scheduled', callback, scope);
 };
 
 /**
@@ -157,7 +161,20 @@ exports.isScheduled = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.isTriggered = function (id, callback, scope) {
-    this.core.isTriggered(id, callback, scope);
+    this.core.hasType(id, 'triggered', callback, scope);
+};
+
+/**
+ * Get the type (triggered, scheduled) for the notification.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getType = function (id, callback, scope) {
+    this.core.getType(id, callback, scope);
 };
 
 /**
@@ -168,15 +185,8 @@ exports.isTriggered = function (id, callback, scope) {
  *
  * @return [ Void ]
  */
-exports.getAllIds = function (callback, scope) {
-    this.core.getAllIds(callback, scope);
-};
-
-/**
- * Alias for `getAllIds`.
- */
-exports.getIds = function () {
-    this.getAllIds.apply(this, arguments);
+exports.getIds = function (callback, scope) {
+    this.core.getIds(callback, scope);
 };
 
 /**
@@ -230,41 +240,13 @@ exports.getAll = function (callback, scope) {
 };
 
 /**
- * List of scheduled notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getScheduled = function (ids, callback, scope) {
-    this.core.getScheduled(ids, callback, scope);
-};
-
-/**
  * List of all scheduled notifications.
  *
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllScheduled = function (callback, scope) {
-    this.core.getAllScheduled(callback, scope);
-};
-
-/**
- * List of triggered notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getTriggered = function (ids, callback, scope) {
-    this.core.getTriggered(ids, callback, scope);
+exports.getScheduled = function (callback, scope) {
+    this.core.getScheduled(callback, scope);
 };
 
 /**
@@ -273,8 +255,8 @@ exports.getTriggered = function (ids, callback, scope) {
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllTriggered = function (callback, scope) {
-    this.core.getAllTriggered(callback, scope);
+exports.getTriggered = function (callback, scope) {
+    this.core.getTriggered(callback, scope);
 };
 
 /**

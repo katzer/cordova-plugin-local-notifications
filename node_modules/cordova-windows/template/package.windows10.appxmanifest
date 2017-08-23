@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap mp">
+
+  <Identity
+    Name="$guid1$"
+    Version="1.0.0.0"
+    Publisher="CN=$username$" />
+
+  <mp:PhoneIdentity PhoneProductId="$guid1$" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>$projectname$</DisplayName>
+    <PublisherDisplayName>$username$</PublisherDisplayName>
+    <Logo>images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="0.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+
+  <Applications>
+    <Application
+      Id="App"
+      StartPage="www/index.html">
+
+      <uap:VisualElements
+        DisplayName="$projectname$"
+        Description="CordovaApp"
+        BackgroundColor="#464646"
+        Square150x150Logo="images\Square150x150Logo.png"
+        Square44x44Logo="images\Square44x44Logo.png">
+
+        <uap:SplashScreen Image="images\splashscreen.png" />
+        <uap:DefaultTile ShortName="$projectname$"
+                         Square310x310Logo="images\Square310x310Logo.png"
+                         Square71x71Logo="images\Square71x71Logo.png"
+                         Wide310x150Logo="images\Wide310x150Logo.png" />
+
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+
+</Package>

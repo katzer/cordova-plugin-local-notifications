@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2013 Anis Kadri
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.test.plugins.extensionsplugin"
+    version="1.0.0">
+
+    <!-- new requirement: NO SPACES -->
+    <name>extensionsplugin</name>
+    <!-- These are going to be required by plugman-registry -->
+    <description>my description</description>
+    <author>Jackson Badman</author>
+    <keywords>extensions,plugin</keywords>
+    <license>BSD</license>
+    <!-- end plugman-registry requirements -->
+
+    <!-- windows -->
+    <platform name="windows">
+        <config-file target="package.windows.appxmanifest" parent="/Package">
+            <Extensions>
+                <Extension Category="windows.activatableClass.inProcessServer">
+                    <InProcessServer>
+                        <Path>Foo.dll</Path>
+                        <ActivatableClass ActivatableClassId="Foo.Class" ThreadingModel="both" />
+                    </InProcessServer>
+                </Extension>
+            </Extensions>
+        </config-file>
+
+        <resource-file src="src/windows/Foo.dll" target="Foo.dll" />
+    </platform>
+
+</plugin>

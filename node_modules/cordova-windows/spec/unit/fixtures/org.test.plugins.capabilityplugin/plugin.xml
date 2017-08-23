@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="org.test.plugins.capabilityplugin" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>org.test.plugins.capabilityplugin</name>
+    <js-module name="org.test.plugins.capabilityplugin" src="www/org.test.plugins.capabilityplugin.js">
+        <clobbers target="cordova.plugins.org.test.plugins.capabilityplugin" />
+    </js-module>
+    <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
+        <Capability Name="enterpriseAuthentication" />
+        <Capability Name="privateNetworkClientServer" />
+        <Capability Name="sharedUserCertificates" />
+        <DeviceCapability Name="webcam"/>
+    </config-file>
+</plugin>

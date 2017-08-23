@@ -1,3 +1,4 @@
 {
-    "ios": "latest"
+    "ios": "latest",
+    "windows": "5.0.0"
 }

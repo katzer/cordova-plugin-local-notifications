@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup Label="Globals">
+        <ProjectGuid>{ef7dd979-6f12-4bdf-8754-9468ce799c4d}</ProjectGuid>
+        <ProjectName>dummy1</ProjectName>
+    </PropertyGroup>
+</Project>

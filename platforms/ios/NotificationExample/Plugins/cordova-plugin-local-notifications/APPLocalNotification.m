@@ -1,4 +1,8 @@
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -361,30 +365,6 @@
 }
 
 /**
- * Scheduled notification by id.
- *
- * @param [ Number ] id The id of the notification to return.
- *
- * @return [ Void ]
- */
-- (void) scheduledNotification:(CDVInvokedUrlCommand*)command
-{
-    [self notification:command byType:NotifcationTypeScheduled];
-}
-
-/**
- * Triggered notification by id.
- *
- * @param [ Number ] id The id of the notification to return.
- *
- * @return [ Void ]
- */
-- (void) triggeredNotification:(CDVInvokedUrlCommand*)command
-{
-    [self notification:command byType:NotifcationTypeTriggered];
-}
-
-/**
  * Notification by type and id.
  *
  * @param [ APPNotificationType ] type The type of notifications to look for.
@@ -612,11 +592,11 @@
     if (!deviceready && [event isEqualToString:@"click"]) {
         _launchDetails = @[notification.options.id, event];
     }
-    
+
     if (![event isEqualToString:@"clear"]) {
         [self fireEvent:@"clear" notification:notification];
     }
-    
+
     if ([response isKindOfClass:UNTextInputNotificationResponse.class]) {
         [data setObject:((UNTextInputNotificationResponse*) response).userText
                  forKey:@"text"];
@@ -710,13 +690,13 @@
         notiAsJSON = [request encodeToJSON];
         [data setObject:request.options.id forKey:@"notification"];
     }
-    
+
     dataAsData =
     [NSJSONSerialization dataWithJSONObject:data options:0 error:NULL];
 
     dataAsJSON =
     [[NSString alloc] initWithData:dataAsData encoding:NSUTF8StringEncoding];
-    
+
     if (request) {
         params = [NSString stringWithFormat:@"%@,%@", notiAsJSON, dataAsJSON];
     } else {

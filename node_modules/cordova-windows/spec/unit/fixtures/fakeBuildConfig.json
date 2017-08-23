@@ -1,0 +1,9 @@
+{
+    "windows": {
+        "debug": {
+            "packageCertificateKeyFile": "some/path",
+            "packageThumbprint": "thumbprint",
+            "publisherId": "CN=Publisher, O=Id"
+        }
+    }
+}

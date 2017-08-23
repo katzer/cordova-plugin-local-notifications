@@ -1,5 +1,9 @@
 cordova.define("cordova-plugin-local-notifications.LocalNotification.Core", function(require, exports, module) {
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -19,7 +23,7 @@ cordova.define("cordova-plugin-local-notifications.LocalNotification.Core", func
 var exec = require('cordova/exec');
 
 /**
- * Request permission to show notifications.
+ * Check permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
  * @param [ Object ]   scope    The callback function's scope.
@@ -28,11 +32,6 @@ var exec = require('cordova/exec');
  */
 exports.hasPermission = function (callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
 
     exec(fn, null, 'LocalNotification', 'check', []);
 };
@@ -47,11 +46,6 @@ exports.hasPermission = function (callback, scope) {
  */
 exports.requestPermission = function (callback, scope) {
     var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
 
     exec(fn, null, 'LocalNotification', 'request', []);
 };
@@ -192,11 +186,33 @@ exports.cancelAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.isPresent = function (id, callback, scope) {
-    this.exec('isPresent', id, callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type) {
+        fn(type != 'unknown');
+    });
 };
 
 /**
- * Check if a notification is scheduled.
+ * Check if a notification has a given type.
+ *
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ String ]   type     The type of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.hasType = function (id, type, callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type2) {
+        fn(type == type2);
+    });
+};
+
+/**
+ * Get the type (triggered, scheduled) for the notification.
  *
  * @param [ Int ]      id       The ID of the notification.
  * @param [ Function ] callback The function to be exec as the callback.
@@ -204,21 +220,8 @@ exports.isPresent = function (id, callback, scope) {
  *
  * @return [ Void ]
  */
-exports.isScheduled = function (id, callback, scope) {
-    this.exec('isScheduled', id, callback, scope);
-};
-
-/**
- * Check if a notification was triggered.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.isTriggered = function (id, callback, scope) {
-    this.exec('isTriggered', id, callback, scope);
+exports.getType = function (id, callback, scope) {
+    this.exec('type', id, callback, scope);
 };
 
 /**
@@ -229,15 +232,8 @@ exports.isTriggered = function (id, callback, scope) {
  *
  * @return [ Void ]
  */
-exports.getAllIds = function (callback, scope) {
+exports.getIds = function (callback, scope) {
     this.exec('ids', null, callback, scope);
-};
-
-/**
- * Alias for `getAllIds`.
- */
-exports.getIds = function () {
-    this.getAllIds.apply(this, arguments);
 };
 
 /**
@@ -308,83 +304,13 @@ exports.getAll = function (callback, scope) {
 };
 
 /**
- * List of scheduled notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getScheduled = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('scheduledNotification', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('scheduledNotifications', ids, callback, scope);
-};
-
-/**
  * List of all scheduled notifications.
  *
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllScheduled = function (callback, scope) {
+exports.getScheduled = function (callback, scope) {
     this.exec('scheduledNotifications', null, callback, scope);
-};
-
-/**
- * List of triggered notifications specified by id.
- * If called without IDs, all notification will be returned.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.getTriggered = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('triggeredNotification', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('triggeredNotifications', ids, callback, scope);
 };
 
 /**
@@ -393,7 +319,7 @@ exports.getTriggered = function () {
  * @param [ Function ]   callback The function to be exec as the callback.
  * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllTriggered = function (callback, scope) {
+exports.getTriggered = function (callback, scope) {
     this.exec('triggeredNotifications', null, callback, scope);
 };
 

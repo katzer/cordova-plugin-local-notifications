@@ -1,0 +1,21 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "NotificationExample"
+        },
+        "cordova-plugin-local-notifications": {
+            "PACKAGE_NAME": "NotificationExample"
+        }
+    },
+    "dependent_plugins": {}
+}

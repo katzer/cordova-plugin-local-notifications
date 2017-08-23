@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2013 Anis Kadri
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.test.configtest"
+    version="3.0.0">
+
+    <name>Does Code Fil Write Even Work? Hopefully the Tests Will Tell Us</name>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/widget">
+            <poop/>
+        </config-file>
+        <config-file target="res/xml/config.xml" parent="/widget">
+            <poop/>
+        </config-file>
+    </platform>
+
+    <platform name="windows">
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities">
+            <Capability Note="should-exist-for-all-appxmanifest-target-files" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions="=8.1.0">
+            <Capability Note="should-exist-for-win81-win-and-phone" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions="=8.1.0" device-target="windows">
+            <Capability Note="should-exist-for-win81-win-only" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions="=8.1.0" device-target="phone">
+            <Capability Note="should-exist-for-win81-phone-only" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions="=8.1.0" device-target="all">
+            <Capability Note="should-exist-for-win81-win-and-phone" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions="<=10.0.0" device-target="all">
+            <Capability Note="should-exist-for-win10-and-win81-win-and-phone" />
+        </config-file>
+        <config-file target="package.appxmanifest" parent="/Parent/Capabilities" versions=">=10.0.0">
+            <Capability Note="should-exist-in-win10-only" />
+        </config-file>
+    </platform>
+</plugin>

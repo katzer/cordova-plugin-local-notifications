@@ -1,0 +1,99 @@
+﻿/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
+/* Container */
+.extendedSplashScreen {
+    background-color:#464646;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    text-align: center;
+    z-index: 2147483647;
+}
+
+.extendedSplashScreen.hidden {
+    display: none;
+}
+
+#extendedSplashImageHelper {
+    vertical-align: middle;
+    display: inline-block;
+    height: 100%;
+}
+
+#extendedSplashImage {
+    position: absolute;
+    left: 0px;
+    max-height: 100%;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+#extendedSplashImage.phone {
+    position: relative;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+/* ProgressRing */
+.win-progress-ring.win-medium,
+.win-ring.win-medium {
+    width: 40px;
+    height: 40px;
+}
+
+.win-progress-ring:indeterminate::-ms-fill,
+.win-ring:indeterminate::-ms-fill {
+    animation-name: -ms-ring;
+}
+
+.win-progress-bar::-ms-fill,
+.win-progress-ring::-ms-fill,
+.win-ring::-ms-fill {
+    background-color: Highlight;
+}
+
+.win-ring.win-medium.extended-splash-progress-phone {
+    position: absolute;
+    width: 100%;
+    top: calc(100% - 140px);
+    text-align: center;
+    display: block;
+}
+
+.win-ring.win-medium.extended-splash-progress-wp10 {
+    position: absolute;
+    top: calc(82.5% - 20px);
+    left: calc(50% - 20px);
+}
+
+.win-ring.win-medium.extended-splash-progress-desktop {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+#extendedSplashProgress.hidden {
+    display: none;
+}

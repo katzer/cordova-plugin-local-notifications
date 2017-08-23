@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+-->
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputPath>build\windows\$(Configuration)\$(Platform)\win10\</OutputPath>
+    <IntermediateOutputPath>build\windows\bld\</IntermediateOutputPath>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>f9b0ae20-c91c-42b9-9c6e-d3bc28b4509e</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Label="CordovaBuildParameters" Condition="'$(CordovaBundlePlatforms)' != ''">
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>$(CordovaBundlePlatforms)</AppxBundlePlatforms>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0'">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).Default.props" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
+  <PropertyGroup>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <UapDefaultAssetScale>100</UapDefaultAssetScale>
+  </PropertyGroup>
+  <!--
+    MSBuild\12.0\Bin\Microsoft.Common.CurrentVersion.targets contains a "TargetPlatformVersion" check, which will throw if
+    the version is not formatted as X.Y. To workaround this check, change target platform version to 10.0 if Visual Studio
+    Version is less than 14.
+  -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' &lt; '14.0'">
+    <TargetPlatformVersion>10.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppxManifest Include="package.windows10.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <Content Exclude="images\*SplashScreenPhone*;images\*.scale-240.*" Include="images\*.png" />
+    <Content Exclude="images\*SplashScreenPhone*;images\*.scale-240.*" Include="images\*.jpg" />
+    <Content Exclude="images\*SplashScreenPhone*;images\*.scale-240.*" Include="images\*.jpeg" />
+  </ItemGroup>
+  <Import Project="CordovaApp.projitems" Label="Shared" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
+  <Target AfterTargets="ResolveAssemblyReferences" BeforeTargets="AfterResolveReferences" Condition="'$(Platform)' == 'AnyCPU'" Name="DetectMangedWinMDWithAnyCpu">
+    <Error Condition="'%(_ResolveAssemblyReferenceResolvedFiles.WinMDFile)' == 'true' AND '%(_ResolveAssemblyReferenceResolvedFiles.WinMDFileType)' == 'Managed'" Text="The following component requires .NET Native compilation which is not available when targeting 'Windows10' and 'AnyCPU'. Consider changing the targeted processor architecture to one of the following: 'x86, x64, ARM' (if you are using command line this could be done by adding '--archs' parameter, for example: 'cordova build windows --archs=x64'). %(_ResolveAssemblyReferenceResolvedFiles.Identity)" />
+    </Target>
+  <PropertyGroup>
+    <PreBuildEvent>node "$(ProjectDir)\\cordova\\prebuild-10.js"</PreBuildEvent>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+</Project>

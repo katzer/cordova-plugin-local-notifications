@@ -1,4 +1,8 @@
 /*
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
  * Version 2.0 (the 'License'). You may not use this file except in
@@ -47,12 +51,8 @@
 // Cancel all notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
 
-// If a notification with an ID is present
-- (void) isPresent:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is scheduled
-- (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is triggered
-- (void) isTriggered:(CDVInvokedUrlCommand*)command;
+// Notification type
+- (void) type:(CDVInvokedUrlCommand*)command;
 
 // List of all notification IDs
 - (void) ids:(CDVInvokedUrlCommand*)command;
@@ -63,10 +63,6 @@
 
 // Notification by id
 - (void) notification:(CDVInvokedUrlCommand*)command;
-// Scheduled notification by id
-- (void) scheduledNotification:(CDVInvokedUrlCommand*)command;
-// Triggered notification by id
-- (void) triggeredNotification:(CDVInvokedUrlCommand*)command;
 
 // List of notifications by id
 - (void) notifications:(CDVInvokedUrlCommand*)command;
