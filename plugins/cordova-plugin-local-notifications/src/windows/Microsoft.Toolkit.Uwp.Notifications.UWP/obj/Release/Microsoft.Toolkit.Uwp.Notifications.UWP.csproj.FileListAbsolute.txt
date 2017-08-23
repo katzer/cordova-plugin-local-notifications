@@ -1,0 +1,17 @@
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Release\Microsoft.Toolkit.Uwp.Notifications.xml
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Release\Microsoft.Toolkit.Uwp.Notifications.dll
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Release\Microsoft.Toolkit.Uwp.Notifications.pdb
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Release\Microsoft.Toolkit.Uwp.Notifications.pri
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\Microsoft.Toolkit.Uwp.Notifications.dll
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\Microsoft.Toolkit.Uwp.Notifications.pdb
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\priconfig.xml
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\priconfig.xml.intermediate
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\layout.resfiles
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\layout.resfiles.intermediate
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\resources.resfiles
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\resources.resfiles.intermediate
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\pri.resfiles
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\pri.resfiles.intermediate
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\qualifiers.txt
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\qualifiers.txt.intermediate
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Release\MultipleQualifiersPerDimensionFound.txt
