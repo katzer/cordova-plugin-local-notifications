@@ -60,35 +60,11 @@ exports.request = function (success, error) {
  * @return [ Void ]
  */
 exports.schedule = function (success, error, args) {
-    var options = [], actions = [];
+    var options = [];
 
     for (var i = 0, props, opts; i < args.length; i++) {
         props = args[i];
-        opts  = new LocalNotification.Options();
-
-        for (var prop in opts) {
-            if (prop != 'actions' && props[prop]) opts[prop] = props[prop];
-        }
-
-        for (var j = 0, action, btn; j < props.actions.length; j++) {
-            action = props.actions[j];
-
-            if (!action.type || action.type == 'button') {
-                btn = new LocalNotification.Button();
-            } else
-            if (action.type == 'input') {
-                btn = new LocalNotification.Input();
-            }
-
-            for (prop in btn) {
-                if (action[prop]) btn[prop] = action[prop];
-            }
-
-            actions.push(btn);
-        }
-
-        opts.actions = actions;
-
+        opts  = exports.parseOptions(props);
         options.push(opts);
     }
 
@@ -361,6 +337,60 @@ exports.clone = function (obj) {
     }
 
     return clone;
+};
+
+/**
+ * Parse notification spec into an instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Options ]
+ */
+exports.parseOptions = function (obj) {
+    var opts  = new LocalNotification.Options();
+
+    for (var prop in opts) {
+        if (prop != 'actions' && obj[prop]) {
+            opts[prop] = obj[prop];
+        }
+    }
+
+    var actions  = exports.parseActions(obj);
+    opts.actions = actions;
+
+    return opts;
+};
+
+/**
+ * Parse action specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ Array<LocalNotification.Action> ]
+ */
+exports.parseActions = function (obj) {
+    var actions = [];
+
+    if (!obj.actions) return actions;
+
+    for (var i = 0, action, btn; i < obj.actions.length; i++) {
+        action = obj.actions[i];
+
+        if (!action.type || action.type == 'button') {
+            btn = new LocalNotification.Button();
+        } else
+        if (action.type == 'input') {
+            btn = new LocalNotification.Input();
+        }
+
+        for (var prop in btn) {
+            if (action[prop]) btn[prop] = action[prop];
+        }
+
+        actions.push(btn);
+    }
+
+    return actions;
 };
 
 // Handle onclick event
