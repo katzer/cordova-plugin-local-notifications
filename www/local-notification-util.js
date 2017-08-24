@@ -28,11 +28,9 @@ exports._defaults = {
     text:    '',
     title:   '',
     sound:   'res://platform_default',
-    trigger: 'date',
     badge:   undefined,
     data:    undefined,
-    every:   undefined,
-    at:      undefined,
+    trigger: { type: 'calendar' },
     actions: [],
     actionGroupId: undefined,
     attachments: []
@@ -58,12 +56,6 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.led         = undefined;
         defaults.color       = undefined;
         break;
-    case 'iOS':
-        defaults.region        = undefined;
-        defaults.radius        = undefined;
-        defaults.notifyOnEntry = true;
-        defaults.notifyOnExit  = false;
-        break;
     }
 };
 
@@ -77,7 +69,6 @@ exports.applyPlatformSpecificOptions = function () {
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
 
-    options.at   = this.getValueFor(options, 'at', 'firstAt', 'date');
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
 
@@ -87,10 +78,6 @@ exports.mergeWithDefaults = function (options) {
 
     if (options.autoClear !== true && options.ongoing) {
         options.autoClear = false;
-    }
-
-    if (options.at === undefined || options.at === null) {
-        options.at = new Date();
     }
 
     for (var key in defaults) {
@@ -105,7 +92,7 @@ exports.mergeWithDefaults = function (options) {
 
     for (key in options) {
         if (!defaults.hasOwnProperty(key)) {
-            delete options[key];
+            // delete options[key];
             console.warn('Unknown property: ' + key);
         }
     }
@@ -148,21 +135,12 @@ exports.convertProperties = function (options) {
         }
     }
 
-    if (options.at) {
-        if (typeof options.at == 'object') {
-            options.at = options.at.getTime();
-        }
-
-        options.at = Math.round(options.at/1000);
-    }
-
     if (typeof options.data == 'object') {
         options.data = JSON.stringify(options.data);
     }
 
-    if (options.actions) {
-        this.convertActions(options);
-    }
+    this.convertTrigger(options);
+    this.convertActions(options);
 
     return options;
 };
@@ -198,6 +176,57 @@ exports.convertActions = function (options) {
 
     options.category = (options.category || 'DEFAULT_GROUP').toString();
     options.actions  = actions;
+
+    return options;
+};
+
+/**
+ * Convert the passed values for the trigger to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports.convertTrigger = function (options) {
+    var cfg      = options.trigger,
+        isDate   = Date.prototype.isPrototypeOf(cfg),
+        isObject = Object.prototype.isPrototypeOf(cfg),
+        trigger  = !isDate && isObject ? cfg : {},
+        date     = this.getValueFor(trigger, 'at', 'firstAt', 'date');
+
+    if (!trigger.type) {
+        trigger.type = trigger.center ? 'location' : 'calendar';
+    }
+
+    var isCal = trigger.type == 'calendar';
+
+    if (isCal && !date) {
+        date = this.getValueFor(options, 'at', 'firstAt', 'date') || new Date();
+    }
+
+    if (isCal) {
+        date = typeof date == 'object' ? date.getTime() : date;
+        trigger.at = Math.round(date / 1000);
+    }
+
+    if (isCal && !trigger.every && options.every) {
+        trigger.every = options.every;
+    }
+
+    if (!isCal) {
+        trigger.notifyOnEntry = !!trigger.notifyOnEntry;
+        trigger.notifyOnExit  = trigger.notifyOnExit === true;
+        trigger.radius        = trigger.radius || 5;
+    }
+
+    delete options.every;
+    delete options.at;
+    delete options.firstAt;
+    delete options.date;
+
+    options.trigger = trigger;
+
+    return options;
 };
 
 /**
