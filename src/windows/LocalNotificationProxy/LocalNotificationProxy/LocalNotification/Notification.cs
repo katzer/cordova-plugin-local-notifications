@@ -49,7 +49,15 @@
             All, Scheduled, Triggered, Unknown
         }
 
+        /// <summary>
+        /// Gets the wrapped notification options.
+        /// </summary>
         public Options Options { get; private set; }
+
+        /// <summary>
+        /// Gets the unique identifier for the toast.
+        /// </summary>
+        public string Id => $"{this.Options.Id}#{this.Options.Trigger.Occurrence}";
 
         /// <summary>
         /// Gets a ToastAudio object based on the specified sound uri.
@@ -260,8 +268,12 @@
         {
             get
             {
-                var date = DateTimeOffset.FromUnixTimeMilliseconds(this.Options.At * 1000).LocalDateTime;
+                var trigger = this.Options.Trigger;
+                var time = trigger.At;
+                var date = DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
                 var minDate = DateTime.Now.AddSeconds(0.1);
+
+                date = date.AddTicks(this.Interval.Ticks * (trigger.Occurrence - 1));
 
                 return (date < minDate) ? minDate : date;
             }
@@ -274,7 +286,7 @@
         {
             get
             {
-                switch (this.Options.Every)
+                switch (this.Options.Trigger.Every)
                 {
                     case "minute":
                         return new TimeSpan(TimeSpan.TicksPerMinute);
@@ -295,17 +307,6 @@
         public string GetXml()
         {
             return this.Options.GetXml();
-        }
-
-        /// <summary>
-        /// If the notification shall be repeating.
-        /// </summary>
-        /// <returns>True if the Every property has some value.</returns>
-        public bool IsRepeating()
-        {
-            var every = this.Options.Every;
-
-            return every != null && every.Length > 0 && !every.Equals("0");
         }
     }
 }

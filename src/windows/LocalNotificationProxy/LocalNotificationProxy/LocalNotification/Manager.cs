@@ -46,8 +46,15 @@ namespace LocalNotificationProxy.LocalNotification
         {
             foreach (Options options in notifications)
             {
-                var toast = new Builder(options).Build();
-                ToastNotifier.AddToSchedule(toast);
+                var builder = new Builder(options);
+                ScheduledToastNotification toast;
+
+                do
+                {
+                    toast = builder.Build();
+                    ToastNotifier.AddToSchedule(toast);
+                    builder.MoveNext();
+                } while (builder.HasNext());
             }
         }
 
@@ -98,29 +105,29 @@ namespace LocalNotificationProxy.LocalNotification
         public List<Options> Cancel(int[] ids)
         {
             var scheduled = ToastNotifier.GetScheduledToastNotifications();
-            var tags = new List<int>(ids);
+            var toRemove = new List<int>(ids);
+            var toClear = new List<int>(ids);
             var toasts = new List<Options>();
 
             foreach (var toast in scheduled)
             {
                 var id = int.Parse(toast.Tag);
 
-                if (tags.Contains(id))
+                if (toRemove.Contains(id))
                 {
-                    tags.Remove(id);
-                    toasts.Add(new Notification(toast).Options);
+                    toClear.Remove(id);
                     ToastNotifier.RemoveFromSchedule(toast);
-                }
 
-                if (tags.Count == 0)
-                {
-                    break;
+                    if (!this.IsPhantom(toast))
+                    {
+                        toasts.Add(new Notification(toast).Options);
+                    }
                 }
             }
 
-            if (tags.Count > 0)
+            if (toClear.Count > 0)
             {
-                toasts.AddRange(this.Clear(tags.ToArray()));
+                toasts.AddRange(this.Clear(toClear.ToArray()));
             }
 
             return toasts;
@@ -165,7 +172,10 @@ namespace LocalNotificationProxy.LocalNotification
 
                 foreach (var toast in toasts)
                 {
-                    ids.Add(int.Parse(toast.Tag));
+                    if (!this.IsPhantom(toast))
+                    {
+                        ids.Add(int.Parse(toast.Tag));
+                    }
                 }
             }
 
@@ -175,7 +185,10 @@ namespace LocalNotificationProxy.LocalNotification
 
                 foreach (var toast in toasts)
                 {
-                    ids.Add(int.Parse(toast.Tag));
+                    if (!this.IsPhantom(toast))
+                    {
+                        ids.Add(int.Parse(toast.Tag));
+                    }
                 }
             }
 
@@ -206,7 +219,10 @@ namespace LocalNotificationProxy.LocalNotification
 
                 foreach (var toast in toasts)
                 {
-                    notifications.Add(new Notification(toast));
+                    if (!this.IsPhantom(toast))
+                    {
+                        notifications.Add(new Notification(toast));
+                    }
                 }
             }
 
@@ -216,7 +232,10 @@ namespace LocalNotificationProxy.LocalNotification
 
                 foreach (var toast in toasts)
                 {
-                    notifications.Add(new Notification(toast));
+                    if (!this.IsPhantom(toast))
+                    {
+                        notifications.Add(new Notification(toast));
+                    }
                 }
             }
 
@@ -357,6 +376,26 @@ namespace LocalNotificationProxy.LocalNotification
             }
 
             return Notification.Type.Unknown;
+        }
+
+        /// <summary>
+        /// If the specified toast is only for internal reason.
+        /// </summary>
+        /// <param name="toast">The toast notification to test for.</param>
+        /// <returns>True if its an internal ("phantom") one.</returns>
+        private bool IsPhantom(ToastNotification toast)
+        {
+            return toast.Group.Length > 0;
+        }
+
+        /// <summary>
+        /// If the specified toast is only for internal reason.
+        /// </summary>
+        /// <param name="toast">The toast notification to test for.</param>
+        /// <returns>True if its an internal ("phantom") one.</returns>
+        private bool IsPhantom(ScheduledToastNotification toast)
+        {
+            return toast.Group.Length > 0;
         }
     }
 }

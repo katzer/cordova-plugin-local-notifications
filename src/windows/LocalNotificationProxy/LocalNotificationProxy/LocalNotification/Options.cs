@@ -33,7 +33,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets notification ID.
         /// </summary>
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets notification title.
@@ -61,14 +61,9 @@ namespace LocalNotificationProxy.LocalNotification
         public string Image { get; set; }
 
         /// <summary>
-        /// Gets or sets the notification fire date.
+        /// Gets or sets the notification trigger.
         /// </summary>
-        public long At { get; set; }
-
-        /// <summary>
-        /// Gets or sets the notification repeat interval.
-        /// </summary>
-        public string Every { get; set; }
+        public Trigger Trigger { get; set; }
 
         /// <summary>
         /// Gets or sets the notification user data.
@@ -98,9 +93,8 @@ namespace LocalNotificationProxy.LocalNotification
             var options = new Options();
             var node = doc.DocumentElement;
 
-            options.ID = int.Parse(node.GetAttribute("id"));
+            options.Id = int.Parse(node.GetAttribute("id"));
             options.Badge = int.Parse(node.GetAttribute("badge"));
-            options.At = int.Parse(node.GetAttribute("at"));
 
             if (node.GetAttributeNode("text") != null)
             {
@@ -120,11 +114,6 @@ namespace LocalNotificationProxy.LocalNotification
             if (node.GetAttributeNode("image") != null)
             {
                 options.Image = node.GetAttribute("image");
-            }
-
-            if (node.GetAttributeNode("every") != null)
-            {
-                options.Every = node.GetAttribute("every");
             }
 
             if (node.GetAttributeNode("data") != null)
@@ -158,9 +147,8 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var node = new XmlDocument().CreateElement("options");
 
-            node.SetAttribute("id", this.ID.ToString());
+            node.SetAttribute("id", this.Id.ToString());
             node.SetAttribute("badge", this.Badge.ToString());
-            node.SetAttribute("at", this.At.ToString());
 
             if (this.Title != null)
             {
@@ -180,11 +168,6 @@ namespace LocalNotificationProxy.LocalNotification
             if (this.Image != null)
             {
                 node.SetAttribute("image", this.Image);
-            }
-
-            if (this.Every != null)
-            {
-                node.SetAttribute("every", this.Every);
             }
 
             if (this.Data != null)

@@ -347,18 +347,44 @@ exports.clone = function (obj) {
  * @return [ LocalNotification.Options ]
  */
 exports.parseOptions = function (obj) {
-    var opts  = new LocalNotification.Options();
+    var opts   = new LocalNotification.Options(),
+        ignore = ['actions', 'trigger'];
 
     for (var prop in opts) {
-        if (prop != 'actions' && obj[prop]) {
+        if (!ignore.includes(prop) && obj[prop]) {
             opts[prop] = obj[prop];
         }
     }
+
+    var trigger  = exports.parseTrigger(obj);
+    opts.trigger = trigger;
 
     var actions  = exports.parseActions(obj);
     opts.actions = actions;
 
     return opts;
+};
+
+/**
+ * Parse trigger spec into instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Trigger ]
+ */
+exports.parseTrigger = function (obj) {
+    var trigger = new LocalNotification.Trigger(),
+        spec    = obj.trigger, val;
+
+    if (!spec) return trigger;
+
+    for (var prop in trigger) {
+        val = spec[prop];
+        if (!val) continue;
+        trigger[prop] = prop == 'every' ? val.toString() : val;
+    }
+
+    return trigger;
 };
 
 /**
