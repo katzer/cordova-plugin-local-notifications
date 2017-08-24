@@ -26,6 +26,7 @@ package de.appplant.cordova.plugin.notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationManagerCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +67,13 @@ public class Manager {
      */
     public static Manager getInstance(Context context) {
         return new Manager(context);
+    }
+
+    /**
+     * Check if app has local notification permission.
+     */
+    public boolean hasPermission () {
+        return getNotMgrCompat().areNotificationsEnabled();
     }
 
     /**
@@ -453,6 +461,13 @@ public class Manager {
     private NotificationManager getNotMgr () {
         return (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+    
+    /**
+     * Notification manager compat for the application.
+     */
+    private NotificationManagerCompat getNotMgrCompat () {
+        return NotificationManagerCompat.from(context);
     }
 
 }

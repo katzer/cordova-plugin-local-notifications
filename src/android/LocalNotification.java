@@ -134,7 +134,10 @@ public class LocalNotification extends CordovaPlugin {
 
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-                if (action.equals("schedule")) {
+                if (action.equals("hasPermission")) {
+                    hasPermission(command);
+                }
+                else if (action.equals("schedule")) {
                     schedule(args);
                     command.success();
                 }
@@ -201,6 +204,17 @@ public class LocalNotification extends CordovaPlugin {
         });
 
         return true;
+    }
+
+    /**
+     * Ask if user has enabled permission for local notifications.
+     *
+     * @param command
+     *      The callback context used when calling back into JavaScript.
+     */
+    private void hasPermission (CallbackContext command) {
+        PluginResult result = new PluginResult(PluginResult.Status.OK, getNotificationMgr().hasPermission());
+        command.sendPluginResult(result);
     }
 
     /**
