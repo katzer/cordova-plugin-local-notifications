@@ -101,13 +101,15 @@ public class Manager {
                 .setTriggerReceiver(receiver)
                 .build();
 
+        notification.cancel();
+
         notification.schedule();
 
         return notification;
     }
 
     /**
-     * Clear local notification specified by ID.
+     * Update local notification specified by ID.
      *
      * @param id
      *      The notification ID
@@ -122,8 +124,6 @@ public class Manager {
         if (notification == null)
             return null;
 
-        notification.cancel();
-
         JSONObject options = mergeJSONObjects(
                 notification.getOptions().getDict(), updates);
 
@@ -131,7 +131,16 @@ public class Manager {
             options.put("updated", true);
         } catch (JSONException ignore) {}
 
-        return schedule(options, receiver);
+        Options notificationOptions = new Options(context);
+        notificationOptions.parse(options);
+
+        Notification displayNotification = new Builder(notificationOptions)
+                .setTriggerReceiver(receiver)
+                .build();
+
+        displayNotification.schedule();
+
+        return displayNotification;
     }
 
     /**
