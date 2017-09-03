@@ -144,7 +144,7 @@ public class Builder {
         }
 
         if (smallIcon == 0) {
-            builder.setSmallIcon(options.getIcon());
+            builder.setSmallIcon(context.getApplicationInfo().icon);
         } else {
             builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getIconBitmap());
