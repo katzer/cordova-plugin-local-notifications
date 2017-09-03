@@ -121,10 +121,12 @@ public class Builder {
         long[] vibrate = options.getVibrate();
         NotificationCompat.Builder builder;
 
-        builder = new NotificationCompat.Builder(context)
-                .setDefaults(0)
-                .setContentTitle(options.getTitle())
-                .setContentText(options.getText())
+        builder = new NotificationCompat.Builder(context);
+		
+		builder.setStyle(new Notification.BigTextStyle(builder)
+				.bigText(options.getText())
+				.setBigContentTitle(options.getTitle());
+		builder.setDefaults(0)
                 .setNumber(options.getBadgeNumber())
                 .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
