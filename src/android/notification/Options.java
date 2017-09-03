@@ -241,12 +241,20 @@ public class Options {
      */
     public int getLedColor() {
         String hex = options.optString("led", null);
-
         if (hex == null) {
             return 0;
         }
-
-        int aRGB = Integer.parseInt(hex, 16);
+        if (hex.charAt(0) == "#") {
+            hex = hex.substring(1);
+        }
+        
+        int aRGB = 0;
+        try {
+            aRGB = Integer.parseInt(hex, 16);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
 
         return aRGB + 0xFF000000;
     }
@@ -298,8 +306,17 @@ public class Options {
         if (hex == null) {
             return NotificationCompat.COLOR_DEFAULT;
         }
+        if (hex.charAt(0) == "#") {
+            hex = hex.substring(1);
+        }
 
-        int aRGB = Integer.parseInt(hex, 16);
+        int aRGB = 0;
+        try {
+            aRGB = Integer.parseInt(hex, 16);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
 
         return aRGB + 0xFF000000;
     }
