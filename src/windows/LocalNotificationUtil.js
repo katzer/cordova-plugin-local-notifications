@@ -61,6 +61,9 @@ exports.getRepeatInterval = function (every) {
 
     if (every == 'hour')
         return 360000;
+        
+    if(every == 'week')
+    	return 604800000;
 
     if (!NaN(every))
         return parseInt(every) * 60000;
