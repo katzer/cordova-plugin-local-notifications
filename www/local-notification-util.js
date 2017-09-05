@@ -201,7 +201,8 @@ exports.convertTrigger = function (options) {
     var isCal = trigger.type == 'calendar';
 
     if (isCal && !date) {
-        date = this.getValueFor(options, 'at', 'firstAt', 'date') || new Date();
+        date = this.getValueFor(options, 'trigger', 'at', 'firstAt', 'date');
+        date = date || new Date();
     }
 
     if (isCal) {
@@ -211,14 +212,6 @@ exports.convertTrigger = function (options) {
 
     if (isCal && !trigger.every && options.every) {
         trigger.every = options.every;
-    }
-
-    if (!trigger.count && device.platform == 'windows') {
-        trigger.count = trigger.every ? 5 : 1;
-    }
-
-    if (trigger.every && device.platform == 'windows') {
-        trigger.every = trigger.every.toString();
     }
 
     if (!isCal) {
