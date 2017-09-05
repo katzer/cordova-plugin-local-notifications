@@ -121,6 +121,11 @@ namespace LocalNotificationProxy.LocalNotification
                 options.Data = node.GetAttribute("data");
             }
 
+            if (node.GetAttributeNode("attachments") != null)
+            {
+                options.Attachments = node.GetAttribute("attachments").Split(',');
+            }
+
             if (node.GetAttributeNode("action") != null)
             {
                 options.Action = node.GetAttribute("action");
@@ -173,6 +178,11 @@ namespace LocalNotificationProxy.LocalNotification
             if (this.Data != null)
             {
                 node.SetAttribute("data", this.Data);
+            }
+
+            if (this.Attachments != null)
+            {
+                node.SetAttribute("attachments", string.Join(",", this.Attachments));
             }
 
             if (action != null)
