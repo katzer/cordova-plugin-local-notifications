@@ -290,6 +290,9 @@
 
                 switch (every)
                 {
+                    case null:
+                    case "":
+                        return TimeSpan.Zero;
                     case "second":
                         return new TimeSpan(TimeSpan.TicksPerSecond);
                     case "minute":
