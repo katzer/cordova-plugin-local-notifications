@@ -61,6 +61,11 @@ namespace LocalNotificationProxy.LocalNotification
         public string Image { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the popup shall be visible.
+        /// </summary>
+        public bool Silent { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the notification trigger.
         /// </summary>
         public Trigger Trigger { get; set; }
@@ -126,6 +131,11 @@ namespace LocalNotificationProxy.LocalNotification
                 options.Attachments = node.GetAttribute("attachments").Split(',');
             }
 
+            if (node.GetAttributeNode("silent") != null)
+            {
+                options.Silent = true;
+            }
+
             if (node.GetAttributeNode("action") != null)
             {
                 options.Action = node.GetAttribute("action");
@@ -183,6 +193,11 @@ namespace LocalNotificationProxy.LocalNotification
             if (this.Attachments != null)
             {
                 node.SetAttribute("attachments", string.Join(",", this.Attachments));
+            }
+
+            if (this.Silent)
+            {
+                node.SetAttribute("silent", "1");
             }
 
             if (action != null)
