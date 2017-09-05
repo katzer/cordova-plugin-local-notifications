@@ -78,6 +78,20 @@ exports.schedule = function (success, error, args) {
 };
 
 /**
+ * Update notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.schedule = function (success, error, args) {
+    console.warn('LocalNotification#update is not implemented.');
+    success();
+};
+
+/**
  * Clear the notifications specified by id.
  *
  * @param [ Function ] success Success callback
