@@ -115,6 +115,16 @@
 }
 
 /**
+ * Show notification in foreground.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) silent
+{
+    return [[dict objectForKey:@"silent"] boolValue];
+}
+
+/**
  * The badge number for the notification.
  *
  * @return [ NSNumber* ]

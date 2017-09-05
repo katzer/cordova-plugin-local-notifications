@@ -30,8 +30,9 @@ exports._defaults = {
     sound:   'res://platform_default',
     badge:   undefined,
     data:    undefined,
-    trigger: { type: 'calendar' },
+    silent:  false,
     actions: [],
+    trigger: { type: 'calendar' },
     actionGroupId: undefined,
     attachments: []
 };
@@ -201,7 +202,8 @@ exports.convertTrigger = function (options) {
     var isCal = trigger.type == 'calendar';
 
     if (isCal && !date) {
-        date = this.getValueFor(options, 'trigger', 'at', 'firstAt', 'date');
+        date = this.getValueFor(options, 'at', 'firstAt', 'date');
+        date = date || isObject && !cfg.getTime ? new Date() : options.trigger;
         date = date || new Date();
     }
 
