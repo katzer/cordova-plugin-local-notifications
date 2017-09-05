@@ -57,22 +57,19 @@ exports.schedule = function (notifications, callback, scope, args) {
     this.core.schedule(notifications, callback, scope, args);
 };
 
-// /**
-//  * Update existing notifications specified by IDs in options.
-//  *
-//  * @param {Object} notifications
-//  *      The notification properties to update
-//  * @param {Function} callback
-//  *      A function to be called after the notification has been updated
-//  * @param {Object?} scope
-//  *      The scope for the callback function
-//  * @param {Object?} args
-//  *      skipPermission:true schedules the notifications immediatly without
-//  *                          registering or checking for permission
-//  */
-// exports.update = function (notifications, callback, scope, args) {
-//     this.core.update(notifications, callback, scope, args);
-// };
+/**
+ * Update notifications.
+ *
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
+ */
+exports.update = function (notifications, callback, scope, args) {
+    this.core.update(notifications, callback, scope, args);
+};
 
 /**
  * Clear the specified notifications by id.

@@ -40,8 +40,8 @@
 
 // Schedule notifications
 - (void) schedule:(CDVInvokedUrlCommand*)command;
-//// Update set of notifications
-//- (void) update:(CDVInvokedUrlCommand*)command;
+// Update set of notifications
+- (void) update:(CDVInvokedUrlCommand*)command;
 // Clear notifications by id
 - (void) clear:(CDVInvokedUrlCommand*)command;
 // Clear all notifications
