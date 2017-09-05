@@ -286,16 +286,35 @@
         {
             get
             {
-                switch (this.Options.Trigger.Every)
+                var every = this.Options.Trigger.Every;
+
+                switch (every)
                 {
+                    case "second":
+                        return new TimeSpan(TimeSpan.TicksPerSecond);
                     case "minute":
                         return new TimeSpan(TimeSpan.TicksPerMinute);
                     case "hour":
                         return new TimeSpan(TimeSpan.TicksPerHour);
                     case "day":
                         return new TimeSpan(TimeSpan.TicksPerDay);
-                    default:
-                        return TimeSpan.Zero;
+                    case "week":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 7);
+                    case "month":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 31);
+                    case "quarter":
+                        return new TimeSpan(TimeSpan.TicksPerHour * 2190);
+                    case "year":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 365);
+                }
+
+                try
+                {
+                    return TimeSpan.FromSeconds(60 * int.Parse(every));
+                }
+                catch
+                {
+                    return TimeSpan.Zero;
                 }
             }
         }
