@@ -58,7 +58,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets the notification image.
         /// </summary>
-        public string Image { get; set; }
+        public string Icon { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the popup shall be visible.
@@ -123,7 +123,7 @@ namespace LocalNotificationProxy.LocalNotification
 
             if (node.GetAttributeNode("image") != null)
             {
-                options.Image = node.GetAttribute("image");
+                options.Icon = node.GetAttribute("image");
             }
 
             if (node.GetAttributeNode("data") != null)
@@ -185,9 +185,9 @@ namespace LocalNotificationProxy.LocalNotification
                 node.SetAttribute("sound", this.Sound);
             }
 
-            if (this.Image != null)
+            if (this.Icon != null)
             {
-                node.SetAttribute("image", this.Image);
+                node.SetAttribute("image", this.Icon);
             }
 
             if (this.Data != null)

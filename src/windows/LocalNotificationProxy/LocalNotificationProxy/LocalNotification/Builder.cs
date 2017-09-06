@@ -104,7 +104,7 @@ namespace LocalNotificationProxy.LocalNotification
                             }
                         },
 
-                        AppLogoOverride = this.Content.Image
+                        AppLogoOverride = this.Content.Icon
                     }
                 },
 

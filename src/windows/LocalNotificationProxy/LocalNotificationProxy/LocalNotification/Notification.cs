@@ -101,12 +101,12 @@
         /// <summary>
         /// Gets a GenericAppLogo object based on the specified icon uri.
         /// </summary>
-        public ToastGenericAppLogo Image
+        public ToastGenericAppLogo Icon
         {
             get
             {
                 var image = new ToastGenericAppLogo();
-                var path = this.Options.Image;
+                var path = this.Options.Icon;
 
                 if (path == null || path.StartsWith("res://logo"))
                 {
