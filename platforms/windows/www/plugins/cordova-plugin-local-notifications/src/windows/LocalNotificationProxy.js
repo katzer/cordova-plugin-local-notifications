@@ -23,7 +23,41 @@
 var LocalNotification = LocalNotificationProxy.LocalNotification,
        ActivationKind = Windows.ApplicationModel.Activation.ActivationKind;
 
-var impl = new LocalNotificationProxy.LocalNotificationProxy();
+var impl  = new LocalNotificationProxy.LocalNotificationProxy(),
+    queue = [],
+    ready = false;
+
+/**
+ * Set launchDetails object.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.launch = function (success, error, args) {
+    var plugin = cordova.plugins.notification.local;
+
+    if (args.length === 0 || plugin.launchDetails) return;
+
+    plugin.launchDetails = { id: args[0], action: args[1] };
+};
+
+/**
+ * To execute all queued events.
+ *
+ * @return [ Void ]
+ */
+exports.ready = function () {
+    ready = true;
+
+    for (var i = 0; i < queue.length; i++) {
+        exports.fireEvent.apply(exports, queue[i]);
+    }
+
+    queue = [];
+};
 
 /**
  * Check permission to show notifications.
@@ -61,35 +95,11 @@ exports.request = function (success, error) {
  * @return [ Void ]
  */
 exports.schedule = function (success, error, args) {
-    var options = [], actions = [];
+    var options = [];
 
     for (var i = 0, props, opts; i < args.length; i++) {
         props = args[i];
-        opts  = new LocalNotification.Options();
-
-        for (var prop in opts) {
-            if (prop != 'actions' && props[prop]) opts[prop] = props[prop];
-        }
-
-        for (var j = 0, action, btn; j < props.actions.length; j++) {
-            action = props.actions[j];
-
-            if (!action.type || action.type == 'button') {
-                btn = new LocalNotification.Button();
-            } else
-            if (action.type == 'input') {
-                btn = new LocalNotification.Input();
-            }
-
-            for (prop in btn) {
-                if (action[prop]) btn[prop] = action[prop];
-            }
-
-            actions.push(btn);
-        }
-
-        opts.actions = actions;
-
+        opts  = exports.parseOptions(props);
         options.push(opts);
     }
 
@@ -97,6 +107,33 @@ exports.schedule = function (success, error, args) {
 
     for (i = 0; i < options.length; i++) {
         exports.fireEvent('add', options[i]);
+    }
+
+    success();
+};
+
+/**
+ * Update notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.update = function (success, error, args) {
+    var options = [];
+
+    for (var i = 0, props, opts; i < args.length; i++) {
+        props = args[i];
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.update(options);
+
+    for (i = 0; i < options.length; i++) {
+        exports.fireEvent('update', options[i]);
     }
 
     success();
@@ -299,6 +336,10 @@ exports.clicked = function (xml, input) {
         meta.text = input.first().current.value;
     }
 
+    if (!ready) {
+        exports.launch(null, null, [toast.id, event]);
+    }
+
     exports.fireEvent(event, toast, meta);
 };
 
@@ -314,6 +355,11 @@ exports.clicked = function (xml, input) {
 exports.fireEvent = function (event, toast, data) {
     var meta   = Object.assign({ event: event }, data),
         plugin = cordova.plugins.notification.local.core;
+
+    if (!ready) {
+        queue.push(arguments);
+        return;
+    }
 
     if (toast) {
         plugin.fireEvent(event, exports.clone(toast), meta);
@@ -362,6 +408,109 @@ exports.clone = function (obj) {
     }
 
     return clone;
+};
+
+/**
+ * Parse notification spec into an instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Options ]
+ */
+exports.parseOptions = function (obj) {
+    var opts   = new LocalNotification.Options(),
+        ignore = ['progressBar', 'actions', 'trigger'];
+
+    for (var prop in opts) {
+        if (!ignore.includes(prop) && obj[prop]) {
+            opts[prop] = obj[prop];
+        }
+    }
+
+    var progressBar  = exports.parseProgressBar(obj);
+    opts.progressBar = progressBar;
+
+    var trigger  = exports.parseTrigger(obj);
+    opts.trigger = trigger;
+
+    var actions  = exports.parseActions(obj);
+    opts.actions = actions;
+
+    return opts;
+};
+
+/**
+ * Parse trigger spec into instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Trigger ]
+ */
+exports.parseTrigger = function (obj) {
+    var trigger = new LocalNotification.Trigger(),
+        spec    = obj.trigger, val;
+
+    if (!spec) return trigger;
+
+    for (var prop in trigger) {
+        val = spec[prop];
+        if (!val) continue;
+        trigger[prop] = prop == 'every' ? val.toString() : val;
+    }
+
+    return trigger;
+};
+
+/**
+ * Parse action specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ Array<LocalNotification.Action> ]
+ */
+exports.parseActions = function (obj) {
+    var actions = [];
+
+    if (!obj.actions) return actions;
+
+    for (var i = 0, action, btn; i < obj.actions.length; i++) {
+        action = obj.actions[i];
+
+        if (!action.type || action.type == 'button') {
+            btn = new LocalNotification.Button();
+        } else
+        if (action.type == 'input') {
+            btn = new LocalNotification.Input();
+        }
+
+        for (var prop in btn) {
+            if (action[prop]) btn[prop] = action[prop];
+        }
+
+        actions.push(btn);
+    }
+
+    return actions;
+};
+
+/**
+ * Parse progressBar specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.ProgressBar ]
+ */
+exports.parseProgressBar = function (obj) {
+    var bar  = new LocalNotification.ProgressBar(),
+        spec = obj.progressBar;
+
+    if (!spec) return bar;
+
+    for (var prop in bar) {
+        if (spec[prop]) bar[prop] = spec[prop];
+    }
+
+    return bar;
 };
 
 // Handle onclick event

@@ -1,6 +1,12 @@
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\LocalNotificationProxy.winmd
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\LocalNotificationProxy.pdb
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\LocalNotificationProxy.pri
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.dll
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.pdb
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.xml
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.pri
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.csprojResolveAssemblyReference.cache
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.csproj.CoreCompileInputs.cache
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.winmd
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.pdb
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.winmdobj
@@ -16,8 +22,3 @@ Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotifica
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\qualifiers.txt
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\qualifiers.txt.intermediate
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\MultipleQualifiersPerDimensionFound.txt
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.dll
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.pdb
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.xml
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Debug\Microsoft.Toolkit.Uwp.Notifications.pri
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Debug\LocalNotificationProxy.csprojResolveAssemblyReference.cache

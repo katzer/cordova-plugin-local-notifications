@@ -50,6 +50,15 @@ namespace LocalNotificationProxy
         }
 
         /// <summary>
+        /// Update notifications.
+        /// </summary>
+        /// <param name="notifications">List of key-value properties</param>
+        public void Update([ReadOnlyArray] Options[] notifications)
+        {
+            this.manager.Update(notifications);
+        }
+
+        /// <summary>
         /// Clear the notifications specified by id.
         /// </summary>
         /// <param name="ids">The IDs of the notification to clear.</param>

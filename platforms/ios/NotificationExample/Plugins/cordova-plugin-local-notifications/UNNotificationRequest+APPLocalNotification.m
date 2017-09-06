@@ -65,6 +65,16 @@ static char optionsKey;
 }
 
 /**
+ * If the notification was updated.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) wasUpdated
+{
+    return [self.content userInfo][@"updatedAt"] != NULL;
+}
+
+/**
  * Encode the user info dict to JSON.
  */
 - (NSString*) encodeToJSON

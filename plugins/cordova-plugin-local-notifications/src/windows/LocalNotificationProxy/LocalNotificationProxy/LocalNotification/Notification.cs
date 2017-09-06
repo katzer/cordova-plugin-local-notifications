@@ -49,7 +49,15 @@
             All, Scheduled, Triggered, Unknown
         }
 
+        /// <summary>
+        /// Gets the wrapped notification options.
+        /// </summary>
         public Options Options { get; private set; }
+
+        /// <summary>
+        /// Gets the unique identifier for the toast.
+        /// </summary>
+        public string Id => $"{this.Options.Id}#{this.Options.Trigger.Occurrence}";
 
         /// <summary>
         /// Gets a ToastAudio object based on the specified sound uri.
@@ -93,12 +101,12 @@
         /// <summary>
         /// Gets a GenericAppLogo object based on the specified icon uri.
         /// </summary>
-        public ToastGenericAppLogo Image
+        public ToastGenericAppLogo Icon
         {
             get
             {
                 var image = new ToastGenericAppLogo();
-                var path = this.Options.Image;
+                var path = this.Options.Icon;
 
                 if (path == null || path.StartsWith("res://logo"))
                 {
@@ -254,14 +262,42 @@
         }
 
         /// <summary>
+        /// Gets the progress bar widget.
+        /// </summary>
+        public AdaptiveProgressBar ProgressBar
+        {
+            get
+            {
+                var bar = this.Options.ProgressBar;
+
+                if (!bar.Enabled)
+                {
+                    return null;
+                }
+
+                return new AdaptiveProgressBar()
+                {
+                    Title = bar.Title,
+                    Value = new BindableProgressBarValue("progress.value"),
+                    ValueStringOverride = new BindableString("progress.description"),
+                    Status = new BindableString("progress.status")
+                };
+            }
+        }
+
+        /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
         public DateTime Date
         {
             get
             {
-                var date = DateTimeOffset.FromUnixTimeMilliseconds(this.Options.At * 1000).LocalDateTime;
+                var trigger = this.Options.Trigger;
+                var time = trigger.At;
+                var date = DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
                 var minDate = DateTime.Now.AddSeconds(0.1);
+
+                date = date.AddTicks(this.Interval.Ticks * (trigger.Occurrence - 1));
 
                 return (date < minDate) ? minDate : date;
             }
@@ -274,16 +310,38 @@
         {
             get
             {
-                switch (this.Options.Every)
+                var every = this.Options.Trigger.Every;
+
+                switch (every)
                 {
+                    case null:
+                    case "":
+                        return TimeSpan.Zero;
+                    case "second":
+                        return new TimeSpan(TimeSpan.TicksPerSecond);
                     case "minute":
                         return new TimeSpan(TimeSpan.TicksPerMinute);
                     case "hour":
                         return new TimeSpan(TimeSpan.TicksPerHour);
                     case "day":
                         return new TimeSpan(TimeSpan.TicksPerDay);
-                    default:
-                        return TimeSpan.Zero;
+                    case "week":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 7);
+                    case "month":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 31);
+                    case "quarter":
+                        return new TimeSpan(TimeSpan.TicksPerHour * 2190);
+                    case "year":
+                        return new TimeSpan(TimeSpan.TicksPerDay * 365);
+                }
+
+                try
+                {
+                    return TimeSpan.FromSeconds(60 * int.Parse(every));
+                }
+                catch
+                {
+                    return TimeSpan.Zero;
                 }
             }
         }
@@ -295,17 +353,6 @@
         public string GetXml()
         {
             return this.Options.GetXml();
-        }
-
-        /// <summary>
-        /// If the notification shall be repeating.
-        /// </summary>
-        /// <returns>True if the Every property has some value.</returns>
-        public bool IsRepeating()
-        {
-            var every = this.Options.Every;
-
-            return every != null && every.Length > 0 && !every.Equals("0");
         }
     }
 }

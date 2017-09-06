@@ -21,3 +21,4 @@ Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotifica
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Release\Microsoft.Toolkit.Uwp.Notifications.pdb
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Release\Microsoft.Toolkit.Uwp.Notifications.xml
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\bin\ARM\Release\Microsoft.Toolkit.Uwp.Notifications.pri
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\ARM\Release\LocalNotificationProxy.csproj.CoreCompileInputs.cache

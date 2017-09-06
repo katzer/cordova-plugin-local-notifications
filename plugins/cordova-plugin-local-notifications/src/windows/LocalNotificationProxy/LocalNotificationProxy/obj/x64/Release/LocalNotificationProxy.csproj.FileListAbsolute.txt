@@ -21,3 +21,4 @@ Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotifica
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\x64\Release\qualifiers.txt.intermediate
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\x64\Release\MultipleQualifiersPerDimensionFound.txt
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\x64\Release\LocalNotificationProxy.csprojResolveAssemblyReference.cache
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\LocalNotificationProxy\LocalNotificationProxy\obj\x64\Release\LocalNotificationProxy.csproj.CoreCompileInputs.cache

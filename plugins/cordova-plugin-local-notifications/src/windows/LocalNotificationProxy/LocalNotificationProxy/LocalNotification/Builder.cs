@@ -30,20 +30,25 @@ namespace LocalNotificationProxy.LocalNotification
         /// Initializes a new instance of the <see cref="Builder"/> class.
         /// </summary>
         /// <param name="options">Notification properties to set.</param>
-        internal Builder(Options options)
+        public Builder(Options options)
         {
             this.Content = new Notification(options);
         }
 
         /// <summary>
-        /// Gets content
+        /// Gets the content.
         /// </summary>
         public Notification Content { get; private set; }
 
         /// <summary>
-        /// Gets options
+        /// Gets the options.
         /// </summary>
         private Options Options { get => this.Content.Options; }
+
+        /// <summary>
+        /// Gets the trigger.
+        /// </summary>
+        private Trigger Trigger { get => this.Options.Trigger; }
 
         /// <summary>
         /// Build a toast notification specified by the options.
@@ -53,11 +58,23 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var toast = this.InitToast();
 
+            this.AddProgressBarToToast(toast);
             this.AddAttachmentsToToast(toast);
             this.AddActionsToToast(toast);
 
             return this.ConvertToastToNotification(toast);
         }
+
+        /// <summary>
+        /// If there is at least one more toast variant to build.
+        /// </summary>
+        /// <returns>True if there are more toasts to build.</returns>
+        public bool HasNext() => this.Trigger.Count > this.Trigger.Occurrence;
+
+        /// <summary>
+        /// Moves the flag to the next toast variant.
+        /// </summary>
+        public void MoveNext() => this.Trigger.Occurrence += this.HasNext() ? 1 : 0;
 
         /// <summary>
         /// Gets the initialize skeleton for a toast notification.
@@ -87,7 +104,7 @@ namespace LocalNotificationProxy.LocalNotification
                             }
                         },
 
-                        AppLogoOverride = this.Content.Image
+                        AppLogoOverride = this.Content.Icon
                     }
                 },
 
@@ -97,6 +114,20 @@ namespace LocalNotificationProxy.LocalNotification
                     Inputs = { }
                 }
             };
+        }
+
+        /// <summary>
+        /// Adds optional progress bar to the toast.
+        /// </summary>
+        /// <param name="toast">Tho toast to extend for.</param>
+        private void AddProgressBarToToast(ToastContent toast)
+        {
+            var progressBar = this.Content.ProgressBar;
+
+            if (progressBar != null)
+            {
+                toast.Visual.BindingGeneric.Children.Add(progressBar);
+            }
         }
 
         /// <summary>
@@ -137,20 +168,16 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var xml = toast.GetXml();
             var at = this.Content.Date;
-            ScheduledToastNotification notification;
+            var notification = new ScheduledToastNotification(xml, at);
 
-            if (this.Content.IsRepeating())
-            {
-                var interval = this.Content.Interval;
-                notification = new ScheduledToastNotification(xml, at, interval, 5);
-            }
-            else
-            {
-                notification = new ScheduledToastNotification(xml, at);
-            }
+            notification.Id = this.Content.Id;
+            notification.Tag = this.Options.Id.ToString();
+            notification.SuppressPopup = this.Options.Silent;
 
-            notification.Id = this.Options.ID.ToString();
-            notification.Tag = notification.Id;
+            if (this.Trigger.Occurrence > 1)
+            {
+                notification.Group = notification.Tag;
+            }
 
             return notification;
         }

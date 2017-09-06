@@ -51,32 +51,34 @@ var app = {
     },
     // Initialize plugin
     pluginInitialize: function() {
-        document.getElementById('granted').onclick        = app.hasPermission;
-        document.getElementById('request').onclick        = app.askPermission;
-        document.getElementById('sched_single').onclick   = app.scheduleSingle;
-        document.getElementById('sched_multi').onclick    = app.scheduleMultiple;
-        document.getElementById('sched_delayed').onclick  = app.scheduleDelayed;
-        document.getElementById('sched_interval').onclick = app.scheduleInterval;
-        document.getElementById('sched_actions').onclick  = app.scheduleActions;
-        document.getElementById('clear_single').onclick   = app.clearSingle;
-        document.getElementById('clear_multi').onclick    = app.clearMulti;
-        document.getElementById('clear_all').onclick      = app.clearAll;
-        document.getElementById('cancel_single').onclick  = app.cancelSingle;
-        document.getElementById('cancel_multi').onclick   = app.cancelMulti;
-        document.getElementById('cancel_all').onclick     = app.cancelAll;
-        document.getElementById('present?').onclick       = app.isPresent;
-        document.getElementById('scheduled?').onclick     = app.isScheduled;
-        document.getElementById('triggered?').onclick     = app.isTriggered;
-        document.getElementById('type').onclick           = app.type;
-        document.getElementById('ids').onclick            = app.ids;
-        document.getElementById('scheduled_ids').onclick  = app.scheduledIds;
-        document.getElementById('triggered_ids').onclick  = app.triggeredIds;
-        document.getElementById('scheduled_nots').onclick = app.scheduledNots;
-        document.getElementById('triggered_nots').onclick = app.triggeredNots;
-        document.getElementById('notification').onclick   = app.notification;
-        document.getElementById('multiple_nots').onclick  = app.multipleNots;
-        document.getElementById('notifications').onclick  = app.notifications;
-        document.getElementById('defaults').onclick       = app.setDefaultTitle;
+        document.getElementById('granted').onclick         = app.hasPermission;
+        document.getElementById('request').onclick         = app.askPermission;
+        document.getElementById('sched_single').onclick    = app.scheduleSingle;
+        document.getElementById('sched_multi').onclick     = app.scheduleMultiple;
+        document.getElementById('sched_delayed').onclick   = app.scheduleDelayed;
+        document.getElementById('sched_interval').onclick  = app.scheduleInterval;
+        document.getElementById('sched_actions').onclick   = app.scheduleActions;
+        document.getElementById('update_text').onclick     = app.update;
+        document.getElementById('update_interval').onclick = app.updateInterval;
+        document.getElementById('clear_single').onclick    = app.clearSingle;
+        document.getElementById('clear_multi').onclick     = app.clearMulti;
+        document.getElementById('clear_all').onclick       = app.clearAll;
+        document.getElementById('cancel_single').onclick   = app.cancelSingle;
+        document.getElementById('cancel_multi').onclick    = app.cancelMulti;
+        document.getElementById('cancel_all').onclick      = app.cancelAll;
+        document.getElementById('present?').onclick        = app.isPresent;
+        document.getElementById('scheduled?').onclick      = app.isScheduled;
+        document.getElementById('triggered?').onclick      = app.isTriggered;
+        document.getElementById('type').onclick            = app.type;
+        document.getElementById('ids').onclick             = app.ids;
+        document.getElementById('scheduled_ids').onclick   = app.scheduledIds;
+        document.getElementById('triggered_ids').onclick   = app.triggeredIds;
+        document.getElementById('scheduled_nots').onclick  = app.scheduledNots;
+        document.getElementById('triggered_nots').onclick  = app.triggeredNots;
+        document.getElementById('notification').onclick    = app.notification;
+        document.getElementById('multiple_nots').onclick   = app.multipleNots;
+        document.getElementById('notifications').onclick   = app.notifications;
+        document.getElementById('defaults').onclick        = app.setDefaultTitle;
 
         var details = cordova.plugins.notification.local.launchDetails;
 
@@ -100,7 +102,8 @@ var app = {
     scheduleSingle: function () {
         cordova.plugins.notification.local.schedule({
             id: 1,
-            text: 'Test Message 1',
+            title: 'Test Message',
+            text: 'My first notification',
             icon: 'http://3.bp.blogspot.com/-Qdsy-GpempY/UU_BN9LTqSI/AAAAAAAAAMA/LkwLW2yNBJ4/s1600/supersu.png',
             smallIcon: 'res://cordova',
             sound: null,
@@ -131,25 +134,25 @@ var app = {
         var now             = new Date().getTime(),
             _5_sec_from_now = new Date(now + 5 * 1000);
 
-        var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+        var sound = device.platform != 'iOS' ? 'file://sound.mp3' : 'file://beep.caf';
 
         cordova.plugins.notification.local.schedule({
             id: 1,
             title: 'Scheduled with delay',
             text: 'Test Message 1',
-            at: _5_sec_from_now,
+            trigger: _5_sec_from_now,
             sound: sound,
             badge: 12
         });
     },
     // Schedule a repeating notification
     scheduleInterval: function () {
-        var sound = device.platform == 'Android' ? 'file://sound.mp3' : 'file://beep.caf';
+        var sound = device.platform != 'iOS' ? 'file://sound.mp3' : 'file://beep.caf';
 
         cordova.plugins.notification.local.schedule({
             id: 1,
             text: 'Scheduled every minute',
-            every: 'minute',
+            trigger: { every: 'minute' },
             sound: sound,
             icon: 'res://icon',
             smallIcon: 'res://ic_popup_sync'
@@ -160,6 +163,7 @@ var app = {
         cordova.plugins.notification.local.schedule({
             title: 'Local Notification Plugin',
             text: 'Made by appPlant from Leipzig/Germany',
+            icon: 'file://img/avatar.jpg?crop=cirlce',
             attachments: ['file://img/logo.png'],
             actionGroupId: 'like-dislike',
             actions: [{
@@ -179,6 +183,27 @@ var app = {
                 emptyText: 'Enter feedback',
                 submitTitle: 'Send'
             }]
+        });
+    },
+    // Update notification text
+    update: function () {
+        cordova.plugins.notification.local.update({
+            id: 1,
+            title: 'Updated Message 1',
+            text: 'New icon :)',
+            icon: 'res://icon',
+            color: 'FF0000',
+            attachments: ['file://img/logo.png'],
+            data: { updated: true }
+        });
+    },
+    // Update trigger interval
+    updateInterval: function () {
+        cordova.plugins.notification.local.update({
+            id: 1,
+            title: 'Updated Message 1',
+            text: 'Triggeres every minute',
+            every: 'minute'
         });
     },
     // Clear a single notification
@@ -298,7 +323,7 @@ var app = {
         });
         cordova.plugins.notification.local.on('update', function (obj) {
             console.log('update', arguments);
-            // showToast('updated: ' + obj.id);
+            showToast('updated: ' + obj.id);
         });
         cordova.plugins.notification.local.on('trigger', function (obj) {
             console.log('trigger', arguments);
@@ -371,7 +396,7 @@ showWinDialog = function (text) {
 };
 
 if (window.hasOwnProperty('Windows')) {
-    alert = function (msg) { new Windows.UI.Popups.MessageDialog(msg).showAsync(); };
+    alert = showWinDialog;
 }
 
 app.initialize();

@@ -1208,7 +1208,7 @@
         </member>
         <member name="P:Microsoft.Toolkit.Uwp.Notifications.ToastActivationOptions.AfterActivationBehavior">
             <summary>
-            Not supported on Windows: Specifies the behavior that the toast should use when the user invokes this action. Note that this option only works on <see cref="T:Microsoft.Toolkit.Uwp.Notifications.ToastButton"/> and <see cref="T:Microsoft.Toolkit.Uwp.Notifications.ToastContextMenuItem"/>.
+            New in Fall Creators Update: Specifies the behavior that the toast should use when the user invokes this action. Note that this option only works on <see cref="T:Microsoft.Toolkit.Uwp.Notifications.ToastButton"/> and <see cref="T:Microsoft.Toolkit.Uwp.Notifications.ToastContextMenuItem"/>. Desktop-only, supported in builds 16251 or higher.
             </summary>
         </member>
         <member name="T:Microsoft.Toolkit.Uwp.Notifications.IToastBindingGenericChild">

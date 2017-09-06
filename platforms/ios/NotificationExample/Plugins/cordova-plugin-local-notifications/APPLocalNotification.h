@@ -26,9 +26,9 @@
 @interface APPLocalNotification : CDVPlugin <UNUserNotificationCenterDelegate>
 
 // Set launchDetails object
-- (void) launchDetails:(CDVInvokedUrlCommand*)command;
+- (void) launch:(CDVInvokedUrlCommand*)command;
 // Execute all queued events
-- (void) deviceready:(CDVInvokedUrlCommand*)command;
+- (void) ready:(CDVInvokedUrlCommand*)command;
 
 // Check permission to show notifications
 - (void) check:(CDVInvokedUrlCommand*)command;
@@ -40,8 +40,8 @@
 
 // Schedule notifications
 - (void) schedule:(CDVInvokedUrlCommand*)command;
-//// Update set of notifications
-//- (void) update:(CDVInvokedUrlCommand*)command;
+// Update set of notifications
+- (void) update:(CDVInvokedUrlCommand*)command;
 // Clear notifications by id
 - (void) clear:(CDVInvokedUrlCommand*)command;
 // Clear all notifications

@@ -2,6 +2,7 @@ Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Too
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Debug\Microsoft.Toolkit.Uwp.Notifications.dll
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Debug\Microsoft.Toolkit.Uwp.Notifications.pdb
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\bin\Debug\Microsoft.Toolkit.Uwp.Notifications.pri
+Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\Microsoft.Toolkit.Uwp.Notifications.UWP.csproj.CoreCompileInputs.cache
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\Microsoft.Toolkit.Uwp.Notifications.dll
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\Microsoft.Toolkit.Uwp.Notifications.pdb
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\priconfig.xml
@@ -15,4 +16,3 @@ Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Too
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\qualifiers.txt
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\qualifiers.txt.intermediate
 Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\MultipleQualifiersPerDimensionFound.txt
-Z:\Documents\github\cordova-plugin-local-notifications\src\windows\Microsoft.Toolkit.Uwp.Notifications.UWP\obj\Debug\Microsoft.Toolkit.Uwp.Notifications.UWP.csprojResolveAssemblyReference.cache

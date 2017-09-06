@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     "UAP,Version=v10.0.15063": {
       "Microsoft.CSharp/4.0.0": {
@@ -2149,10 +2149,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -4398,10 +4404,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -6681,10 +6693,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -8939,10 +8957,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -11231,10 +11255,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -13489,10 +13519,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     },
@@ -15781,10 +15817,16 @@
       },
       "Microsoft.Toolkit.Uwp.Notifications.UWP/1.0.0": {
         "type": "project",
-        "framework": "UAP,Version=v10.0",
+        "framework": "UAP,Version=v10.0.10240",
         "dependencies": {
           "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
           "StyleCop.Analyzers": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Microsoft.Toolkit.Uwp.Notifications.UWP.dll": {}
         }
       }
     }
@@ -21578,11 +21620,21 @@
       "projectUniqueName": "Z:\\Documents\\github\\cordova-plugin-local-notifications\\src\\windows\\LocalNotificationProxy\\LocalNotificationProxy\\LocalNotificationProxy.csproj",
       "projectName": "LocalNotificationProxy",
       "projectPath": "Z:\\Documents\\github\\cordova-plugin-local-notifications\\src\\windows\\LocalNotificationProxy\\LocalNotificationProxy\\LocalNotificationProxy.csproj",
+      "packagesPath": "C:\\Users\\katze\\.nuget\\packages\\",
       "outputPath": "Z:\\Documents\\github\\cordova-plugin-local-notifications\\src\\windows\\LocalNotificationProxy\\LocalNotificationProxy\\obj\\",
       "projectStyle": "PackageReference",
+      "skipContentFileWrite": true,
+      "configFilePaths": [
+        "C:\\Users\\katze\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
       "originalTargetFrameworks": [
         "uap10.0.15063"
       ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
       "frameworks": {
         "uap10.0.15063": {
           "projectReferences": {
@@ -21637,5 +21689,39 @@
         "#import": []
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Ein Downgrade des Pakets \"Microsoft.NETCore\" von 5.0.2 auf 5.0.0 wurde festgestellt. Verweisen Sie direkt aus dem Projekt auf das Paket, um eine andere Version auszuwählen. \r\n LocalNotificationProxy (>= 1.0.0) -> Microsoft.Toolkit.Uwp.Notifications.UWP (>= 1.0.0) -> Microsoft.NETCore.UniversalWindowsPlatform (>= 5.2.3) -> Microsoft.NETCore (>= 5.0.2) \r\n LocalNotificationProxy (>= 1.0.0) -> Microsoft.NETCore (>= 5.0.0)",
+      "libraryId": "Microsoft.NETCore",
+      "targetGraphs": [
+        "UAP,Version=v10.0.15063",
+        "UAP,Version=v10.0.15063/win10-arm",
+        "UAP,Version=v10.0.15063/win10-arm-aot",
+        "UAP,Version=v10.0.15063/win10-x64",
+        "UAP,Version=v10.0.15063/win10-x64-aot",
+        "UAP,Version=v10.0.15063/win10-x86",
+        "UAP,Version=v10.0.15063/win10-x86-aot"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Ein Downgrade des Pakets \"Microsoft.NETCore.Portable.Compatibility\" von 1.0.2 auf 1.0.1 wurde festgestellt. Verweisen Sie direkt aus dem Projekt auf das Paket, um eine andere Version auszuwählen. \r\n LocalNotificationProxy (>= 1.0.0) -> Microsoft.Toolkit.Uwp.Notifications.UWP (>= 1.0.0) -> Microsoft.NETCore.UniversalWindowsPlatform (>= 5.2.3) -> Microsoft.NETCore.Portable.Compatibility (>= 1.0.2) \r\n LocalNotificationProxy (>= 1.0.0) -> Microsoft.NETCore.Portable.Compatibility (>= 1.0.1)",
+      "libraryId": "Microsoft.NETCore.Portable.Compatibility",
+      "targetGraphs": [
+        "UAP,Version=v10.0.15063",
+        "UAP,Version=v10.0.15063/win10-arm",
+        "UAP,Version=v10.0.15063/win10-arm-aot",
+        "UAP,Version=v10.0.15063/win10-x64",
+        "UAP,Version=v10.0.15063/win10-x64-aot",
+        "UAP,Version=v10.0.15063/win10-x86",
+        "UAP,Version=v10.0.15063/win10-x86-aot"
+      ]
+    }
+  ]
 }

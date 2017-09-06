@@ -83,41 +83,38 @@ exports.schedule = function (msgs, callback, scope, args) {
     }
 };
 
-// /**
-//  * Update existing notifications specified by IDs in options.
-//  *
-//  * @param {Object} notifications
-//  *      The notification properties to update
-//  * @param {Function} callback
-//  *      A function to be called after the notification has been updated
-//  * @param {Object?} scope
-//  *      The scope for the callback function
-//  * @param {Object?} args
-//  *      skipPermission:true schedules the notifications immediatly without
-//  *                          registering or checking for permission
-//  */
-// exports.update = function (msgs, callback, scope, args) {
-//     var fn = function(granted) {
+/**
+ * Schedule notifications.
+ *
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
+ */
+exports.update = function (msgs, callback, scope, args) {
+    var fn = function(granted) {
 
-//         if (!granted) return;
+        if (!granted) return;
 
-//         var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        var notifications = Array.isArray(msgs) ? msgs : [msgs];
 
-//         for (var i = 0; i < notifications.length; i++) {
-//             var notification = notifications[i];
+        for (var i = 0; i < notifications.length; i++) {
+            var notification = notifications[i];
 
-//             this.convertProperties(notification);
-//         }
+            this.convertProperties(notification);
+        }
 
-//         this.exec('update', notifications, callback, scope);
-//     };
+        this.exec('update', notifications, callback, scope);
+    };
 
-//     if (args && args.skipPermission) {
-//         fn.call(this, true);
-//     } else {
-//         this.registerPermission(fn, this);
-//     }
-// };
+    if (args && args.skipPermission) {
+        fn.call(this, true);
+    } else {
+        this.requestPermission(fn, this);
+    }
+};
 
 /**
  * Clear the specified notifications by id.

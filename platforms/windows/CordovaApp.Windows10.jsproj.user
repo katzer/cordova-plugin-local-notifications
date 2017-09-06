@@ -13,4 +13,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(UseDotNetNativeToolchain)'=='Release|x86|true'">
+    <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoRefresh>false</AutoRefresh>
+  </PropertyGroup>
 </Project>

@@ -61,18 +61,6 @@
 #pragma mark Properties
 
 /**
- * The type for the notification.
- *
- * @return [ NSString* ]
- */
-- (NSString*) triggerType
-{
-    NSString* type = [dict objectForKey:@"trigger"];
-
-    return type.length ? type : @"normal";
-}
-
-/**
  * The ID for the notification.
  *
  * @return [ NSNumber* ]
@@ -124,6 +112,16 @@
 - (NSString*) text
 {
     return [dict objectForKey:@"text"];
+}
+
+/**
+ * Show notification in foreground.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) silent
+{
+    return [[dict objectForKey:@"silent"] boolValue];
 }
 
 /**
@@ -280,12 +278,12 @@
  */
 - (UNNotificationTrigger*) trigger
 {
-    NSString* type = [self triggerType];
+    NSString* type = [self valueForTriggerOption:@"type"];
 
     if ([type isEqualToString:@"location"])
         return [self triggerWithRegion];
 
-    if (![type isEqualToString:@"date"])
+    if (![type isEqualToString:@"calendar"])
         NSLog(@"Unknown type: %@", type);
 
     if ([self isRepeating])
@@ -315,6 +313,11 @@
 #pragma mark -
 #pragma mark Private
 
+- (id) valueForTriggerOption:(NSString*)key
+{
+    return [[dict objectForKey:@"trigger"] objectForKey:key];
+}
+
 /**
  * The date when to fire the notification.
  *
@@ -322,8 +325,7 @@
  */
 - (NSDate*) triggerDate
 {
-    double timestamp = [[dict objectForKey:@"at"]
-                        doubleValue];
+    double timestamp = [[self valueForTriggerOption:@"at"] doubleValue];
 
     return [NSDate dateWithTimeIntervalSince1970:timestamp];
 }
@@ -335,7 +337,7 @@
  */
 - (BOOL) isRepeating
 {
-    id every = [dict objectForKey:@"every"];
+    id every = [self valueForTriggerOption:@"every"];
 
     if ([every isKindOfClass:NSString.class])
         return ((NSString*) every).length > 0;
@@ -364,7 +366,7 @@
  */
 - (UNNotificationTrigger*) repeatingTrigger
 {
-    id every = [dict objectForKey:@"every"];
+    id every = [self valueForTriggerOption:@"every"];
 
     if ([every isKindOfClass:NSString.class])
         return [self triggerWithDateMatchingComponents];
@@ -382,7 +384,7 @@
  */
 - (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
 {
-    long interval = [[dict objectForKey:@"every"] longValue];
+    long interval = [[self valueForTriggerOption:@"every"] longValue];
 
     if (interval < 60) {
         NSLog(@"time interval must be at least 60 if repeating");
@@ -438,8 +440,8 @@
  */
 - (UNLocationNotificationTrigger*) triggerWithRegion
 {
-    NSArray* center = [dict objectForKey:@"center"];
-    double radius = [[dict objectForKey:@"radius"] doubleValue];
+    NSArray* center = [self valueForTriggerOption:@"center"];
+    double radius   = [[self valueForTriggerOption:@"radius"] doubleValue];
 
     CLLocationCoordinate2D coord =
     CLLocationCoordinate2DMake([center[0] doubleValue], [center[1] doubleValue]);
@@ -449,8 +451,8 @@
                                       radius:radius
                                   identifier:self.identifier];
 
-    region.notifyOnEntry = [[dict objectForKey:@"notifyOnEntry"] boolValue];
-    region.notifyOnExit  = [[dict objectForKey:@"notifyOnExit"] boolValue];
+    region.notifyOnEntry = [[self valueForTriggerOption:@"notifyOnEntry"] boolValue];
+    region.notifyOnExit  = [[self valueForTriggerOption:@"notifyOnExit"] boolValue];
 
     return [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
 }
@@ -472,7 +474,7 @@
  */
 - (NSCalendarUnit) repeatInterval
 {
-    NSString* interval = [dict objectForKey:@"every"];
+    NSString* interval = [self valueForTriggerOption:@"every"];
     NSCalendarUnit units = NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
     if ([interval isEqualToString:@"minute"])
@@ -504,7 +506,7 @@
 - (NSDateComponents*) customDateComponents
 {
     NSDateComponents* date  = [[NSDateComponents alloc] init];
-    NSDictionary* every     = [dict objectForKey:@"every"];
+    NSDictionary* every     = [self valueForTriggerOption:@"every"];
 
     for (NSString* key in every) {
         long value = [[every valueForKey:key] longValue];

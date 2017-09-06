@@ -33,7 +33,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets notification ID.
         /// </summary>
-        public int ID { get; set; }
+        public int Id { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets notification title.
@@ -58,17 +58,17 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets the notification image.
         /// </summary>
-        public string Image { get; set; }
+        public string Icon { get; set; }
 
         /// <summary>
-        /// Gets or sets the notification fire date.
+        /// Gets or sets a value indicating whether the popup shall be visible.
         /// </summary>
-        public long At { get; set; }
+        public bool Silent { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the notification repeat interval.
+        /// Gets or sets the notification trigger.
         /// </summary>
-        public string Every { get; set; }
+        public Trigger Trigger { get; set; }
 
         /// <summary>
         /// Gets or sets the notification user data.
@@ -86,6 +86,11 @@ namespace LocalNotificationProxy.LocalNotification
         public IAction[] Actions { get; set; }
 
         /// <summary>
+        /// Gets or sets the notification progress bar.
+        /// </summary>
+        public ProgressBar ProgressBar { get; set; }
+
+        /// <summary>
         /// Deserializes the XML string into an instance of Options.
         /// </summary>
         /// <param name="identifier">The serialized instance of Options as an xml string.</param>
@@ -98,9 +103,8 @@ namespace LocalNotificationProxy.LocalNotification
             var options = new Options();
             var node = doc.DocumentElement;
 
-            options.ID = int.Parse(node.GetAttribute("id"));
+            options.Id = int.Parse(node.GetAttribute("id"));
             options.Badge = int.Parse(node.GetAttribute("badge"));
-            options.At = int.Parse(node.GetAttribute("at"));
 
             if (node.GetAttributeNode("text") != null)
             {
@@ -119,17 +123,22 @@ namespace LocalNotificationProxy.LocalNotification
 
             if (node.GetAttributeNode("image") != null)
             {
-                options.Image = node.GetAttribute("image");
-            }
-
-            if (node.GetAttributeNode("every") != null)
-            {
-                options.Every = node.GetAttribute("every");
+                options.Icon = node.GetAttribute("image");
             }
 
             if (node.GetAttributeNode("data") != null)
             {
                 options.Data = node.GetAttribute("data");
+            }
+
+            if (node.GetAttributeNode("attachments") != null)
+            {
+                options.Attachments = node.GetAttribute("attachments").Split(',');
+            }
+
+            if (node.GetAttributeNode("silent") != null)
+            {
+                options.Silent = true;
             }
 
             if (node.GetAttributeNode("action") != null)
@@ -158,9 +167,8 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var node = new XmlDocument().CreateElement("options");
 
-            node.SetAttribute("id", this.ID.ToString());
+            node.SetAttribute("id", this.Id.ToString());
             node.SetAttribute("badge", this.Badge.ToString());
-            node.SetAttribute("at", this.At.ToString());
 
             if (this.Title != null)
             {
@@ -177,19 +185,24 @@ namespace LocalNotificationProxy.LocalNotification
                 node.SetAttribute("sound", this.Sound);
             }
 
-            if (this.Image != null)
+            if (this.Icon != null)
             {
-                node.SetAttribute("image", this.Image);
-            }
-
-            if (this.Every != null)
-            {
-                node.SetAttribute("every", this.Every);
+                node.SetAttribute("image", this.Icon);
             }
 
             if (this.Data != null)
             {
                 node.SetAttribute("data", this.Data);
+            }
+
+            if (this.Attachments != null)
+            {
+                node.SetAttribute("attachments", string.Join(",", this.Attachments));
+            }
+
+            if (this.Silent)
+            {
+                node.SetAttribute("silent", "1");
             }
 
             if (action != null)

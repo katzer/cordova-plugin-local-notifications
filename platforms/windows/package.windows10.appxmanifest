@@ -21,7 +21,9 @@
         <uap:DefaultTile ShortName="NotificationExample" Square310x310Logo="images\Square310x310Logo.png" Square71x71Logo="images\Square71x71Logo.png" Wide310x150Logo="images\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:InitialRotationPreference>
+          <uap:Rotation Preference="portrait" />
           <uap:Rotation Preference="landscape" />
+          <uap:Rotation Preference="landscapeFlipped" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
       <uap:ApplicationContentUriRules>
