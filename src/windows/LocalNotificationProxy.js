@@ -87,7 +87,20 @@ exports.schedule = function (success, error, args) {
  * @return [ Void ]
  */
 exports.update = function (success, error, args) {
-    console.warn('LocalNotification#update is not implemented.');
+    var options = [];
+
+    for (var i = 0, props, opts; i < args.length; i++) {
+        props = args[i];
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.update(options);
+
+    for (i = 0; i < options.length; i++) {
+        exports.fireEvent('update', options[i]);
+    }
+
     success();
 };
 
@@ -362,13 +375,16 @@ exports.clone = function (obj) {
  */
 exports.parseOptions = function (obj) {
     var opts   = new LocalNotification.Options(),
-        ignore = ['actions', 'trigger'];
+        ignore = ['progressBar', 'actions', 'trigger'];
 
     for (var prop in opts) {
         if (!ignore.includes(prop) && obj[prop]) {
             opts[prop] = obj[prop];
         }
     }
+
+    var progressBar  = exports.parseProgressBar(obj);
+    opts.progressBar = progressBar;
 
     var trigger  = exports.parseTrigger(obj);
     opts.trigger = trigger;
@@ -431,6 +447,26 @@ exports.parseActions = function (obj) {
     }
 
     return actions;
+};
+
+/**
+ * Parse progressBar specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.ProgressBar ]
+ */
+exports.parseProgressBar = function (obj) {
+    var bar  = new LocalNotification.ProgressBar(),
+        spec = obj.progressBar;
+
+    if (!spec) return bar;
+
+    for (var prop in bar) {
+        if (spec[prop]) bar[prop] = spec[prop];
+    }
+
+    return bar;
 };
 
 // Handle onclick event

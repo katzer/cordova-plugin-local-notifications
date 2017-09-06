@@ -59,6 +59,31 @@ namespace LocalNotificationProxy.LocalNotification
         }
 
         /// <summary>
+        /// Update notifications.
+        /// </summary>
+        /// <param name="notifications">List of key-value properties</param>
+        public void Update([ReadOnlyArray] Options[] notifications)
+        {
+            foreach (Options options in notifications)
+            {
+                var bar = options.ProgressBar;
+
+                if (!bar.Enabled)
+                {
+                    continue;
+                }
+
+                var data = new NotificationData { SequenceNumber = 0 };
+
+                data.Values["progress.value"] = bar.Value.ToString();
+                data.Values["progress.status"] = bar.Status.ToString();
+                data.Values["progress.description"] = bar.Description.ToString();
+
+                ToastNotifier.Update(data, options.Id.ToString());
+            }
+        }
+
+        /// <summary>
         /// Clear the notifications specified by id.
         /// </summary>
         /// <param name="ids">The IDs of the notification to clear.</param>

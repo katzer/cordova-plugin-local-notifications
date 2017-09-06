@@ -118,6 +118,7 @@
     <Compile Include="LocalNotification\Input.cs" />
     <Compile Include="LocalNotification\Manager.cs" />
     <Compile Include="LocalNotification\Options.cs" />
+    <Compile Include="LocalNotification\ProgressBar.cs" />
     <Compile Include="LocalNotification\Trigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

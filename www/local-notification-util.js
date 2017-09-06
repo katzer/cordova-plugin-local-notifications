@@ -30,11 +30,12 @@ exports._defaults = {
     sound:   'res://platform_default',
     badge:   undefined,
     data:    undefined,
-    silent:  false,
-    actions: [],
+    icon:    undefined,
     trigger: { type: 'calendar' },
+    actions: [],
     actionGroupId: undefined,
-    attachments: []
+    attachments: [],
+    progressBar: false
 };
 
 // Listener
@@ -142,6 +143,7 @@ exports.convertProperties = function (options) {
 
     this.convertTrigger(options);
     this.convertActions(options);
+    this.convertProgressBar(options);
 
     return options;
 };
@@ -202,9 +204,7 @@ exports.convertTrigger = function (options) {
     var isCal = trigger.type == 'calendar';
 
     if (isCal && !date) {
-        date = this.getValueFor(options, 'at', 'firstAt', 'date');
-        date = date || isObject && !cfg.getTime ? new Date() : options.trigger;
-        date = date || new Date();
+        date = this.getValueFor(options, 'at', 'firstAt', 'date') || new Date();
     }
 
     if (isCal) {
@@ -214,6 +214,14 @@ exports.convertTrigger = function (options) {
 
     if (isCal && !trigger.every && options.every) {
         trigger.every = options.every;
+    }
+
+    if (!trigger.count && device.platform == 'windows') {
+        trigger.count = trigger.every ? 5 : 1;
+    }
+
+    if (trigger.every && device.platform == 'windows') {
+        trigger.every = trigger.every.toString();
     }
 
     if (!isCal) {
@@ -228,6 +236,23 @@ exports.convertTrigger = function (options) {
     delete options.date;
 
     options.trigger = trigger;
+
+    return options;
+};
+
+/**
+ * Convert the passed values for the progressBar to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports.convertProgressBar = function (options) {
+    var cfg = options.progressBar;
+
+    if (typeof cfg === 'boolean') {
+        options.progressBar = { enabled: cfg };
+    }
 
     return options;
 };

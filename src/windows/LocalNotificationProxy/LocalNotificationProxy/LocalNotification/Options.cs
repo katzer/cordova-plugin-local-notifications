@@ -33,7 +33,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets notification ID.
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets notification title.
@@ -84,6 +84,11 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets the notification actions.
         /// </summary>
         public IAction[] Actions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the notification progress bar.
+        /// </summary>
+        public ProgressBar ProgressBar { get; set; }
 
         /// <summary>
         /// Deserializes the XML string into an instance of Options.

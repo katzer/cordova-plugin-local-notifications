@@ -58,6 +58,7 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var toast = this.InitToast();
 
+            this.AddProgressBarToToast(toast);
             this.AddAttachmentsToToast(toast);
             this.AddActionsToToast(toast);
 
@@ -113,6 +114,20 @@ namespace LocalNotificationProxy.LocalNotification
                     Inputs = { }
                 }
             };
+        }
+
+        /// <summary>
+        /// Adds optional progress bar to the toast.
+        /// </summary>
+        /// <param name="toast">Tho toast to extend for.</param>
+        private void AddProgressBarToToast(ToastContent toast)
+        {
+            var progressBar = this.Content.ProgressBar;
+
+            if (progressBar != null)
+            {
+                toast.Visual.BindingGeneric.Children.Add(progressBar);
+            }
         }
 
         /// <summary>

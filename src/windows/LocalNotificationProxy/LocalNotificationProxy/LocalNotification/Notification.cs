@@ -262,6 +262,30 @@
         }
 
         /// <summary>
+        /// Gets the progress bar widget.
+        /// </summary>
+        public AdaptiveProgressBar ProgressBar
+        {
+            get
+            {
+                var bar = this.Options.ProgressBar;
+
+                if (!bar.Enabled)
+                {
+                    return null;
+                }
+
+                return new AdaptiveProgressBar()
+                {
+                    Title = bar.Title,
+                    Value = new BindableProgressBarValue("progress.value"),
+                    ValueStringOverride = new BindableString("progress.description"),
+                    Status = new BindableString("progress.status")
+                };
+            }
+        }
+
+        /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
         public DateTime Date
