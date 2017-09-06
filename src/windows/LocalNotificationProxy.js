@@ -86,7 +86,7 @@ exports.schedule = function (success, error, args) {
  *
  * @return [ Void ]
  */
-exports.schedule = function (success, error, args) {
+exports.update = function (success, error, args) {
     console.warn('LocalNotification#update is not implemented.');
     success();
 };
