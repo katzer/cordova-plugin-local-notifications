@@ -22,7 +22,41 @@
 var LocalNotification = LocalNotificationProxy.LocalNotification,
        ActivationKind = Windows.ApplicationModel.Activation.ActivationKind;
 
-var impl = new LocalNotificationProxy.LocalNotificationProxy();
+var impl  = new LocalNotificationProxy.LocalNotificationProxy(),
+    queue = [],
+    ready = false;
+
+/**
+ * Set launchDetails object.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.launch = function (success, error, args) {
+    var plugin = cordova.plugins.notification.local;
+
+    if (args.length === 0 || plugin.launchDetails) return;
+
+    plugin.launchDetails = { id: args[0], action: args[1] };
+};
+
+/**
+ * To execute all queued events.
+ *
+ * @return [ Void ]
+ */
+exports.ready = function () {
+    ready = true;
+
+    for (var i = 0; i < queue.length; i++) {
+        exports.fireEvent.apply(exports, queue[i]);
+    }
+
+    queue = [];
+};
 
 /**
  * Check permission to show notifications.
@@ -301,6 +335,10 @@ exports.clicked = function (xml, input) {
         meta.text = input.first().current.value;
     }
 
+    if (!ready) {
+        exports.launch(null, null, [toast.id, event]);
+    }
+
     exports.fireEvent(event, toast, meta);
 };
 
@@ -316,6 +354,11 @@ exports.clicked = function (xml, input) {
 exports.fireEvent = function (event, toast, data) {
     var meta   = Object.assign({ event: event }, data),
         plugin = cordova.plugins.notification.local.core;
+
+    if (!ready) {
+        queue.push(arguments);
+        return;
+    }
 
     if (toast) {
         plugin.fireEvent(event, exports.clone(toast), meta);

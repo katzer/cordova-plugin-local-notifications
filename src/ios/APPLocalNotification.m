@@ -47,13 +47,12 @@
  *
  * @return [ Void ]
  */
-- (void) launchDetails:(CDVInvokedUrlCommand*)command
+- (void) launch:(CDVInvokedUrlCommand*)command
 {
     if (!_launchDetails)
         return;
 
     NSString* js;
-
     js = [NSString stringWithFormat:
           @"cordova.plugins.notification.local.launchDetails = {id:%@, action:'%@'}",
           _launchDetails[0], _launchDetails[1]];
@@ -68,7 +67,7 @@
  *
  * @return [ Void ]
  */
-- (void) deviceready:(CDVInvokedUrlCommand*)command
+- (void) ready:(CDVInvokedUrlCommand*)command
 {
     deviceready = YES;
 
@@ -119,18 +118,18 @@
         for (NSDictionary* options in notifications) {
             NSNumber* id = [options objectForKey:@"id"];
             UNNotificationRequest* notification;
-            
+
             notification = [_center getNotificationWithId:id];
-            
+
             if (!notification)
                 continue;
-            
+
             [self updateNotification:[notification copy]
                          withOptions:options];
-            
+
             [self fireEvent:@"update" notification:notification];
         }
-        
+
         [self execCallback:command];
     }];
 }
@@ -240,7 +239,7 @@
             default:
                 type = @"unknown";
         }
-        
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                      messageAsString:type];
@@ -316,11 +315,11 @@
 
         NSArray* notifications;
         notifications = [_center getNotificationOptionsById:ids];
-        
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                messageAsDictionary:[notifications firstObject]];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -489,7 +488,7 @@
 
     APPNotificationContent*
     newNotification = [[APPNotificationContent alloc] initWithOptions:options];
-    
+
     [self scheduleNotification:newNotification];
 }
 
