@@ -629,8 +629,9 @@
     NSString *js, *params, *notiAsJSON, *dataAsJSON;
     NSData* dataAsData;
 
-    [data setObject:event       forKey:@"event"];
-    [data setObject:@(isActive) forKey:@"foreground"];
+    [data setObject:event           forKey:@"event"];
+    [data setObject:@(isActive)     forKey:@"foreground"];
+    [data setObject:@(!deviceready) forKey:@"queued"];
 
     if (request) {
         notiAsJSON = [request encodeToJSON];

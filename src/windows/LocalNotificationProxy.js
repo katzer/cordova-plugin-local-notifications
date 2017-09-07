@@ -352,11 +352,11 @@ exports.clicked = function (xml, input) {
  * @return [ Void ]
  */
 exports.fireEvent = function (event, toast, data) {
-    var meta   = Object.assign({ event: event }, data),
+    var meta   = Object.assign({ event: event, queued: !ready }, data),
         plugin = cordova.plugins.notification.local.core;
 
     if (!ready) {
-        queue.push(arguments);
+        queue.push([event, toast, meta]);
         return;
     }
 
