@@ -464,7 +464,14 @@
  */
 - (double) timeInterval
 {
-    return MAX(0.01f, [self.triggerDate timeIntervalSinceDate:[NSDate date]]);
+    double interval = [[self valueForTriggerOption:@"in"]
+                       doubleValue];
+    
+    if (interval == 0) {
+        interval = [self.triggerDate timeIntervalSinceDate:NSDate.date];
+    }
+    
+    return MAX(0.01f, interval);
 }
 
 /**
