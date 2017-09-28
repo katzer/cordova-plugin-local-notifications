@@ -36,6 +36,7 @@ exports._defaults = {
     sound: 'res://platform_default',
     badge: 0,
     id:    0,
+    priority: 0,
     data:  undefined,
     every: undefined,
     at:    undefined
@@ -160,6 +161,15 @@ exports.convertProperties = function (options) {
             console.warn('Badge number is not a number: ' + options.id);
         } else {
             options.badge = Number(options.badge);
+        }
+    }
+    
+    if (options.priority) {
+        if (isNaN(options.priority)) {
+            options.priority = this.getDefaults().priority;
+            console.warn('Priority number is not a number: ' + options.id);
+        } else {
+            options.priority = Number(options.priority);
         }
     }
 
