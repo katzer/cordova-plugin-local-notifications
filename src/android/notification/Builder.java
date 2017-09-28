@@ -130,7 +130,8 @@ public class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setColor(options.getColor());
-
+                .setPriority(options.getPriority());
+        
         if (ledColor != 0) {
             builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
         }
