@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+using Windows.Data.Xml.Dom;
+
 namespace LocalNotificationProxy.LocalNotification
 {
     public sealed class Trigger
@@ -52,5 +54,52 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets or sets trigger interval.
         /// </summary>
         public string Every { get; set; }
+
+        /// <summary>
+        /// Deserializes the XML string into an instance of Trigger.
+        /// </summary>
+        /// <param name="xml">The serialized instance of Options as an xml string.</param>
+        /// <returns>An instance where all properties have been assigned.</returns>
+        internal static Trigger Parse(string xml)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            var trigger = new Trigger();
+            var node = doc.DocumentElement;
+
+            trigger.At = long.Parse(node.GetAttribute("at"));
+            trigger.In = long.Parse(node.GetAttribute("in"));
+            trigger.Count = int.Parse(node.GetAttribute("count"));
+            trigger.Occurrence = int.Parse(node.GetAttribute("occurrence"));
+
+            if (node.GetAttributeNode("every") != null)
+            {
+                trigger.Every = node.GetAttribute("every");
+            }
+
+            return trigger;
+        }
+
+        /// <summary>
+        /// Gets the instance as an serialized xml element.
+        /// </summary>
+        /// <returns>Element with all property values set as attributes.</returns>
+        internal string GetXml()
+        {
+            var node = new XmlDocument().CreateElement("trigger");
+
+            node.SetAttribute("at", this.At.ToString());
+            node.SetAttribute("in", this.In.ToString());
+            node.SetAttribute("count", this.Count.ToString());
+            node.SetAttribute("occurrence", this.Occurrence.ToString());
+
+            if (this.Every != null)
+            {
+                node.SetAttribute("every", this.Every);
+            }
+
+            return node.GetXml();
+        }
     }
 }

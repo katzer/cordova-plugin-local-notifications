@@ -393,14 +393,17 @@ exports.cloneAll = function (objs) {
  */
 exports.clone = function (obj) {
     var ignore = ['action'],
+        dclone = ['trigger'],
         clone  = {};
+
+    if (obj === null) return null;
 
     for (var prop in obj) {
         if (ignore.includes(prop) || typeof obj[prop] === 'function')
             continue;
 
         try {
-            clone[prop] = obj[prop];
+            clone[prop] = dclone.includes(prop) ? exports.clone(obj[prop]) : obj[prop];
         } catch (e) {
             clone[prop] = null;
         }

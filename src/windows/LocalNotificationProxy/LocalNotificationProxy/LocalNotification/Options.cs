@@ -105,6 +105,7 @@ namespace LocalNotificationProxy.LocalNotification
 
             options.Id = int.Parse(node.GetAttribute("id"));
             options.Badge = int.Parse(node.GetAttribute("badge"));
+            options.Trigger = Trigger.Parse(node.GetAttribute("trigger"));
 
             if (node.GetAttributeNode("text") != null)
             {
@@ -169,6 +170,7 @@ namespace LocalNotificationProxy.LocalNotification
 
             node.SetAttribute("id", this.Id.ToString());
             node.SetAttribute("badge", this.Badge.ToString());
+            node.SetAttribute("trigger", this.Trigger.GetXml());
 
             if (this.Title != null)
             {
