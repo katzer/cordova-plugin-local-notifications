@@ -200,6 +200,12 @@ public class Options {
         return options.optInt("id", 0);
     }
 
+     /**
+     * Priority for the local notification as a number.
+     */
+    public int getPriority () {
+       return options.optInt("priority", 0);
+    }
     /**
      * ID for the local notification as a string.
      */
