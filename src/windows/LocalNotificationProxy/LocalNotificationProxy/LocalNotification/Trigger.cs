@@ -31,7 +31,12 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets trigger date.
         /// </summary>
-        public long At { get; set; }
+        public long At { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets relative trigger date in seconds from now.
+        /// </summary>
+        public long In { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets trigger count.

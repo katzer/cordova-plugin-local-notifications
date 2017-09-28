@@ -293,9 +293,17 @@
             get
             {
                 var trigger = this.Options.Trigger;
-                var time = trigger.At;
-                var date = DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
                 var minDate = DateTime.Now.AddSeconds(0.1);
+                DateTime date;
+
+                if (trigger.In != 0)
+                {
+                    date = DateTime.Now.AddSeconds(trigger.In);
+                }
+                else
+                {
+                    date = DateTimeOffset.FromUnixTimeMilliseconds(trigger.At * 1000).LocalDateTime;
+                }
 
                 date = date.AddTicks(this.Interval.Ticks * (trigger.Occurrence - 1));
 
