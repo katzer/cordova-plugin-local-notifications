@@ -352,11 +352,11 @@ exports.clicked = function (xml, input) {
  * @return [ Void ]
  */
 exports.fireEvent = function (event, toast, data) {
-    var meta   = Object.assign({ event: event, queued: !ready }, data),
+    var meta   = Object.assign({ event: event }, data),
         plugin = cordova.plugins.notification.local.core;
 
     if (!ready) {
-        queue.push([event, toast, meta]);
+        queue.push(arguments);
         return;
     }
 
@@ -457,10 +457,29 @@ exports.parseTrigger = function (obj) {
     for (var prop in trigger) {
         val = spec[prop];
         if (!val) continue;
-        trigger[prop] = prop == 'every' ? val.toString() : val;
+        trigger[prop] = prop == 'every' ? exports.parseEvery(val) : val;
     }
 
     return trigger;
+};
+
+/**
+ * Parse trigger.every spec into instance of prefered type.
+ *
+ * @param [ Object ] spec The trigger.every object.
+ *
+ * @return [ LocalNotification.Every|String ]
+ */
+exports.parseEvery = function (spec) {
+    var every = new LocalNotification.Every();
+
+    if (typeof spec !== 'object') return spec.toString();
+
+    for (var prop in every) {
+        if (spec[prop]) every[prop] = parseInt(spec[prop]);
+    }
+
+    return every;
 };
 
 /**

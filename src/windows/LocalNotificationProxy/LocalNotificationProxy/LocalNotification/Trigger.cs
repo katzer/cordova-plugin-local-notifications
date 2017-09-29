@@ -19,12 +19,16 @@
  * limitations under the License.
  */
 
-using Windows.Data.Xml.Dom;
-
 namespace LocalNotificationProxy.LocalNotification
 {
+    using System;
+    using Windows.Data.Xml.Dom;
+
     public sealed class Trigger
     {
+        private DateTime? triggerDate;
+        private TimeSpan? triggerInterval;
+
         /// <summary>
         /// Gets trigger type.
         /// </summary>
@@ -53,7 +57,88 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets trigger interval.
         /// </summary>
-        public string Every { get; set; }
+        public object Every { get; set; }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        internal DateTime Date
+        {
+            get
+            {
+                var minDate = DateTime.Now.AddSeconds(0.1);
+
+                if (!this.triggerDate.HasValue)
+                {
+                    this.triggerDate = this.Every is Every ? this.GetRelDate() : this.GetFixDate();
+                }
+
+                var ticks = this.Interval.Ticks * (this.Occurrence - 1);
+                var date = this.triggerDate.Value.AddTicks(ticks);
+
+                return (date < minDate) ? minDate : date;
+            }
+        }
+
+        /// <summary>
+        /// Gets the parsed repeat interval.
+        /// </summary>
+        internal TimeSpan Interval
+        {
+            get
+            {
+                if (this.triggerInterval.HasValue)
+                {
+                    return this.triggerInterval.Value;
+                }
+
+                var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
+
+                try
+                {
+                    switch (every)
+                    {
+                        case null:
+                        case "":
+                            this.triggerInterval = TimeSpan.Zero;
+                            break;
+                        case "second":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerSecond);
+                            break;
+                        case "minute":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerMinute);
+                            break;
+                        case "hour":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerHour);
+                            break;
+                        case "day":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay);
+                            break;
+                        case "week":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 7);
+                            break;
+                        case "month":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 31);
+                            break;
+                        case "quarter":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerHour * 2190);
+                            break;
+                        case "year":
+                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 365);
+                            break;
+                        default:
+                            this.triggerInterval = TimeSpan.FromSeconds(60 * int.Parse(every as string));
+                            break;
+                    }
+                }
+                catch
+                {
+                    this.triggerInterval = TimeSpan.Zero;
+                }
+
+                return this.triggerInterval.Value;
+            }
+        }
 
         /// <summary>
         /// Deserializes the XML string into an instance of Trigger.
@@ -94,12 +179,157 @@ namespace LocalNotificationProxy.LocalNotification
             node.SetAttribute("count", this.Count.ToString());
             node.SetAttribute("occurrence", this.Occurrence.ToString());
 
-            if (this.Every != null)
+            if (this.Every is string)
             {
-                node.SetAttribute("every", this.Every);
+                node.SetAttribute("every", this.Every as string);
             }
 
             return node.GetXml();
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <returns>The fix date specified by trigger.at or trigger.in</returns>
+        private DateTime GetFixDate()
+        {
+            DateTime date;
+
+            if (this.In != 0)
+            {
+                date = DateTime.Now.AddSeconds(this.In);
+            }
+            else
+            {
+                date = DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
+            }
+
+            return date;
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <returns>The first matching date specified by trigger.every</returns>
+        private DateTime GetRelDate()
+        {
+            var every = this.Every as Every;
+            var p = every.ToArray2();
+            var date = every.ToDateTime();
+            var now = DateTime.Now;
+
+            if (date >= now || date.Year < now.Year)
+            {
+                return date;
+            }
+
+            if (date.Month < now.Month)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                    case "hour":
+                    case "day":
+                        if (every.YearIsVariable)
+                        {
+                            p[4] = now.Year + 1;
+                        }
+
+                        break;
+                    case "year":
+                        p[4] = now.Year + 1;
+                        break;
+                }
+            }
+            else if (date.Day < now.Day)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                    case "hour":
+                        if (every.MonthIsVariable)
+                        {
+                            // TODO: end of year
+                            p[3] = now.Month + 1;
+                        }
+                        else if (every.YearIsVariable)
+                        {
+                            p[4] = now.Year + 1;
+                        }
+
+                        break;
+                    case "month":
+                        // TODO: end of year
+                        p[3] = now.Month + 1;
+                        break;
+                    case "year":
+                        p[4] = now.Year + 1;
+                        break;
+                }
+            }
+            else if (date.Hour < now.Hour)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                        if (every.DayIsVariable)
+                        {
+                            // TODO: end of month
+                            p[2] = now.Day + 1;
+                        }
+                        else if (every.MonthIsVariable)
+                        {
+                            // TODO: end of year
+                            p[3] = now.Month + 1;
+                        }
+
+                        break;
+                    case "hour":
+                        // TODO: end of day
+                        p[1] = now.Hour;
+                        break;
+                    case "day":
+                        // TODO: end of month
+                        p[2] = now.Day + 1;
+                        break;
+                    case "month":
+                        // TODO: end of year
+                        p[3] = now.Month + 1;
+                        break;
+                    case "year":
+                        p[4] = now.Year + 1;
+                        break;
+                }
+            }
+            else if (date.Minute < now.Minute)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                        // TODO: end of hour
+                        p[0] = now.Minute + 1;
+                        break;
+                    case "hour":
+                        // TODO: end of day
+                        p[1] = now.Hour + 1;
+                        break;
+                    case "day":
+                        // TODO: end of month
+                        p[2] = now.Day + 1;
+                        break;
+                    case "month":
+                        // TODO: end of year
+                        p[3] = now.Month + 1;
+                        break;
+                    case "year":
+                        p[4] = now.Year + 1;
+                        break;
+                }
+            }
+
+            date = new DateTime(p[4], p[3], p[2], p[1], p[0], 0);
+
+            return date;
         }
     }
 }

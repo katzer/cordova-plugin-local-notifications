@@ -292,65 +292,7 @@
         {
             get
             {
-                var trigger = this.Options.Trigger;
-                var minDate = DateTime.Now.AddSeconds(0.1);
-                DateTime date;
-
-                if (trigger.In != 0)
-                {
-                    date = DateTime.Now.AddSeconds(trigger.In);
-                }
-                else
-                {
-                    date = DateTimeOffset.FromUnixTimeMilliseconds(trigger.At * 1000).LocalDateTime;
-                }
-
-                date = date.AddTicks(this.Interval.Ticks * (trigger.Occurrence - 1));
-
-                return (date < minDate) ? minDate : date;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parsed repeat interval.
-        /// </summary>
-        public TimeSpan Interval
-        {
-            get
-            {
-                var every = this.Options.Trigger.Every;
-
-                switch (every)
-                {
-                    case null:
-                    case "":
-                        return TimeSpan.Zero;
-                    case "second":
-                        return new TimeSpan(TimeSpan.TicksPerSecond);
-                    case "minute":
-                        return new TimeSpan(TimeSpan.TicksPerMinute);
-                    case "hour":
-                        return new TimeSpan(TimeSpan.TicksPerHour);
-                    case "day":
-                        return new TimeSpan(TimeSpan.TicksPerDay);
-                    case "week":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 7);
-                    case "month":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 31);
-                    case "quarter":
-                        return new TimeSpan(TimeSpan.TicksPerHour * 2190);
-                    case "year":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 365);
-                }
-
-                try
-                {
-                    return TimeSpan.FromSeconds(60 * int.Parse(every));
-                }
-                catch
-                {
-                    return TimeSpan.Zero;
-                }
+                return this.Options.Trigger.Date;
             }
         }
 
