@@ -27,7 +27,6 @@ namespace LocalNotificationProxy.LocalNotification
     public sealed class Trigger
     {
         private DateTime? triggerDate;
-        private TimeSpan? triggerInterval;
 
         /// <summary>
         /// Gets trigger type.
@@ -66,77 +65,15 @@ namespace LocalNotificationProxy.LocalNotification
         {
             get
             {
-                var minDate = DateTime.Now.AddSeconds(0.1);
-
                 if (!this.triggerDate.HasValue)
                 {
                     this.triggerDate = this.Every is Every ? this.GetRelDate() : this.GetFixDate();
                 }
 
-                var ticks = this.Interval.Ticks * (this.Occurrence - 1);
-                var date = this.triggerDate.Value.AddTicks(ticks);
+                var date = this.GetNextTriggerDate();
+                var minDate = DateTime.Now.AddSeconds(0.1);
 
                 return (date < minDate) ? minDate : date;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parsed repeat interval.
-        /// </summary>
-        internal TimeSpan Interval
-        {
-            get
-            {
-                if (this.triggerInterval.HasValue)
-                {
-                    return this.triggerInterval.Value;
-                }
-
-                var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
-
-                try
-                {
-                    switch (every)
-                    {
-                        case null:
-                        case "":
-                            this.triggerInterval = TimeSpan.Zero;
-                            break;
-                        case "second":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerSecond);
-                            break;
-                        case "minute":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerMinute);
-                            break;
-                        case "hour":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerHour);
-                            break;
-                        case "day":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay);
-                            break;
-                        case "week":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 7);
-                            break;
-                        case "month":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 31);
-                            break;
-                        case "quarter":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerHour * 2190);
-                            break;
-                        case "year":
-                            this.triggerInterval = new TimeSpan(TimeSpan.TicksPerDay * 365);
-                            break;
-                        default:
-                            this.triggerInterval = TimeSpan.FromSeconds(60 * int.Parse(every as string));
-                            break;
-                    }
-                }
-                catch
-                {
-                    this.triggerInterval = TimeSpan.Zero;
-                }
-
-                return this.triggerInterval.Value;
             }
         }
 
@@ -304,6 +241,52 @@ namespace LocalNotificationProxy.LocalNotification
             }
 
             return date;
+        }
+
+        /// <summary>
+        /// Calculates the next trigger date by adding (interval * occurence)
+        /// </summary>
+        /// <returns>The next valid trigger date</returns>
+        private DateTime GetNextTriggerDate()
+        {
+            var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
+            var date = this.triggerDate.Value;
+            var multiple = this.Occurrence - 1;
+
+            if (multiple == 0)
+            {
+                return date;
+            }
+
+            switch (every)
+            {
+                case null:
+                case "":
+                    return date;
+                case "minute":
+                    return date.AddMinutes(multiple * 1);
+                case "hour":
+                    return date.AddHours(multiple * 1);
+                case "day":
+                    return date.AddDays(multiple * 1);
+                case "week":
+                    return date.AddDays(multiple * 7);
+                case "month":
+                    return date.AddMonths(multiple * 1);
+                case "quarter":
+                    return date.AddMonths(multiple * 3);
+                case "year":
+                    return date.AddYears(multiple * 1);
+            }
+
+            try
+            {
+                return date.AddSeconds(multiple * (60 * int.Parse(every as string)));
+            }
+            catch
+            {
+                return date;
+            }
         }
     }
 }
