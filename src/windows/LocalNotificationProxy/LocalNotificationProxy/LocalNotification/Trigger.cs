@@ -214,7 +214,6 @@ namespace LocalNotificationProxy.LocalNotification
         private DateTime GetRelDate()
         {
             var every = this.Every as Every;
-            var p = every.ToArray2();
             var date = every.ToDateTime();
             var now = DateTime.Now;
 
@@ -232,13 +231,12 @@ namespace LocalNotificationProxy.LocalNotification
                     case "day":
                         if (every.YearIsVariable)
                         {
-                            p[4] = now.Year + 1;
+                            return date.AddYears(now.Year - date.Year + 1);
                         }
 
                         break;
                     case "year":
-                        p[4] = now.Year + 1;
-                        break;
+                        return date.AddYears(now.Year - date.Year + 1);
                 }
             }
             else if (date.Day < now.Day)
@@ -249,22 +247,18 @@ namespace LocalNotificationProxy.LocalNotification
                     case "hour":
                         if (every.MonthIsVariable)
                         {
-                            // TODO: end of year
-                            p[3] = now.Month + 1;
+                            return date.AddMonths(now.Month - date.Month + 1);
                         }
                         else if (every.YearIsVariable)
                         {
-                            p[4] = now.Year + 1;
+                            return date.AddYears(now.Year - date.Year + 1);
                         }
 
                         break;
                     case "month":
-                        // TODO: end of year
-                        p[3] = now.Month + 1;
-                        break;
+                        return date.AddMonths(now.Month - date.Month + 1);
                     case "year":
-                        p[4] = now.Year + 1;
-                        break;
+                        return date.AddYears(now.Year - date.Year + 1);
                 }
             }
             else if (date.Hour < now.Hour)
@@ -274,31 +268,22 @@ namespace LocalNotificationProxy.LocalNotification
                     case "minute":
                         if (every.DayIsVariable)
                         {
-                            // TODO: end of month
-                            p[2] = now.Day + 1;
+                            return date.AddDays(now.Day - date.Day + 1);
                         }
                         else if (every.MonthIsVariable)
                         {
-                            // TODO: end of year
-                            p[3] = now.Month + 1;
+                            return date.AddMonths(now.Month - date.Month + 1);
                         }
 
                         break;
                     case "hour":
-                        // TODO: end of day
-                        p[1] = now.Hour;
-                        break;
+                        return date.AddHours(now.Hour - date.Hour);
                     case "day":
-                        // TODO: end of month
-                        p[2] = now.Day + 1;
-                        break;
+                        return date.AddDays(now.Day - date.Day + 1);
                     case "month":
-                        // TODO: end of year
-                        p[3] = now.Month + 1;
-                        break;
+                        return date.AddMonths(now.Month - date.Month + 1);
                     case "year":
-                        p[4] = now.Year + 1;
-                        break;
+                        return date.AddYears(now.Year - date.Year + 1);
                 }
             }
             else if (date.Minute < now.Minute)
@@ -306,28 +291,17 @@ namespace LocalNotificationProxy.LocalNotification
                 switch (every.Interval)
                 {
                     case "minute":
-                        // TODO: end of hour
-                        p[0] = now.Minute + 1;
-                        break;
+                        return date.AddMinutes(now.Minute - date.Minute + 1);
                     case "hour":
-                        // TODO: end of day
-                        p[1] = now.Hour + 1;
-                        break;
+                        return date.AddHours(now.Hour - date.Hour + 1);
                     case "day":
-                        // TODO: end of month
-                        p[2] = now.Day + 1;
-                        break;
+                        return date.AddDays(now.Day - date.Day + 1);
                     case "month":
-                        // TODO: end of year
-                        p[3] = now.Month + 1;
-                        break;
+                        return date.AddMonths(now.Month - date.Month + 1);
                     case "year":
-                        p[4] = now.Year + 1;
-                        break;
+                        return date.AddYears(now.Year - date.Year + 1);
                 }
             }
-
-            date = new DateTime(p[4], p[3], p[2], p[1], p[0], 0);
 
             return date;
         }

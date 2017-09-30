@@ -81,40 +81,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets the interval as a string representation.
         /// </summary>
         /// <returns>year, month, ...</returns>
-        internal string Interval
-        {
-            get
-            {
-                var pos = Array.IndexOf(this.ToArray(), 0);
-
-                return Intervals[pos + 1];
-            }
-        }
-
-        /// <summary>
-        /// Gets an array of all date parts to construct a datetime instance.
-        /// </summary>
-        /// <returns>[min, hour, day, month, year]</returns>
-        internal int[] ToArray()
-        {
-            return new int[] { this.Minute, this.Hour, this.Day, this.Month, this.Year };
-        }
-
-        /// <summary>
-        /// Gets an array of all date parts to construct a datetime instance.
-        /// </summary>
-        /// <returns>[min, hour, day, month, year]</returns>
-        internal int[] ToArray2()
-        {
-            var today = DateTime.Today;
-            var ary = this.ToArray();
-
-            ary[2] = this.Day > 0 ? this.Day : today.Day;
-            ary[3] = this.Month > 0 ? this.Month : today.Month;
-            ary[4] = this.Year > 0 ? this.Year : today.Year;
-
-            return ary;
-        }
+        internal string Interval { get => Intervals[Array.IndexOf(this.ToArray(), 0) + 1]; }
 
         /// <summary>
         /// Converts the date time components into a datetime object.
@@ -122,9 +89,23 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>A datetime object</returns>
         internal DateTime ToDateTime()
         {
-            var p = this.ToArray2();
+            var p = this.ToArray();
+            var today = DateTime.Today;
+
+            p[2] = this.Day > 0 ? this.Day : today.Day;
+            p[3] = this.Month > 0 ? this.Month : today.Month;
+            p[4] = this.Year > 0 ? this.Year : today.Year;
 
             return new DateTime(p[4], p[3], p[2], p[1], p[0], 0);
+        }
+
+        /// <summary>
+        /// Gets an array of all date parts to construct a datetime instance.
+        /// </summary>
+        /// <returns>[min, hour, day, month, year]</returns>
+        private int[] ToArray()
+        {
+            return new int[] { this.Minute, this.Hour, this.Day, this.Month, this.Year };
         }
     }
 }
