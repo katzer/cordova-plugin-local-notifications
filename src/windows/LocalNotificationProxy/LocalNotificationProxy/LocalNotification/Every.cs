@@ -30,58 +30,33 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets the minute.
         /// </summary>
-        public int Minute { get; set; }
+        public int? Minute { get; set; }
 
         /// <summary>
         /// Gets or sets the hour.
         /// </summary>
-        public int Hour { get; set; }
+        public int? Hour { get; set; }
 
         /// <summary>
         /// Gets or sets the day.
         /// </summary>
-        public int Day { get; set; }
+        public int? Day { get; set; }
 
         /// <summary>
         /// Gets or sets the month.
         /// </summary>
-        public int Month { get; set; }
+        public int? Month { get; set; }
 
         /// <summary>
         /// Gets or sets the year.
         /// </summary>
-        public int Year { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the minute is not fix.
-        /// </summary>
-        internal bool MinuteIsVariable { get => this.Minute == 0; }
-
-        /// <summary>
-        /// Gets a value indicating whether the hour is not fix.
-        /// </summary>
-        internal bool HourIsVariable { get => this.Hour == 0; }
-
-        /// <summary>
-        /// Gets a value indicating whether the day is not fix.
-        /// </summary>
-        internal bool DayIsVariable { get => this.Day == 0; }
-
-        /// <summary>
-        /// Gets a value indicating whether the month is not fix.
-        /// </summary>
-        internal bool MonthIsVariable { get => this.Month == 0; }
-
-        /// <summary>
-        /// Gets a value indicating whether the year is not fix.
-        /// </summary>
-        internal bool YearIsVariable { get => this.Year == 0; }
+        public int? Year { get; set; }
 
         /// <summary>
         /// Gets the interval as a string representation.
         /// </summary>
         /// <returns>year, month, ...</returns>
-        internal string Interval { get => Intervals[Array.IndexOf(this.ToArray(), 0) + 1]; }
+        internal string Interval { get => Intervals[Array.IndexOf(this.ToArray(), null) + 1]; }
 
         /// <summary>
         /// Converts the date time components into a datetime object.
@@ -92,20 +67,22 @@ namespace LocalNotificationProxy.LocalNotification
             var p = this.ToArray();
             var today = DateTime.Today;
 
-            p[2] = this.DayIsVariable ? today.Day : this.Day;
-            p[3] = this.MonthIsVariable ? today.Month : this.Month;
-            p[4] = this.YearIsVariable ? today.Year : this.Year;
+            p[0] = this.Minute.GetValueOrDefault();
+            p[1] = this.Hour.GetValueOrDefault();
+            p[2] = this.Day.GetValueOrDefault(today.Day);
+            p[3] = this.Month.GetValueOrDefault(today.Month);
+            p[4] = this.Year.GetValueOrDefault(today.Year);
 
-            return new DateTime(p[4], p[3], p[2], p[1], p[0], 0);
+            return new DateTime(p[4].Value, p[3].Value, p[2].Value, p[1].Value, p[0].Value, 0);
         }
 
         /// <summary>
         /// Gets an array of all date parts to construct a datetime instance.
         /// </summary>
         /// <returns>[min, hour, day, month, year]</returns>
-        private int[] ToArray()
+        private int?[] ToArray()
         {
-            return new int[] { this.Minute, this.Hour, this.Day, this.Month, this.Year };
+            return new int?[] { this.Minute, this.Hour, this.Day, this.Month, this.Year };
         }
     }
 }

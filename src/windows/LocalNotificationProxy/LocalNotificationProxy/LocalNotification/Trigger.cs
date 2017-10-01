@@ -191,7 +191,7 @@ namespace LocalNotificationProxy.LocalNotification
                     case "minute":
                     case "hour":
                     case "day":
-                        if (every.YearIsVariable)
+                        if (!every.Year.HasValue)
                         {
                             return date.AddYears(now.Year - date.Year + 1);
                         }
@@ -207,11 +207,11 @@ namespace LocalNotificationProxy.LocalNotification
                 {
                     case "minute":
                     case "hour":
-                        if (every.MonthIsVariable)
+                        if (!every.Month.HasValue)
                         {
                             return date.AddMonths(now.Month - date.Month + 1);
                         }
-                        else if (every.YearIsVariable)
+                        else if (!every.Year.HasValue)
                         {
                             return date.AddYears(now.Year - date.Year + 1);
                         }
@@ -228,11 +228,11 @@ namespace LocalNotificationProxy.LocalNotification
                 switch (every.Interval)
                 {
                     case "minute":
-                        if (every.DayIsVariable)
+                        if (!every.Day.HasValue)
                         {
                             return date.AddDays(now.Day - date.Day + 1);
                         }
-                        else if (every.MonthIsVariable)
+                        else if (!every.Month.HasValue)
                         {
                             return date.AddMonths(now.Month - date.Month + 1);
                         }
