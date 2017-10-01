@@ -179,7 +179,7 @@ namespace LocalNotificationProxy.LocalNotification
                 return date;
             }
 
-            if (date.Year < now.Year)
+            if (every.Interval == null || date.Year < now.Year)
             {
                 return null;
             }
