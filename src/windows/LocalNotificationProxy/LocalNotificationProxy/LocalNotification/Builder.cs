@@ -168,7 +168,21 @@ namespace LocalNotificationProxy.LocalNotification
         {
             var xml = toast.GetXml();
             var at = this.Content.Date;
-            var notification = new ScheduledToastNotification(xml, at);
+            ScheduledToastNotification notification;
+
+            if (!at.HasValue)
+            {
+                return null;
+            }
+
+            try
+            {
+                notification = new ScheduledToastNotification(xml, at.Value);
+            }
+            catch
+            {
+                return null;
+            }
 
             notification.Id = this.Content.Id;
             notification.Tag = this.Options.Id.ToString();

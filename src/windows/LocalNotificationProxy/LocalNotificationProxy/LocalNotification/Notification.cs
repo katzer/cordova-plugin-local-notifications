@@ -288,7 +288,7 @@
         /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
-        public DateTime Date
+        public DateTime? Date
         {
             get
             {

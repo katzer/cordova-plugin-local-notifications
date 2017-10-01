@@ -61,7 +61,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
-        internal DateTime Date
+        internal DateTime? Date
         {
             get
             {
@@ -70,10 +70,30 @@ namespace LocalNotificationProxy.LocalNotification
                     this.triggerDate = this.Every is Every ? this.GetRelDate() : this.GetFixDate();
                 }
 
-                var date = this.GetNextTriggerDate();
-                var minDate = DateTime.Now.AddSeconds(0.1);
+                if (!this.triggerDate.HasValue)
+                {
+                    return null;
+                }
 
-                return (date < minDate) ? minDate : date;
+                var date = this.GetNextTriggerDate();
+                var minDate = DateTime.Now.AddSeconds(0.2);
+
+                if (!date.HasValue)
+                {
+                    return null;
+                }
+
+                if (date >= minDate)
+                {
+                    return date;
+                }
+
+                if ((minDate - date).Value.TotalMinutes <= 1)
+                {
+                    return minDate;
+                }
+
+                return null;
             }
         }
 
@@ -148,15 +168,20 @@ namespace LocalNotificationProxy.LocalNotification
         /// Gets the date when to trigger the notification.
         /// </summary>
         /// <returns>The first matching date specified by trigger.every</returns>
-        private DateTime GetRelDate()
+        private DateTime? GetRelDate()
         {
             var every = this.Every as Every;
             var date = every.ToDateTime();
             var now = DateTime.Now;
 
-            if (date >= now || date.Year < now.Year)
+            if (date >= now)
             {
                 return date;
+            }
+
+            if (date.Year < now.Year)
+            {
+                return null;
             }
 
             if (date.Month < now.Month)
@@ -240,14 +265,14 @@ namespace LocalNotificationProxy.LocalNotification
                 }
             }
 
-            return date;
+            return null;
         }
 
         /// <summary>
         /// Calculates the next trigger date by adding (interval * occurence)
         /// </summary>
         /// <returns>The next valid trigger date</returns>
-        private DateTime GetNextTriggerDate()
+        private DateTime? GetNextTriggerDate()
         {
             var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
             var date = this.triggerDate.Value;
@@ -285,7 +310,7 @@ namespace LocalNotificationProxy.LocalNotification
             }
             catch
             {
-                return date;
+                return null;
             }
         }
     }

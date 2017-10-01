@@ -92,9 +92,9 @@ namespace LocalNotificationProxy.LocalNotification
             var p = this.ToArray();
             var today = DateTime.Today;
 
-            p[2] = this.Day > 0 ? this.Day : today.Day;
-            p[3] = this.Month > 0 ? this.Month : today.Month;
-            p[4] = this.Year > 0 ? this.Year : today.Year;
+            p[2] = this.DayIsVariable ? today.Day : this.Day;
+            p[3] = this.MonthIsVariable ? today.Month : this.Month;
+            p[4] = this.YearIsVariable ? today.Year : this.Year;
 
             return new DateTime(p[4], p[3], p[2], p[1], p[0], 0);
         }
