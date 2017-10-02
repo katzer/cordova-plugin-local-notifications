@@ -17,15 +17,15 @@
        under the License.
 */
 
-var fs = require('fs'),
-    path = require('path'),
-    util = require('util'),
-    events = require('cordova-common').events,
-    CordovaError = require('cordova-common').CordovaError;
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
+var events = require('cordova-common').events;
+var CordovaError = require('cordova-common').CordovaError;
 
 PodsJson.FILENAME = 'pods.json';
 
-function PodsJson(podsJsonPath) {
+function PodsJson (podsJsonPath) {
     this.path = podsJsonPath;
     this.contents = null;
     this.__dirty = false;
@@ -41,18 +41,18 @@ function PodsJson(podsJsonPath) {
         this.clear();
         this.write();
     } else {
-        events.emit('verbose', 'pods.json found in platforms/ios');  
+        events.emit('verbose', 'pods.json found in platforms/ios');
         // load contents
         this.contents = fs.readFileSync(this.path, 'utf8');
         this.contents = JSON.parse(this.contents);
     }
 }
 
-PodsJson.prototype.get = function(name) {
+PodsJson.prototype.get = function (name) {
     return this.contents[name];
 };
 
-PodsJson.prototype.remove = function(name) {
+PodsJson.prototype.remove = function (name) {
     if (this.contents[name]) {
         delete this.contents[name];
         this.__dirty = true;
@@ -60,17 +60,17 @@ PodsJson.prototype.remove = function(name) {
     }
 };
 
-PodsJson.prototype.clear = function() {
+PodsJson.prototype.clear = function () {
     this.contents = {};
     this.__dirty = true;
 };
 
-PodsJson.prototype.destroy = function() {
+PodsJson.prototype.destroy = function () {
     fs.unlinkSync(this.path);
     events.emit('verbose', util.format('Deleted `%s`', this.path));
 };
 
-PodsJson.prototype.write = function() {
+PodsJson.prototype.write = function () {
     if (this.contents) {
         fs.writeFileSync(this.path, JSON.stringify(this.contents, null, 4));
         this.__dirty = false;
@@ -78,11 +78,11 @@ PodsJson.prototype.write = function() {
     }
 };
 
-PodsJson.prototype.set = function(name, type, spec, count) {
+PodsJson.prototype.set = function (name, type, spec, count) {
     this.setJson(name, { name: name, type: type, spec: spec, count: count });
 };
 
-PodsJson.prototype.increment = function(name) {
+PodsJson.prototype.increment = function (name) {
     var val = this.get(name);
     if (val) {
         val.count++;
@@ -90,7 +90,7 @@ PodsJson.prototype.increment = function(name) {
     }
 };
 
-PodsJson.prototype.decrement = function(name) {
+PodsJson.prototype.decrement = function (name) {
     var val = this.get(name);
     if (val) {
         val.count--;
@@ -102,13 +102,13 @@ PodsJson.prototype.decrement = function(name) {
     }
 };
 
-PodsJson.prototype.setJson = function(name, json) {
+PodsJson.prototype.setJson = function (name, json) {
     this.contents[name] = json;
     this.__dirty = true;
     events.emit('verbose', util.format('Set pods.json for `%s`', name));
 };
 
-PodsJson.prototype.isDirty = function() {
+PodsJson.prototype.isDirty = function () {
     return this.__dirty;
 };
 

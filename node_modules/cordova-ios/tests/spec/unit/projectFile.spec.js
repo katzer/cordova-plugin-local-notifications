@@ -30,44 +30,44 @@ var locations = {
     pbxproj: path.join(iosProject, 'SampleApp.xcodeproj/project.pbxproj')
 };
 
-describe('projectFile', function() {
-    beforeEach(function() {
+describe('projectFile', function () {
+    beforeEach(function () {
         shell.cp('-rf', iosProjectFixture, iosProject);
     });
 
-    afterEach(function() {
+    afterEach(function () {
         shell.rm('-rf', iosProject);
     });
 
     describe('parse method', function () {
-        it('Test#001 : should throw if project is not an xcode project', function() {
+        it('Test#001 : should throw if project is not an xcode project', function () {
             shell.rm('-rf', path.join(iosProject, 'SampleApp', 'SampleApp.xcodeproj'));
-            expect(function() { projectFile.parse(); }).toThrow();
+            expect(function () { projectFile.parse(); }).toThrow();
         });
-        it('Test#002 : should throw if project does not contain an appropriate config.xml file', function() {
+        it('Test#002 : should throw if project does not contain an appropriate config.xml file', function () {
             shell.rm(path.join(iosProject, 'SampleApp', 'config.xml'));
-            expect(function() { projectFile.parse(locations); })
+            expect(function () { projectFile.parse(locations); })
                 .toThrow(new Error('Could not find *-Info.plist file, or config.xml file.'));
         });
-        it('Test#003 : should throw if project does not contain an appropriate -Info.plist file', function() {
+        it('Test#003 : should throw if project does not contain an appropriate -Info.plist file', function () {
             shell.rm(path.join(iosProject, 'SampleApp', 'SampleApp-Info.plist'));
             expect(function () { projectFile.parse(locations); })
                 .toThrow(new Error('Could not find *-Info.plist file, or config.xml file.'));
         });
-        it('Test#004 : should return right directory when multiple .plist files are present', function() {
-            //Create a folder named A with config.xml and .plist files in it
+        it('Test#004 : should return right directory when multiple .plist files are present', function () {
+            // Create a folder named A with config.xml and .plist files in it
             var pathToFolderA = path.join(iosProject, 'A');
             shell.mkdir(pathToFolderA);
             shell.cp('-rf', path.join(iosProject, 'SampleApp/*'), pathToFolderA);
 
             var parsedProjectFile = projectFile.parse(locations);
-            var pluginsDir = parsedProjectFile.plugins_dir,
-                resourcesDir = parsedProjectFile.resources_dir,
-                xcodePath = parsedProjectFile.xcode_path;
+            var pluginsDir = parsedProjectFile.plugins_dir;
+            var resourcesDir = parsedProjectFile.resources_dir;
+            var xcodePath = parsedProjectFile.xcode_path;
 
-            var pluginsDirParent = path.dirname(pluginsDir),
-                resourcesDirParent = path.dirname(resourcesDir),
-                sampleAppDir = path.join(iosProject, 'SampleApp');
+            var pluginsDirParent = path.dirname(pluginsDir);
+            var resourcesDirParent = path.dirname(resourcesDir);
+            var sampleAppDir = path.join(iosProject, 'SampleApp');
 
             expect(pluginsDirParent).toEqual(sampleAppDir);
             expect(resourcesDirParent).toEqual(sampleAppDir);
@@ -76,7 +76,7 @@ describe('projectFile', function() {
     });
 
     describe('other methods', function () {
-        it('Test#005 : getPackageName method should return the CFBundleIdentifier from the project\'s Info.plist file', function() {
+        it('Test#005 : getPackageName method should return the CFBundleIdentifier from the project\'s Info.plist file', function () {
             expect(projectFile.parse(locations).getPackageName()).toEqual('com.example.friendstring');
         });
     });

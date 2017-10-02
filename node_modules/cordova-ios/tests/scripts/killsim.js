@@ -21,7 +21,7 @@
 
 var shell = require('shelljs');
 
-function killSimulator(processName) {
+function killSimulator (processName) {
     var result;
     var return_code = 0;
     // check iOS Simulator if running
@@ -30,7 +30,7 @@ function killSimulator(processName) {
 
     // if iOS Simulator is running, kill it
     if (return_code === 0) { // found
-        shell.echo('iOS Simulator is running as ("'+ processName +'"), we\'re going to kill it.');
+        shell.echo('iOS Simulator is running as ("' + processName + '"), we\'re going to kill it.');
         result = shell.exec('killall "' + processName + '"');
         if (result.code !== 0) {
             shell.echo('Failed to kill process: ' + processName);
@@ -41,4 +41,4 @@ function killSimulator(processName) {
 }
 
 killSimulator('iOS Simulator'); // XCode 6
-killSimulator('Simulator'); // XCode 7 
+killSimulator('Simulator'); // XCode 7

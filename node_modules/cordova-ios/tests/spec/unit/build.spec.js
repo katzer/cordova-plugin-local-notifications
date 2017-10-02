@@ -24,12 +24,12 @@ var build = rewire('../../../bin/templates/scripts/cordova/lib/build');
 describe('build', function () {
     var testProjectPath = path.join('/test', 'project', 'path');
 
-    describe('getXcodeBuildArgs method', function() {
+    describe('getXcodeBuildArgs method', function () {
 
         var getXcodeBuildArgs = build.__get__('getXcodeBuildArgs');
         build.__set__('__dirname', path.join('/test', 'dir'));
 
-        it('should generate appropriate args if a single buildFlag is passed in', function(done) {
+        it('should generate appropriate args if a single buildFlag is passed in', function (done) {
             var isDevice = true;
             var buildFlags = '-xcconfig TestXcconfigFlag';
 
@@ -53,7 +53,7 @@ describe('build', function () {
             done();
         });
 
-        it('should generate appropriate args if buildFlags are passed in', function(done) {
+        it('should generate appropriate args if buildFlags are passed in', function (done) {
             var isDevice = true;
             var buildFlags = [
                 '-xcconfig TestXcconfigFlag',
@@ -86,7 +86,7 @@ describe('build', function () {
             done();
         });
 
-        it('should generate appropriate args for device', function(done) {
+        it('should generate appropriate args for device', function (done) {
             var isDevice = true;
             var args = getXcodeBuildArgs('TestProjectName', testProjectPath, 'TestConfiguration', isDevice, null);
             expect(args[0]).toEqual('-xcconfig');
@@ -108,7 +108,7 @@ describe('build', function () {
             done();
         });
 
-        it('should generate appropriate args for simulator', function(done) {
+        it('should generate appropriate args for simulator', function (done) {
             var isDevice = false;
             var args = getXcodeBuildArgs('TestProjectName', testProjectPath, 'TestConfiguration', isDevice, null, 'iPhone 5s');
             expect(args[0]).toEqual('-xcconfig');
@@ -130,7 +130,7 @@ describe('build', function () {
             done();
         });
 
-        it('should add matched flags that are not overriding for device', function(done) {
+        it('should add matched flags that are not overriding for device', function (done) {
             var isDevice = true;
             var buildFlags = '-sdk TestSdkFlag';
 
@@ -156,7 +156,7 @@ describe('build', function () {
             done();
         });
 
-        it('should add matched flags that are not overriding for simulator', function(done) {
+        it('should add matched flags that are not overriding for simulator', function (done) {
             var isDevice = false;
             var buildFlags = '-archivePath TestArchivePathFlag';
 
@@ -183,11 +183,11 @@ describe('build', function () {
         });
     });
 
-    describe('getXcodeArchiveArgs method', function() {
+    describe('getXcodeArchiveArgs method', function () {
 
         var getXcodeArchiveArgs = build.__get__('getXcodeArchiveArgs');
 
-        it('should generate the appropriate arguments', function(done) {
+        it('should generate the appropriate arguments', function (done) {
             var archiveArgs = getXcodeArchiveArgs('TestProjectName', testProjectPath, '/test/output/path', '/test/export/options/path');
             expect(archiveArgs[0]).toEqual('-exportArchive');
             expect(archiveArgs[1]).toEqual('-archivePath');
@@ -201,11 +201,11 @@ describe('build', function () {
         });
     });
 
-    describe('parseBuildFlag method', function() {
+    describe('parseBuildFlag method', function () {
 
         var parseBuildFlag = build.__get__('parseBuildFlag');
 
-        it('should detect an xcconfig change', function(done) {
+        it('should detect an xcconfig change', function (done) {
             var buildFlag = '-xcconfig /path/to/config';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -213,7 +213,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a workspace change', function(done) {
+        it('should detect a workspace change', function (done) {
             var buildFlag = '-workspace MyTestWorkspace';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -221,7 +221,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a scheme change', function(done) {
+        it('should detect a scheme change', function (done) {
             var buildFlag = '-scheme MyTestScheme';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -229,7 +229,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a configuration change', function(done) {
+        it('should detect a configuration change', function (done) {
             var buildFlag = '-configuration MyTestConfiguration';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -237,7 +237,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect an sdk change', function(done) {
+        it('should detect an sdk change', function (done) {
             var buildFlag = '-sdk NotARealSDK';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -245,7 +245,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a destination change', function(done) {
+        it('should detect a destination change', function (done) {
             var buildFlag = '-destination MyTestDestination';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -253,7 +253,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect an archivePath change', function(done) {
+        it('should detect an archivePath change', function (done) {
             var buildFlag = '-archivePath MyTestArchivePath';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -261,7 +261,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a configuration_build_dir change', function(done) {
+        it('should detect a configuration_build_dir change', function (done) {
             var buildFlag = 'CONFIGURATION_BUILD_DIR=/path/to/fake/config/build/dir';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -269,7 +269,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should detect a shared_precomps_dir change', function(done) {
+        it('should detect a shared_precomps_dir change', function (done) {
             var buildFlag = 'SHARED_PRECOMPS_DIR=/path/to/fake/shared/precomps/dir';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -277,7 +277,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(0);
             done();
         });
-        it('should parse arbitrary build settings', function(done) {
+        it('should parse arbitrary build settings', function (done) {
             var buildFlag = 'MY_ARBITRARY_BUILD_SETTING=ValueOfArbitraryBuildSetting';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -285,7 +285,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(1);
             done();
         });
-        it('should parse userdefaults', function(done) {
+        it('should parse userdefaults', function (done) {
             var buildFlag = '-myuserdefault=TestUserDefaultValue';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);
@@ -293,7 +293,7 @@ describe('build', function () {
             expect(args.otherFlags.length).toEqual(1);
             done();
         });
-        it('should parse settings with a space', function(done) {
+        it('should parse settings with a space', function (done) {
             var buildFlag = '-anotherxcodebuildsetting withASpace';
             var args = { 'otherFlags': [] };
             parseBuildFlag(buildFlag, args);

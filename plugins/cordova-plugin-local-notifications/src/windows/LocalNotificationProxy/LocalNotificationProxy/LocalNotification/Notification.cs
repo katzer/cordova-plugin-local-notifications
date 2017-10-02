@@ -288,61 +288,11 @@
         /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
-        public DateTime Date
+        public DateTime? Date
         {
             get
             {
-                var trigger = this.Options.Trigger;
-                var time = trigger.At;
-                var date = DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
-                var minDate = DateTime.Now.AddSeconds(0.1);
-
-                date = date.AddTicks(this.Interval.Ticks * (trigger.Occurrence - 1));
-
-                return (date < minDate) ? minDate : date;
-            }
-        }
-
-        /// <summary>
-        /// Gets the parsed repeat interval.
-        /// </summary>
-        public TimeSpan Interval
-        {
-            get
-            {
-                var every = this.Options.Trigger.Every;
-
-                switch (every)
-                {
-                    case null:
-                    case "":
-                        return TimeSpan.Zero;
-                    case "second":
-                        return new TimeSpan(TimeSpan.TicksPerSecond);
-                    case "minute":
-                        return new TimeSpan(TimeSpan.TicksPerMinute);
-                    case "hour":
-                        return new TimeSpan(TimeSpan.TicksPerHour);
-                    case "day":
-                        return new TimeSpan(TimeSpan.TicksPerDay);
-                    case "week":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 7);
-                    case "month":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 31);
-                    case "quarter":
-                        return new TimeSpan(TimeSpan.TicksPerHour * 2190);
-                    case "year":
-                        return new TimeSpan(TimeSpan.TicksPerDay * 365);
-                }
-
-                try
-                {
-                    return TimeSpan.FromSeconds(60 * int.Parse(every));
-                }
-                catch
-                {
-                    return TimeSpan.Zero;
-                }
+                return this.Options.Trigger.Date;
             }
         }
 

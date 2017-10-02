@@ -2,13 +2,14 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
-    <DebuggerType>Script</DebuggerType>
+    <DebuggerType>ManagedOnly</DebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(UseDotNetNativeToolchain)'=='Release|ARM|true'">
     <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
+    <DebuggerType>ManagedOnly</DebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>

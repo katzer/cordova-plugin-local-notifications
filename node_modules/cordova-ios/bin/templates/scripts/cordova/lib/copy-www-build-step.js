@@ -24,19 +24,19 @@
 // This script should not be called directly.
 // It is called as a build step from Xcode.
 
-var BUILT_PRODUCTS_DIR = process.env.BUILT_PRODUCTS_DIR,
-    FULL_PRODUCT_NAME = process.env.FULL_PRODUCT_NAME,
-    COPY_HIDDEN = process.env.COPY_HIDDEN,
-    PROJECT_FILE_PATH = process.env.PROJECT_FILE_PATH;
+var BUILT_PRODUCTS_DIR = process.env.BUILT_PRODUCTS_DIR;
+var FULL_PRODUCT_NAME = process.env.FULL_PRODUCT_NAME;
+var COPY_HIDDEN = process.env.COPY_HIDDEN;
+var PROJECT_FILE_PATH = process.env.PROJECT_FILE_PATH;
 
-var path = require('path'),
-    fs = require('fs'),
-    shell = require('shelljs'),
-    srcDir = 'www',
-    dstDir = path.join(BUILT_PRODUCTS_DIR, FULL_PRODUCT_NAME),
-    dstWwwDir = path.join(dstDir, 'www');
+var path = require('path');
+var fs = require('fs');
+var shell = require('shelljs');
+var srcDir = 'www';
+var dstDir = path.join(BUILT_PRODUCTS_DIR, FULL_PRODUCT_NAME);
+var dstWwwDir = path.join(dstDir, 'www');
 
-if(!BUILT_PRODUCTS_DIR) {
+if (!BUILT_PRODUCTS_DIR) {
     console.error('The script is meant to be run as an Xcode build step and relies on env variables set by Xcode.');
     process.exit(1);
 }
@@ -57,13 +57,13 @@ shell.rm('-rf', path.join(dstDir, 'embedded.mobileprovision'));
 
 // Copy www dir recursively
 var code;
-if(!!COPY_HIDDEN) {
+if (COPY_HIDDEN) {
     code = shell.exec('rsync -Lra "' + srcDir + '" "' + dstDir + '"').code;
 } else {
     code = shell.exec('rsync -Lra --exclude="- .*" "' + srcDir + '" "' + dstDir + '"').code;
 }
 
-if(code !== 0) {
+if (code !== 0) {
     console.error('Error occured on copying www. Code: ' + code);
     process.exit(3);
 }

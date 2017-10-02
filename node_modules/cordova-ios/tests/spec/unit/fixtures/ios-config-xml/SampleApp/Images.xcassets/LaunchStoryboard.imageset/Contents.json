@@ -1,168 +1,168 @@
 {
-  "images" : [
+  "images": [
     {
-      "idiom" : "universal",
-      "scale" : "1x"
+      "idiom": "universal",
+      "scale": "1x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x"
+      "idiom": "universal",
+      "scale": "1x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "idiom": "universal",
+      "scale": "1x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "scale" : "1x",
-      "height-class" : "compact"
+      "idiom": "universal",
+      "scale": "1x"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x",
-      "height-class" : "compact"
+      "idiom": "universal",
+      "scale": "2x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "height-class" : "compact",
-      "scale" : "3x"
+      "idiom": "universal",
+      "scale": "2x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "scale" : "1x",
-      "width-class" : "compact"
+      "idiom": "universal",
+      "scale": "2x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "width-class" : "compact",
-      "scale" : "2x"
+      "idiom": "universal",
+      "scale": "2x"
     },
     {
-      "idiom" : "universal",
-      "width-class" : "compact",
-      "scale" : "3x"
+      "idiom": "universal",
+      "scale": "3x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "1x"
+      "idiom": "universal",
+      "scale": "3x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "2x"
+      "idiom": "universal",
+      "scale": "3x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "universal",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "3x"
+      "idiom": "universal",
+      "scale": "3x"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "1x"
+      "idiom": "ipad",
+      "scale": "1x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "2x"
+      "idiom": "ipad",
+      "scale": "1x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "3x"
+      "idiom": "ipad",
+      "scale": "1x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "height-class" : "compact"
+      "idiom": "ipad",
+      "scale": "1x"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "2x",
-      "height-class" : "compact"
+      "idiom": "ipad",
+      "scale": "2x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "3x",
-      "height-class" : "compact"
+      "idiom": "ipad",
+      "scale": "2x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "width-class" : "compact"
+      "idiom": "ipad",
+      "scale": "2x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "2x",
-      "width-class" : "compact"
+      "idiom": "ipad",
+      "scale": "2x"
     },
     {
-      "idiom" : "iphone",
-      "scale" : "3x",
-      "width-class" : "compact"
+      "idiom": "iphone",
+      "scale": "1x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "1x"
+      "idiom": "iphone",
+      "scale": "1x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "2x"
+      "idiom": "iphone",
+      "scale": "1x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "iphone",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "3x"
+      "idiom": "iphone",
+      "scale": "1x"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "1x"
+      "idiom": "iphone",
+      "scale": "2x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "2x"
+      "idiom": "iphone",
+      "scale": "2x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "height-class" : "compact"
+      "idiom": "iphone",
+      "scale": "2x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "2x",
-      "height-class" : "compact"
+      "idiom": "iphone",
+      "scale": "2x"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "width-class" : "compact"
+      "idiom": "iphone",
+      "scale": "3x",
+      "width-class": "compact",
+      "height-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "scale" : "2x",
-      "width-class" : "compact"
+      "idiom": "iphone",
+      "scale": "3x",
+      "width-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "1x"
+      "idiom": "iphone",
+      "scale": "3x",
+      "height-class": "compact"
     },
     {
-      "idiom" : "ipad",
-      "width-class" : "compact",
-      "height-class" : "compact",
-      "scale" : "2x"
+      "idiom": "iphone",
+      "scale": "3x"
     }
   ],
-  "info" : {
-    "version" : 1,
-    "author" : "xcode"
+  "info": {
+    "author": "Xcode",
+    "version": 1
   }
 }

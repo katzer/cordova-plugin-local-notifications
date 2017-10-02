@@ -1,1 +1,2 @@
-./org.test.plugins.dummyplugin/www/dummyplugin.js
+/* eslint-disable */
+org.test.plugins.dummyplugin/www/dummyplugin.js 

@@ -19,7 +19,6 @@
        under the License.
 */
 
-/*jshint node: true*/
 
 var Q = require('q'),
     iossim = require('ios-sim'),

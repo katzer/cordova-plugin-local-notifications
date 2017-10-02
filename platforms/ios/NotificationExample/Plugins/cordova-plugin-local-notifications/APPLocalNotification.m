@@ -27,9 +27,9 @@
 
 @interface APPLocalNotification ()
 
-@property (strong, nonatomic) UIApplication* app;
 @property (strong, nonatomic) UNUserNotificationCenter* center;
 @property (readwrite, assign) BOOL deviceready;
+@property (readwrite, assign) BOOL isActive;
 @property (readonly, nonatomic, retain) NSArray* launchDetails;
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
 
@@ -37,7 +37,7 @@
 
 @implementation APPLocalNotification
 
-@synthesize deviceready, eventQueue;
+@synthesize deviceready, isActive, eventQueue;
 
 #pragma mark -
 #pragma mark Interface
@@ -169,7 +169,7 @@
 {
     [self.commandDelegate runInBackground:^{
         [_center clearAllNotifications];
-        [_app setApplicationIconBadgeNumber:0];
+        [self clearApplicationIconBadgeNumber];
         [self fireEvent:@"clearall"];
         [self execCallback:command];
     }];
@@ -210,7 +210,7 @@
 {
     [self.commandDelegate runInBackground:^{
         [_center cancelAllNotifications];
-        [_app setApplicationIconBadgeNumber:0];
+        [self clearApplicationIconBadgeNumber];
         [self fireEvent:@"cancelall"];
         [self execCallback:command];
     }];
@@ -560,15 +560,42 @@
 - (void) pluginInitialize
 {
     eventQueue = [[NSMutableArray alloc] init];
-    _app       = [UIApplication sharedApplication];
     _center    = [UNUserNotificationCenter currentNotificationCenter];
 
     _center.delegate = self;
     [_center registerGeneralNotificationCategory];
+
+    [self monitorAppStateChanges];
+}
+
+/**
+ * Monitor changes of the app state and update the _isActive flag.
+ */
+- (void) monitorAppStateChanges
+{
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+
+    [center addObserverForName:UIApplicationDidBecomeActiveNotification
+                        object:NULL queue:[NSOperationQueue mainQueue]
+                    usingBlock:^(NSNotification *e) { isActive = YES; }];
+
+    [center addObserverForName:UIApplicationDidEnterBackgroundNotification
+                        object:NULL queue:[NSOperationQueue mainQueue]
+                    usingBlock:^(NSNotification *e) { isActive = NO; }];
 }
 
 #pragma mark -
 #pragma mark Helper
+
+/**
+ * Removes the badge number from the app icon.
+ */
+- (void) clearApplicationIconBadgeNumber
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    });
+}
 
 /**
  * Simply invokes the callback without any parameter.
@@ -625,12 +652,12 @@
       notification:(UNNotificationRequest*)request
               data:(NSMutableDictionary*)data
 {
-    BOOL isActive = [_app applicationState] == UIApplicationStateActive;
     NSString *js, *params, *notiAsJSON, *dataAsJSON;
     NSData* dataAsData;
 
-    [data setObject:event       forKey:@"event"];
-    [data setObject:@(isActive) forKey:@"foreground"];
+    [data setObject:event           forKey:@"event"];
+    [data setObject:@(isActive)     forKey:@"foreground"];
+    [data setObject:@(!deviceready) forKey:@"queued"];
 
     if (request) {
         notiAsJSON = [request encodeToJSON];

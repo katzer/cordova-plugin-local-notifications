@@ -464,7 +464,14 @@
  */
 - (double) timeInterval
 {
-    return MAX(0.01f, [self.triggerDate timeIntervalSinceDate:[NSDate date]]);
+    double interval = [[self valueForTriggerOption:@"in"]
+                       doubleValue];
+    
+    if (interval == 0) {
+        interval = [self.triggerDate timeIntervalSinceDate:NSDate.date];
+    }
+    
+    return MAX(0.01f, interval);
 }
 
 /**
@@ -696,7 +703,7 @@
  */
 - (NSURL*) urlFromBase64:(NSString*)base64String
 {
-    NSString *filename = [self getBasenameFromAttachmentPath:base64String];
+    NSString *filename = [self basenameFromAttachmentPath:base64String];
     NSUInteger length = [base64String length];
     NSRegularExpression *regex;
     NSString *dataString;
@@ -724,7 +731,7 @@
  *
  * @return [ NSString* ]
  */
-- (NSString*) getBasenameFromAttachmentPath:(NSString*)path
+- (NSString*) basenameFromAttachmentPath:(NSString*)path
 {
     if ([path hasPrefix:@"base64:"]) {
         NSString* pathWithoutPrefix;

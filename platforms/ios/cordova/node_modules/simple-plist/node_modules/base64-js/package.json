@@ -1,0 +1,59 @@
+{
+  "_args": [
+    [
+      "base64-js@1.1.2",
+      "/Users/spindori/Documents/Cordova/cordova-ios"
+    ]
+  ],
+  "_from": "base64-js@1.1.2",
+  "_id": "base64-js@1.1.2",
+  "_inBundle": true,
+  "_integrity": "sha1-1kAMrBxMZgl22Q0HoENR2JOV9eg=",
+  "_location": "/cordova-ios/simple-plist/base64-js",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "base64-js@1.1.2",
+    "name": "base64-js",
+    "escapedName": "base64-js",
+    "rawSpec": "1.1.2",
+    "saveSpec": null,
+    "fetchSpec": "1.1.2"
+  },
+  "_requiredBy": [
+    "/cordova-ios/simple-plist/plist"
+  ],
+  "_resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.1.2.tgz",
+  "_spec": "1.1.2",
+  "_where": "/Users/spindori/Documents/Cordova/cordova-ios",
+  "author": {
+    "name": "T. Jameson Little",
+    "email": "t.jameson.little@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/beatgammit/base64-js/issues"
+  },
+  "dependencies": {},
+  "description": "Base64 encoding/decoding in pure JS",
+  "devDependencies": {
+    "benchmark": "^2.1.0",
+    "browserify": "^13.0.0",
+    "standard": "^6.0.5",
+    "tape": "4.x",
+    "uglify-js": "^2.6.2"
+  },
+  "homepage": "https://github.com/beatgammit/base64-js#readme",
+  "license": "MIT",
+  "main": "lib/b64.js",
+  "name": "base64-js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/beatgammit/base64-js.git"
+  },
+  "scripts": {
+    "build": "browserify -s base64js -r ./ | uglifyjs -m > base64js.min.js",
+    "test": "standard && tape test/*.js"
+  },
+  "version": "1.1.2"
+}

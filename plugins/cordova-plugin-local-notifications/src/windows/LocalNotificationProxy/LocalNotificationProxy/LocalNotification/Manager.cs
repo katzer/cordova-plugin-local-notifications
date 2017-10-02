@@ -47,14 +47,20 @@ namespace LocalNotificationProxy.LocalNotification
             foreach (Options options in notifications)
             {
                 var builder = new Builder(options);
-                ScheduledToastNotification toast;
 
                 do
                 {
-                    toast = builder.Build();
+                    var toast = builder.Build();
+
+                    if (toast == null)
+                    {
+                        break;
+                    }
+
                     ToastNotifier.AddToSchedule(toast);
                     builder.MoveNext();
-                } while (builder.HasNext());
+                }
+                while (builder.HasNext());
             }
         }
 

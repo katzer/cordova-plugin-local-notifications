@@ -3,6 +3,10 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
+    <feature name="Console">
+        <param name="ios-package" value="CDVLogger" />
+        <param name="onload" value="true" />
+    </feature>
     <feature name="HandleOpenUrl">
         <param name="ios-package" value="CDVHandleOpenURL" />
         <param name="onload" value="true" />
@@ -17,6 +21,10 @@
     </feature>
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
+    </feature>
+    <feature name="LocalNotification">
+        <param name="ios-package" onload="true" value="APPLocalNotification" />
+        <param name="onload" value="true" />
     </feature>
     <feature name="Toast">
         <param name="ios-package" value="Toast" />
@@ -43,9 +51,8 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
-    <preference name="windows-target-version" value="10.0" />
-    <feature name="LocalNotification">
-        <param name="ios-package" onload="true" value="APPLocalNotification" />
-        <param name="onload" value="true" />
-    </feature>
+    <preference name="windows-target-version" value="UAP" />
+    <preference name="uap-target-min-version" value="10.0.15063.0" />
+    <preference name="Windows.Universal-MinVersion" value="10.0.15063.0" />
+    <preference name="Windows.Universal" value="10.0.15063.0" />
 </widget>

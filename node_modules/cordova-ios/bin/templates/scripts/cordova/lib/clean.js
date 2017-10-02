@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,16 +17,14 @@
  * under the License.
  */
 
-/*jshint node: true*/
-
-var Q     = require('q'),
-    path  = require('path'),
-    shell = require('shelljs'),
-    spawn = require('./spawn');
+var Q = require('q');
+var path = require('path');
+var shell = require('shelljs');
+var spawn = require('./spawn');
 
 var projectPath = path.join(__dirname, '..', '..');
 
-module.exports.run = function() {
+module.exports.run = function () {
     var projectName = shell.ls(projectPath).filter(function (name) {
         return path.extname(name) === '.xcodeproj';
     })[0];
@@ -36,9 +34,9 @@ module.exports.run = function() {
     }
 
     return spawn('xcodebuild', ['-project', projectName, '-configuration', 'Debug', '-alltargets', 'clean'], projectPath)
-    .then(function () {
-        return spawn('xcodebuild', ['-project', projectName, '-configuration', 'Release', '-alltargets', 'clean'], projectPath);
-    }).then(function () {
-        return shell.rm('-rf', path.join(projectPath, 'build'));
-    });
+        .then(function () {
+            return spawn('xcodebuild', ['-project', projectName, '-configuration', 'Release', '-alltargets', 'clean'], projectPath);
+        }).then(function () {
+            return shell.rm('-rf', path.join(projectPath, 'build'));
+        });
 };

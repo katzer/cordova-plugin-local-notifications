@@ -14,9 +14,10 @@
         }
     },
     "dependencies": {
-        "cordova-ios": "latest",
+        "cordova-ios": "^4.5.1",
         "cordova-plugin-device": "~1.1.6",
         "cordova-plugin-x-toast": "~2.6.0",
-        "cordova-windows": "^5.0.0"
+        "cordova-windows": "^5.0.0",
+        "cordova-plugin-local-notifications": "~0.0.0"
     }
 }

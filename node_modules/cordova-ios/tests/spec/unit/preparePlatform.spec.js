@@ -17,15 +17,12 @@
  under the License.
  */
 
-/* jshint jasmine: true */
-
 var path = require('path');
 var fs = require('fs');
 var shell = require('shelljs');
 var EventEmitter = require('events').EventEmitter;
 var ConfigParser = require('cordova-common').ConfigParser;
 var PluginInfo = require('cordova-common').PluginInfo;
-var ConfigParser = require('cordova-common').ConfigParser;
 var Api = require('../../../bin/templates/scripts/cordova/Api');
 
 var FIXTURES = path.join(__dirname, 'fixtures');
@@ -38,9 +35,9 @@ var dummyPlugin = path.join(FIXTURES, DUMMY_PLUGIN);
 
 shell.config.silent = true;
 
-describe('prepare after plugin add', function() {
+describe('prepare after plugin add', function () {
     var api;
-    beforeEach(function() {
+    beforeEach(function () {
         shell.mkdir('-p', iosPlatform);
         shell.cp('-rf', iosProjectFixture + '/*', iosPlatform);
         api = new Api('ios', iosPlatform, new EventEmitter());
@@ -48,7 +45,7 @@ describe('prepare after plugin add', function() {
         jasmine.addMatchers({
             'toBeInstalledIn': function () {
                 return {
-                    compare: function(actual, expected) {
+                    compare: function (actual, expected) {
                         var result = {};
                         var content;
                         try {
@@ -59,10 +56,10 @@ describe('prepare after plugin add', function() {
                             result.pass = false;
                         }
 
-                        if(result.pass) {
-                            result.message = 'Expected '+ actual + ' to be installed in '+ expected+'.';
+                        if (result.pass) {
+                            result.message = 'Expected ' + actual + ' to be installed in ' + expected + '.';
                         } else {
-                            result.message = 'Expected '+ actual + ' to not be installed in '+ expected+'.';
+                            result.message = 'Expected ' + actual + ' to not be installed in ' + expected + '.';
                         }
                         return result;
                     }
@@ -71,11 +68,11 @@ describe('prepare after plugin add', function() {
         });
     });
 
-    afterEach(function() {
+    afterEach(function () {
         shell.rm('-rf', iosPlatform);
     });
 
-    it('Test 001 : should not overwrite plugin metadata added by "addPlugin"', function(done) {
+    it('Test 001 : should not overwrite plugin metadata added by "addPlugin"', function (done) {
         var project = {
             root: iosProject,
             projectConfig: new ConfigParser(path.join(iosProject, 'config.xml')),
@@ -86,27 +83,27 @@ describe('prepare after plugin add', function() {
         };
 
         var fail = jasmine.createSpy('fail')
-        .and.callFake(function (err) {
-            console.error(err);
-        });
+            .and.callFake(function (err) {
+                console.error(err);
+            });
 
         api.prepare(project, {})
-        .then(function() {
-            expect(fs.existsSync(path.join(iosPlatform, 'ios.json'))).toBe(true);
-            expect(DUMMY_PLUGIN).not.toBeInstalledIn(iosProject);
-            return api.addPlugin(new PluginInfo(dummyPlugin), {});
-        })
-        .then(function() {
-            expect(DUMMY_PLUGIN).toBeInstalledIn(iosPlatform);
-            return api.prepare(project, {});
-        })
-        .then(function() {
-            expect(DUMMY_PLUGIN).toBeInstalledIn(iosPlatform);
-        })
-        .catch(fail)
-        .finally(function() {
-            expect(fail).not.toHaveBeenCalled();
-            done();
-        });
+            .then(function () {
+                expect(fs.existsSync(path.join(iosPlatform, 'ios.json'))).toBe(true);
+                expect(DUMMY_PLUGIN).not.toBeInstalledIn(iosProject);
+                return api.addPlugin(new PluginInfo(dummyPlugin), {});
+            })
+            .then(function () {
+                expect(DUMMY_PLUGIN).toBeInstalledIn(iosPlatform);
+                return api.prepare(project, {});
+            })
+            .then(function () {
+                expect(DUMMY_PLUGIN).toBeInstalledIn(iosPlatform);
+            })
+            .catch(fail)
+            .finally(function () {
+                expect(fail).not.toHaveBeenCalled();
+                done();
+            });
     });
 });

@@ -256,11 +256,10 @@ static NSString *stripFragment(NSString* url)
                         NSLog(@"%@", description);
                         _loadCount = 0;
                         _state = STATE_WAITING_FOR_LOAD_START;
-                        if ([_delegate respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
-                            NSDictionary* errorDictionary = @{NSLocalizedDescriptionKey : description};
-                            NSError* error = [[NSError alloc] initWithDomain:@"CDVUIWebViewDelegate" code:1 userInfo:errorDictionary];
-                            [_delegate webView:webView didFailLoadWithError:error];
-                        }
+                                
+                        NSDictionary* errorDictionary = @{NSLocalizedDescriptionKey : description};
+                        NSError* error = [[NSError alloc] initWithDomain:@"CDVUIWebViewDelegate" code:1 userInfo:errorDictionary];
+                        [self webView:webView didFailLoadWithError:error];
                     }
             }
         } else {

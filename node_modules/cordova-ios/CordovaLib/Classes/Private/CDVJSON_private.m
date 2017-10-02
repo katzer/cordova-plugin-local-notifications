@@ -66,9 +66,9 @@
     id object = [NSJSONSerialization JSONObjectWithData:[self dataUsingEncoding:NSUTF8StringEncoding]
                                                 options:NSJSONReadingMutableContainers
                                                   error:&error];
-
+    
     if (error != nil) {
-        NSLog(@"NSString JSONObject error: %@", [error localizedDescription]);
+        NSLog(@"NSString JSONObject error: %@, Malformed Data: %@", [error localizedDescription], self);
     }
 
     return object;

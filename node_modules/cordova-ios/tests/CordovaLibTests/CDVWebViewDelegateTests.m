@@ -47,6 +47,8 @@
 // expose private interface
 - (BOOL)shouldLoadRequest:(NSURLRequest*)request;
 
+-(BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType;
+
 @end
 
 @interface CDVWebViewDelegateTests : XCTestCase
@@ -63,6 +65,21 @@
 {
     [super tearDown];
 }
+
+- (void)testShouldLoadRequestWithStateWaitForStart
+{
+    NSInteger initialState = 1; // STATE_WAITING_FOR_LOAD_START;
+    NSInteger expectedState = 0; // STATE_IDLE;
+    
+    CDVWebViewDelegate2* wvd = [[CDVWebViewDelegate2 alloc] initWithDelegate:nil]; // not really testing delegate handling
+    wvd.state = initialState;
+    
+    // Testing a top-level navigation
+    [wvd webView:[UIWebView new] shouldStartLoadWithRequest:nil navigationType:UIWebViewNavigationTypeLinkClicked];
+    
+    XCTAssertTrue(wvd.state == expectedState, @"If the navigation started with state STATE_WAITING_FOR_LOAD_START then it must fail and the state should be STATE_IDLE");
+}
+
 
 - (void)testFailLoadStateCancelled
 {

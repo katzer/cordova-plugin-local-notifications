@@ -42,6 +42,7 @@
 
 NSString* const CDVPageDidLoadNotification = @"CDVPageDidLoadNotification";
 NSString* const CDVPluginHandleOpenURLNotification = @"CDVPluginHandleOpenURLNotification";
+NSString* const CDVPluginHandleOpenURLWithAppSourceAndAnnotationNotification = @"CDVPluginHandleOpenURLWithAppSourceAndAnnotationNotification";
 NSString* const CDVPluginResetNotification = @"CDVPluginResetNotification";
 NSString* const CDVLocalNotification = @"CDVLocalNotification";
 NSString* const CDVRemoteNotification = @"CDVRemoteNotification";
@@ -73,6 +74,7 @@ NSString* const CDVViewWillTransitionToSizeNotification = @"CDVViewWillTransitio
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppTerminate) name:UIApplicationWillTerminateNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleOpenURL:) name:CDVPluginHandleOpenURLNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleOpenURLWithApplicationSourceAndAnnotation:) name:CDVPluginHandleOpenURLWithAppSourceAndAnnotationNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onReset) name:CDVPluginResetNotification object:theWebViewEngine.engineWebView];
 
         self.webViewEngine = theWebViewEngine;
@@ -139,6 +141,37 @@ NSString* const CDVViewWillTransitionToSizeNotification = @"CDVViewWillTransitio
         /* Do your thing! */
     }
 }
+
+/*
+    NOTE: calls into JavaScript must not call or trigger any blocking UI, like alerts
+ */
+- (void)handleOpenURLWithApplicationSourceAndAnnotation: (NSNotification*)notification
+{
+    
+    // override to handle urls sent to your app
+    // register your url schemes in your App-Info.plist
+    
+    // The notification object is an NSDictionary which contains
+    // - url which is a type of NSURL
+    // - sourceApplication which is a type of NSString and represents the package
+    // id of the app that calls our app
+    // - annotation which a type of Property list which can be several different types
+    // please see https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/PropertyList.html
+    
+    NSDictionary*  notificationData = [notification object];
+    
+    if ([notificationData isKindOfClass: NSDictionary.class]){
+        
+        NSURL* url = notificationData[@"url"];
+        NSString* sourceApplication = notificationData[@"sourceApplication"];
+        id annotation = notificationData[@"annotation"];
+        
+        if ([url isKindOfClass:NSURL.class] && [sourceApplication isKindOfClass:NSString.class] && annotation) {
+            /* Do your thing! */
+        }
+    }
+}
+
 
 /* NOTE: calls into JavaScript must not call or trigger any blocking UI, like alerts */
 - (void)onAppTerminate

@@ -17,32 +17,30 @@
        under the License.
 */
 
-/*jshint node: true*/
-
-var Q    = require('q'),
-    proc = require('child_process');
+var Q = require('q');
+var proc = require('child_process');
 
 /**
- * Run specified command with arguments 
+ * Run specified command with arguments
  * @param  {String} cmd           Command
  * @param  {Array} args           Array of arguments that should be passed to command
  * @param  {String} opt_cwd       Working directory for command
  * @param  {String} opt_verbosity Verbosity level for command stdout output, "verbose" by default
  * @return {Promise}              Promise either fullfilled or rejected with error code
  */
-module.exports = function(cmd, args, opt_cwd) {
+module.exports = function (cmd, args, opt_cwd) {
     var d = Q.defer();
     try {
         var child = proc.spawn(cmd, args, {cwd: opt_cwd, stdio: 'inherit'});
 
-        child.on('exit', function(code) {
+        child.on('exit', function (code) {
             if (code) {
                 d.reject('Error code ' + code + ' for command: ' + cmd + ' with args: ' + args);
             } else {
                 d.resolve();
             }
         });
-    } catch(e) {
+    } catch (e) {
         d.reject(e);
     }
     return d.promise;

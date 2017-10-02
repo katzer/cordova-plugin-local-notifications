@@ -1,6 +1,6 @@
 {
     "libz.tbd": 1,
-    "QuartzCore.framework": 1,
     "UserNotifications.framework": 1,
-    "CoreLocation.framework": 1
+    "CoreLocation.framework": 1,
+    "QuartzCore.framework": 1
 }

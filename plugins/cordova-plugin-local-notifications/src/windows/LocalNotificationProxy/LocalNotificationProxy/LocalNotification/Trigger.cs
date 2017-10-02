@@ -21,31 +21,347 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
+    using System;
+    using Windows.Data.Xml.Dom;
+
     public sealed class Trigger
     {
+        private DateTime? triggerDate;
+
         /// <summary>
-        /// Gets trigger type.
+        /// Gets the trigger type.
         /// </summary>
         public string Type { get; } = "calendar";
 
         /// <summary>
-        /// Gets or sets trigger date.
+        /// Gets or sets the trigger date.
         /// </summary>
-        public long At { get; set; }
+        public long At { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets trigger count.
+        /// Gets or sets the relative trigger date from now.
+        /// </summary>
+        public int In { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the trigger count.
         /// </summary>
         public int Count { get; set; } = 1;
 
         /// <summary>
-        /// Gets trigger occurrence.
+        /// Gets the trigger occurrence.
         /// </summary>
         public int Occurrence { get; internal set; } = 1;
 
         /// <summary>
-        /// Gets or sets trigger interval.
+        /// Gets or sets the trigger interval.
         /// </summary>
-        public string Every { get; set; }
+        public object Every { get; set; }
+
+        /// <summary>
+        /// Gets or sets the trigger unit.
+        /// </summary>
+        public string Unit { get; set; } = "second";
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        internal DateTime? Date
+        {
+            get
+            {
+                if (!this.triggerDate.HasValue)
+                {
+                    this.triggerDate = this.Every is Every ? this.GetRelDate() : this.GetFixDate();
+                }
+
+                if (!this.triggerDate.HasValue)
+                {
+                    return null;
+                }
+
+                var date = this.GetNextTriggerDate();
+                var minDate = DateTime.Now.AddSeconds(0.2);
+
+                if (!date.HasValue)
+                {
+                    return null;
+                }
+
+                if (date >= minDate)
+                {
+                    return date;
+                }
+
+                if ((minDate - date).Value.TotalMinutes <= 1)
+                {
+                    return minDate;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the XML string into an instance of Trigger.
+        /// </summary>
+        /// <param name="xml">The serialized instance of Options as an xml string.</param>
+        /// <returns>An instance where all properties have been assigned.</returns>
+        internal static Trigger Parse(string xml)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            var trigger = new Trigger();
+            var node = doc.DocumentElement;
+
+            trigger.At = int.Parse(node.GetAttribute("at"));
+            trigger.In = int.Parse(node.GetAttribute("in"));
+            trigger.Unit = node.GetAttribute("unit");
+            trigger.Count = int.Parse(node.GetAttribute("count"));
+            trigger.Occurrence = int.Parse(node.GetAttribute("occurrence"));
+
+            if (node.GetAttributeNode("every") != null)
+            {
+                trigger.Every = node.GetAttribute("every");
+            }
+
+            return trigger;
+        }
+
+        /// <summary>
+        /// Gets the instance as an serialized xml element.
+        /// </summary>
+        /// <returns>Element with all property values set as attributes.</returns>
+        internal string GetXml()
+        {
+            var node = new XmlDocument().CreateElement("trigger");
+
+            node.SetAttribute("at", this.At.ToString());
+            node.SetAttribute("in", this.In.ToString());
+            node.SetAttribute("unit", this.Unit);
+            node.SetAttribute("count", this.Count.ToString());
+            node.SetAttribute("occurrence", this.Occurrence.ToString());
+
+            if (!(this.Every is Every))
+            {
+                node.SetAttribute("every", this.Every.ToString());
+            }
+
+            return node.GetXml();
+        }
+
+        /// <summary>
+        /// Adds the interval to the specified date.
+        /// </summary>
+        /// <param name="date">The date where to add the interval of ticks</param>
+        /// <param name="interval">minute, hour, day, ...</param>
+        /// <param name="ticks">The number of minutes, hours, days, ...</param>
+        /// <returns>A new datetime instance</returns>
+        private DateTime? AddInterval(DateTime date, string interval, int ticks)
+        {
+            switch (interval)
+            {
+                case null:
+                case "":
+                    return null;
+                case "sec":
+                case "second":
+                case "seconds":
+                    return DateTime.Now.AddSeconds(ticks);
+                case "min":
+                case "minute":
+                case "minutes":
+                    return DateTime.Now.AddMinutes(ticks);
+                case "hour":
+                case "hours":
+                    return DateTime.Now.AddHours(ticks);
+                case "day":
+                case "days":
+                    return DateTime.Now.AddDays(ticks);
+                case "week":
+                case "weeks":
+                    return DateTime.Now.AddDays(ticks * 7);
+                case "month":
+                case "months":
+                    return DateTime.Now.AddMonths(ticks);
+                case "quarter":
+                case "quarters":
+                    return DateTime.Now.AddMonths(ticks * 3);
+                case "year":
+                case "years":
+                    return DateTime.Now.AddYears(ticks);
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <returns>The fix date specified by trigger.at or trigger.in</returns>
+        private DateTime? GetFixDate()
+        {
+            if (this.In != 0)
+            {
+                return this.AddInterval(DateTime.Now, this.Unit, this.In);
+            }
+
+            return DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <returns>The first matching date specified by trigger.every</returns>
+        private DateTime? GetRelDate()
+        {
+            return this.GetRelDate(DateTime.Now);
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <param name="now">The relative date to calculate the date from.</param>
+        /// <returns>The first matching date specified by trigger.every</returns>
+        private DateTime? GetRelDate(DateTime now)
+        {
+            var every = this.Every as Every;
+            var date = every.ToDateTime(now);
+
+            if (date >= now)
+            {
+                return date;
+            }
+
+            if (every.Interval == null || date.Year < now.Year)
+            {
+                return null;
+            }
+
+            if (date.Month < now.Month)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                    case "hour":
+                    case "day":
+                        if (!every.Year.HasValue)
+                        {
+                            return date.AddYears(now.Year - date.Year + 1);
+                        }
+
+                        break;
+                    case "year":
+                        return date.AddYears(now.Year - date.Year + 1);
+                }
+            }
+            else if (date.Day < now.Day)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                    case "hour":
+                        if (!every.Month.HasValue)
+                        {
+                            return date.AddMonths(now.Month - date.Month + 1);
+                        }
+                        else if (!every.Year.HasValue)
+                        {
+                            return date.AddYears(now.Year - date.Year + 1);
+                        }
+
+                        break;
+                    case "month":
+                        return date.AddMonths(now.Month - date.Month + 1);
+                    case "year":
+                        return date.AddYears(now.Year - date.Year + 1);
+                }
+            }
+            else if (date.Hour < now.Hour)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                        if (!every.Day.HasValue)
+                        {
+                            return date.AddDays(now.Day - date.Day + 1);
+                        }
+                        else if (!every.Month.HasValue)
+                        {
+                            return date.AddMonths(now.Month - date.Month + 1);
+                        }
+
+                        break;
+                    case "hour":
+                        return date.AddHours(now.Hour - date.Hour);
+                    case "day":
+                        return date.AddDays(now.Day - date.Day + 1);
+                    case "month":
+                        return date.AddMonths(now.Month - date.Month + 1);
+                    case "year":
+                        return date.AddYears(now.Year - date.Year + 1);
+                }
+            }
+            else if (date.Minute < now.Minute)
+            {
+                switch (every.Interval)
+                {
+                    case "minute":
+                        return date.AddMinutes(now.Minute - date.Minute + 1);
+                    case "hour":
+                        return date.AddHours(now.Hour - date.Hour + 1);
+                    case "day":
+                        return date.AddDays(now.Day - date.Day + 1);
+                    case "month":
+                        return date.AddMonths(now.Month - date.Month + 1);
+                    case "year":
+                        return date.AddYears(now.Year - date.Year + 1);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Calculates the next trigger date by adding (interval * occurence)
+        /// </summary>
+        /// <returns>The next valid trigger date</returns>
+        private DateTime? GetNextTriggerDate()
+        {
+            var date = this.triggerDate.Value;
+            var multiple = this.Occurrence - 1;
+
+            if (multiple == 0)
+            {
+                return date;
+            }
+
+            var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
+            DateTime? nextDate;
+
+            if (every is double)
+            {
+                var ticks = Convert.ToInt32(every);
+
+                if (ticks == 0)
+                {
+                    return null;
+                }
+
+                nextDate = this.AddInterval(date, this.Unit, multiple * ticks);
+            }
+            else
+            {
+                nextDate = this.AddInterval(date, every as string, multiple);
+
+                if (nextDate.HasValue && this.Every is Every)
+                {
+                    nextDate = this.GetRelDate(nextDate.Value);
+                }
+            }
+
+            return nextDate;
+        }
     }
 }

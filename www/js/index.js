@@ -131,16 +131,13 @@ var app = {
     },
     // Schedule a delayed notification
     scheduleDelayed: function () {
-        var now             = new Date().getTime(),
-            _5_sec_from_now = new Date(now + 5 * 1000);
-
         var sound = device.platform != 'iOS' ? 'file://sound.mp3' : 'file://beep.caf';
 
         cordova.plugins.notification.local.schedule({
             id: 1,
             title: 'Scheduled with delay',
             text: 'Test Message 1',
-            trigger: _5_sec_from_now,
+            trigger: { in: 5, unit: 'second' },
             sound: sound,
             badge: 12
         });

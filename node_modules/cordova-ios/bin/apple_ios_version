@@ -19,7 +19,7 @@
     under the License.
 */
 
-var versions = require('./lib/versions.js');
+var versions = require('./templates/scripts/cordova/lib/versions.js');
 
 versions.get_apple_ios_version().done(null, function(err) {
     console.log(err);

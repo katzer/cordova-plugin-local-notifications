@@ -4,7 +4,7 @@
 ios-sim
 =======
 
-Supports Xcode 6 only since version 3.x.
+Supports Xcode 8 and greater only since version 5.x.
 
 The ios-sim tool is a command-line utility that launches an iOS application on the iOS Simulator. This allows for niceties such as automated testing without having to open Xcode.
 

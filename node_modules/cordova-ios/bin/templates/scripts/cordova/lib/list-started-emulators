@@ -19,7 +19,6 @@
        under the License.
 */
 
-/*jshint node: true*/
 
 var Q = require('q'),
     exec = require('child_process').exec;

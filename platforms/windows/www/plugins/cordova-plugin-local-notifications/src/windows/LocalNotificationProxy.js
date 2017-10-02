@@ -394,14 +394,17 @@ exports.cloneAll = function (objs) {
  */
 exports.clone = function (obj) {
     var ignore = ['action'],
+        dclone = ['trigger'],
         clone  = {};
+
+    if (obj === null) return null;
 
     for (var prop in obj) {
         if (ignore.includes(prop) || typeof obj[prop] === 'function')
             continue;
 
         try {
-            clone[prop] = obj[prop];
+            clone[prop] = dclone.includes(prop) ? exports.clone(obj[prop]) : obj[prop];
         } catch (e) {
             clone[prop] = null;
         }
@@ -455,10 +458,29 @@ exports.parseTrigger = function (obj) {
     for (var prop in trigger) {
         val = spec[prop];
         if (!val) continue;
-        trigger[prop] = prop == 'every' ? val.toString() : val;
+        trigger[prop] = prop == 'every' ? exports.parseEvery(val) : val;
     }
 
     return trigger;
+};
+
+/**
+ * Parse trigger.every spec into instance of prefered type.
+ *
+ * @param [ Object ] spec The trigger.every object.
+ *
+ * @return [ LocalNotification.Every|String ]
+ */
+exports.parseEvery = function (spec) {
+    var every = new LocalNotification.Every();
+
+    if (typeof spec !== 'object') return spec;
+
+    for (var prop in every) {
+        if (spec[prop]) every[prop] = parseInt(spec[prop]);
+    }
+
+    return every;
 };
 
 /**

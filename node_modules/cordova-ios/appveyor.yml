@@ -7,12 +7,14 @@ install:
   - ps: Install-Product node $env:nodejs_version
   # Lines below required due to uncrustify installation failure on Windows
   - npm install --prod
-  - npm install jshint jasmine rewire
+  - npm install eslint eslint-config-semistandard jasmine rewire
+  - npm install eslint-config-standard eslint-plugin-import eslint-plugin-node
+  - npm install eslint-plugin-promise eslint-plugin-standard
 
 build: off
 
 test_script:
   - node --version
   - npm --version
-  - npm run jshint
   - npm run unit-tests
+  - npm run eslint

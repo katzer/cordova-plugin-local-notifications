@@ -17,8 +17,8 @@ Don't forget to check out the [README](https://github.com/phonegap/ios-sim/blob/
 
 Please run the commands below in your Terminal.app and include it in the issue. Check when done and include results below.
 
-- [ ] 1. sw_vers -productVersion
+- [ ] 1. system_profiler SPSoftwareDataType
 - [ ] 2. ios-sim --version
 - [ ] 3. xcodebuild -version
 - [ ] 4. xcode-select --print-path
-- [ ] 5. gcc --version
+- [ ] 5. node --version

@@ -19,7 +19,7 @@
        under the License.
 */
 
-var check_reqs = require('./lib/check_reqs');
+var check_reqs = require('./templates/scripts/cordova/lib/check_reqs');
 
 // check for help flag
 if (['--help', '/?', '-h', 'help', '-help', '/help'].indexOf(process.argv[2]) > -1) {
