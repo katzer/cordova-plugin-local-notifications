@@ -170,9 +170,18 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The first matching date specified by trigger.every</returns>
         private DateTime? GetRelDate()
         {
+            return this.GetRelDate(DateTime.Now);
+        }
+
+        /// <summary>
+        /// Gets the date when to trigger the notification.
+        /// </summary>
+        /// <param name="now">The relative date to calculate the date from.</param>
+        /// <returns>The first matching date specified by trigger.every</returns>
+        private DateTime? GetRelDate(DateTime now)
+        {
             var every = this.Every as Every;
-            var date = every.ToDateTime();
-            var now = DateTime.Now;
+            var date = every.ToDateTime(now);
 
             if (date >= now)
             {
@@ -274,7 +283,6 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The next valid trigger date</returns>
         private DateTime? GetNextTriggerDate()
         {
-            var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
             var date = this.triggerDate.Value;
             var multiple = this.Occurrence - 1;
 
@@ -283,35 +291,68 @@ namespace LocalNotificationProxy.LocalNotification
                 return date;
             }
 
+            var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
+
             switch (every)
             {
                 case null:
                 case "":
-                    return date;
+                    return null;
+
                 case "minute":
-                    return date.AddMinutes(multiple * 1);
+                    date = date.AddMinutes(multiple * 1);
+                    break;
+
                 case "hour":
-                    return date.AddHours(multiple * 1);
+                    date = date.AddHours(multiple * 1);
+                    break;
+
                 case "day":
-                    return date.AddDays(multiple * 1);
+                    date = date.AddDays(multiple * 1);
+                    break;
+
                 case "week":
-                    return date.AddDays(multiple * 7);
+                    date = date.AddDays(multiple * 7);
+                    break;
+
                 case "month":
-                    return date.AddMonths(multiple * 1);
+                    date = date.AddMonths(multiple * 1);
+                    break;
+
                 case "quarter":
-                    return date.AddMonths(multiple * 3);
+                    date = date.AddMonths(multiple * 3);
+                    break;
+
                 case "year":
-                    return date.AddYears(multiple * 1);
+                    date = date.AddYears(multiple * 1);
+                    break;
+
+                default:
+                    try
+                    {
+                        var seconds = int.Parse(every as string);
+
+                        if (seconds == 0)
+                        {
+                            return null;
+                        }
+
+                        date = date.AddSeconds(multiple * seconds);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
+                    break;
             }
 
-            try
+            if (this.Every is Every)
             {
-                return date.AddSeconds(multiple * (60 * int.Parse(every as string)));
+                return this.GetRelDate(date);
             }
-            catch
-            {
-                return null;
-            }
+
+            return date;
         }
     }
 }

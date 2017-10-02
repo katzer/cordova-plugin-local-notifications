@@ -61,17 +61,17 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Converts the date time components into a datetime object.
         /// </summary>
+        /// <param name="now">The relative date to calculate the date from.</param>
         /// <returns>A datetime object</returns>
-        internal DateTime ToDateTime()
+        internal DateTime ToDateTime(DateTime now)
         {
             var p = this.ToArray();
-            var today = DateTime.Today;
 
             p[0] = this.Minute.GetValueOrDefault();
             p[1] = this.Hour.GetValueOrDefault();
-            p[2] = this.Day.GetValueOrDefault(today.Day);
-            p[3] = this.Month.GetValueOrDefault(today.Month);
-            p[4] = this.Year.GetValueOrDefault(today.Year);
+            p[2] = this.Day.GetValueOrDefault(now.Day);
+            p[3] = this.Month.GetValueOrDefault(now.Month);
+            p[4] = this.Year.GetValueOrDefault(now.Year);
 
             return new DateTime(p[4].Value, p[3].Value, p[2].Value, p[1].Value, p[0].Value, 0);
         }

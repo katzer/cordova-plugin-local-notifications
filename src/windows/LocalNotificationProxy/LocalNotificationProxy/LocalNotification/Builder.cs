@@ -69,7 +69,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// If there is at least one more toast variant to build.
         /// </summary>
         /// <returns>True if there are more toasts to build.</returns>
-        public bool HasNext() => this.Trigger.Count > this.Trigger.Occurrence;
+        public bool HasNext() => this.Trigger.Count >= this.Trigger.Occurrence;
 
         /// <summary>
         /// Moves the flag to the next toast variant.

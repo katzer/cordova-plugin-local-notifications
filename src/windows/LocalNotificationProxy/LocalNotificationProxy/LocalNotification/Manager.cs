@@ -52,11 +52,12 @@ namespace LocalNotificationProxy.LocalNotification
                 {
                     var toast = builder.Build();
 
-                    if (toast != null)
+                    if (toast == null)
                     {
-                        ToastNotifier.AddToSchedule(toast);
+                        break;
                     }
 
+                    ToastNotifier.AddToSchedule(toast);
                     builder.MoveNext();
                 }
                 while (builder.HasNext());
