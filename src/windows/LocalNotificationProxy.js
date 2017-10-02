@@ -473,7 +473,7 @@ exports.parseTrigger = function (obj) {
 exports.parseEvery = function (spec) {
     var every = new LocalNotification.Every();
 
-    if (typeof spec !== 'object') return spec.toString();
+    if (typeof spec !== 'object') return spec;
 
     for (var prop in every) {
         if (spec[prop]) every[prop] = parseInt(spec[prop]);

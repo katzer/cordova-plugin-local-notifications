@@ -29,34 +29,39 @@ namespace LocalNotificationProxy.LocalNotification
         private DateTime? triggerDate;
 
         /// <summary>
-        /// Gets trigger type.
+        /// Gets the trigger type.
         /// </summary>
         public string Type { get; } = "calendar";
 
         /// <summary>
-        /// Gets or sets trigger date.
+        /// Gets or sets the trigger date.
         /// </summary>
         public long At { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets relative trigger date in seconds from now.
+        /// Gets or sets the relative trigger date from now.
         /// </summary>
-        public long In { get; set; } = 0;
+        public int In { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets trigger count.
+        /// Gets or sets the trigger count.
         /// </summary>
         public int Count { get; set; } = 1;
 
         /// <summary>
-        /// Gets trigger occurrence.
+        /// Gets the trigger occurrence.
         /// </summary>
         public int Occurrence { get; internal set; } = 1;
 
         /// <summary>
-        /// Gets or sets trigger interval.
+        /// Gets or sets the trigger interval.
         /// </summary>
         public object Every { get; set; }
+
+        /// <summary>
+        /// Gets or sets the trigger unit.
+        /// </summary>
+        public string Unit { get; set; } = "second";
 
         /// <summary>
         /// Gets the date when to trigger the notification.
@@ -110,8 +115,9 @@ namespace LocalNotificationProxy.LocalNotification
             var trigger = new Trigger();
             var node = doc.DocumentElement;
 
-            trigger.At = long.Parse(node.GetAttribute("at"));
-            trigger.In = long.Parse(node.GetAttribute("in"));
+            trigger.At = int.Parse(node.GetAttribute("at"));
+            trigger.In = int.Parse(node.GetAttribute("in"));
+            trigger.Unit = node.GetAttribute("unit");
             trigger.Count = int.Parse(node.GetAttribute("count"));
             trigger.Occurrence = int.Parse(node.GetAttribute("occurrence"));
 
@@ -133,35 +139,65 @@ namespace LocalNotificationProxy.LocalNotification
 
             node.SetAttribute("at", this.At.ToString());
             node.SetAttribute("in", this.In.ToString());
+            node.SetAttribute("unit", this.Unit);
             node.SetAttribute("count", this.Count.ToString());
             node.SetAttribute("occurrence", this.Occurrence.ToString());
 
-            if (this.Every is string)
+            if (!(this.Every is Every))
             {
-                node.SetAttribute("every", this.Every as string);
+                node.SetAttribute("every", this.Every.ToString());
             }
 
             return node.GetXml();
         }
 
         /// <summary>
+        /// Adds the interval to the specified date.
+        /// </summary>
+        /// <param name="date">The date where to add the interval of ticks</param>
+        /// <param name="interval">minute, hour, day, ...</param>
+        /// <param name="ticks">The number of minutes, hours, days, ...</param>
+        /// <returns>A new datetime instance</returns>
+        private DateTime? AddInterval(DateTime date, string interval, int ticks)
+        {
+            switch (interval)
+            {
+                case null:
+                case "":
+                    return null;
+                case "second":
+                    return DateTime.Now.AddSeconds(ticks);
+                case "minute":
+                    return DateTime.Now.AddMinutes(ticks);
+                case "hour":
+                    return DateTime.Now.AddHours(ticks);
+                case "day":
+                    return DateTime.Now.AddDays(ticks);
+                case "week":
+                    return DateTime.Now.AddDays(ticks * 7);
+                case "month":
+                    return DateTime.Now.AddMonths(ticks);
+                case "quarter":
+                    return DateTime.Now.AddMonths(ticks * 3);
+                case "year":
+                    return DateTime.Now.AddYears(ticks);
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
         /// Gets the date when to trigger the notification.
         /// </summary>
         /// <returns>The fix date specified by trigger.at or trigger.in</returns>
-        private DateTime GetFixDate()
+        private DateTime? GetFixDate()
         {
-            DateTime date;
-
             if (this.In != 0)
             {
-                date = DateTime.Now.AddSeconds(this.In);
-            }
-            else
-            {
-                date = DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
+                return this.AddInterval(DateTime.Now, this.Unit, this.In);
             }
 
-            return date;
+            return DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
         }
 
         /// <summary>
@@ -292,67 +328,30 @@ namespace LocalNotificationProxy.LocalNotification
             }
 
             var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
+            DateTime? nextDate;
 
-            switch (every)
+            if (every is double)
             {
-                case null:
-                case "":
+                var ticks = Convert.ToInt32(every);
+
+                if (ticks == 0)
+                {
                     return null;
+                }
 
-                case "minute":
-                    date = date.AddMinutes(multiple * 1);
-                    break;
-
-                case "hour":
-                    date = date.AddHours(multiple * 1);
-                    break;
-
-                case "day":
-                    date = date.AddDays(multiple * 1);
-                    break;
-
-                case "week":
-                    date = date.AddDays(multiple * 7);
-                    break;
-
-                case "month":
-                    date = date.AddMonths(multiple * 1);
-                    break;
-
-                case "quarter":
-                    date = date.AddMonths(multiple * 3);
-                    break;
-
-                case "year":
-                    date = date.AddYears(multiple * 1);
-                    break;
-
-                default:
-                    try
-                    {
-                        var seconds = int.Parse(every as string);
-
-                        if (seconds == 0)
-                        {
-                            return null;
-                        }
-
-                        date = date.AddSeconds(multiple * seconds);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-
-                    break;
+                nextDate = this.AddInterval(date, this.Unit, multiple * ticks);
             }
-
-            if (this.Every is Every)
+            else
             {
-                return this.GetRelDate(date);
+                nextDate = this.AddInterval(date, every as string, multiple);
+
+                if (nextDate.HasValue && this.Every is Every)
+                {
+                    nextDate = this.GetRelDate(nextDate.Value);
+                }
             }
 
-            return date;
+            return nextDate;
         }
     }
 }

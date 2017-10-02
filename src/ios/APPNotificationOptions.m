@@ -384,15 +384,17 @@
  */
 - (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
 {
-    long interval = [[self valueForTriggerOption:@"every"] longValue];
+    double ticks   = [[self valueForTriggerOption:@"every"] doubleValue];
+    NSString* unit = [self valueForTriggerOption:@"unit"];
+    double seconds = [self convertTicksToSeconds:ticks unit:unit];
 
-    if (interval < 60) {
-        NSLog(@"time interval must be at least 60 if repeating");
-        interval = 60;
+    if (seconds < 60) {
+        NSLog(@"time interval must be at least 60 sec if repeating");
+        seconds = 60;
     }
 
     return [UNTimeIntervalNotificationTrigger
-            triggerWithTimeInterval:interval repeats:YES];
+            triggerWithTimeInterval:seconds repeats:YES];
 }
 
 /**
@@ -464,14 +466,11 @@
  */
 - (double) timeInterval
 {
-    double interval = [[self valueForTriggerOption:@"in"]
-                       doubleValue];
-    
-    if (interval == 0) {
-        interval = [self.triggerDate timeIntervalSinceDate:NSDate.date];
-    }
-    
-    return MAX(0.01f, interval);
+    double ticks   = [[self valueForTriggerOption:@"in"] doubleValue];
+    NSString* unit = [self valueForTriggerOption:@"unit"];
+    double seconds = [self convertTicksToSeconds:ticks unit:unit];
+
+    return MAX(0.01f, seconds);
 }
 
 /**
@@ -515,12 +514,11 @@
     NSDateComponents* date  = [[NSDateComponents alloc] init];
     NSDictionary* every     = [self valueForTriggerOption:@"every"];
 
+    date.second = 0;
+
     for (NSString* key in every) {
         long value = [[every valueForKey:key] longValue];
 
-        if ([key isEqualToString:@"second"]) {
-            date.second = value;
-        } else
         if ([key isEqualToString:@"minute"]) {
             date.minute = value;
         } else
@@ -772,6 +770,44 @@
     }
 
     return url;
+}
+
+/**
+ * Convert the amount of ticks into seconds.
+ *
+ * @param [ double ]    ticks The amount of ticks.
+ * @param [ NSString* ] unit  The unit of the ticks (minute, hour, day, ...)
+ *
+ * @return [ double ] Amount of ticks in seconds.
+ */
+- (double) convertTicksToSeconds:(double)ticks unit:(NSString*)unit
+{
+    if ([unit isEqualToString:@"second"]) {
+        return ticks;
+    } else
+    if ([unit isEqualToString:@"minute"]) {
+        return ticks * 60;
+    } else
+    if ([unit isEqualToString:@"hour"]) {
+        return ticks * 60 * 60;
+    } else
+    if ([unit isEqualToString:@"day"]) {
+        return ticks * 60 * 60 * 24;
+    } else
+    if ([unit isEqualToString:@"week"]) {
+        return ticks * 60 * 60 * 24 * 7;
+    } else
+    if ([unit isEqualToString:@"month"]) {
+        return ticks * 60 * 60 * 24 * 30.438;
+    } else
+    if ([unit isEqualToString:@"quarter"]) {
+        return ticks * 60 * 60 * 24 * 91.313;
+    } else
+    if ([unit isEqualToString:@"year"]) {
+        return ticks * 60 * 60 * 24 * 365;
+    }
+
+    return 0;
 }
 
 @end
