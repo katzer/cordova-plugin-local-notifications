@@ -191,10 +191,7 @@ exports.convertActions = function (options) {
  * @return [ Map ] Interaction object with trigger spec.
  */
 exports.convertTrigger = function (options) {
-    var cfg      = options.trigger,
-        isDate   = Date.prototype.isPrototypeOf(cfg),
-        isObject = Object.prototype.isPrototypeOf(cfg),
-        trigger  = !isDate && isObject ? cfg : {},
+    var trigger  = options.trigger || {},
         date     = this.getValueFor(trigger, 'at', 'firstAt', 'date');
 
     if (!trigger.type) {
@@ -204,16 +201,20 @@ exports.convertTrigger = function (options) {
     var isCal = trigger.type == 'calendar';
 
     if (isCal && !date) {
-        date = this.getValueFor(options, 'at', 'firstAt', 'date') || new Date();
-    }
-
-    if (isCal) {
-        date = typeof date == 'object' ? date.getTime() : date;
-        trigger.at = Math.round(date / 1000);
+        date = this.getValueFor(options, 'at', 'firstAt', 'date');
     }
 
     if (isCal && !trigger.every && options.every) {
         trigger.every = options.every;
+    }
+
+    if (isCal && (trigger.in || trigger.every)) {
+        date = null;
+    }
+
+    if (isCal && date) {
+        date       = typeof date == 'object' ? date.getTime() : date;
+        trigger.at = Math.round(date / 1000);
     }
 
     if (!trigger.count && device.platform == 'windows') {
@@ -228,6 +229,10 @@ exports.convertTrigger = function (options) {
         trigger.notifyOnEntry = !!trigger.notifyOnEntry;
         trigger.notifyOnExit  = trigger.notifyOnExit === true;
         trigger.radius        = trigger.radius || 5;
+    }
+
+    if (!isCal || trigger.at) {
+        delete trigger.every;
     }
 
     delete options.every;
