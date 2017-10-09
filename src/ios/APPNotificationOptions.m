@@ -353,8 +353,14 @@
  *
  * @return [ UNTimeIntervalNotificationTrigger* ]
  */
-- (UNTimeIntervalNotificationTrigger*) nonRepeatingTrigger
+- (UNNotificationTrigger*) nonRepeatingTrigger
 {
+    id timestamp = [self valueForTriggerOption:@"at"];
+
+    if (timestamp) {
+        return [self triggerWithDateMatchingComponents:NO];
+    }
+
     return [UNTimeIntervalNotificationTrigger
             triggerWithTimeInterval:[self timeInterval] repeats:NO];
 }
@@ -369,7 +375,7 @@
     id every = [self valueForTriggerOption:@"every"];
 
     if ([every isKindOfClass:NSString.class])
-        return [self triggerWithDateMatchingComponents];
+        return [self triggerWithDateMatchingComponents:YES];
 
     if ([every isKindOfClass:NSDictionary.class])
         return [self triggerWithCustomDateMatchingComponents];
@@ -402,7 +408,7 @@
  *
  * @return [ UNCalendarNotificationTrigger* ]
  */
-- (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents
+- (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents:(BOOL)repeats
 {
     NSCalendar* cal = [[NSCalendar alloc]
                        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -413,7 +419,7 @@
     date.timeZone = [NSTimeZone defaultTimeZone];
 
     return [UNCalendarNotificationTrigger
-            triggerWithDateMatchingComponents:date repeats:YES];
+            triggerWithDateMatchingComponents:date repeats:repeats];
 }
 
 /**
@@ -456,7 +462,8 @@
     region.notifyOnEntry = [[self valueForTriggerOption:@"notifyOnEntry"] boolValue];
     region.notifyOnExit  = [[self valueForTriggerOption:@"notifyOnExit"] boolValue];
 
-    return [UNLocationNotificationTrigger triggerWithRegion:region repeats:YES];
+    return [UNLocationNotificationTrigger triggerWithRegion:region
+                                                    repeats:YES];
 }
 
 /**
