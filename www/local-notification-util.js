@@ -87,7 +87,8 @@ exports.mergeWithDefaults = function (options) {
             if (options.hasOwnProperty(key) && ['data','sound'].indexOf(key) > -1) {
                 options[key] = undefined;
             } else {
-                options[key] = defaults[key];
+                var obj = defaults[key];
+                options[key] = typeof obj === 'object' ? Object.assign({}, obj) : obj;
             }
         }
     }
