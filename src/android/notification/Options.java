@@ -170,6 +170,9 @@ public class Options {
         } else
         if (cfg instanceof JSONArray) {
             hex = options.optJSONArray("led").optString(0);
+        } else
+        if (cfg instanceof JSONObject) {
+            hex = options.optJSONObject("led").optString("color");
         }
 
         if (hex == null)
@@ -192,11 +195,15 @@ public class Options {
      */
     int getLedOn() {
         Object cfg = options.opt("led");
+        int defVal = 1000;
 
         if (cfg instanceof JSONArray)
-            return options.optJSONArray("led").optInt(1);
+            return options.optJSONArray("led").optInt(1, defVal);
 
-        return 1000;
+        if (cfg instanceof JSONObject)
+            return options.optJSONObject("led").optInt("on", defVal);
+
+        return defVal;
     }
 
     /**
@@ -204,11 +211,15 @@ public class Options {
      */
     int getLedOff() {
         Object cfg = options.opt("led");
+        int defVal = 1000;
 
         if (cfg instanceof JSONArray)
-            return options.optJSONArray("led").optInt(2);
+            return options.optJSONArray("led").optInt(2, defVal);
 
-        return 1000;
+        if (cfg instanceof JSONObject)
+            return options.optJSONObject("led").optInt("off", defVal);
+
+        return defVal;
     }
 
     /**
