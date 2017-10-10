@@ -29,13 +29,12 @@ import de.appplant.cordova.plugin.notification.Notification;
  * notification manually. It un-persists the cleared notification from the
  * shared preferences.
  */
-public class ClearReceiver extends de.appplant.cordova.plugin.notification.ClearReceiver {
+public class ClearReceiver extends de.appplant.cordova.plugin.notification.receiver.ClearReceiver {
 
     /**
      * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification
      */
     @Override
     public void onClear (Notification notification) {

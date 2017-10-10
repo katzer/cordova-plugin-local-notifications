@@ -21,16 +21,23 @@
 
 package de.appplant.cordova.plugin.notification;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import org.json.JSONException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Date;
+import de.appplant.cordova.plugin.notification.util.AssetUtil;
+
+import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
+import static android.support.v4.app.NotificationCompat.DEFAULT_SOUND;
+import static android.support.v4.app.NotificationCompat.DEFAULT_VIBRATE;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all
@@ -40,105 +47,41 @@ import java.util.Date;
 public class Options {
 
     // Key name for bundled extras
-    static final String EXTRA = "NOTIFICATION_OPTIONS";
+    public static final String EXTRA = "NOTIFICATION_OPTIONS";
+
+    // Default icon path
+    private static final String DEFAULT_ICON = "res://icon";
 
     // The original JSON object
-    private JSONObject options = new JSONObject();
+    private final JSONObject options;
 
-    // Repeat interval
-    private long interval = 0;
-
-    // Application context
+    // The application context
     private final Context context;
 
     // Asset util instance
     private final AssetUtil assets;
 
+    /**
+     * When creating without a context, various methods might not work well.
+     *
+     * @param options The options dict map.
+     */
+    public Options(JSONObject options) {
+        this.options = options;
+        this.context = null;
+        this.assets  = null;
+    }
 
     /**
      * Constructor
      *
-     * @param context
-     *      Application context
+     * @param context The application context.
+     * @param options The options dict map.
      */
-    public Options(Context context){
-    	this.context = context;
-        this.assets  = AssetUtil.getInstance(context);
-    }
-
-    /**
-     * Parse given JSON properties.
-     *
-     * @param options
-     *      JSON properties
-     */
-    public Options parse (JSONObject options) {
+    public Options(Context context, JSONObject options) {
+        this.context = context;
         this.options = options;
-
-        parseInterval();
-        parseAssets();
-
-        return this;
-    }
-
-    /**
-     * Parse repeat interval.
-     */
-    private void parseInterval() {
-        String every = options.optString("every").toLowerCase();
-
-        if (every.isEmpty()) {
-            interval = 0;
-        } else
-        if (every.equals("second")) {
-            interval = 1000;
-        } else
-        if (every.equals("minute")) {
-            interval = AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15;
-        } else
-        if (every.equals("hour")) {
-            interval = AlarmManager.INTERVAL_HOUR;
-        } else
-        if (every.equals("day")) {
-            interval = AlarmManager.INTERVAL_DAY;
-        } else
-        if (every.equals("week")) {
-            interval = AlarmManager.INTERVAL_DAY * 7;
-        } else
-        if (every.equals("month")) {
-            interval = AlarmManager.INTERVAL_DAY * 31;
-        } else
-        if (every.equals("quarter")) {
-            interval = AlarmManager.INTERVAL_HOUR * 2190;
-        } else
-        if (every.equals("year")) {
-            interval = AlarmManager.INTERVAL_DAY * 365;
-        } else {
-            try {
-                interval = Integer.parseInt(every) * 60000;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Parse asset URIs.
-     */
-    private void parseAssets() {
-
-        if (options.has("iconUri") && !options.optBoolean("updated"))
-            return;
-
-        Uri iconUri  = assets.parse(options.optString("icon", "res://icon"));
-        Uri soundUri = assets.parseSound(options.optString("sound", null));
-
-        try {
-            options.put("iconUri", iconUri.toString());
-            options.put("soundUri", soundUri.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        this.assets  = AssetUtil.getInstance(context);
     }
 
     /**
@@ -156,6 +99,24 @@ public class Options {
     }
 
     /**
+     * Gets the ID for the local notification.
+     *
+     * @return 0 if the user did not specify.
+     */
+    public Integer getId() {
+        return options.optInt("id", 0);
+    }
+
+    /**
+     * The identifier for the local notification.
+     *
+     * @return The notification ID as the string
+     */
+    public String getIdentifier() {
+        return getId().toString();
+    }
+
+    /**
      * Text for the local notification.
      */
     public String getText() {
@@ -163,59 +124,24 @@ public class Options {
     }
 
     /**
-     * Repeat interval (day, week, month, year, aso.)
-     */
-    public long getRepeatInterval() {
-        return interval;
-    }
-
-    /**
      * Badge number for the local notification.
      */
-    public int getBadgeNumber() {
+    int getBadgeNumber() {
         return options.optInt("badge", 0);
     }
 
     /**
      * ongoing flag for local notifications.
      */
-    public Boolean isOngoing() {
-        return options.optBoolean("ongoing", false);
+    Boolean isSticky() {
+        return options.optBoolean("sticky", false);
     }
 
     /**
      * autoClear flag for local notifications.
      */
-    public Boolean isAutoClear() {
+    Boolean isAutoClear() {
         return options.optBoolean("autoClear", false);
-    }
-
-    /**
-     * ID for the local notification as a number.
-     */
-    public Integer getId() {
-        return options.optInt("id", 0);
-    }
-
-    /**
-     * ID for the local notification as a string.
-     */
-    public String getIdStr() {
-        return getId().toString();
-    }
-
-    /**
-     * Trigger date.
-     */
-    public Date getTriggerDate() {
-        return new Date(getTriggerTime());
-    }
-
-    /**
-     * Trigger date in milliseconds.
-     */
-    public long getTriggerTime() {
-        return options.optLong("at", 0) * 1000;
     }
 
     /**
@@ -233,65 +159,99 @@ public class Options {
     }
 
     /**
-     * @return
-     *      The notification color for LED
+     * The notification color for LED.
      */
-    public int getLedColor() {
-        String hex = options.optString("led", null);
+    int getLedColor() {
+        Object cfg = options.opt("led");
+        String hex = null;
 
-        if (hex == null) {
-            return 0;
+        if (cfg instanceof String) {
+            hex = options.optString("led");
+        } else
+        if (cfg instanceof JSONArray) {
+            hex = options.optJSONArray("led").optString(0);
         }
 
-        int aRGB = Integer.parseInt(hex, 16);
+        if (hex == null)
+            return 0;
 
-        return aRGB + 0xFF000000;
+        try {
+            hex      = stripHex(hex);
+            int aRGB = Integer.parseInt(hex, 16);
+
+            return aRGB + 0xFF000000;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     /**
-     * @return
-     *      The notification background color for the small icon
-     *      Returns null, if no color is given.
+     * The notification color for LED.
+     */
+    int getLedOn() {
+        Object cfg = options.opt("led");
+
+        if (cfg instanceof JSONArray)
+            return options.optJSONArray("led").optInt(1);
+
+        return 1000;
+    }
+
+    /**
+     * The notification color for LED.
+     */
+    int getLedOff() {
+        Object cfg = options.opt("led");
+
+        if (cfg instanceof JSONArray)
+            return options.optJSONArray("led").optInt(2);
+
+        return 1000;
+    }
+
+    /**
+     * The notification background color for the small icon.
+     *
+     * @return null, if no color is given.
      */
     public int getColor() {
         String hex = options.optString("color", null);
 
-        if (hex == null) {
+        if (hex == null)
             return NotificationCompat.COLOR_DEFAULT;
+
+        try {
+            hex      = stripHex(hex);
+            int aRGB = Integer.parseInt(hex, 16);
+
+            return aRGB + 0xFF000000;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
 
-        int aRGB = Integer.parseInt(hex, 16);
-
-        return aRGB + 0xFF000000;
+        return NotificationCompat.COLOR_DEFAULT;
     }
 
     /**
      * Sound file path for the local notification.
      */
-    public Uri getSoundUri() {
-        Uri uri = null;
-
-        try{
-            uri = Uri.parse(options.optString("soundUri"));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return uri;
+    public Uri getSound() {
+        return assets.parse(options.optString("sound"));
     }
 
     /**
      * Icon bitmap for the local notification.
      */
-    public Bitmap getIconBitmap() {
-        Bitmap bmp;
+    Bitmap getLargeIcon() {
+        Uri uri    = assets.parse(options.optString("icon", DEFAULT_ICON));
+        Bitmap bmp = null;
 
         try {
-            Uri uri = Uri.parse(options.optString("iconUri"));
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
             e.printStackTrace();
-            bmp = assets.getIconFromDrawable("icon");
         }
 
         return bmp;
@@ -301,12 +261,16 @@ public class Options {
      * Icon resource ID for the local notification.
      */
     public int getIcon () {
-        String icon = options.optString("icon", "");
+        String icon = options.optString("icon", DEFAULT_ICON);
 
-        int resId = assets.getResIdForDrawable(icon);
+        int resId = assets.getResId(icon);
 
         if (resId == 0) {
             resId = getSmallIcon();
+        }
+
+        if (resId == 0) {
+            resId = assets.getResId(DEFAULT_ICON);
         }
 
         if (resId == 0) {
@@ -319,10 +283,115 @@ public class Options {
     /**
      * Small icon resource ID for the local notification.
      */
-    public int getSmallIcon () {
+    int getSmallIcon() {
         String icon = options.optString("smallIcon", "");
+        return assets.getResId(icon);
+    }
 
-        return assets.getResIdForDrawable(icon);
+    /**
+     * If the phone should vibrate.
+     */
+    private boolean isWithVibration() {
+        return options.optBoolean("vibrate", true);
+    }
+
+    /**
+     * If the phone should play no sound.
+     */
+    private boolean isWithoutSound() {
+        Object value = options.opt("sound");
+        return value == null || value.equals(false);
+    }
+
+    /**
+     * If the phone should play the default sound.
+     */
+    private boolean isWithDefaultSound() {
+        Object value = options.opt("sound");
+        return value != null && value.equals(true);
+    }
+
+    /**
+     * If the phone should show no LED light.
+     */
+    private boolean isWithoutLights() {
+        Object value = options.opt("led");
+        return value == null || value.equals(false);
+    }
+
+    /**
+     * If the phone should show the default LED lights.
+     */
+    private boolean isWithDefaultLights() {
+        Object value = options.opt("led");
+        return value != null && value.equals(true);
+    }
+
+    /**
+     * Set the default notification options that will be used.
+     * The value should be one or more of the following fields combined with
+     * bitwise-or: DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS.
+     */
+    int getDefaults() {
+        int defaults = options.optInt("defaults", 0);
+
+        if (isWithVibration()) {
+            defaults |= DEFAULT_VIBRATE;
+        } else {
+            defaults &= DEFAULT_VIBRATE;
+        }
+
+        if (isWithDefaultSound()) {
+            defaults |= DEFAULT_SOUND;
+        } else
+        if (isWithoutSound()) {
+            defaults &= DEFAULT_SOUND;
+        }
+
+        if (isWithDefaultLights()) {
+            defaults |= DEFAULT_LIGHTS;
+        } else
+        if (isWithoutLights()) {
+            defaults &= DEFAULT_LIGHTS;
+        }
+
+        return defaults;
+    }
+
+    /**
+     * Gets the visibility for the notification.
+     *
+     * @return VISIBILITY_PUBLIC or VISIBILITY_SECRET
+     */
+    int getVisibility() {
+        if (options.optBoolean("lockscreen", true)) {
+            return VISIBILITY_PUBLIC;
+        } else {
+            return VISIBILITY_SECRET;
+        }
+    }
+
+    /**
+     * Gets the notifications priority.
+     */
+    int getPriority() {
+        int prio = options.optInt("priority");
+
+        return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
+    }
+
+    /**
+     * If the notification shall show the when date.
+     */
+    boolean getShowWhen() {
+        return options.optBoolean("showWhen", true);
+    }
+
+    /**
+     * Gets the raw trigger spec as provided by the user.
+     */
+    public JSONObject getTrigger() {
+        return options.optJSONObject("trigger");
     }
 
     /**
@@ -330,6 +399,17 @@ public class Options {
      */
     public String toString() {
         return options.toString();
+    }
+
+    /**
+     * Strips the hex code #FF00FF => FF00FF
+     *
+     * @param hex The hex code to strip.
+     *
+     * @return The stripped hex code without a leading #
+     */
+    private String stripHex(String hex) {
+        return (hex.charAt(0) == '#') ? hex.substring(1) : hex;
     }
 
 }

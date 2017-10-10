@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,6 +28,9 @@ import android.os.Bundle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Abstract content receiver activity for local notifications. Creates the
@@ -38,8 +41,7 @@ abstract public class AbstractClickActivity extends Activity {
     /**
      * Called when local notification was clicked to launch the main intent.
      *
-     * @param state
-     *      Saved instance state
+     * @param state Saved instance state
      */
     @Override
     public void onCreate (Bundle state) {
@@ -50,14 +52,12 @@ abstract public class AbstractClickActivity extends Activity {
         Context context = getApplicationContext();
 
         try {
-            String data = bundle.getString(Options.EXTRA);
-            JSONObject options = new JSONObject(data);
-
-            Builder builder =
-                    new Builder(context, options);
+            String data     = bundle.getString(Options.EXTRA);
+            JSONObject dict = new JSONObject(data);
+            Options options = new Options(context, dict);
 
             Notification notification =
-                    buildNotification(builder);
+                    new Notification(context, options);
 
             onClick(notification);
         } catch (JSONException e) {
@@ -78,18 +78,9 @@ abstract public class AbstractClickActivity extends Activity {
     /**
      * Called when local notification was clicked by the user.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification
      */
     abstract public void onClick (Notification notification);
-
-    /**
-     * Build notification specified by options.
-     *
-     * @param builder
-     *      Notification builder
-     */
-    abstract public Notification buildNotification (Builder builder);
 
     /**
      * Launch main intent from package.

@@ -19,41 +19,25 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.receiver;
+
+import de.appplant.cordova.plugin.notification.Notification;
 
 /**
- * The receiver activity is triggered when a notification is clicked by a user.
- * The activity calls the background callback and brings the launch intent
- * up to foreground.
+ * The clear intent receiver is triggered when the user clears a
+ * notification manually. It un-persists the cleared notification from the
+ * shared preferences.
  */
-public class ClickActivity extends AbstractClickActivity {
+public class ClearReceiver extends AbstractClearReceiver {
 
     /**
-     * Called when local notification was clicked by the user. Will
-     * move the app to foreground.
+     * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification
      */
     @Override
-    public void onClick(Notification notification) {
-        launchApp();
-
-        if (notification.isRepeating()) {
-            notification.clear();
-        } else {
-            notification.cancel();
-        }
-    }
-
-    /**
-     * Build notification specified by options.
-     *
-     * @param builder
-     *      Notification builder
-     */
-    public Notification buildNotification (Builder builder) {
-        return builder.build();
+    public void onClear (Notification notification) {
+        // notification.clear();
     }
 
 }

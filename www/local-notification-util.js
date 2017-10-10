@@ -51,12 +51,17 @@ exports.applyPlatformSpecificOptions = function () {
 
     switch (device.platform) {
     case 'Android':
-        defaults.icon        = 'res://ic_popup_reminder';
-        defaults.smallIcon   = undefined;
-        defaults.ongoing     = false;
-        defaults.autoClear   = true;
-        defaults.led         = undefined;
-        defaults.color       = undefined;
+        defaults.icon       = 'res://icon';
+        defaults.smallIcon  = undefined;
+        defaults.sticky     = false;
+        defaults.autoClear  = true;
+        defaults.led        = true;
+        defaults.color      = undefined;
+        defaults.vibrate    = false;
+        defaults.lockscreen = true;
+        defaults.showWhen   = true;
+        defaults.priority   = 0;
+        defaults.defaults   = 0;
         break;
     }
 };
@@ -111,14 +116,17 @@ exports.mergeWithDefaults = function (options) {
  * @return [ Object ] The converted property list
  */
 exports.convertProperties = function (options) {
+    var parseToInt = function (prop, options) {
+        if (isNaN(options[prop])) {
+            console.warn(prop + ' is not a number: ' + options[prop]);
+            return this.getDefaults()[prop];
+        } else {
+            return Number(options[prop]);
+        }
+    };
 
     if (options.id) {
-        if (isNaN(options.id)) {
-            options.id = this.getDefaults().id;
-            console.warn('Id is not a number: ' + options.id);
-        } else {
-            options.id = Number(options.id);
-        }
+        options.id = parseToInt('id', options);
     }
 
     if (options.title) {
@@ -130,12 +138,15 @@ exports.convertProperties = function (options) {
     }
 
     if (options.badge) {
-        if (isNaN(options.badge)) {
-            options.badge = this.getDefaults().badge;
-            console.warn('Badge number is not a number: ' + options.id);
-        } else {
-            options.badge = Number(options.badge);
-        }
+        options.badge = parseToInt('badge', options);
+    }
+
+    if (options.priority) {
+        options.priority = parseToInt('priority', options);
+    }
+
+    if (options.defaults) {
+        options.defaults = parseToInt('defaults', options);
     }
 
     if (typeof options.data == 'object') {

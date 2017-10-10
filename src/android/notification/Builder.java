@@ -24,12 +24,12 @@ package de.appplant.cordova.plugin.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import org.json.JSONObject;
-
 import java.util.Random;
+
+import de.appplant.cordova.plugin.notification.activity.ClickActivity;
+import de.appplant.cordova.plugin.notification.receiver.ClearReceiver;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -43,9 +43,6 @@ public class Builder {
     // Notification options passed by JS
     private final Options options;
 
-    // Receiver to handle the trigger event
-    private Class<?> triggerReceiver;
-
     // Receiver to handle the clear event
     private Class<?> clearReceiver = ClearReceiver.class;
 
@@ -55,21 +52,7 @@ public class Builder {
     /**
      * Constructor
      *
-     * @param context
-     *      Application context
-     * @param options
-     *      Notification options
-     */
-    public Builder(Context context, JSONObject options) {
-        this.context = context;
-        this.options = new Options(context).parse(options);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param options
-     *      Notification options
+     * @param options Notification options
      */
     public Builder(Options options) {
         this.context = options.getContext();
@@ -77,21 +60,9 @@ public class Builder {
     }
 
     /**
-     * Set trigger receiver.
-     *
-     * @param receiver
-     *      Broadcast receiver
-     */
-    public Builder setTriggerReceiver(Class<?> receiver) {
-        this.triggerReceiver = receiver;
-        return this;
-    }
-
-    /**
      * Set clear receiver.
      *
-     * @param receiver
-     *      Broadcast receiver
+     * @param receiver Broadcast receiver for the clear event.
      */
     public Builder setClearReceiver(Class<?> receiver) {
         this.clearReceiver = receiver;
@@ -101,8 +72,7 @@ public class Builder {
     /**
      * Set click activity.
      *
-     * @param activity
-     *      Activity
+     * @param activity The activity to handler the click event.
      */
     public Builder setClickActivity(Class<?> activity) {
         this.clickActivity = activity;
@@ -111,50 +81,45 @@ public class Builder {
 
     /**
      * Creates the notification with all its options passed through JS.
+     *
+     * @return The final notification to display.
      */
     public Notification build() {
-        Uri sound     = options.getSoundUri();
         int smallIcon = options.getSmallIcon();
-        int ledColor  = options.getLedColor();
         NotificationCompat.Builder builder;
 
-        builder = new NotificationCompat.Builder(context)
-                .setDefaults(0)
+        builder = new NotificationCompat.Builder(context, "group")
+                .setDefaults(options.getDefaults())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setNumber(options.getBadgeNumber())
-                .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
-                .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setOngoing(options.isSticky())
+                .setColor(options.getColor())
+                .setSound(options.getSound())
+                .setVisibility(options.getVisibility())
+                .setPriority(options.getPriority())
+                .setShowWhen(options.getShowWhen())
+                .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (ledColor != 0) {
-            builder.setLights(ledColor, 100, 100);
-        }
-
-        if (sound != null) {
-            builder.setSound(sound);
-        }
-
-        if (smallIcon == 0) {
-            builder.setSmallIcon(options.getIcon());
+        if (smallIcon != 0) {
+            builder.setSmallIcon(smallIcon);
+            builder.setLargeIcon(options.getLargeIcon());
         } else {
-            builder.setSmallIcon(options.getSmallIcon());
-            builder.setLargeIcon(options.getIconBitmap());
+            builder.setSmallIcon(options.getIcon());
         }
 
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
-        return new Notification(context, options, builder, triggerReceiver);
+        return new Notification(context, options, builder);
     }
 
     /**
      * Set intent to handle the delete event. Will clean up some persisted
      * preferences.
      *
-     * @param builder
-     *      Local notification builder instance
+     * @param builder Local notification builder instance
      */
     private void applyDeleteReceiver(NotificationCompat.Builder builder) {
 
@@ -162,7 +127,7 @@ public class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
-                .setAction(options.getIdStr())
+                .setAction(options.getIdentifier())
                 .putExtra(Options.EXTRA, options.toString());
 
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
@@ -175,8 +140,7 @@ public class Builder {
      * Set intent to handle the click event. Will bring the app to
      * foreground.
      *
-     * @param builder
-     *      Local notification builder instance
+     * @param builder Local notification builder instance
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
 

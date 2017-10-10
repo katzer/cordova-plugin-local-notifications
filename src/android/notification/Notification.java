@@ -23,6 +23,7 @@ package de.appplant.cordova.plugin.notification;
 
 
 import android.app.AlarmManager;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -36,6 +37,8 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
+
 /**
  * Wrapper class around OS notification class. Handles basic operations
  * like show, delete, cancel for a single local notification instance.
@@ -46,9 +49,6 @@ public class Notification {
     public enum Type {
         ALL, SCHEDULED, TRIGGERED
     }
-
-    // Default receiver to handle the trigger event
-    private static Class<?> defaultReceiver = TriggerReceiver.class;
 
     // Key for private preferences
     static final String PREF_KEY = "LocalNotification";
@@ -62,27 +62,29 @@ public class Notification {
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
 
-    // Receiver to handle the trigger event
-    private Class<?> receiver = defaultReceiver;
+    /**
+     * Constructor
+     *
+     * @param context Application context.
+     * @param options Parsed notification options.
+     * @param builder Pre-configured notification builder.
+     */
+    Notification (Context context, Options options, NotificationCompat.Builder builder) {
+        this.context  = context;
+        this.options  = options;
+        this.builder  = builder;
+    }
 
     /**
      * Constructor
      *
-     * @param context
-     *      Application context
-     * @param options
-     *      Parsed notification options
-     * @param builder
-     *      Pre-configured notification builder
+     * @param context Application context.
+     * @param options Parsed notification options.
      */
-    protected Notification (Context context, Options options,
-                    NotificationCompat.Builder builder, Class<?> receiver) {
-
-        this.context = context;
-        this.options = options;
-        this.builder = builder;
-
-        this.receiver = receiver != null ? receiver : defaultReceiver;
+    public Notification(Context context, Options options) {
+        this.context  = context;
+        this.options  = options;
+        this.builder  = null;
     }
 
     /**
@@ -106,113 +108,113 @@ public class Notification {
         return options.getId();
     }
 
-    /**
-     * If it's a repeating notification.
-     */
-    public boolean isRepeating () {
-        return getOptions().getRepeatInterval() > 0;
-    }
+    // /**
+    //  * If it's a repeating notification.
+    //  */
+    // public boolean isRepeating () {
+    //     return getOptions().getRepeatInterval() > 0;
+    // }
 
-    /**
-     * If the notification was in the past.
-     */
-    public boolean wasInThePast () {
-        return new Date().after(options.getTriggerDate());
-    }
+    // /**
+    //  * If the notification was in the past.
+    //  */
+    // public boolean wasInThePast () {
+    //     return new Date().after(options.getTriggerDate());
+    // }
 
-    /**
-     * If the notification is scheduled.
-     */
-    public boolean isScheduled () {
-        return isRepeating() || !wasInThePast();
-    }
+    // /**
+    //  * If the notification is scheduled.
+    //  */
+    // public boolean isScheduled () {
+    //     return isRepeating() || !wasInThePast();
+    // }
 
-    /**
-     * If the notification is triggered.
-     */
-    public boolean isTriggered () {
-        return wasInThePast();
-    }
+    // /**
+    //  * If the notification is triggered.
+    //  */
+    // public boolean isTriggered () {
+    //     return wasInThePast();
+    // }
 
-    /**
-     * If the notification is an update.
-     *
-     * @param keepFlag
-     *      Set to false to remove the flag from the option map
-     */
-    protected boolean isUpdate (boolean keepFlag) {
-        boolean updated = options.getDict().optBoolean("updated", false);
+    // /**
+    //  * If the notification is an update.
+    //  *
+    //  * @param keepFlag
+    //  *      Set to false to remove the flag from the option map
+    //  */
+    // protected boolean isUpdate (boolean keepFlag) {
+    //     boolean updated = options.getDict().optBoolean("updated", false);
 
-        if (!keepFlag) {
-            options.getDict().remove("updated");
-        }
+    //     if (!keepFlag) {
+    //         options.getDict().remove("updated");
+    //     }
 
-        return updated;
-    }
+    //     return updated;
+    // }
 
-    /**
-     * Notification type can be one of pending or scheduled.
-     */
-    public Type getType () {
-        return isScheduled() ? Type.SCHEDULED : Type.TRIGGERED;
-    }
+    // /**
+    //  * Notification type can be one of pending or scheduled.
+    //  */
+    // public Type getType () {
+    //     return isScheduled() ? Type.SCHEDULED : Type.TRIGGERED;
+    // }
 
     /**
      * Schedule the local notification.
      */
     public void schedule() {
-        long triggerTime = options.getTriggerTime();
+        // long triggerTime = options.getTriggerTime();
 
-        persist();
+        // persist();
 
-        // Intent gets called when the Notification gets fired
-        Intent intent = new Intent(context, receiver)
-                .setAction(options.getIdStr())
-                .putExtra(Options.EXTRA, options.toString());
+        // // Intent gets called when the Notification gets fired
+        // Intent intent = new Intent(context, receiver)
+        //         .setAction(options.getIdStr())
+        //         .putExtra(Options.EXTRA, options.toString());
 
-        PendingIntent pi = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        // PendingIntent pi = PendingIntent.getBroadcast(
+        //         context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        if (isRepeating()) {
-            getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
-                    triggerTime, options.getRepeatInterval(), pi);
-        } else {
-            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
-        }
+        // if (isRepeating()) {
+        //     getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
+        //             triggerTime, options.getRepeatInterval(), pi);
+        // } else {
+        //     getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+        // }
     }
 
-    /**
-     * Clear the local notification without canceling repeating alarms.
-     */
-    public void clear () {
+    // /**
+    //  * Clear the local notification without canceling repeating alarms.
+    //  */
+    // public void clear () {
 
-        if (!isRepeating() && wasInThePast())
-            unpersist();
+    //     if (!isRepeating() && wasInThePast())
+    //         unpersist();
 
-        if (!isRepeating())
-            getNotMgr().cancel(getId());
-    }
+    //     if (!isRepeating())
+    //         getNotMgr().cancel(getId());
+    // }
 
-    /**
-     * Cancel the local notification.
-     *
-     * Create an intent that looks similar, to the one that was registered
-     * using schedule. Making sure the notification id in the action is the
-     * same. Now we can search for such an intent using the 'getService'
-     * method and cancel it.
-     */
-    public void cancel() {
-        Intent intent = new Intent(context, receiver)
-                .setAction(options.getIdStr());
+    // /**
+    //  * Cancel the local notification.
+    //  *
+    //  * Create an intent that looks similar, to the one that was registered
+    //  * using schedule. Making sure the notification id in the action is the
+    //  * same. Now we can search for such an intent using the 'getService'
+    //  * method and cancel it.
+    //  */
+    // public void cancel() {
+    //     Intent intent = new Intent(context, receiver)
+    //             .setAction(options.getIdStr());
 
-        PendingIntent pi = PendingIntent.
-                getBroadcast(context, 0, intent, 0);
+    //     PendingIntent pi = PendingIntent.
+    //             getBroadcast(context, 0, intent, 0);
 
-        getAlarmMgr().cancel(pi);
-        getNotMgr().cancel(options.getId());
+    //     getAlarmMgr().cancel(pi);
+    //     getNotMgr().cancel(options.getId());
 
-        unpersist();
-    }
+    //     unpersist();
+    // }
 
     /**
      * Present the local notification to user.
@@ -225,87 +227,80 @@ public class Notification {
     /**
      * Show as local notification when in background.
      */
-    @SuppressWarnings("deprecation")
     private void showNotification () {
-        int id = getOptions().getId();
-
-        if (Build.VERSION.SDK_INT <= 15) {
-            // Notification for HoneyComb to ICS
-            getNotMgr().notify(id, builder.getNotification());
-        } else {
-            // Notification for Jellybean and above
-            getNotMgr().notify(id, builder.build());
+        if (builder != null) {
+            getNotMgr().notify(getId(), builder.build());
         }
     }
 
-    /**
-     * Count of triggers since schedule.
-     */
-    public int getTriggerCountSinceSchedule() {
-        long now = System.currentTimeMillis();
-        long triggerTime = options.getTriggerTime();
+    // /**
+    //  * Count of triggers since schedule.
+    //  */
+    // public int getTriggerCountSinceSchedule() {
+    //     long now = System.currentTimeMillis();
+    //     long triggerTime = options.getTriggerTime();
 
-        if (!wasInThePast())
-            return 0;
+    //     if (!wasInThePast())
+    //         return 0;
 
-        if (!isRepeating())
-            return 1;
+    //     if (!isRepeating())
+    //         return 1;
 
-        return (int) ((now - triggerTime) / options.getRepeatInterval());
-    }
+    //     return (int) ((now - triggerTime) / options.getRepeatInterval());
+    // }
 
-    /**
-     * Encode options to JSON.
-     */
-    public String toString() {
-        JSONObject dict = options.getDict();
-        JSONObject json = new JSONObject();
+    // /**
+    //  * Encode options to JSON.
+    //  */
+    // public String toString() {
+    //     JSONObject dict = options.getDict();
+    //     JSONObject json = new JSONObject();
 
-        try {
-            json = new JSONObject(dict.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    //     try {
+    //         json = new JSONObject(dict.toString());
+    //     } catch (JSONException e) {
+    //         e.printStackTrace();
+    //     }
 
-        json.remove("firstAt");
-        json.remove("updated");
-        json.remove("soundUri");
-        json.remove("iconUri");
+    //     json.remove("firstAt");
+    //     json.remove("updated");
+    //     json.remove("soundUri");
+    //     json.remove("iconUri");
 
-        return json.toString();
-    }
+    //     return json.toString();
+    // }
 
-    /**
-     * Persist the information of this notification to the Android Shared
-     * Preferences. This will allow the application to restore the notification
-     * upon device reboot, app restart, retrieve notifications, aso.
-     */
-    private void persist () {
-        SharedPreferences.Editor editor = getPrefs().edit();
+    // /**
+    //  * Persist the information of this notification to the Android Shared
+    //  * Preferences. This will allow the application to restore the notification
+    //  * upon device reboot, app restart, retrieve notifications, aso.
+    //  */
+    // private void persist () {
+    //     SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.putString(options.getIdStr(), options.toString());
+    //     editor.putString(options.getIdStr(), options.toString());
 
-        if (Build.VERSION.SDK_INT < 9) {
-            editor.commit();
-        } else {
-            editor.apply();
-        }
-    }
+    //     if (Build.VERSION.SDK_INT < 9) {
+    //         editor.commit();
+    //     } else {
+    //         editor.apply();
+    //     }
+    // }
 
-    /**
-     * Remove the notification from the Android shared Preferences.
-     */
-    private void unpersist () {
-        SharedPreferences.Editor editor = getPrefs().edit();
+    // /**
+    //  * Remove the notification from the Android shared Preferences.
+    //  */
+    // private void unpersist () {
+    //     SharedPreferences.Editor editor = getPrefs().edit();
 
-        editor.remove(options.getIdStr());
+    //     editor.remove(options.getIdStr());
 
-        if (Build.VERSION.SDK_INT < 9) {
-            editor.commit();
-        } else {
-            editor.apply();
-        }
-    }
+    //     if (Build.VERSION.SDK_INT < 9) {
+    //         editor.commit();
+    //     } else {
+    //         editor.apply();
+    //     }
+    // }
 
     /**
      * Shared private preferences for the application.
@@ -327,16 +322,6 @@ public class Notification {
      */
     private AlarmManager getAlarmMgr () {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-    }
-
-    /**
-     * Set default receiver to handle the trigger event.
-     *
-     * @param receiver
-     *      broadcast receiver
-     */
-    public static void setDefaultTriggerReceiver (Class<?> receiver) {
-        defaultReceiver = receiver;
     }
 
 }

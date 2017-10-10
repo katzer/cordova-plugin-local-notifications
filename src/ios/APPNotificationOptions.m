@@ -158,11 +158,12 @@
     NSString* path = [dict objectForKey:@"sound"];
     NSString* file;
 
+    if ([path isKindOfClass:NSNumber.class]) {
+        return [path boolValue] ? [UNNotificationSound defaultSound] : NULL;
+    }
+
     if (!path.length)
         return NULL;
-
-    if ([path isEqualToString:@"res://platform_default"])
-        return [UNNotificationSound defaultSound];
 
     if ([path hasPrefix:@"file:/"]) {
         file = [self soundNameForAsset:path];

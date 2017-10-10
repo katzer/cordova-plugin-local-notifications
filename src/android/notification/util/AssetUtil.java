@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -42,19 +42,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+import static android.media.RingtoneManager.TYPE_NOTIFICATION;
+
 /**
  * Util class to map unified asset URIs to native URIs. URIs like file:///
  * map to absolute paths while file:// point relatively to the www folder
  * within the asset resources. And res:// means a resource from the native
  * res folder. Remote assets are accessible via http:// for example.
  */
-class AssetUtil {
+public class AssetUtil {
 
     // Name of the storage folder
     private static final String STORAGE_FOLDER = "/localnotification";
-
-    // Placeholder URI for default sound
-    private static final String DEFAULT_SOUND = "res://platform_default";
 
     // Ref to the context passed through the constructor to access the
     // resources and app directory.
@@ -63,8 +62,7 @@ class AssetUtil {
     /**
      * Constructor
      *
-     * @param context
-     *      Application context
+     * @param context Application context
      */
     private AssetUtil(Context context) {
         this.context = context;
@@ -73,30 +71,10 @@ class AssetUtil {
     /**
      * Static method to retrieve class instance.
      *
-     * @param context
-     *      Application context
+     * @param context Application context
      */
-    static AssetUtil getInstance(Context context) {
+    public static AssetUtil getInstance(Context context) {
         return new AssetUtil(context);
-    }
-
-    /**
-     * Parse path path to native URI.
-     *
-     * @param path
-     *      Path to path file
-     */
-    Uri parseSound (String path) {
-
-        if (path == null || path.isEmpty())
-            return Uri.EMPTY;
-
-        if (path.equalsIgnoreCase(DEFAULT_SOUND)) {
-            return RingtoneManager.getDefaultUri(RingtoneManager
-                    .TYPE_NOTIFICATION);
-        }
-
-        return parse(path);
     }
 
     /**
@@ -105,9 +83,10 @@ class AssetUtil {
      * @param path
      *      The given path
      */
-    Uri parse (String path) {
-
-        if (path.startsWith("res:")) {
+    public Uri parse (String path) {
+        if (path == null || path.isEmpty()) {
+            return Uri.EMPTY;
+        } else if (path.startsWith("res:")) {
             return getUriForResourcePath(path);
         } else if (path.startsWith("file:///")) {
             return getUriFromPath(path);
@@ -191,7 +170,7 @@ class AssetUtil {
      */
     private Uri getUriForResourcePath(String path) {
         String resPath = path.replaceFirst("res://", "");
-        int resId      = getResIdForDrawable(resPath);
+        int resId      = getResId(resPath);
         File file      = getTmpFile();
 
         if (resId == 0) {
@@ -296,14 +275,15 @@ class AssetUtil {
     /**
      * Resource ID for drawable.
      *
-     * @param resPath
-     *      Resource path as string
+     * @param resPath Resource path as string.
+     *
+     * @return The resource ID or 0 if not found.
      */
-    int getResIdForDrawable(String resPath) {
-        int resId = getResIdForDrawable(getPkgName(), resPath);
+    public int getResId(String resPath) {
+        int resId = getResId(context.getResources(), resPath);
 
         if (resId == 0) {
-            resId = getResIdForDrawable("android", resPath);
+            resId = getResId(Resources.getSystem(), resPath);
         }
 
         return resId;
@@ -312,56 +292,32 @@ class AssetUtil {
     /**
      * Resource ID for drawable.
      *
-     * @param clsName
-     *      Relative package or global android name space
-     * @param resPath
-     *      Resource path as string
+     * @param res     The resources where to look for.
+     * @param resPath The name of the resource.
+     *
+     * @return The resource ID or 0 if not found.
      */
-    int getResIdForDrawable(String clsName, String resPath) {
-        String drawable = getBaseName(resPath);
-        int resId = 0;
+    private int getResId(Resources res, String resPath) {
+        String pkgName = getPkgName(res);
+        String resName = getBaseName(resPath);
+        int resId;
 
-        try {
-            Class<?> cls  = Class.forName(clsName + ".R$drawable");
+        resId = res.getIdentifier(resName, "mipmap", pkgName);
 
-            resId = (Integer) cls.getDeclaredField(drawable).get(Integer.class);
-        } catch (Exception ignore) {}
+        if (resId == 0) {
+            resId = res.getIdentifier(resName, "drawable", pkgName);
+        }
 
         return resId;
     }
 
     /**
-     * Convert drawable resource to bitmap.
-     *
-     * @param drawable
-     *      Drawable resource name
-     */
-    Bitmap getIconFromDrawable (String drawable) {
-        Resources res = context.getResources();
-        int iconId;
-
-        iconId = getResIdForDrawable(getPkgName(), drawable);
-
-        if (iconId == 0) {
-            iconId = getResIdForDrawable("android", drawable);
-        }
-
-        if (iconId == 0) {
-            iconId = android.R.drawable.screen_background_dark_transparent;
-        }
-
-        return BitmapFactory.decodeResource(res, iconId);
-    }
-
-    /**
      * Convert URI to Bitmap.
      *
-     * @param uri
-     *      Internal image URI
+     * @param uri Internal image URI
      */
-    Bitmap getIconFromUri (Uri uri) throws IOException {
+    public Bitmap getIconFromUri(Uri uri) throws IOException {
         InputStream input = context.getContentResolver().openInputStream(uri);
-
         return BitmapFactory.decodeStream(input);
     }
 
@@ -422,10 +378,10 @@ class AssetUtil {
     }
 
     /**
-     * Package name specified by context.
+     * Package name specified by the resource bundle.
      */
-    private String getPkgName () {
-        return context.getPackageName();
+    private String getPkgName (Resources res) {
+        return res == Resources.getSystem() ? "android" : context.getPackageName();
     }
 
 }

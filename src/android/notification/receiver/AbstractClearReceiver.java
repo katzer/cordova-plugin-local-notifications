@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,6 +28,9 @@ import android.os.Bundle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Abstract delete receiver for local notifications. Creates the local
@@ -38,35 +41,31 @@ abstract public class AbstractClearReceiver extends BroadcastReceiver {
     /**
      * Called when the notification was cleared from the notification center.
      *
-     * @param context
-     *      Application context
-     * @param intent
-     *      Received intent with content data
+     * @param context Application context
+     * @param intent  Received intent with content data
      */
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle  = intent.getExtras();
-        JSONObject options;
+        String data    = bundle.getString(Options.EXTRA);
 
         try {
-            String data = bundle.getString(Options.EXTRA);
-            options = new JSONObject(data);
+            JSONObject dict = new JSONObject(data);
+            Options options = new Options(context, dict);
+
+            Notification notification =
+                    new Notification(context, options);
+
+            onClear(notification);
         } catch (JSONException e) {
             e.printStackTrace();
-            return;
         }
-
-        Notification notification =
-                new Builder(context, options).build();
-
-        onClear(notification);
     }
 
     /**
      * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification
      */
     abstract public void onClear (Notification notification);
 

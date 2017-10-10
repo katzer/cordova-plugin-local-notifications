@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,7 +29,9 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
+import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Abstract broadcast receiver for local notifications. Creates the
@@ -40,10 +42,8 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
     /**
      * Called when an alarm was triggered.
      *
-     * @param context
-     *      Application context
-     * @param intent
-     *      Received intent with content data
+     * @param context Application context
+     * @param intent  Received intent with content data
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -54,21 +54,15 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
             String data = bundle.getString(Options.EXTRA);
             JSONObject dict = new JSONObject(data);
 
-            options = new Options(context).parse(dict);
+            options = new Options(context, dict);
         } catch (JSONException e) {
             e.printStackTrace();
             return;
         }
 
-        if (options == null)
-            return;
-
-        if (isFirstAlarmInFuture(options))
-            return;
-
-        Builder builder = new Builder(options);
+        Builder builder           = new Builder(options);
         Notification notification = buildNotification(builder);
-        boolean updated = notification.isUpdate(false);
+        boolean updated           = false;// notification.isUpdate(false);
 
         onTrigger(notification, updated);
     }
@@ -76,45 +70,16 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
     /**
      * Called when a local notification was triggered.
      *
-     * @param notification
-     *      Wrapper around the local notification
-     * @param updated
-     *      If an update has triggered or the original
+     * @param notification  Wrapper around the local notification
+     * @param updated       If an update has triggered or the original
      */
     abstract public void onTrigger (Notification notification, boolean updated);
 
     /**
      * Build notification specified by options.
      *
-     * @param builder
-     *      Notification builder
+     * @param builder Notification builder
      */
     abstract public Notification buildNotification (Builder builder);
-
-    /*
-     * If you set a repeating alarm at 11:00 in the morning and it
-     * should trigger every morning at 08:00 o'clock, it will
-     * immediately fire. E.g. Android tries to make up for the
-     * 'forgotten' reminder for that day. Therefore we ignore the event
-     * if Android tries to 'catch up'.
-     */
-    private Boolean isFirstAlarmInFuture (Options options) {
-        Notification notification = new Builder(options).build();
-
-        if (!notification.isRepeating())
-            return false;
-
-        Calendar now    = Calendar.getInstance();
-        Calendar alarm  = Calendar.getInstance();
-
-        alarm.setTime(notification.getOptions().getTriggerDate());
-
-        int alarmHour   = alarm.get(Calendar.HOUR_OF_DAY);
-        int alarmMin    = alarm.get(Calendar.MINUTE);
-        int currentHour = now.get(Calendar.HOUR_OF_DAY);
-        int currentMin  = now.get(Calendar.MINUTE);
-
-        return (currentHour != alarmHour && currentMin != alarmMin);
-    }
 
 }

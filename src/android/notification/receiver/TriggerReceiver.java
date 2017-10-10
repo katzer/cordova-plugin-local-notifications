@@ -19,7 +19,10 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.receiver;
+
+import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Notification;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -33,10 +36,8 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * Called when a local notification was triggered. Does present the local
      * notification and re-schedule the alarm if necessary.
      *
-     * @param notification
-     *      Wrapper around the local notification
-     * @param updated
-     *      If an update has triggered or the original
+     * @param notification Wrapper around the local notification
+     * @param updated      If an update has triggered or the original
      */
     @Override
     public void onTrigger (Notification notification, boolean updated) {
@@ -46,8 +47,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     /**
      * Build notification specified by options.
      *
-     * @param builder
-     *      Notification builder
+     * @param builder Notification builder
      */
     @Override
     public Notification buildNotification (Builder builder) {

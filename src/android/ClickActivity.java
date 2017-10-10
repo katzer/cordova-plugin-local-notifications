@@ -21,22 +21,19 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.TriggerReceiver;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.
  * The activity calls the background callback and brings the launch intent
  * up to foreground.
  */
-public class ClickActivity extends de.appplant.cordova.plugin.notification.ClickActivity {
+public class ClickActivity extends de.appplant.cordova.plugin.notification.activity.ClickActivity {
 
     /**
      * Called when local notification was clicked by the user.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification
      */
     @Override
     public void onClick(Notification notification) {
@@ -44,24 +41,11 @@ public class ClickActivity extends de.appplant.cordova.plugin.notification.Click
 
         super.onClick(notification);
 
-        if (notification.getOptions().isOngoing())
-            return;
+        // if (notification.getOptions().isOngoing())
+        //     return;
 
-        String event = notification.isRepeating() ? "clear" : "cancel";
-        LocalNotification.fireEvent(event, notification);
-    }
-
-    /**
-     * Build notification specified by options.
-     *
-     * @param builder
-     *      Notification builder
-     */
-    @Override
-    public Notification buildNotification (Builder builder) {
-        return builder
-                .setTriggerReceiver(TriggerReceiver.class)
-                .build();
+        // String event = notification.isRepeating() ? "clear" : "cancel";
+        // LocalNotification.fireEvent(event, notification);
     }
 
 }
