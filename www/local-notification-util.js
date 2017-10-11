@@ -60,8 +60,8 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.vibrate    = false;
         defaults.lockscreen = true;
         defaults.showWhen   = true;
-        defaults.priority   = 0;
         defaults.defaults   = 0;
+        defaults.priority   = 0;
         break;
     }
 };
@@ -265,11 +265,25 @@ exports.convertTrigger = function (options) {
  * @return [ Map ] Interaction object with trigger spec.
  */
 exports.convertProgressBar = function (options) {
-    var cfg = options.progressBar;
+    var isAndroid = device.platform == 'Android',
+        cfg       = options.progressBar;
 
     if (typeof cfg === 'boolean') {
-        options.progressBar = { enabled: cfg };
+        cfg = options.progressBar = { enabled: cfg };
     }
+
+    if (typeof cfg.enabled !== 'boolean') {
+        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== undefined);
+    }
+
+    cfg.value = cfg.value || 0;
+
+    if (isAndroid) {
+        cfg.maxValue      = cfg.maxValue || 100;
+        cfg.indeterminate = cfg.indeterminate !== undefined ? cfg.indeterminate : false;
+    }
+
+    cfg.enabled = !!cfg.enabled;
 
     return options;
 };

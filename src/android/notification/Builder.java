@@ -100,7 +100,15 @@ public class Builder {
                 .setVisibility(options.getVisibility())
                 .setPriority(options.getPriority())
                 .setShowWhen(options.getShowWhen())
+                .setUsesChronometer(options.isWithProgressBar())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
+
+        if (options.isWithProgressBar()) {
+            builder.setProgress(
+                    options.getProgressMaxValue(),
+                    options.getProgressValue(),
+                    options.isIndeterminateProgress());
+        }
 
         if (smallIcon != 0) {
             builder.setSmallIcon(smallIcon);

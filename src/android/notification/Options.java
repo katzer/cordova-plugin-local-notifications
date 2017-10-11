@@ -403,6 +403,48 @@ public class Options {
     }
 
     /**
+     * If the notification shall display a progress bar.
+     */
+    boolean isWithProgressBar() {
+        return options
+                .optJSONObject("progressBar")
+                .optBoolean("enabled", false);
+    }
+
+    /**
+     * Gets the progress value.
+     *
+     * @return 0 by default.
+     */
+    int getProgressValue() {
+        return options
+                .optJSONObject("progressBar")
+                .optInt("value", 0);
+    }
+
+    /**
+     * Gets the progress value.
+     *
+     * @return 100 by default.
+     */
+    int getProgressMaxValue() {
+        return options
+                .optJSONObject("progressBar")
+                .optInt("maxValue", 100);
+    }
+
+    /**
+     * Gets the progress indeterminate value.
+     *
+     * @return false by default.
+     */
+    boolean isIndeterminateProgress() {
+        return options
+                .optJSONObject("progressBar")
+                .optBoolean("indeterminate", false);
+    }
+
+    /**
      * Gets the raw trigger spec as provided by the user.
      */
     public JSONObject getTrigger() {
