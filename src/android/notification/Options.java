@@ -29,6 +29,11 @@ import android.support.v4.app.NotificationCompat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
@@ -249,7 +254,7 @@ public class Options {
      * Sound file path for the local notification.
      */
     public Uri getSound() {
-        return assets.parse(options.optString("sound"));
+        return assets.parse(options.optString("sound", null));
     }
 
     /**
@@ -448,7 +453,38 @@ public class Options {
      * The summary for inbox style notifications.
      */
     String getSummary() {
-        return options.optString("summary");
+        return options.optString("summary", null);
+    }
+
+    /**
+     * Image attachments for image style notifications.
+     *
+     * @return For now it only returns the first item as Android does not
+     *         support multiple attachments like iOS.
+     */
+    List<Bitmap> getAttachments() {
+        JSONArray paths   = options.optJSONArray("attachments");
+        List<Bitmap> pics = new ArrayList<Bitmap>();
+
+        if (paths == null)
+            return pics;
+
+        for (int i = 0; i < paths.length(); i++) {
+            Uri uri = assets.parse(paths.optString(i));
+
+            if (uri == Uri.EMPTY)
+                continue;
+
+            try {
+                Bitmap pic = assets.getIconFromUri(uri);
+                pics.add(pic);
+                break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return pics;
     }
 
     /**

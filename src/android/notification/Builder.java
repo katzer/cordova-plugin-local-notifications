@@ -24,8 +24,10 @@ package de.appplant.cordova.plugin.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.activity.ClickActivity;
@@ -130,20 +132,24 @@ public class Builder {
      * @param builder Local notification builder instance
      */
     private void applyStyle(NotificationCompat.Builder builder) {
-        String summary = options.getSummary();
-        String text    = options.getText();
+        List<Bitmap> pics = options.getAttachments();
+        String summary    = options.getSummary();
+        String text       = options.getText();
 
-        if (summary == null && text == null)
+        if (pics.size() > 0) {
+            NotificationCompat.BigPictureStyle style =
+                    new NotificationCompat.BigPictureStyle(builder)
+                            .setSummaryText(summary == null ? text : summary)
+                            .bigPicture(pics.get(0));
+
+            builder.setStyle(style);
             return;
+        }
 
-        if (text.contains("\n")) {
+        if (text != null && text.contains("\n")) {
             NotificationCompat.InboxStyle style =
                     new NotificationCompat.InboxStyle(builder)
-                            .setBigContentTitle(options.getTitle());
-
-            if (summary != null) {
-                style.setSummaryText(summary);
-            }
+                            .setSummaryText(summary);
 
             for (String line : text.split("\n")) {
                 style.addLine(line);
@@ -153,17 +159,13 @@ public class Builder {
             return;
         }
 
-        if (summary == null && text.length() < 45)
+        if (text == null || summary == null && text.length() < 45)
             return;
 
         NotificationCompat.BigTextStyle style =
                 new NotificationCompat.BigTextStyle(builder)
-                        .setBigContentTitle(options.getTitle())
+                        .setSummaryText(summary)
                         .bigText(text);
-
-        if (summary != null) {
-            style.setSummaryText(summary);
-        }
 
         builder.setStyle(style);
     }
