@@ -21,6 +21,7 @@
 
 package de.appplant.cordova.plugin.notification.util;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -62,7 +63,7 @@ public class AssetUtil {
     /**
      * Constructor
      *
-     * @param context Application context
+     * @param context Application context.
      */
     private AssetUtil(Context context) {
         this.context = context;
@@ -71,7 +72,7 @@ public class AssetUtil {
     /**
      * Static method to retrieve class instance.
      *
-     * @param context Application context
+     * @param context Application context.
      */
     public static AssetUtil getInstance(Context context) {
         return new AssetUtil(context);
@@ -80,8 +81,7 @@ public class AssetUtil {
     /**
      * The URI for a path.
      *
-     * @param path
-     *      The given path
+     * @param path The given path.
      */
     public Uri parse (String path) {
         if (path == null || path.isEmpty()) {
@@ -102,11 +102,9 @@ public class AssetUtil {
     /**
      * URI for a file.
      *
-     * @param path
-     *      Absolute path like file:///...
+     * @param path Absolute path like file:///...
      *
-     * @return
-     *      URI pointing to the given path
+     * @return URI pointing to the given path.
      */
     private Uri getUriFromPath(String path) {
         String absPath = path.replaceFirst("file://", "");
@@ -123,11 +121,9 @@ public class AssetUtil {
     /**
      * URI for an asset.
      *
-     * @param path
-     *      Asset path like file://...
+     * @param path Asset path like file://...
      *
-     * @return
-     *      URI pointing to the given path
+     * @return URI pointing to the given path.
      */
     private Uri getUriFromAsset(String path) {
         String resPath  = path.replaceFirst("file:/", "www");
@@ -162,53 +158,34 @@ public class AssetUtil {
     /**
      * The URI for a resource.
      *
-     * @param path
-     *            The given relative path
+     * @param path The given relative path.
      *
-     * @return
-     *      URI pointing to the given path
+     * @return URI pointing to the given path.
      */
     private Uri getUriForResourcePath(String path) {
+        Resources res  = context.getResources();
         String resPath = path.replaceFirst("res://", "");
         int resId      = getResId(resPath);
-        File file      = getTmpFile();
 
         if (resId == 0) {
             Log.e("Asset", "File not found: " + resPath);
             return Uri.EMPTY;
         }
 
-        if (file == null) {
-            Log.e("Asset", "Missing external cache dir");
-            return Uri.EMPTY;
-        }
-
-        try {
-            Resources res = context.getResources();
-            FileOutputStream outStream = new FileOutputStream(file);
-            InputStream inputStream = res.openRawResource(resId);
-            copyFile(inputStream, outStream);
-
-            outStream.flush();
-            outStream.close();
-
-            return Uri.fromFile(file);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Uri.EMPTY;
+        return new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                .authority(res.getResourcePackageName(resId))
+                .appendPath(res.getResourceTypeName(resId))
+                .appendPath(res.getResourceEntryName(resId))
+                .build();
     }
 
     /**
      * Uri from remote located content.
      *
-     * @param path
-     *      Remote address
+     * @param path Remote address.
      *
-     * @return
-     *      Uri of the downloaded file
+     * @return Uri of the downloaded file.
      */
     private Uri getUriFromRemote(String path) {
         File file = getTmpFile();
@@ -258,10 +235,8 @@ public class AssetUtil {
     /**
      * Copy content from input stream into output stream.
      *
-     * @param in
-     *      The input stream
-     * @param out
-     *      The output stream
+     * @param in  The input stream.
+     * @param out The output stream.
      */
     private void copyFile(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
@@ -324,8 +299,7 @@ public class AssetUtil {
     /**
      * Extract name of drawable resource from path.
      *
-     * @param resPath
-     *      Resource path as string
+     * @param resPath Resource path as string.
      */
     private String getBaseName (String resPath) {
         String drawable = resPath;
@@ -344,8 +318,7 @@ public class AssetUtil {
     /**
      * Returns a file located under the external cache dir of that app.
      *
-     * @return
-     *      File with a random UUID name
+     * @return File with a random UUID name.
      */
     private File getTmpFile () {
         // If random UUID is not be enough see
@@ -356,10 +329,9 @@ public class AssetUtil {
     /**
      * Returns a file located under the external cache dir of that app.
      *
-     * @param name
-     *      The name of the file
-     * @return
-     *      File with the provided name
+     * @param name The name of the file.
+     *
+     * @return File with the provided name.
      */
     private File getTmpFile (String name) {
         File dir = context.getExternalCacheDir();
