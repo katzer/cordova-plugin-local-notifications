@@ -83,8 +83,12 @@ exports.mergeWithDefaults = function (options) {
         options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
     }
 
-    if (options.autoClear !== true && options.ongoing) {
+    if (options.autoClear !== true && options.sticky) {
         options.autoClear = false;
+    }
+
+    if (defaults.hasOwnProperty('sticky')) {
+        options.sticky = this.getValueFor(options, 'sticky', 'ongoing');
     }
 
     for (var key in defaults) {
