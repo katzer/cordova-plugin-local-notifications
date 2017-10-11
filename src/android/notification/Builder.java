@@ -117,10 +117,55 @@ public class Builder {
             builder.setSmallIcon(options.getIcon());
         }
 
+        applyStyle(builder);
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
         return new Notification(context, options, builder);
+    }
+
+    /**
+     * Find out and set the notification style.
+     *
+     * @param builder Local notification builder instance
+     */
+    private void applyStyle(NotificationCompat.Builder builder) {
+        String summary = options.getSummary();
+        String text    = options.getText();
+
+        if (summary == null && text == null)
+            return;
+
+        if (text.contains("\n")) {
+            NotificationCompat.InboxStyle style =
+                    new NotificationCompat.InboxStyle(builder)
+                            .setBigContentTitle(options.getTitle());
+
+            if (summary != null) {
+                style.setSummaryText(summary);
+            }
+
+            for (String line : text.split("\n")) {
+                style.addLine(line);
+            }
+
+            builder.setStyle(style);
+            return;
+        }
+
+        if (summary == null && text.length() < 45)
+            return;
+
+        NotificationCompat.BigTextStyle style =
+                new NotificationCompat.BigTextStyle(builder)
+                        .setBigContentTitle(options.getTitle())
+                        .bigText(text);
+
+        if (summary != null) {
+            style.setSummaryText(summary);
+        }
+
+        builder.setStyle(style);
     }
 
     /**

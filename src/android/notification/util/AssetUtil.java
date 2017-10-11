@@ -27,7 +27,6 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.util.Log;
@@ -42,8 +41,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
-
-import static android.media.RingtoneManager.TYPE_NOTIFICATION;
 
 /**
  * Util class to map unified asset URIs to native URIs. URIs like file:///

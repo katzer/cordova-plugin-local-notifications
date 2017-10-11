@@ -445,6 +445,13 @@ public class Options {
     }
 
     /**
+     * The summary for inbox style notifications.
+     */
+    String getSummary() {
+        return options.optString("summary");
+    }
+
+    /**
      * Gets the raw trigger spec as provided by the user.
      */
     public JSONObject getTrigger() {

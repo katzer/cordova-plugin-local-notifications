@@ -51,6 +51,7 @@ exports.applyPlatformSpecificOptions = function () {
 
     switch (device.platform) {
     case 'Android':
+        defaults.summary    = undefined;
         defaults.icon       = 'res://icon';
         defaults.smallIcon  = undefined;
         defaults.sticky     = false;
@@ -83,7 +84,7 @@ exports.mergeWithDefaults = function (options) {
         options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
     }
 
-    if (options.autoClear !== true && options.sticky) {
+    if (options.autoClear !== true && options.ongoing) {
         options.autoClear = false;
     }
 
