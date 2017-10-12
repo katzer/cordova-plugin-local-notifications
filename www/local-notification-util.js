@@ -31,6 +31,7 @@ exports._defaults = {
     badge:   undefined,
     data:    undefined,
     icon:    undefined,
+    silent:  false,
     trigger: { type: 'calendar' },
     actions: [],
     actionGroupId: undefined,
@@ -51,18 +52,20 @@ exports.applyPlatformSpecificOptions = function () {
 
     switch (device.platform) {
     case 'Android':
-        defaults.summary    = undefined;
-        defaults.icon       = 'res://icon';
-        defaults.smallIcon  = undefined;
-        defaults.sticky     = false;
-        defaults.autoClear  = true;
-        defaults.led        = true;
-        defaults.color      = undefined;
-        defaults.vibrate    = false;
-        defaults.lockscreen = true;
-        defaults.showWhen   = true;
-        defaults.defaults   = 0;
-        defaults.priority   = 0;
+        defaults.group        = undefined;
+        defaults.groupSummary = false;
+        defaults.summary      = undefined;
+        defaults.icon         = 'res://icon';
+        defaults.smallIcon    = undefined;
+        defaults.sticky       = false;
+        defaults.autoClear    = true;
+        defaults.led          = true;
+        defaults.color        = undefined;
+        defaults.vibrate      = false;
+        defaults.lockscreen   = true;
+        defaults.showWhen     = true;
+        defaults.defaults     = 0;
+        defaults.priority     = 0;
         break;
     }
 };

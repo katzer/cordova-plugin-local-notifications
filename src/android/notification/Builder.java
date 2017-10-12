@@ -90,10 +90,15 @@ public class Builder {
         int smallIcon = options.getSmallIcon();
         NotificationCompat.Builder builder;
 
-        builder = new NotificationCompat.Builder(context, "group")
+        if (options.isSilent()) {
+            return new Notification(context, options);
+        }
+
+        builder = new NotificationCompat.Builder(context, "channel")
                 .setDefaults(options.getDefaults())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
+                .setTicker(options.getText())
                 .setNumber(options.getBadgeNumber())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
@@ -103,6 +108,8 @@ public class Builder {
                 .setPriority(options.getPriority())
                 .setShowWhen(options.getShowWhen())
                 .setUsesChronometer(options.isWithProgressBar())
+                .setGroup(options.getGroup())
+                .setGroupSummary(options.getGroupSummary())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
         if (options.isWithProgressBar()) {

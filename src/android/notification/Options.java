@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -485,6 +484,27 @@ public class Options {
         }
 
         return pics;
+    }
+
+    /**
+     * The group for that notification.
+     */
+    String getGroup() {
+        return options.optString("group", null);
+    }
+
+    /**
+     * If the group shall show a summary.
+     */
+    boolean getGroupSummary() {
+        return options.optBoolean("groupSummary", false);
+    }
+
+    /**
+     * Gets the value of the silent flag.
+     */
+    boolean isSilent() {
+        return options.optBoolean("silent", false);
     }
 
     /**
