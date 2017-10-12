@@ -23,6 +23,7 @@ package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
@@ -238,11 +239,21 @@ public class Options {
             return NotificationCompat.COLOR_DEFAULT;
 
         try {
-            hex      = stripHex(hex);
-            int aRGB = Integer.parseInt(hex, 16);
+            hex = stripHex(hex);
 
+            if (hex.matches("[^0-9]*")) {
+                return Color.class
+                        .getDeclaredField(hex.toUpperCase())
+                        .getInt(null);
+            }
+
+            int aRGB = Integer.parseInt(hex, 16);
             return aRGB + 0xFF000000;
         } catch (NumberFormatException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
