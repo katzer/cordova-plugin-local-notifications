@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.Exception;
 
+import de.appplant.cordova.plugin.notification.ActionGroup;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
@@ -145,6 +146,10 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equalsIgnoreCase("request")) {
                     request(command);
                 } else
+                if (action.equalsIgnoreCase("actions")) {
+                    actions(args.optJSONObject(0));
+                    command.success();
+                } else
                 if (action.equalsIgnoreCase("schedule")) {
                     schedule(args);
                     command.success();
@@ -232,6 +237,19 @@ public class LocalNotification extends CordovaPlugin {
      */
     private void request (CallbackContext command) {
         check(command);
+    }
+
+    /**
+     * Register action group.
+     *
+     * @param args The action group spec.
+     */
+    private void actions (JSONObject args) {
+        ActionGroup group = ActionGroup.parse(cordova.getActivity(), args);
+
+        if (group != null) {
+            ActionGroup.register(group);
+        }
     }
 
     /**

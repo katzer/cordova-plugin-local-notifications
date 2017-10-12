@@ -36,7 +36,7 @@ import de.appplant.cordova.plugin.notification.trigger.IntervalTrigger;
 
 import static de.appplant.cordova.plugin.notification.trigger.IntervalTrigger.Unit;
 
-public class Request {
+public final class Request {
 
     // Key name for bundled extras
     static final String EXTRA = "NOTIFICATION_OCCURRENCE_EXTRA";

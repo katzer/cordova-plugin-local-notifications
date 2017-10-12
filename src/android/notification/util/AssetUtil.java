@@ -48,7 +48,7 @@ import java.util.UUID;
  * within the asset resources. And res:// means a resource from the native
  * res folder. Remote assets are accessible via http:// for example.
  */
-public class AssetUtil {
+public final class AssetUtil {
 
     // Name of the storage folder
     private static final String STORAGE_FOLDER = "/localnotification";

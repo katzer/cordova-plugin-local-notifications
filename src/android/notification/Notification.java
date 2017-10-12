@@ -43,7 +43,7 @@ import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
  * Wrapper class around OS notification class. Handles basic operations
  * like show, delete, cancel for a single local notification instance.
  */
-public class Notification {
+public final class Notification {
 
     // Used to differ notifications by their life cycle state
     public enum Type {

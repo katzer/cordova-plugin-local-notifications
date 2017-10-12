@@ -37,7 +37,7 @@ import de.appplant.cordova.plugin.notification.receiver.ClearReceiver;
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
  */
-public class Builder {
+public final class Builder {
 
     // Application context passed by constructor
     private final Context context;
@@ -127,6 +127,7 @@ public class Builder {
         }
 
         applyStyle(builder);
+        applyActions(builder);
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
@@ -219,6 +220,42 @@ public class Builder {
                 context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
+    }
+
+    /**
+     * Add all actions to the builder if there are any actions.
+     *
+     * @param builder Local notification builder instance
+     */
+    private void applyActions (NotificationCompat.Builder builder) {
+        Action[] actions = options.getActions();
+
+        if (actions == null || actions.length == 0)
+            return;
+
+        for (Action action : actions) {
+            builder.addAction(
+                    action.getIcon(), action.getTitle(),
+                    getPendingIntentForAction(action));
+        }
+    }
+
+    /**
+     * Returns a new PendingIntent for a notification action, including the
+     * action's identifier.
+     *
+     * @param action Notification action needing the PendingIntent
+     */
+    private PendingIntent getPendingIntentForAction (Action action) {
+        Intent intent = new Intent(context, clickActivity)
+                .putExtra(Options.EXTRA, options.toString())
+                .putExtra(Action.EXTRA, action.getId())
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        int requestCode = new Random().nextInt();
+
+        return PendingIntent.getActivity(
+                context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
 }

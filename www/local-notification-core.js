@@ -331,7 +331,7 @@ exports.getTriggered = function (callback, scope) {
  */
 exports.addActionGroup = function (id, actions, callback, scope) {
     var config = { actionGroupId: id, actions: actions };
-    this.exec('registerCategory', config, callback, scope);
+    this.exec('actions', config, callback, scope);
 };
 
 /**

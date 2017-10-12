@@ -49,7 +49,7 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
  * possible option values. Class provides simple readers and more advanced
  * methods to convert independent values into platform specific values.
  */
-public class Options {
+public final class Options {
 
     // Key name for bundled extras
     public static final String EXTRA = "NOTIFICATION_OPTIONS";
@@ -516,6 +516,30 @@ public class Options {
      */
     boolean isSilent() {
         return options.optBoolean("silent", false);
+    }
+
+    /**
+     * Gets the list of actions to display.
+     */
+    Action[] getActions() {
+        String groupId    = options.optString("actionGroupId", null);
+        JSONArray actions = options.optJSONArray("actions");
+        ActionGroup group = null;
+
+        if (actions != null && actions.length() > 0) {
+            group = ActionGroup.parse(context, options);
+        }
+
+        if (group == null && groupId != null) {
+            group = ActionGroup.lookup(groupId);
+        }
+
+        if (group != null) {
+            ActionGroup.register(group);
+            return group.getActions();
+        }
+
+        return null;
     }
 
     /**

@@ -51,7 +51,7 @@ import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
  * state like triggered or scheduled. Offers shortcut ways to schedule,
  * cancel or clear local notifications.
  */
-public class Manager {
+public final class Manager {
 
     // Context passed through constructor and used for notification builder.
     private Context context;

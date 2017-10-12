@@ -432,7 +432,7 @@
  *
  * @return [ Void ]
  */
-- (void) registerCategory:(CDVInvokedUrlCommand *)command
+- (void) actions:(CDVInvokedUrlCommand *)command
 {
     [self.commandDelegate runInBackground:^{
         NSDictionary* options = command.arguments[0];
