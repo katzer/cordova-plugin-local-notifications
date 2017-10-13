@@ -229,14 +229,21 @@ public final class Builder {
      */
     private void applyActions (NotificationCompat.Builder builder) {
         Action[] actions = options.getActions();
+        NotificationCompat.Action.Builder btn;
 
         if (actions == null || actions.length == 0)
             return;
 
         for (Action action : actions) {
-            builder.addAction(
-                    action.getIcon(), action.getTitle(),
-                    getPendingIntentForAction(action));
+             btn = new NotificationCompat.Action.Builder(
+                     action.getIcon(), action.getTitle(),
+                     getPendingIntentForAction(action));
+
+            if (action.isWithInput()) {
+                btn.addRemoteInput(action.getInput());
+            }
+
+            builder.addAction(btn.build());
         }
     }
 

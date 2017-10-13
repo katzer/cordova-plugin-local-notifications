@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.N;
 
 public final class ActionGroup {
 
@@ -86,9 +90,17 @@ public final class ActionGroup {
 
         for (int i = 0; i < list.length(); i++) {
             JSONObject opts = list.optJSONObject(i);
+            String type     = opts.optString("type", "button");
 
-            if (!opts.optString("type", "button").equals("button"))
+            if (type.equals("input") && SDK_INT < N) {
+                Log.w("Action", "Type input is not supported");
                 continue;
+            }
+
+            if (!(type.equals("button") || type.equals("input"))) {
+                Log.w("Action", "Unknown type: " + type);
+                continue;
+            }
 
             actions.add(new Action(context, opts));
         }

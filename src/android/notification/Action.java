@@ -22,7 +22,9 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
+import android.support.v4.app.RemoteInput;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.notification.util.AssetUtil;
@@ -38,17 +40,11 @@ final class Action {
     // Key name for bundled extras
     static final String EXTRA = "NOTIFICATION_ACTION_ID";
 
-    // The ID of the action
-    private final String id;
+    // The application context
+    private final Context context;
 
-    // The title for the action
-    private final String title;
-
-    // The icon for the action
-    private final int icon;
-
-    // The launch flag for the action
-    private final boolean launch;
+    // The action spec
+    private final JSONObject options;
 
     /**
      * Structure to encapsulate a named action that can be shown as part of
@@ -58,50 +54,30 @@ final class Action {
      * @param options The action options.
      */
     Action (Context context, JSONObject options) {
-        this.icon  = parseIcon(context, options.optString("icon"));
-        this.title = options.optString("title");
-        this.id    = options.optString("id", title);
-        this.launch = options.optBoolean("launch", false);
+        this.context = context;
+        this.options = options;
     }
 
     /**
      * Gets the ID for the action.
      */
     public String getId() {
-        return id;
+        return options.optString("id", getTitle());
     }
 
     /**
      * Gets the Title for the action.
      */
     public String getTitle() {
-        return title;
+        return options.optString("title", "unknown");
     }
 
     /**
      * Gets the icon for the action.
      */
     public int getIcon() {
-        return icon;
-    }
-
-    /**
-     * Gets the value of the launch flag.
-     */
-    public boolean isLaunchingApp() {
-        return launch;
-    }
-
-    /**
-     * Parse the uri into a resource id.
-     *
-     * @param context The application context.
-     * @param resPath The resource path.
-     *
-     * @return The resource id.
-     */
-    private int parseIcon(Context context, String resPath) {
         AssetUtil assets = AssetUtil.getInstance(context);
+        String resPath   = options.optString("icon");
         int resId        = assets.getResId(resPath);
 
         if (resId == 0) {
@@ -109,6 +85,50 @@ final class Action {
         }
 
         return resId;
+    }
+
+    /**
+     * Gets the value of the launch flag.
+     */
+    public boolean isLaunchingApp() {
+        return options.optBoolean("launch", false);
+    }
+
+    /**
+     * Gets the type for the action.
+     */
+    boolean isWithInput() {
+        String type = options.optString("type");
+        return type.equals("input");
+    }
+
+    /**
+     * Gets the input config in case of the action is of type input.
+     */
+    RemoteInput getInput() {
+        return new RemoteInput.Builder(getId())
+                .setLabel(options.optString("emptyText"))
+                .setAllowFreeFormInput(options.optBoolean("editable", true))
+                .setChoices(getChoices())
+                .build();
+    }
+
+    /**
+     * List of possible choices for input actions.
+     */
+    private String[] getChoices() {
+        JSONArray opts = options.optJSONArray("choices");
+
+        if (opts == null)
+            return null;
+
+        String[] choices = new String[opts.length()];
+
+        for (int i = 0; i < choices.length; i++) {
+            choices[i] = opts.optString(i);
+        }
+
+        return choices;
     }
 
 }
