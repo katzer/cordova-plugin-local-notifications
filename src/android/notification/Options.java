@@ -106,6 +106,13 @@ public final class Options {
     }
 
     /**
+     * JSON object as string.
+     */
+    public String toString() {
+        return options.toString();
+    }
+
+    /**
      * Gets the ID for the local notification.
      *
      * @return 0 if the user did not specify.
@@ -558,12 +565,12 @@ public final class Options {
      * @return null if there are no messages.
      */
     Message[] getMessages() {
-        Object value = options.opt("text");
+        Object text = options.opt("text");
 
-        if (value == null || value instanceof String)
+        if (text == null || text instanceof String)
             return null;
 
-        JSONArray list = (JSONArray) value;
+        JSONArray list = (JSONArray) text;
 
         if (list.length() == 0)
             return null;
@@ -573,21 +580,14 @@ public final class Options {
 
         for (int i = 0; i < messages.length; i++) {
             JSONObject msg = list.optJSONObject(i);
-            String text    = msg.optString("text");
+            String message = msg.optString("message");
             long timestamp = msg.optLong("date", now);
             String person  = msg.optString("person", null);
 
-            messages[i] = new Message(text, timestamp, person);
+            messages[i] = new Message(message, timestamp, person);
         }
 
         return messages;
-    }
-
-    /**
-     * JSON object as string.
-     */
-    public String toString() {
-        return options.toString();
     }
 
     /**
