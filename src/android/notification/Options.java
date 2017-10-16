@@ -26,12 +26,14 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.appplant.cordova.plugin.notification.util.AssetUtil;
@@ -122,13 +124,6 @@ public final class Options {
     }
 
     /**
-     * Text for the local notification.
-     */
-    public String getText() {
-        return options.optString("text", "");
-    }
-
-    /**
      * Badge number for the local notification.
      */
     int getBadgeNumber() {
@@ -138,7 +133,7 @@ public final class Options {
     /**
      * ongoing flag for local notifications.
      */
-    Boolean isSticky() {
+    public Boolean isSticky() {
         return options.optBoolean("sticky", false);
     }
 
@@ -147,6 +142,42 @@ public final class Options {
      */
     Boolean isAutoClear() {
         return options.optBoolean("autoClear", false);
+    }
+
+    /**
+     * Gets the raw trigger spec as provided by the user.
+     */
+    public JSONObject getTrigger() {
+        return options.optJSONObject("trigger");
+    }
+
+    /**
+     * Gets the value of the silent flag.
+     */
+    boolean isSilent() {
+        return options.optBoolean("silent", false);
+    }
+
+    /**
+     * The group for that notification.
+     */
+    String getGroup() {
+        return options.optString("group", null);
+    }
+
+    /**
+     * If the group shall show a summary.
+     */
+    boolean getGroupSummary() {
+        return options.optBoolean("groupSummary", false);
+    }
+
+    /**
+     * Text for the local notification.
+     */
+    public String getText() {
+        Object text = options.opt("text");
+        return text instanceof String ? (String) text : "";
     }
 
     /**
@@ -498,27 +529,6 @@ public final class Options {
     }
 
     /**
-     * The group for that notification.
-     */
-    String getGroup() {
-        return options.optString("group", null);
-    }
-
-    /**
-     * If the group shall show a summary.
-     */
-    boolean getGroupSummary() {
-        return options.optBoolean("groupSummary", false);
-    }
-
-    /**
-     * Gets the value of the silent flag.
-     */
-    boolean isSilent() {
-        return options.optBoolean("silent", false);
-    }
-
-    /**
      * Gets the list of actions to display.
      */
     Action[] getActions() {
@@ -543,10 +553,34 @@ public final class Options {
     }
 
     /**
-     * Gets the raw trigger spec as provided by the user.
+     * Gets the list of messages to display.
+     *
+     * @return null if there are no messages.
      */
-    public JSONObject getTrigger() {
-        return options.optJSONObject("trigger");
+    Message[] getMessages() {
+        Object value = options.opt("text");
+
+        if (value == null || value instanceof String)
+            return null;
+
+        JSONArray list = (JSONArray) value;
+
+        if (list.length() == 0)
+            return null;
+
+        Message[] messages = new Message[list.length()];
+        long now           = new Date().getTime();
+
+        for (int i = 0; i < messages.length; i++) {
+            JSONObject msg = list.optJSONObject(i);
+            String text    = msg.optString("text");
+            long timestamp = msg.optLong("date", now);
+            String person  = msg.optString("person", null);
+
+            messages[i] = new Message(text, timestamp, person);
+        }
+
+        return messages;
     }
 
     /**

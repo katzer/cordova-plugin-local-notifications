@@ -141,10 +141,6 @@ exports.convertProperties = function (options) {
         options.title = options.title.toString();
     }
 
-    if (options.text) {
-        options.text  = options.text.toString();
-    }
-
     if (options.badge) {
         options.badge = parseToInt('badge', options);
     }

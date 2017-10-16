@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 
 import java.util.List;
 import java.util.Random;
@@ -137,43 +138,108 @@ public final class Builder {
     /**
      * Find out and set the notification style.
      *
-     * @param builder Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyStyle(NotificationCompat.Builder builder) {
-        List<Bitmap> pics = options.getAttachments();
-        String summary    = options.getSummary();
-        String text       = options.getText();
+        Message[] messages = options.getMessages();
+        String summary     = options.getSummary();
 
-        if (pics.size() > 0) {
-            NotificationCompat.BigPictureStyle style =
-                    new NotificationCompat.BigPictureStyle(builder)
-                            .setSummaryText(summary == null ? text : summary)
-                            .bigPicture(pics.get(0));
-
-            builder.setStyle(style);
+        if (messages != null) {
+            applyMessagingStyle(builder, messages);
             return;
         }
 
+        List<Bitmap> pics = options.getAttachments();
+
+        if (pics.size() > 0) {
+            applyBigPictureStyle(builder, pics);
+            return;
+        }
+
+        String text = options.getText();
+
         if (text != null && text.contains("\n")) {
-            NotificationCompat.InboxStyle style =
-                    new NotificationCompat.InboxStyle(builder)
-                            .setSummaryText(summary);
-
-            for (String line : text.split("\n")) {
-                style.addLine(line);
-            }
-
-            builder.setStyle(style);
+            applyInboxStyle(builder);
             return;
         }
 
         if (text == null || summary == null && text.length() < 45)
             return;
 
-        NotificationCompat.BigTextStyle style =
-                new NotificationCompat.BigTextStyle(builder)
-                        .setSummaryText(summary)
-                        .bigText(text);
+        applyBigTextStyle(builder);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder  Local notification builder instance.
+     * @param messages The messages to add to the conversation.
+     */
+    private void applyMessagingStyle(NotificationCompat.Builder builder,
+                                     Message[] messages) {
+
+        NotificationCompat.MessagingStyle style;
+
+        style = new NotificationCompat.MessagingStyle("Me")
+                .setConversationTitle(options.getTitle());
+
+        for (Message msg : messages) {
+            style.addMessage(msg);
+        }
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder Local notification builder instance.
+     * @param pics    The pictures to show.
+     */
+    private void applyBigPictureStyle(NotificationCompat.Builder builder,
+                                      List<Bitmap> pics) {
+
+        NotificationCompat.BigPictureStyle style;
+        String summary = options.getSummary();
+        String text    = options.getText();
+
+        style = new NotificationCompat.BigPictureStyle(builder)
+                .setSummaryText(summary == null ? text : summary)
+                .bigPicture(pics.get(0));
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyInboxStyle(NotificationCompat.Builder builder) {
+        NotificationCompat.InboxStyle style;
+        String text = options.getText();
+
+        style = new NotificationCompat.InboxStyle(builder)
+                .setSummaryText(options.getSummary());
+
+        for (String line : text.split("\n")) {
+            style.addLine(line);
+        }
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply big text style.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyBigTextStyle(NotificationCompat.Builder builder) {
+        NotificationCompat.BigTextStyle style;
+
+        style = new NotificationCompat.BigTextStyle(builder)
+                .setSummaryText(options.getSummary())
+                .bigText(options.getText());
 
         builder.setStyle(style);
     }
@@ -182,7 +248,7 @@ public final class Builder {
      * Set intent to handle the delete event. Will clean up some persisted
      * preferences.
      *
-     * @param builder Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyDeleteReceiver(NotificationCompat.Builder builder) {
 
@@ -203,7 +269,7 @@ public final class Builder {
      * Set intent to handle the click event. Will bring the app to
      * foreground.
      *
-     * @param builder Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
 
@@ -225,7 +291,7 @@ public final class Builder {
     /**
      * Add all actions to the builder if there are any actions.
      *
-     * @param builder Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyActions (NotificationCompat.Builder builder) {
         Action[] actions = options.getActions();

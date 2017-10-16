@@ -108,19 +108,12 @@ public final class Notification {
         return options.getId();
     }
 
-    // /**
-    //  * If it's a repeating notification.
-    //  */
-    // public boolean isRepeating () {
-    //     return getOptions().getRepeatInterval() > 0;
-    // }
-
-    // /**
-    //  * If the notification was in the past.
-    //  */
-    // public boolean wasInThePast () {
-    //     return new Date().after(options.getTriggerDate());
-    // }
+    /**
+     * If it's a repeating notification.
+     */
+    public boolean isRepeating () {
+        return getOptions().getTrigger().has("every");
+    }
 
     // /**
     //  * If the notification is scheduled.
@@ -160,61 +153,37 @@ public final class Notification {
     // }
 
     /**
-     * Schedule the local notification.
+     * Clear the local notification without canceling repeating alarms.
      */
-    public void schedule() {
-        // long triggerTime = options.getTriggerTime();
+    public void clear () {
 
-        // persist();
+        // if (!isRepeating() && wasInThePast())
+        //     unpersist();
 
-        // // Intent gets called when the Notification gets fired
-        // Intent intent = new Intent(context, receiver)
-        //         .setAction(options.getIdStr())
-        //         .putExtra(Options.EXTRA, options.toString());
-
-        // PendingIntent pi = PendingIntent.getBroadcast(
-        //         context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        // if (isRepeating()) {
-        //     getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
-        //             triggerTime, options.getRepeatInterval(), pi);
-        // } else {
-        //     getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
-        // }
+        // if (!isRepeating())
+        //     getNotMgr().cancel(getId());
     }
 
-    // /**
-    //  * Clear the local notification without canceling repeating alarms.
-    //  */
-    // public void clear () {
+    /**
+     * Cancel the local notification.
+     *
+     * Create an intent that looks similar, to the one that was registered
+     * using schedule. Making sure the notification id in the action is the
+     * same. Now we can search for such an intent using the 'getService'
+     * method and cancel it.
+     */
+    public void cancel() {
+        // Intent intent = new Intent(context, receiver)
+        //         .setAction(options.getIdStr());
 
-    //     if (!isRepeating() && wasInThePast())
-    //         unpersist();
+        // PendingIntent pi = PendingIntent.
+        //         getBroadcast(context, 0, intent, 0);
 
-    //     if (!isRepeating())
-    //         getNotMgr().cancel(getId());
-    // }
+        // getAlarmMgr().cancel(pi);
+        // getNotMgr().cancel(options.getId());
 
-    // /**
-    //  * Cancel the local notification.
-    //  *
-    //  * Create an intent that looks similar, to the one that was registered
-    //  * using schedule. Making sure the notification id in the action is the
-    //  * same. Now we can search for such an intent using the 'getService'
-    //  * method and cancel it.
-    //  */
-    // public void cancel() {
-    //     Intent intent = new Intent(context, receiver)
-    //             .setAction(options.getIdStr());
-
-    //     PendingIntent pi = PendingIntent.
-    //             getBroadcast(context, 0, intent, 0);
-
-    //     getAlarmMgr().cancel(pi);
-    //     getNotMgr().cancel(options.getId());
-
-    //     unpersist();
-    // }
+        // unpersist();
+    }
 
     /**
      * Present the local notification to user.
@@ -249,58 +218,43 @@ public final class Notification {
     //     return (int) ((now - triggerTime) / options.getRepeatInterval());
     // }
 
-    // /**
-    //  * Encode options to JSON.
-    //  */
-    // public String toString() {
-    //     JSONObject dict = options.getDict();
-    //     JSONObject json = new JSONObject();
+    /**
+     * Encode options to JSON.
+     */
+    public String toString() {
+        JSONObject dict = options.getDict();
+        JSONObject json = new JSONObject();
 
-    //     try {
-    //         json = new JSONObject(dict.toString());
-    //     } catch (JSONException e) {
-    //         e.printStackTrace();
-    //     }
+        try {
+            json = new JSONObject(dict.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-    //     json.remove("firstAt");
-    //     json.remove("updated");
-    //     json.remove("soundUri");
-    //     json.remove("iconUri");
+        return json.toString();
+    }
 
-    //     return json.toString();
-    // }
+    /**
+     * Persist the information of this notification to the Android Shared
+     * Preferences. This will allow the application to restore the notification
+     * upon device reboot, app restart, retrieve notifications, aso.
+     */
+    private void persist () {
+        SharedPreferences.Editor editor = getPrefs().edit();
 
-    // /**
-    //  * Persist the information of this notification to the Android Shared
-    //  * Preferences. This will allow the application to restore the notification
-    //  * upon device reboot, app restart, retrieve notifications, aso.
-    //  */
-    // private void persist () {
-    //     SharedPreferences.Editor editor = getPrefs().edit();
+        editor.putString(options.getIdentifier(), options.toString());
+        editor.apply();
+    }
 
-    //     editor.putString(options.getIdStr(), options.toString());
+    /**
+     * Remove the notification from the Android shared Preferences.
+     */
+    private void unpersist () {
+        SharedPreferences.Editor editor = getPrefs().edit();
 
-    //     if (Build.VERSION.SDK_INT < 9) {
-    //         editor.commit();
-    //     } else {
-    //         editor.apply();
-    //     }
-    // }
-
-    // /**
-    //  * Remove the notification from the Android shared Preferences.
-    //  */
-    // private void unpersist () {
-    //     SharedPreferences.Editor editor = getPrefs().edit();
-
-    //     editor.remove(options.getIdStr());
-
-    //     if (Build.VERSION.SDK_INT < 9) {
-    //         editor.commit();
-    //     } else {
-    //         editor.apply();
-    //     }
-    // }
+        editor.remove(options.getIdentifier());
+        editor.apply();
+    }
 
     /**
      * Shared private preferences for the application.
