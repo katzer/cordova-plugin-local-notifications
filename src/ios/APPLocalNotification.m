@@ -43,7 +43,8 @@
 @property (readwrite, assign) BOOL deviceready;
 // Event queue
 @property (readonly, nonatomic, retain) NSMutableArray* eventQueue;
-
+// used to know the state of the application
+@property (readwrite, assign) BOOL isInForeground;
 // IOS9: TODO remove later
 @property (nonatomic, retain) CDVInvokedUrlCommand* command;
 
@@ -723,11 +724,11 @@
  */
 - (NSString*) applicationState
 {
-    UIApplicationState state = [self.app applicationState];
-
-    bool isActive = state == UIApplicationStateActive;
-
-    return isActive ? @"foreground" : @"background";
+    /*UIApplicationState state = [self.app applicationState];
+     
+     bool isActive = state == UIApplicationStateActive;*/
+    
+    return self.isInForeground ? @"foreground" : @"background";
 }
 
 /**
@@ -820,6 +821,25 @@
 
     [self scheduleLocalNotification:notification];
 }
+
+/**
+ * App enter in foreground
+ */
+- (void)onAppWillEnterForeground:(NSNotification*)notification
+{
+    NSLog(@"%@",@"applicationWillEnterForeground");
+    self.isInForeground = YES;
+}
+
+/**
+ * App enter in background
+ */
+- (void)onAppDidEnterBackground:(NSNotification*)notification
+{
+    NSLog(@"%@",@"onAppDidEnterBackground");
+    self.isInForeground = NO;
+}
+
 
 /**
  * Cancel a maybe given forerunner with the same ID.
