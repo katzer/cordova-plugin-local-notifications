@@ -34,11 +34,15 @@ public class ClickActivity extends AbstractClickActivity {
      * Called when local notification was clicked by the user. Will
      * move the app to foreground.
      *
-     * @param notification Wrapper around the local notification
+     * @param action       The name of the action.
+     * @param notification Wrapper around the local notification.
      */
     @Override
-    public void onClick(Notification notification) {
+    public void onClick(String action, Notification notification) {
         launchApp();
+
+        if (notification.getOptions().isSticky())
+            return;
 
         if (notification.isRepeating()) {
             notification.clear();

@@ -35,10 +35,13 @@ import de.appplant.cordova.plugin.notification.util.AssetUtil;
  * that it may be generated each time the notification is built. Necessary to
  * compensate for missing functionality in the support library.
  */
-final class Action {
+public final class Action {
 
     // Key name for bundled extras
-    static final String EXTRA = "NOTIFICATION_ACTION_ID";
+    public static final String EXTRA = "NOTIFICATION_ACTION_ID";
+
+    // The id for the click action
+    public static final String CLICK_ACTION_ID = "click";
 
     // The application context
     private final Context context;

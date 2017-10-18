@@ -61,7 +61,7 @@ public class LocalNotification extends CordovaPlugin {
     private static Boolean deviceready = false;
 
     // To inform the user about the state of the app in callbacks
-    protected static Boolean isInBackground = true;
+    private static Boolean isInBackground = true;
 
     // Queues all events before deviceready
     private static ArrayList<String> eventQueue = new ArrayList<String>();
@@ -70,8 +70,6 @@ public class LocalNotification extends CordovaPlugin {
      * Called after plugin construction and fields have been initialized.
      * Prefer to use pluginInitialize instead since there is no value in
      * having parameters on the initialize() function.
-     *
-     * pluginInitialize is not available for cordova 3.0-3.5 !
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
@@ -223,7 +221,7 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void check (CallbackContext command) {
-        boolean allowed = getNotificationMgr().hasPermission();
+        boolean allowed     = getNotificationMgr().hasPermission();
         PluginResult result = new PluginResult(PluginResult.Status.OK, allowed);
 
         command.sendPluginResult(result);
@@ -268,7 +266,7 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     mgr.schedule(request, TriggerReceiver.class);
 
-            fireEvent("schedule", notification);
+            fireEvent("add", notification);
         }
     }
 
@@ -583,31 +581,56 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Fire given event on JS side. Does inform all event listeners.
      *
-     * @param event
-     *      The event name
+     * @param event The event name.
      */
     private void fireEvent (String event) {
-        fireEvent(event, null);
+        fireEvent(event, null, new JSONObject());
     }
 
     /**
      * Fire given event on JS side. Does inform all event listeners.
      *
-     * @param event The event name
-     * @param notification Optional notification to pass the id and properties.
+     * @param event        The event name.
+     * @param notification Optional notification to pass with.
      */
     static void fireEvent (String event, Notification notification) {
-        String state = getApplicationState();
-        String params = "\"" + state + "\"";
+        fireEvent(event, notification, new JSONObject());
+    }
 
-        if (notification != null) {
-            params = notification.toString() + "," + params;
+    /**
+     * Fire given event on JS side. Does inform all event listeners.
+     *
+     * @param event        The event name.
+     * @param notification Optional notification to pass with.
+     * @param data         Event object with additional data.
+     */
+    static void fireEvent (String event, Notification notification,
+                           JSONObject data) {
+
+        String params, js;
+
+        try {
+            data.put("event", event);
+            data.put("foreground", !isInBackground);
+            data.put("queued", !deviceready);
+
+            if (notification != null) {
+                data.put("notification", notification.getId());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        String js = "cordova.plugins.notification.local.core.fireEvent(" +
+        if (notification != null) {
+            params = notification.toString() + "," + data.toString();
+        } else {
+            params = data.toString();
+        }
+
+        js = "cordova.plugins.notification.local.core.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 
-        // sendJavascript(js);
+        sendJavascript(js);
     }
 
     /**
@@ -650,15 +673,6 @@ public class LocalNotification extends CordovaPlugin {
 
     //     return list;
     // }
-
-    /**
-     * Current application state.
-     *
-     * @return "background" or "foreground"
-     */
-    static String getApplicationState() {
-        return isInBackground ? "background" : "foreground";
-    }
 
     /**
      * Notification manager instance.

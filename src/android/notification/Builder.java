@@ -279,6 +279,7 @@ public final class Builder {
 
         Intent intent = new Intent(context, clickActivity)
                 .putExtra(Options.EXTRA, options.toString())
+                .putExtra(Action.EXTRA, Action.CLICK_ACTION_ID)
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int reqCode = new Random().nextInt();

@@ -21,6 +21,12 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.os.Bundle;
+import android.support.v4.app.RemoteInput;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.appplant.cordova.plugin.notification.Notification;
 
 /**
@@ -33,19 +39,25 @@ public class ClickActivity extends de.appplant.cordova.plugin.notification.activ
     /**
      * Called when local notification was clicked by the user.
      *
-     * @param notification Wrapper around the local notification
+     * @param action       The name of the action.
+     * @param notification Wrapper around the local notification.
      */
     @Override
-    public void onClick(Notification notification) {
-        LocalNotification.fireEvent("click", notification);
+    public void onClick(String action, Notification notification) {
+        JSONObject data = new JSONObject();
+        Bundle input    = RemoteInput.getResultsFromIntent(getIntent());
 
-        super.onClick(notification);
+        if (input != null) {
+            try {
+                data.put("text", input.getString(action, ""));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
-        if (notification.getOptions().isSticky())
-            return;
+        LocalNotification.fireEvent(action, notification, data);
 
-        String event = notification.isRepeating() ? "clear" : "cancel";
-        LocalNotification.fireEvent(event, notification);
+        super.onClick(action, notification);
     }
 
 }
