@@ -66,6 +66,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.showWhen     = true;
         defaults.defaults     = 0;
         defaults.priority     = 0;
+        defaults.channel      = undefined;
         break;
     }
 };

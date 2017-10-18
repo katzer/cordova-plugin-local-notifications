@@ -95,8 +95,9 @@ public final class Builder {
             return new Notification(context, options);
         }
 
-        builder = new NotificationCompat.Builder(context, "channel")
+        builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
                 .setDefaults(options.getDefaults())
+                .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setTicker(options.getText())

@@ -173,6 +173,13 @@ public final class Options {
     }
 
     /**
+     * The channel id of that notification.
+     */
+    String getChannel() {
+        return options.optString("channel", Manager.CHANNEL_ID);
+    }
+
+    /**
      * If the group shall show a summary.
      */
     boolean getGroupSummary() {

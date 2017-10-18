@@ -22,13 +22,14 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.app.AlarmManager;
-import android.app.NotificationChannelGroup;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -44,6 +45,10 @@ import java.util.Set;
 
 import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.O;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+
 // import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
 
 /**
@@ -53,7 +58,13 @@ import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
  */
 public final class Manager {
 
-    // Context passed through constructor and used for notification builder.
+    // TODO: temporary
+    static final String CHANNEL_ID = "default-channel-id";
+
+    // TODO: temporary
+    private static final CharSequence CHANNEL_NAME = "Default channel";
+
+    // The application context
     private Context context;
 
     /**
@@ -61,8 +72,9 @@ public final class Manager {
      *
      * @param context Application context
      */
-    private Manager(Context context){
+    private Manager(Context context) {
         this.context = context;
+        createDefaultChannel();
     }
 
     /**
@@ -139,6 +151,27 @@ public final class Manager {
 
         receiver.onReceive(context, intent);
         return true;
+    }
+
+    /**
+     * TODO: temporary
+     */
+    private void createDefaultChannel() {
+        NotificationManager mgr = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (SDK_INT < O)
+            return;
+
+        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+
+        if (channel != null)
+            return;
+
+        channel = new NotificationChannel(
+                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+
+        mgr.createNotificationChannel(channel);
     }
 
     // /**
