@@ -104,6 +104,16 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <provider
+                android:name="de.appplant.cordova.plugin.notification.util.AssetProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true" >
+                <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/localnotification_provider_paths"/>
+            </provider>
+
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver"
                 android:exported="false" />
@@ -130,6 +140,10 @@
             <!-- <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
+
+        <source-file
+            src="src/android/xml/localnotification_provider_paths.xml"
+            target-dir="res/xml" />
 
         <source-file
             src="src/android/LocalNotification.java"
@@ -190,6 +204,10 @@
         <source-file
             src="src/android/notification/trigger/MatchTrigger.java"
             target-dir="src/de/appplant/cordova/plugin/notification/trigger" />
+
+        <source-file
+            src="src/android/notification/util/AssetProvider.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/util" />
 
         <source-file
             src="src/android/notification/util/AssetUtil.java"

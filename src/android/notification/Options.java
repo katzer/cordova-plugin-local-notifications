@@ -56,6 +56,9 @@ public final class Options {
     // Key name for bundled extras
     public static final String EXTRA = "NOTIFICATION_OPTIONS";
 
+    // Key name for bundled sound extra
+    public static final String SOUND_EXTRA = "NOTIFICATION_SOUND";
+
     // Default icon path
     private static final String DEFAULT_ICON = "res://icon";
 

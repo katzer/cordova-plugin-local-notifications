@@ -29,6 +29,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
@@ -189,17 +190,16 @@ public final class Notification {
      * Present the local notification to user.
      */
     public void show () {
-        // TODO Show dialog when in foreground
-        showNotification();
-    }
+        if (builder == null)
+            return;
 
-    /**
-     * Show as local notification when in background.
-     */
-    private void showNotification () {
-        if (builder != null) {
-            getNotMgr().notify(getId(), builder.build());
-        }
+        String sound = builder.getExtras().getString(Options.SOUND_EXTRA);
+        Uri soundUri = Uri.parse(sound);
+
+        context.grantUriPermission("com.android.systemui", soundUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        getNotMgr().notify(getId(), builder.build());
     }
 
     // /**

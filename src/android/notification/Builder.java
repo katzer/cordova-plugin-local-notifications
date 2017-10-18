@@ -25,6 +25,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 
@@ -88,15 +90,22 @@ public final class Builder {
      * @return The final notification to display.
      */
     public Notification build() {
-        int smallIcon = options.getSmallIcon();
         NotificationCompat.Builder builder;
 
         if (options.isSilent()) {
             return new Notification(context, options);
         }
 
+        int smallIcon = options.getSmallIcon();
+        Uri sound     = options.getSound();
+        Bundle extras = new Bundle();
+
+        extras.putString(Options.EXTRA, options.toString());
+        extras.putString(Options.SOUND_EXTRA, sound.toString());
+
         builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
                 .setDefaults(options.getDefaults())
+                .setExtras(extras)
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
@@ -105,7 +114,7 @@ public final class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())
-                .setSound(options.getSound())
+                .setSound(sound)
                 .setVisibility(options.getVisibility())
                 .setPriority(options.getPriority())
                 .setShowWhen(options.getShowWhen())

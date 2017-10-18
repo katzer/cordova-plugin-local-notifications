@@ -112,7 +112,7 @@ public final class AssetUtil {
             return Uri.EMPTY;
         }
 
-        return Uri.fromFile(file);
+        return getUriFromFile(file);
     }
 
     /**
@@ -142,7 +142,7 @@ public final class AssetUtil {
             outStream.flush();
             outStream.close();
 
-            return Uri.fromFile(file);
+            return getUriFromFile(file);
 
         } catch (Exception e) {
             Log.e("Asset", "File not found: assets/" + resPath);
@@ -213,7 +213,7 @@ public final class AssetUtil {
             outStream.flush();
             outStream.close();
 
-            return Uri.fromFile(file);
+            return getUriFromFile(file);
 
         } catch (MalformedURLException e) {
             Log.e("Asset", "Incorrect URL");
@@ -344,6 +344,18 @@ public final class AssetUtil {
         new File(storage).mkdir();
 
         return new File(storage, name);
+    }
+
+    /**
+     * Get content URI for the specified file.
+     *
+     * @param file The file to get the URI.
+     *
+     * @return content://...
+     */
+    private Uri getUriFromFile(File file) {
+        String authority = context.getPackageName() + ".provider";
+        return AssetProvider.getUriForFile(context, authority, file);
     }
 
     /**
