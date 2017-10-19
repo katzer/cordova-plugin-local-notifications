@@ -30,12 +30,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.appplant.cordova.plugin.notification.trigger.MatchTrigger;
 import de.appplant.cordova.plugin.notification.trigger.DateTrigger;
 import de.appplant.cordova.plugin.notification.trigger.IntervalTrigger;
+import de.appplant.cordova.plugin.notification.trigger.MatchTrigger;
 
 import static de.appplant.cordova.plugin.notification.trigger.IntervalTrigger.Unit;
 
+/**
+ * An object you use to specify a notification’s content and the condition
+ * that triggers its delivery.
+ */
 public final class Request {
 
     // Key name for bundled extras

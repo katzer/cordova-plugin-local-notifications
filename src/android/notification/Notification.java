@@ -23,22 +23,15 @@ package de.appplant.cordova.plugin.notification;
 
 
 import android.app.AlarmManager;
-import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
-
-import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -193,7 +186,7 @@ public final class Notification {
         if (builder == null)
             return;
 
-        String sound = builder.getExtras().getString(Options.SOUND_EXTRA);
+        String sound = builder.getExtras().getString(Options.EXTRA_SOUND);
         Uri soundUri = Uri.parse(sound);
 
         context.grantUriPermission("com.android.systemui", soundUri,

@@ -23,6 +23,7 @@ package de.appplant.cordova.plugin.localnotification;
 
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -30,7 +31,7 @@ import de.appplant.cordova.plugin.notification.Notification;
  * Android notification bar. The notification uses the default notification
  * sound and it vibrates the phone.
  */
-public class TriggerReceiver extends de.appplant.cordova.plugin.notification.receiver.TriggerReceiver {
+public class TriggerReceiver extends AbstractTriggerReceiver {
 
     /**
      * Called when a local notification was triggered. Does present the local
@@ -41,7 +42,7 @@ public class TriggerReceiver extends de.appplant.cordova.plugin.notification.rec
      */
     @Override
     public void onTrigger (Notification notification, boolean updated) {
-        super.onTrigger(notification, updated);
+        notification.show();
 
         if (!updated) {
             LocalNotification.fireEvent("trigger", notification);

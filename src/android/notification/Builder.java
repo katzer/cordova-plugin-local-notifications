@@ -33,8 +33,7 @@ import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import java.util.List;
 import java.util.Random;
 
-import de.appplant.cordova.plugin.notification.activity.ClickActivity;
-import de.appplant.cordova.plugin.notification.receiver.ClearReceiver;
+import de.appplant.cordova.plugin.notification.action.Action;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -49,10 +48,10 @@ public final class Builder {
     private final Options options;
 
     // Receiver to handle the clear event
-    private Class<?> clearReceiver = ClearReceiver.class;
+    private Class<?> clearReceiver;
 
     // Activity to handle the click event
-    private Class<?> clickActivity = ClickActivity.class;
+    private Class<?> clickActivity;
 
     /**
      * Constructor
@@ -101,11 +100,12 @@ public final class Builder {
         Bundle extras = new Bundle();
 
         extras.putString(Options.EXTRA, options.toString());
-        extras.putString(Options.SOUND_EXTRA, sound.toString());
+        extras.putString(Options.EXTRA_SOUND, sound.toString());
 
         builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
                 .setDefaults(options.getDefaults())
                 .setExtras(extras)
+                .setOnlyAlertOnce(true)
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
@@ -288,7 +288,8 @@ public final class Builder {
 
         Intent intent = new Intent(context, clickActivity)
                 .putExtra(Options.EXTRA, options.toString())
-                .putExtra(Action.EXTRA, Action.CLICK_ACTION_ID)
+                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
+                .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int reqCode = new Random().nextInt();
@@ -333,7 +334,8 @@ public final class Builder {
     private PendingIntent getPendingIntentForAction (Action action) {
         Intent intent = new Intent(context, clickActivity)
                 .putExtra(Options.EXTRA, options.toString())
-                .putExtra(Action.EXTRA, action.getId())
+                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
+                .putExtra(Action.EXTRA_ID, action.getId())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int requestCode = new Random().nextInt();

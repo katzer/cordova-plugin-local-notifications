@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.action;
 
 import android.content.Context;
 import android.util.Log;
@@ -57,7 +57,7 @@ public final class ActionGroup {
      *
      * @return Null if no group was found.
      */
-    static ActionGroup lookup (String id) {
+    public static ActionGroup lookup(String id) {
         return groups.get(id);
     }
 

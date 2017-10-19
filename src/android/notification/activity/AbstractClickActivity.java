@@ -29,11 +29,11 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.appplant.cordova.plugin.notification.Action;
+import de.appplant.cordova.plugin.notification.action.Action;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 
-import static de.appplant.cordova.plugin.notification.Action.CLICK_ACTION_ID;
+import static de.appplant.cordova.plugin.notification.action.Action.CLICK_ACTION_ID;
 
 /**
  * Abstract content receiver activity for local notifications. Creates the
@@ -55,7 +55,7 @@ abstract public class AbstractClickActivity extends Activity {
         Context context = getApplicationContext();
 
         try {
-            String action   = bundle.getString(Action.EXTRA, CLICK_ACTION_ID);
+            String action   = bundle.getString(Action.EXTRA_ID, CLICK_ACTION_ID);
             String data     = bundle.getString(Options.EXTRA);
             JSONObject dict = new JSONObject(data);
             Options options = new Options(context, dict);

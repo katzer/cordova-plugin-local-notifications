@@ -34,10 +34,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.lang.Exception;
 
-import de.appplant.cordova.plugin.notification.ActionGroup;
+import de.appplant.cordova.plugin.notification.action.ActionGroup;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;

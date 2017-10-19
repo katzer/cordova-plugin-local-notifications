@@ -21,6 +21,7 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
 
@@ -28,13 +29,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
+import de.appplant.cordova.plugin.notification.activity.AbstractClickActivity;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.
  * The activity calls the background callback and brings the launch intent
  * up to foreground.
  */
-public class ClickActivity extends de.appplant.cordova.plugin.notification.activity.ClickActivity {
+public class ClickActivity extends AbstractClickActivity {
 
     /**
      * Called when local notification was clicked by the user.
@@ -44,8 +47,11 @@ public class ClickActivity extends de.appplant.cordova.plugin.notification.activ
      */
     @Override
     public void onClick(String action, Notification notification) {
-        JSONObject data = new JSONObject();
-        Bundle input    = RemoteInput.getResultsFromIntent(getIntent());
+        JSONObject data  = new JSONObject();
+        Intent intent    = getIntent();
+        Bundle bundle    = intent.getExtras();
+        Bundle input     = RemoteInput.getResultsFromIntent(intent);
+        boolean doLaunch = bundle.getBoolean(Options.EXTRA_LAUNCH, true);
 
         if (input != null) {
             try {
@@ -55,9 +61,20 @@ public class ClickActivity extends de.appplant.cordova.plugin.notification.activ
             }
         }
 
+        if (doLaunch) {
+            launchApp();
+        }
+
         LocalNotification.fireEvent(action, notification, data);
 
-        super.onClick(action, notification);
+        if (notification.getOptions().isSticky())
+            return;
+
+        if (notification.isRepeating()) {
+            notification.clear();
+        } else {
+            notification.cancel();
+        }
     }
 
 }

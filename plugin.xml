@@ -166,11 +166,15 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
  -->
         <source-file
-            src="src/android/notification/activity/AbstractClickActivity.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/activity" />
+            src="src/android/notification/action/Action.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/action" />
 
         <source-file
-            src="src/android/notification/activity/ClickActivity.java"
+            src="src/android/notification/action/ActionGroup.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/action" />
+
+        <source-file
+            src="src/android/notification/activity/AbstractClickActivity.java"
             target-dir="src/de/appplant/cordova/plugin/notification/activity" />
 
         <source-file
@@ -183,14 +187,6 @@
  -->
         <source-file
             src="src/android/notification/receiver/AbstractTriggerReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
-
-        <source-file
-            src="src/android/notification/receiver/ClearReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
-
-        <source-file
-            src="src/android/notification/receiver/TriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
@@ -212,14 +208,6 @@
         <source-file
             src="src/android/notification/util/AssetUtil.java"
             target-dir="src/de/appplant/cordova/plugin/notification/util" />
-
-        <source-file
-            src="src/android/notification/Action.java"
-            target-dir="src/de/appplant/cordova/plugin/notification" />
-
-        <source-file
-            src="src/android/notification/ActionGroup.java"
-            target-dir="src/de/appplant/cordova/plugin/notification" />
 
         <source-file
             src="src/android/notification/Builder.java"

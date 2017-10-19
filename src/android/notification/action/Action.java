@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.notification.action;
 
 import android.content.Context;
 import android.support.v4.app.RemoteInput;
@@ -38,7 +38,7 @@ import de.appplant.cordova.plugin.notification.util.AssetUtil;
 public final class Action {
 
     // Key name for bundled extras
-    public static final String EXTRA = "NOTIFICATION_ACTION_ID";
+    public static final String EXTRA_ID = "NOTIFICATION_ACTION_ID";
 
     // The id for the click action
     public static final String CLICK_ACTION_ID = "click";
@@ -100,7 +100,7 @@ public final class Action {
     /**
      * Gets the type for the action.
      */
-    boolean isWithInput() {
+    public boolean isWithInput() {
         String type = options.optString("type");
         return type.equals("input");
     }
@@ -108,7 +108,7 @@ public final class Action {
     /**
      * Gets the input config in case of the action is of type input.
      */
-    RemoteInput getInput() {
+    public RemoteInput getInput() {
         return new RemoteInput.Builder(getId())
                 .setLabel(options.optString("emptyText"))
                 .setAllowFreeFormInput(options.optBoolean("editable", true))

@@ -28,22 +28,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import de.appplant.cordova.plugin.notification.receiver.TriggerReceiver;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;

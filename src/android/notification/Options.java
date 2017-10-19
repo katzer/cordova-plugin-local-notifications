@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.appplant.cordova.plugin.notification.action.Action;
+import de.appplant.cordova.plugin.notification.action.ActionGroup;
 import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
@@ -57,7 +59,10 @@ public final class Options {
     public static final String EXTRA = "NOTIFICATION_OPTIONS";
 
     // Key name for bundled sound extra
-    public static final String SOUND_EXTRA = "NOTIFICATION_SOUND";
+    static final String EXTRA_SOUND = "NOTIFICATION_SOUND";
+
+    // Key name for bundled launch extra
+    public static final String EXTRA_LAUNCH = "NOTIFICATION_LAUNCH";
 
     // Default icon path
     private static final String DEFAULT_ICON = "res://icon";
@@ -173,6 +178,13 @@ public final class Options {
      */
     String getGroup() {
         return options.optString("group", null);
+    }
+
+    /**
+     * launch flag for the notification.
+     */
+    boolean isLaunchingApp() {
+        return options.optBoolean("launch", true);
     }
 
     /**
