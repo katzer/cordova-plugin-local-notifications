@@ -28,14 +28,18 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.Date;
 
+import static android.app.AlarmManager.RTC;
+import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MAX;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
 
 // import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
 
@@ -109,10 +113,20 @@ public final class Manager {
                      context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             try {
-                mgr.setExact(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+                switch (options.getPriority()) {
+                    case IMPORTANCE_MIN:
+                        mgr.setExact(RTC, date.getTime(), pi);
+                        break;
+                    case IMPORTANCE_MAX:
+                        mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, date.getTime(), pi);
+                        break;
+                    default:
+                        mgr.setExact(RTC_WAKEUP, date.getTime(), pi);
+                        break;
+                }
             } catch (Exception ignore) {
-                // on some Samsung devices there is a known bug where a 500 alarms limit can crash the app
-                // http://developer.samsung.com/forum/board/thread/view.do?boardName=General&messageId=280286&listLines=15&startId=zzzzz%7E&searchSubId=0000000001
+                // Samsung devices have a known bug where a 500 alarms limit
+                // can crash the app
             }
 
         } while (request.moveNext());
