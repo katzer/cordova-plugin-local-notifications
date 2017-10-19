@@ -21,7 +21,10 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.util.Log;
+import android.util.Pair;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -41,9 +44,6 @@ import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
-
-// import de.appplant.cordova.plugin.notification.Manager;
-// import de.appplant.cordova.plugin.notification.Notification;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
@@ -65,6 +65,9 @@ public class LocalNotification extends CordovaPlugin {
     // Queues all events before deviceready
     private static ArrayList<String> eventQueue = new ArrayList<String>();
 
+    // Launch details
+    private static Pair<Integer, String> launchDetails;
+
     /**
      * Called after plugin construction and fields have been initialized.
      * Prefer to use pluginInitialize instead since there is no value in
@@ -78,8 +81,7 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Called when the system is about to start resuming a previous activity.
      *
-     * @param multitasking
-     *      Flag indicating if multitasking is turned on for app
+     * @param multitasking Flag indicating if multitasking is turned on for app.
      */
     @Override
     public void onPause(boolean multitasking) {
@@ -105,7 +107,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void onDestroy() {
-        deviceready = false;
+        deviceready    = false;
         isInBackground = true;
     }
 
@@ -119,18 +121,21 @@ public class LocalNotification extends CordovaPlugin {
      * To run on the UI thread, use:
      *     cordova.getActivity().runOnUiThread(runnable);
      *
-     * @param action
-     *      The action to execute.
-     * @param args
-     *      The exec() arguments in JSON form.
-     * @param command
-     *      The callback context used when calling back into JavaScript.
-     * @return
-     *      Whether the action was valid.
+     * @param action  The action to execute.
+     * @param args    The exec() arguments in JSON form.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     *
+     * @return Whether the action was valid.
      */
     @Override
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
+
+        if (action.equals("launch")) {
+            launch(command);
+            return true;
+        }
 
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
@@ -211,6 +216,31 @@ public class LocalNotification extends CordovaPlugin {
         });
 
         return true;
+    }
+
+    /**
+     * Set launchDetails object.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    @SuppressLint("DefaultLocale")
+    private void launch(CallbackContext command) {
+        if (launchDetails == null)
+            return;
+
+        JSONObject details = new JSONObject();
+
+        try {
+            details.put("id", launchDetails.first);
+            details.put("action", launchDetails.second);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        command.success(details);
+
+        launchDetails = null;
     }
 
     /**
@@ -599,13 +629,11 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Fire given event on JS side. Does inform all event listeners.
      *
-     * @param event        The event name.
-     * @param notification Optional notification to pass with.
-     * @param data         Event object with additional data.
+     * @param event The event name.
+     * @param toast Optional notification to pass with.
+     * @param data  Event object with additional data.
      */
-    static void fireEvent (String event, Notification notification,
-                           JSONObject data) {
-
+    static void fireEvent (String event, Notification toast, JSONObject data) {
         String params, js;
 
         try {
@@ -613,15 +641,15 @@ public class LocalNotification extends CordovaPlugin {
             data.put("foreground", !isInBackground);
             data.put("queued", !deviceready);
 
-            if (notification != null) {
-                data.put("notification", notification.getId());
+            if (toast != null) {
+                data.put("notification", toast.getId());
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (notification != null) {
-            params = notification.toString() + "," + data.toString();
+        if (toast != null) {
+            params = toast.toString() + "," + data.toString();
         } else {
             params = data.toString();
         }
@@ -629,13 +657,17 @@ public class LocalNotification extends CordovaPlugin {
         js = "cordova.plugins.notification.local.core.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 
+        if (launchDetails == null && !deviceready && toast != null) {
+            launchDetails = new Pair<Integer, String>(toast.getId(), event);
+        }
+
         sendJavascript(js);
     }
 
     /**
      * Use this instead of deprecated sendJavascript
      *
-     * @param js JS code snippet as string
+     * @param js JS code snippet as string.
      */
     private static synchronized void sendJavascript(final String js) {
 
@@ -643,18 +675,12 @@ public class LocalNotification extends CordovaPlugin {
             eventQueue.add(js);
             return;
         }
-        Runnable jsLoader = new Runnable() {
+
+        ((Activity)(webView.getContext())).runOnUiThread(new Runnable() {
             public void run() {
                 webView.loadUrl("javascript:" + js);
             }
-        };
-        try {
-            Method post = webView.getClass().getMethod("post",Runnable.class);
-            post.invoke(webView,jsLoader);
-        } catch(Exception e) {
-
-            ((Activity)(webView.getContext())).runOnUiThread(jsLoader);
-        }
+        });
     }
 
     // /**

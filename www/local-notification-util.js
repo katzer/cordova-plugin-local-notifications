@@ -395,20 +395,24 @@ exports.exec = function (action, args, callback, scope) {
     exec(fn, null, 'LocalNotification', action, params);
 };
 
+exports.setLaunchDetails = function () {
+    exports.exec('launch', null, function (details) {
+        if (details) {
+            cordova.plugins.notification.local.launchDetails = details;
+        }
+    });
+};
+
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    // Device is ready now, the listeners are registered
-    // and all queued events can be executed.
     exports.exec('ready');
 });
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
-    // Set launchDetails object
-    exports.exec('launch');
-    // Device plugin is ready now
+    exports.setLaunchDetails();
+
     channel.onCordovaInfoReady.subscribe(function () {
-        // Merge platform specifics into defaults
         exports.applyPlatformSpecificOptions();
     });
 });
