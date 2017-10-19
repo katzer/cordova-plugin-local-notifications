@@ -205,6 +205,13 @@ public final class Manager {
     //     return notification;
     // }
 
+    /**
+     * Clear all local notifications.
+     */
+    public void clearAll () {
+        getNotMgr().cancelAll();
+    }
+
     // /**
     //  * Clear local notification specified by ID.
     //  *
@@ -219,19 +226,6 @@ public final class Manager {
     //     }
 
     //     return notification;
-    // }
-
-    // /**
-    //  * Clear all local notifications.
-    //  */
-    // public void clearAll () {
-    //     List<Notification> notifications = getAll();
-
-    //     for (Notification notification : notifications) {
-    //         notification.clear();
-    //     }
-
-    //     getNotMgr().cancelAll();
     // }
 
     // /**

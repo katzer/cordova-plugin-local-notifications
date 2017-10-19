@@ -23,7 +23,6 @@ package de.appplant.cordova.plugin.localnotification;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.util.Log;
 import android.util.Pair;
 
 import org.apache.cordova.CallbackContext;
@@ -35,9 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.lang.Exception;
 
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
 import de.appplant.cordova.plugin.notification.Manager;
@@ -155,7 +152,7 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equalsIgnoreCase("schedule")) {
                     schedule(args);
                     command.success();
-                }
+                } else
                 // if (action.equals("update")) {
                 //     update(args);
                 //     command.success();
@@ -172,10 +169,10 @@ public class LocalNotification extends CordovaPlugin {
                 //     clear(args);
                 //     command.success();
                 // } else
-                // if (action.equals("clearAll")) {
-                //     clearAll();
-                //     command.success();
-                // } else
+                if (action.equals("clearAll")) {
+                    clearAll();
+                    command.success();
+                }
                 // if (action.equals("isPresent")) {
                 //     isPresent(args.optInt(0), command);
                 // } else
@@ -250,7 +247,7 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void check (CallbackContext command) {
-        boolean allowed     = getNotificationMgr().hasPermission();
+        boolean allowed     = getNotMgr().hasPermission();
         PluginResult result = new PluginResult(PluginResult.Status.OK, allowed);
 
         command.sendPluginResult(result);
@@ -285,7 +282,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param notifications The notifications to schedule.
      */
     private void schedule (JSONArray notifications) {
-        Manager mgr = getNotificationMgr();
+        Manager mgr = getNotMgr();
 
         for (int i = 0; i < notifications.length(); i++) {
             JSONObject dict = notifications.optJSONObject(i);
@@ -311,7 +308,7 @@ public class LocalNotification extends CordovaPlugin {
     //         int id = update.optInt("id", 0);
 
     //         Notification notification =
-    //                 getNotificationMgr().update(id, update, TriggerReceiver.class);
+    //                 getNotMgr().update(id, update, TriggerReceiver.class);
 
     //         if (notification == null)
     //             continue;
@@ -331,7 +328,7 @@ public class LocalNotification extends CordovaPlugin {
     //         int id = ids.optInt(i, 0);
 
     //         Notification notification =
-    //                 getNotificationMgr().cancel(id);
+    //                 getNotMgr().cancel(id);
 
     //         if (notification == null)
     //             continue;
@@ -344,7 +341,7 @@ public class LocalNotification extends CordovaPlugin {
     //  * Cancel all scheduled notifications.
     //  */
     // private void cancelAll() {
-    //     getNotificationMgr().cancelAll();
+    //     getNotMgr().cancelAll();
     //     fireEvent("cancelall");
     // }
 
@@ -359,7 +356,7 @@ public class LocalNotification extends CordovaPlugin {
     //         int id = ids.optInt(i, 0);
 
     //         Notification notification =
-    //                 getNotificationMgr().clear(id);
+    //                 getNotMgr().clear(id);
 
     //         if (notification == null)
     //             continue;
@@ -368,13 +365,13 @@ public class LocalNotification extends CordovaPlugin {
     //     }
     // }
 
-    // /**
-    //  * Clear all triggered notifications without canceling them.
-    //  */
-    // private void clearAll() {
-    //     getNotificationMgr().clearAll();
-    //     fireEvent("clearall");
-    // }
+    /**
+     * Clear all triggered notifications without canceling them.
+     */
+    private void clearAll() {
+        getNotMgr().clearAll();
+        fireEvent("clearall");
+    }
 
     // /**
     //  * If a notification with an ID is present.
@@ -385,7 +382,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void isPresent (int id, CallbackContext command) {
-    //     boolean exist = getNotificationMgr().exist(id);
+    //     boolean exist = getNotMgr().exist(id);
 
     //     PluginResult result = new PluginResult(
     //             PluginResult.Status.OK, exist);
@@ -402,7 +399,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void isScheduled (int id, CallbackContext command) {
-    //     boolean exist = getNotificationMgr().exist(
+    //     boolean exist = getNotMgr().exist(
     //             id, Notification.Type.SCHEDULED);
 
     //     PluginResult result = new PluginResult(
@@ -420,7 +417,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void isTriggered (int id, CallbackContext command) {
-    //     boolean exist = getNotificationMgr().exist(
+    //     boolean exist = getNotMgr().exist(
     //             id, Notification.Type.TRIGGERED);
 
     //     PluginResult result = new PluginResult(
@@ -436,7 +433,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void getAllIds (CallbackContext command) {
-    //     List<Integer> ids = getNotificationMgr().getIds();
+    //     List<Integer> ids = getNotMgr().getIds();
 
     //     command.success(new JSONArray(ids));
     // }
@@ -448,7 +445,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void getScheduledIds (CallbackContext command) {
-    //     List<Integer> ids = getNotificationMgr().getIdsByType(
+    //     List<Integer> ids = getNotMgr().getIdsByType(
     //             Notification.Type.SCHEDULED);
 
     //     command.success(new JSONArray(ids));
@@ -461,7 +458,7 @@ public class LocalNotification extends CordovaPlugin {
     //  *      The callback context used when calling back into JavaScript.
     //  */
     // private void getTriggeredIds (CallbackContext command) {
-    //     List<Integer> ids = getNotificationMgr().getIdsByType(
+    //     List<Integer> ids = getNotMgr().getIdsByType(
     //             Notification.Type.TRIGGERED);
 
     //     command.success(new JSONArray(ids));
@@ -556,7 +553,7 @@ public class LocalNotification extends CordovaPlugin {
     //     PluginResult result;
 
     //     List<JSONObject> options =
-    //             getNotificationMgr().getOptionsBy(type, toList(ids));
+    //             getNotMgr().getOptionsBy(type, toList(ids));
 
     //     if (options.isEmpty()) {
     //         // Status.NO_RESULT led to no callback invocation :(
@@ -585,9 +582,9 @@ public class LocalNotification extends CordovaPlugin {
     //     List<JSONObject> options;
 
     //     if (ids.length() == 0) {
-    //         options = getNotificationMgr().getOptionsByType(type);
+    //         options = getNotMgr().getOptionsByType(type);
     //     } else {
-    //         options = getNotificationMgr().getOptionsBy(type, toList(ids));
+    //         options = getNotMgr().getOptionsBy(type, toList(ids));
     //     }
 
     //     command.success(new JSONArray(options));
@@ -702,7 +699,7 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Notification manager instance.
      */
-    private Manager getNotificationMgr() {
+    private Manager getNotMgr() {
         return Manager.getInstance(cordova.getActivity());
     }
 

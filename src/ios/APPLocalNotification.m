@@ -49,10 +49,11 @@
  */
 - (void) launch:(CDVInvokedUrlCommand*)command
 {
+    NSString* js;
+
     if (!_launchDetails)
         return;
 
-    NSString* js;
     js = [NSString stringWithFormat:
           @"cordova.plugins.notification.local.launchDetails = {id:%@, action:'%@'}",
           _launchDetails[0], _launchDetails[1]];
