@@ -28,6 +28,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.Date;
@@ -77,7 +78,7 @@ public final class Manager {
      * Check if app has local notification permission.
      */
     public boolean hasPermission () {
-        return getNotMgr().areNotificationsEnabled();
+        return getNotCompMgr().areNotificationsEnabled();
     }
 
     /**
@@ -108,7 +109,7 @@ public final class Manager {
                      context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             try {
-                mgr.set(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+                mgr.setExact(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
             } catch (Exception ignore) {
                 // on some Samsung devices there is a known bug where a 500 alarms limit can crash the app
                 // http://developer.samsung.com/forum/board/thread/view.do?boardName=General&messageId=280286&listLines=15&startId=zzzzz%7E&searchSubId=0000000001
@@ -144,8 +145,7 @@ public final class Manager {
      * TODO: temporary
      */
     private void createDefaultChannel() {
-        NotificationManager mgr = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
             return;
@@ -192,8 +192,7 @@ public final class Manager {
     // /**
     //  * Clear local notification specified by ID.
     //  *
-    //  * @param id
-    //  *      The notification ID
+    //  * @param id The notification ID.
     //  */
     // public Notification clear (int id) {
     //     Notification notification = get(id);
@@ -209,7 +208,7 @@ public final class Manager {
      * Clear all local notifications.
      */
     public void clearAll () {
-        getNotMgr().cancelAll();
+        getNotCompMgr().cancelAll();
     }
 
     // /**
@@ -238,7 +237,7 @@ public final class Manager {
     //         notification.cancel();
     //     }
 
-    //     getNotMgr().cancelAll();
+    //     getNotCompMgr().cancelAll();
     // }
 
     // /**
@@ -515,7 +514,15 @@ public final class Manager {
     /**
      * Notification manager for the application.
      */
-    private NotificationManagerCompat getNotMgr () {
+    private NotificationManager getNotMgr() {
+        return (NotificationManager) context.getSystemService(
+                Context.NOTIFICATION_SERVICE);
+    }
+
+    /**
+     * Notification compat manager for the application.
+     */
+    private NotificationManagerCompat getNotCompMgr() {
         return NotificationManagerCompat.from(context);
     }
 
