@@ -26,11 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Abstract delete receiver for local notifications. Creates the local
@@ -46,27 +43,22 @@ abstract public class AbstractClearReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle  = intent.getExtras();
-        String data    = bundle.getString(Options.EXTRA);
+        Bundle bundle      = intent.getExtras();
+        int toastId        = bundle.getInt(Notification.EXTRA_ID);
+        Notification toast = Manager.getInstance(context).get(toastId);
 
-        try {
-            JSONObject dict = new JSONObject(data);
-            Options options = new Options(context, dict);
+        if (toast == null)
+            return;
 
-            Notification notification =
-                    new Notification(context, options);
-
-            onClear(notification);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        onClear(toast, bundle);
     }
 
     /**
      * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification Wrapper around the local notification
+     * @param notification Wrapper around the local notification.
+     * @param bundle The bundled extras.
      */
-    abstract public void onClear (Notification notification);
+    abstract public void onClear (Notification notification, Bundle bundle);
 
 }

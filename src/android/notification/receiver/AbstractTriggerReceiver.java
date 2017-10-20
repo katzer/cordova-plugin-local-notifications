@@ -26,10 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 
@@ -47,39 +45,37 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle  = intent.getExtras();
-        Options options;
+        Bundle bundle   = intent.getExtras();
+        int toastId     = bundle.getInt(Notification.EXTRA_ID);
+        Options options = Manager.getInstance(context).getOptions(toastId);
 
-        try {
-            String data = bundle.getString(Options.EXTRA);
-            JSONObject dict = new JSONObject(data);
-
-            options = new Options(context, dict);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (options == null)
             return;
-        }
 
-        Builder builder           = new Builder(options);
-        Notification notification = buildNotification(builder);
-        boolean updated           = false;// notification.isUpdate(false);
+        Builder builder    = new Builder(options);
+        Notification toast = buildNotification(builder, bundle);
 
-        onTrigger(notification, updated);
+        if (toast == null)
+            return;
+
+        onTrigger(toast, bundle);
     }
 
     /**
      * Called when a local notification was triggered.
      *
-     * @param notification  Wrapper around the local notification
-     * @param updated       If an update has triggered or the original
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
-    abstract public void onTrigger (Notification notification, boolean updated);
+    abstract public void onTrigger (Notification notification, Bundle bundle);
 
     /**
      * Build notification specified by options.
      *
-     * @param builder Notification builder
+     * @param builder Notification builder.
+     * @param bundle  The bundled extras.
      */
-    abstract public Notification buildNotification (Builder builder);
+    abstract public Notification buildNotification (Builder builder,
+                                                    Bundle bundle);
 
 }

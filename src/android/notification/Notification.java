@@ -24,14 +24,29 @@ package de.appplant.cordova.plugin.notification;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.ArraySet;
+import android.support.v4.util.Pair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static android.app.AlarmManager.RTC;
+import static android.app.AlarmManager.RTC_WAKEUP;
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MAX;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -43,6 +58,9 @@ public final class Notification {
     public enum Type {
         ALL, SCHEDULED, TRIGGERED
     }
+
+    // Extra key for the id
+    public static final String EXTRA_ID = "NOTIFICATION_ID";
 
     // Key for private preferences
     static final String PREF_KEY = "LocalNotification";
@@ -105,7 +123,7 @@ public final class Notification {
     /**
      * If it's a repeating notification.
      */
-    public boolean isRepeating () {
+    private boolean isRepeating () {
         return getOptions().getTrigger().has("every");
     }
 
@@ -147,15 +165,101 @@ public final class Notification {
     // }
 
     /**
+     * Schedule the local notification.
+     *
+     * @param request Set of notification options.
+     * @param receiver Receiver to handle the trigger event.
+     */
+    void schedule(Request request, Class<?> receiver) {
+        List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
+        Set<String> ids = new ArraySet<String>();
+        AlarmManager mgr = getAlarmMgr();
+
+        do {
+            Date date = request.getTriggerDate();
+
+            if (date == null)
+                continue;
+
+            Intent intent = new Intent(context, receiver)
+                    .setAction(PREF_KEY + "#" + request.getIdentifier())
+                    .putExtra(Notification.EXTRA_ID, options.getId())
+                    .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
+
+            intents.add(new Pair<Date, Intent>(date, intent));
+        }
+        while (request.moveNext());
+
+        if (intents.isEmpty())
+            return;
+
+        Intent last = intents.get(intents.size() - 1).second;
+        last.putExtra(Request.EXTRA_LAST, true);
+
+        for (Pair<Date, Intent> pair : intents) {
+            Date date     = pair.first;
+            long time     = date.getTime();
+            Intent intent = pair.second;
+
+            if (!date.after(new Date()) && trigger(intent, receiver))
+                continue;
+
+            PendingIntent pi = PendingIntent.getBroadcast(
+                    context, 0, intent, FLAG_CANCEL_CURRENT);
+
+            try {
+                switch (options.getPriority()) {
+                    case IMPORTANCE_MIN:
+                        mgr.setExact(RTC, time, pi);
+                        break;
+                    case IMPORTANCE_MAX:
+                        mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                        break;
+                    default:
+                        mgr.setExact(RTC_WAKEUP, time, pi);
+                        break;
+                }
+                ids.add(intent.getAction());
+            } catch (Exception ignore) {
+                // Samsung devices have a known bug where a 500 alarms limit
+                // can crash the app
+            }
+        }
+
+        persist(ids);
+    }
+
+    /**
+     * Trigger local notification specified by options.
+     *
+     * @param intent The intent to broadcast.
+     * @param cls    The broadcast class.
+     */
+    private boolean trigger (Intent intent, Class<?> cls) {
+        BroadcastReceiver receiver;
+
+        try {
+            receiver = (BroadcastReceiver) cls.newInstance();
+        } catch (InstantiationException e) {
+            return false;
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+
+        receiver.onReceive(context, intent);
+        return true;
+    }
+
+    /**
      * Clear the local notification without canceling repeating alarms.
      */
     public void clear () {
+        getNotMgr().cancel(getId());
 
-        // if (!isRepeating() && wasInThePast())
-        //     unpersist();
+        if (isRepeating())
+            return;
 
-        // if (!isRepeating())
-        //     getNotMgr().cancel(getId());
+        unpersist();
     }
 
     /**
@@ -167,31 +271,36 @@ public final class Notification {
      * method and cancel it.
      */
     public void cancel() {
-        // Intent intent = new Intent(context, receiver)
-        //         .setAction(options.getIdStr());
+        Set<String> actions = getPrefs().getStringSet(
+                "#" + options.getIdentifier(), null);
 
-        // PendingIntent pi = PendingIntent.
-        //         getBroadcast(context, 0, intent, 0);
+        unpersist();
+        getNotMgr().cancel(options.getId());
 
-        // getAlarmMgr().cancel(pi);
-        // getNotMgr().cancel(options.getId());
+        if (actions == null)
+            return;
 
-        // unpersist();
+        for (String action : actions) {
+            Intent intent = new Intent(action);
+
+            PendingIntent pi = PendingIntent.getBroadcast(
+                    context, 0, intent, 0);
+
+            if (pi != null) {
+                getAlarmMgr().cancel(pi);
+            }
+        }
     }
 
     /**
      * Present the local notification to user.
      */
     public void show () {
+
         if (builder == null)
             return;
 
-        String sound = builder.getExtras().getString(Options.EXTRA_SOUND);
-        Uri soundUri = Uri.parse(sound);
-
-        context.grantUriPermission("com.android.systemui", soundUri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
+        grantPermissionToPlaySoundFromExternal();
         getNotMgr().notify(getId(), builder.build());
     }
 
@@ -231,11 +340,15 @@ public final class Notification {
      * Persist the information of this notification to the Android Shared
      * Preferences. This will allow the application to restore the notification
      * upon device reboot, app restart, retrieve notifications, aso.
+     *
+     * @param ids List of intent actions to persist.
      */
-    private void persist () {
+    private void persist (Set<String> ids) {
         SharedPreferences.Editor editor = getPrefs().edit();
+        String id = options.getIdentifier();
 
-        editor.putString(options.getIdentifier(), options.toString());
+        editor.putString(id, options.toString());
+        editor.putStringSet("#" + id, ids);
         editor.apply();
     }
 
@@ -244,9 +357,27 @@ public final class Notification {
      */
     private void unpersist () {
         SharedPreferences.Editor editor = getPrefs().edit();
+        String id = options.getIdentifier();
 
-        editor.remove(options.getIdentifier());
+        editor.remove(id);
+        editor.remove("#" + id);
         editor.apply();
+    }
+
+    /**
+     * Since Android 7 the app will crash if an external process has no
+     * permission to access the referenced sound file.
+     */
+    private void grantPermissionToPlaySoundFromExternal() {
+        if (builder == null)
+            return;
+
+        String sound = builder.getExtras().getString(Options.EXTRA_SOUND);
+        Uri soundUri = Uri.parse(sound);
+
+        context.grantUriPermission(
+                "com.android.systemui", soundUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
     /**

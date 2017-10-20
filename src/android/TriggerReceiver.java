@@ -21,6 +21,8 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.os.Bundle;
+
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
@@ -37,28 +39,27 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * Called when a local notification was triggered. Does present the local
      * notification, re-schedule the alarm if necessary and fire trigger event.
      *
-     * @param notification Wrapper around the local notification
-     * @param updated      If an update has triggered or the original
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, boolean updated) {
+    public void onTrigger (Notification notification, Bundle bundle) {
         notification.show();
-
-        if (!updated) {
-            LocalNotification.fireEvent("trigger", notification);
-        }
+        LocalNotification.fireEvent("trigger", notification);
     }
 
     /**
      * Build notification specified by options.
      *
-     * @param builder Notification builder
+     * @param builder Notification builder.
+     * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder) {
+    public Notification buildNotification (Builder builder, Bundle bundle) {
         return builder
                 .setClickActivity(ClickActivity.class)
                 .setClearReceiver(ClearReceiver.class)
+                .setExtras(bundle)
                 .build();
     }
 

@@ -26,14 +26,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import de.appplant.cordova.plugin.notification.action.Action;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Options;
 
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
 import static de.appplant.cordova.plugin.notification.action.Action.CLICK_ACTION_ID;
+import static de.appplant.cordova.plugin.notification.action.Action.EXTRA_ID;
 
 /**
  * Abstract content receiver activity for local notifications. Creates the
@@ -50,23 +49,16 @@ abstract public class AbstractClickActivity extends Activity {
     public void onCreate (Bundle state) {
         super.onCreate(state);
 
-        Intent intent   = getIntent();
-        Bundle bundle   = intent.getExtras();
-        Context context = getApplicationContext();
+        Intent intent      = getIntent();
+        Bundle bundle      = intent.getExtras();
+        Context context    = getApplicationContext();
+        int toastId        = bundle.getInt(Notification.EXTRA_ID);
+        Notification toast = Manager.getInstance(context).get(toastId);
 
-        try {
-            String action   = bundle.getString(Action.EXTRA_ID, CLICK_ACTION_ID);
-            String data     = bundle.getString(Options.EXTRA);
-            JSONObject dict = new JSONObject(data);
-            Options options = new Options(context, dict);
+        if (toast == null)
+            return;
 
-            Notification notification =
-                    new Notification(context, options);
-
-            onClick(action, notification);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        onClick(toast, bundle);
     }
 
     /**
@@ -82,15 +74,22 @@ abstract public class AbstractClickActivity extends Activity {
     /**
      * Called when local notification was clicked by the user.
      *
-     * @param action       The name of the action.
      * @param notification Wrapper around the local notification.
+     * @param bundle The bundled extras.
      */
-    abstract public void onClick (String action, Notification notification);
+    abstract public void onClick (Notification notification, Bundle bundle);
+
+    /**
+     * The invoked action.
+     */
+    protected String getAction() {
+        return getIntent().getExtras().getString(EXTRA_ID, CLICK_ACTION_ID);
+    }
 
     /**
      * Launch main intent from package.
      */
-    public void launchApp() {
+    protected void launchApp() {
         Context context = getApplicationContext();
         String pkgName  = context.getPackageName();
 
@@ -99,7 +98,7 @@ abstract public class AbstractClickActivity extends Activity {
                 .getLaunchIntentForPackage(pkgName);
 
         intent.addFlags(
-                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                FLAG_ACTIVITY_REORDER_TO_FRONT | FLAG_ACTIVITY_SINGLE_TOP);
 
         context.startActivity(intent);
     }

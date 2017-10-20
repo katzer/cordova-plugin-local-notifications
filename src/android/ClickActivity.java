@@ -21,7 +21,6 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
 
@@ -29,8 +28,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.activity.AbstractClickActivity;
+
+import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
+import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.
@@ -42,39 +43,65 @@ public class ClickActivity extends AbstractClickActivity {
     /**
      * Called when local notification was clicked by the user.
      *
-     * @param action       The name of the action.
      * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onClick(String action, Notification notification) {
+    public void onClick(Notification notification, Bundle bundle) {
+        String action    = getAction();
         JSONObject data  = new JSONObject();
-        Intent intent    = getIntent();
-        Bundle bundle    = intent.getExtras();
-        Bundle input     = RemoteInput.getResultsFromIntent(intent);
-        boolean doLaunch = bundle.getBoolean(Options.EXTRA_LAUNCH, true);
 
-        if (input != null) {
-            try {
-                data.put("text", input.getString(action, ""));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (doLaunch) {
-            launchApp();
-        }
+        setTextInput(action, data);
+        launchAppIf();
 
         LocalNotification.fireEvent(action, notification, data);
 
         if (notification.getOptions().isSticky())
             return;
 
-        if (notification.isRepeating()) {
-            notification.clear();
-        } else {
+        if (isLast()) {
             notification.cancel();
+        } else {
+            notification.clear();
         }
+    }
+
+    /**
+     * Set the text if any remote input is given.
+     *
+     * @param action The action where to look for.
+     * @param data   The object to extend.
+     */
+    private void setTextInput(String action, JSONObject data) {
+        Bundle input = RemoteInput.getResultsFromIntent(getIntent());
+
+        if (input == null)
+            return;
+
+        try {
+            data.put("text", input.getString(action));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Launch app if requested by user.
+     */
+    private void launchAppIf() {
+        boolean doLaunch = getIntent().getBooleanExtra(EXTRA_LAUNCH, true);
+
+        if (!doLaunch)
+            return;
+
+        launchApp();
+    }
+
+    /**
+     * If the notification was the last scheduled one by request.
+     */
+    private boolean isLast() {
+        return getIntent().getBooleanExtra(EXTRA_LAST, false);
     }
 
 }

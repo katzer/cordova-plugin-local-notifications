@@ -21,8 +21,12 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.os.Bundle;
+
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractClearReceiver;
+
+import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
 
 /**
@@ -35,11 +39,19 @@ public class ClearReceiver extends AbstractClearReceiver {
     /**
      * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification Wrapper around the local notification
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onClear (Notification notification) {
-        notification.clear();
+    public void onClear (Notification notification, Bundle bundle) {
+        boolean isLast = bundle.getBoolean(EXTRA_LAST, false);
+
+        if (isLast) {
+            notification.cancel();
+        } else {
+            notification.clear();
+        }
+
         LocalNotification.fireEvent("clear", notification);
     }
 

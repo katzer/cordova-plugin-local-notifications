@@ -21,27 +21,19 @@
 
 package de.appplant.cordova.plugin.notification;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationManagerCompat;
 
-import java.util.Date;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static android.app.AlarmManager.RTC;
-import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MAX;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
-
-// import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
+import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY;
 
 /**
  * Central way to access all or single local notifications set by specific
@@ -92,67 +84,12 @@ public final class Manager {
      * @param receiver Receiver to handle the trigger event.
      */
     public Notification schedule (Request request, Class<?> receiver) {
-        Options options  = request.getOptions();
-        AlarmManager mgr = getAlarmMgr();
+        Options options    = request.getOptions();
+        Notification toast = new Notification(context, options);
 
-        do {
-            Date date = request.getTriggerDate();
+        toast.schedule(request, receiver);
 
-            if (date == null)
-                continue;
-
-            Intent intent = new Intent(context, receiver)
-                    .setAction(request.getIdentifier())
-                    .putExtra(Request.EXTRA, request.getOccurrence())
-                    .putExtra(Options.EXTRA, options.toString());
-
-            if (!date.after(new Date()) && trigger(intent, receiver))
-                continue;
-
-            PendingIntent pi = PendingIntent.getBroadcast(
-                     context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            try {
-                switch (options.getPriority()) {
-                    case IMPORTANCE_MIN:
-                        mgr.setExact(RTC, date.getTime(), pi);
-                        break;
-                    case IMPORTANCE_MAX:
-                        mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, date.getTime(), pi);
-                        break;
-                    default:
-                        mgr.setExact(RTC_WAKEUP, date.getTime(), pi);
-                        break;
-                }
-            } catch (Exception ignore) {
-                // Samsung devices have a known bug where a 500 alarms limit
-                // can crash the app
-            }
-
-        } while (request.moveNext());
-
-        return new Notification(context, options);
-    }
-
-    /**
-     * Trigger local notification specified by options.
-     *
-     * @param intent The intent to broadcast.
-     * @param cls    The broadcast class.
-     */
-    private boolean trigger (Intent intent, Class<?> cls) {
-        BroadcastReceiver receiver;
-
-        try {
-            receiver = (BroadcastReceiver) cls.newInstance();
-        } catch (InstantiationException e) {
-            return false;
-        } catch (IllegalAccessException e) {
-            return false;
-        }
-
-        receiver.onReceive(context, intent);
-        return true;
+        return toast;
     }
 
     /**
@@ -459,33 +396,46 @@ public final class Manager {
     //     return options;
     // }
 
-    // /**
-    //  * Get existent local notification.
-    //  *
-    //  * @param id
-    //  *      Notification ID
-    //  */
-    // public Notification get(int id) {
-    //     Map<String, ?> alarms = getPrefs().getAll();
-    //     String notId          = Integer.toString(id);
-    //     JSONObject options;
+    /**
+     * Get local notification options.
+     *
+     * @param id Notification ID.
+     *
+     * @return null if could not found.
+     */
+    public Options getOptions(int id) {
+        SharedPreferences prefs = getPrefs();
+        String toastId          = Integer.toString(id);
 
-    //     if (!alarms.containsKey(notId))
-    //         return null;
+        if (!prefs.contains(toastId))
+            return null;
 
+        try {
+            String json     = prefs.getString(toastId, null);
+            JSONObject dict = new JSONObject(json);
 
-    //     try {
-    //         String json = alarms.get(notId).toString();
-    //         options = new JSONObject(json);
-    //     } catch (JSONException e) {
-    //         e.printStackTrace();
-    //         return null;
-    //     }
+            return new Options(context, dict);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-    //     Builder builder = new Builder(context, options);
+    /**
+     * Get existent local notification.
+     *
+     * @param id Notification ID.
+     *
+     * @return null if could not found.
+     */
+    public Notification get(int id) {
+        Options options = getOptions(id);
 
-    //     return builder.build();
-    // }
+        if (options == null)
+            return null;
+
+        return new Notification(context, options);
+    }
 
     // /**
     //  * Merge two JSON objects.
@@ -511,18 +461,11 @@ public final class Manager {
     //     return obj1;
     // }
 
-    // /**
-    //  * Shared private preferences for the application.
-    //  */
-    // private SharedPreferences getPrefs () {
-    //     return context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
-    // }
-
     /**
-     * Alarm manager for the application.
+     * Shared private preferences for the application.
      */
-    private AlarmManager getAlarmMgr () {
-        return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    private SharedPreferences getPrefs () {
+        return context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
     }
 
     /**

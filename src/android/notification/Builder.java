@@ -53,6 +53,9 @@ public final class Builder {
     // Activity to handle the click event
     private Class<?> clickActivity;
 
+    // Additional extras to merge into each intent
+    private Bundle extras;
+
     /**
      * Constructor
      *
@@ -84,6 +87,16 @@ public final class Builder {
     }
 
     /**
+     * Set bundle extras.
+     *
+     * @param extras The bundled extras to merge into.
+     */
+    public Builder setExtras(Bundle extras) {
+        this.extras = extras;
+        return this;
+    }
+
+    /**
      * Creates the notification with all its options passed through JS.
      *
      * @return The final notification to display.
@@ -99,7 +112,7 @@ public final class Builder {
         Uri sound     = options.getSound();
         Bundle extras = new Bundle();
 
-        extras.putString(Options.EXTRA, options.toString());
+        extras.putInt(Notification.EXTRA_ID, options.getId());
         extras.putString(Options.EXTRA_SOUND, sound.toString());
 
         builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
@@ -266,8 +279,9 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
+                .putExtras(extras)
                 .setAction(options.getIdentifier())
-                .putExtra(Options.EXTRA, options.toString());
+                .putExtra(Notification.EXTRA_ID, options.getId());
 
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
                 context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -287,9 +301,10 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clickActivity)
-                .putExtra(Options.EXTRA, options.toString())
-                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
+                .putExtras(extras)
+                .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
+                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         int reqCode = new Random().nextInt();
@@ -333,15 +348,16 @@ public final class Builder {
      */
     private PendingIntent getPendingIntentForAction (Action action) {
         Intent intent = new Intent(context, clickActivity)
-                .putExtra(Options.EXTRA, options.toString())
-                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
+                .putExtras(extras)
+                .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())
+                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int requestCode = new Random().nextInt();
+        int reqCode = new Random().nextInt();
 
         return PendingIntent.getActivity(
-                context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, reqCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
 }

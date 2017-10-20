@@ -43,7 +43,10 @@ import static de.appplant.cordova.plugin.notification.trigger.IntervalTrigger.Un
 public final class Request {
 
     // Key name for bundled extras
-    static final String EXTRA = "NOTIFICATION_OCCURRENCE_EXTRA";
+    static final String EXTRA_OCCURRENCE = "NOTIFICATION_OCCURRENCE";
+
+    // Key name for bundled extras
+    public static final String EXTRA_LAST = "NOTIFICATION_LAST";
 
     // The options spec
     private final Options options;
