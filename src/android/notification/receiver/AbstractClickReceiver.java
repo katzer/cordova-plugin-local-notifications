@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification.activity;
+package de.appplant.cordova.plugin.notification.receiver;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,7 +38,7 @@ import static de.appplant.cordova.plugin.notification.action.Action.EXTRA_ID;
  * Abstract content receiver activity for local notifications. Creates the
  * local notification and calls the event functions for further proceeding.
  */
-abstract public class AbstractClickActivity extends Activity {
+abstract public class AbstractClickReceiver extends Activity {
 
     /**
      * Called when local notification was clicked to launch the main intent.

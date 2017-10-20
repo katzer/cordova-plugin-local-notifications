@@ -28,7 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.activity.AbstractClickActivity;
+import de.appplant.cordova.plugin.notification.receiver.AbstractClickReceiver;
 
 import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
@@ -38,7 +38,7 @@ import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
  * The activity calls the background callback and brings the launch intent
  * up to foreground.
  */
-public class ClickActivity extends AbstractClickActivity {
+public class ClickReceiver extends AbstractClickReceiver {
 
     /**
      * Called when local notification was clicked by the user.

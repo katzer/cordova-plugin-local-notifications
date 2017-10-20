@@ -36,11 +36,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import de.appplant.cordova.plugin.notification.action.ActionGroup;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
+import de.appplant.cordova.plugin.notification.action.ActionGroup;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local

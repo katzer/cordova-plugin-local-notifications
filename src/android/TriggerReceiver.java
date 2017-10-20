@@ -57,7 +57,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     @Override
     public Notification buildNotification (Builder builder, Bundle bundle) {
         return builder
-                .setClickActivity(ClickActivity.class)
+                .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)
                 .setExtras(bundle)
                 .build();

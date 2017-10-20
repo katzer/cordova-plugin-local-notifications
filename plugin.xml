@@ -123,7 +123,7 @@
                 android:exported="false" />
 
             <activity
-                android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
+                android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
                 android:launchMode="singleInstance"
                 android:theme="@android:style/Theme.Translucent"
                 android:exported="false" />
@@ -154,7 +154,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/ClickActivity.java"
+            src="src/android/ClickReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
@@ -174,11 +174,11 @@
             target-dir="src/de/appplant/cordova/plugin/notification/action" />
 
         <source-file
-            src="src/android/notification/activity/AbstractClickActivity.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/activity" />
+            src="src/android/notification/receiver/AbstractClearReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
-            src="src/android/notification/receiver/AbstractClearReceiver.java"
+            src="src/android/notification/receiver/AbstractClickReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 <!--
         <source-file
