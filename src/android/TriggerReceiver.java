@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.localnotification;
 import android.os.Bundle;
 
 import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 
@@ -44,6 +45,12 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger (Notification notification, Bundle bundle) {
+        int badge = notification.getOptions().getBadgeNumber();
+
+        if (badge > 0) {
+            Manager.getInstance(notification.getContext()).setBadge(badge);
+        }
+
         notification.show();
         LocalNotification.fireEvent("trigger", notification);
     }

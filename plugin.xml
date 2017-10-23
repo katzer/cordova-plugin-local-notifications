@@ -43,12 +43,13 @@
         <engine name="cordova"         version=">=3.6.0"  />
         <engine name="cordova-plugman" version=">=4.3.0"  />
         <engine name="cordova-windows" version=">=4.2.0"  />
-        <engine name="apple-ios"       version=">=10.0.0" />
         <engine name="cordova-android" version=">=6.0.0"  />
+        <engine name="apple-ios"       version=">=10.0.0" />
     </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
+    <dependency id="cordova-plugin-badge" version=">=0.8.5" />
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -96,6 +97,7 @@
     <!-- android -->
     <platform name="android">
         <framework src="com.android.support:support-v4:26.+" value="gradle" />
+        <framework src="src/android/build/localnotification.gradle" custom="true" type="gradleReference"/>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">

@@ -123,7 +123,7 @@ public final class Builder {
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setTicker(options.getText())
-                .setNumber(options.getBadgeNumber())
+                .setNumber(options.getNumber())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())

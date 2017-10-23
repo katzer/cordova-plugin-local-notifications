@@ -138,8 +138,15 @@ public final class Options {
     /**
      * Badge number for the local notification.
      */
-    int getBadgeNumber() {
+    public int getBadgeNumber() {
         return options.optInt("badge", 0);
+    }
+
+    /**
+     * Number for the local notification.
+     */
+    public int getNumber() {
+        return options.optInt("number", 0);
     }
 
     /**

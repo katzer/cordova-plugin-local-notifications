@@ -30,6 +30,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.appplant.cordova.plugin.badge.BadgeImpl;
+
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
@@ -160,6 +162,7 @@ public final class Manager {
      */
     public void clearAll () {
         getNotCompMgr().cancelAll();
+        setBadge(0);
     }
 
     // /**
@@ -460,6 +463,19 @@ public final class Manager {
 
     //     return obj1;
     // }
+
+    /**
+     * Set the badge number of the app icon.
+     *
+     * @param badge The badge number.
+     */
+    public void setBadge (int badge) {
+        if (badge == 0) {
+            new BadgeImpl(context).clearBadge();
+        } else {
+            new BadgeImpl(context).setBadge(badge);
+        }
+    }
 
     /**
      * Shared private preferences for the application.
