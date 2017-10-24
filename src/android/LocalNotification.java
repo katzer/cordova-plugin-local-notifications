@@ -35,12 +35,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
+
+import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
+import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
@@ -157,58 +161,46 @@ public class LocalNotification extends CordovaPlugin {
                 //     update(args);
                 //     command.success();
                 // } else
-                // if (action.equals("cancel")) {
-                //     cancel(args);
-                //     command.success();
-                // } else
-                // if (action.equals("cancelAll")) {
-                //     cancelAll();
-                //     command.success();
-                // } else
-                // if (action.equals("clear")) {
-                //     clear(args);
-                //     command.success();
-                // } else
+                if (action.equals("cancel")) {
+                    cancel(args);
+                    command.success();
+                } else
+                if (action.equals("cancelAll")) {
+                    cancelAll();
+                    command.success();
+                } else
+                if (action.equals("clear")) {
+                    clear(args);
+                    command.success();
+                } else
                 if (action.equals("clearAll")) {
                     clearAll();
                     command.success();
+                } else
+                if (action.equals("type")) {
+                    type(args.optInt(0), command);
+                } else
+                if (action.equals("ids")) {
+                    ids(command);
+                } else
+                if (action.equals("scheduledIds")) {
+                    scheduledIds(command);
+                } else
+                if (action.equals("triggeredIds")) {
+                    triggeredIds(command);
+                } else
+                if (action.equals("notification")) {
+                    notification(args.optInt(0), command);
+                } else
+                if (action.equals("notifications")) {
+                    notifications(args, command);
+                } else
+                if (action.equals("scheduledNotifications")) {
+                    scheduledNotifications(command);
+                } else
+                if (action.equals("triggeredNotifications")) {
+                    triggeredNotifications(command);
                 }
-                // if (action.equals("isPresent")) {
-                //     isPresent(args.optInt(0), command);
-                // } else
-                // if (action.equals("isScheduled")) {
-                //     isScheduled(args.optInt(0), command);
-                // } else
-                // if (action.equals("isTriggered")) {
-                //     isTriggered(args.optInt(0), command);
-                // } else
-                // if (action.equals("getAllIds")) {
-                //     getAllIds(command);
-                // } else
-                // if (action.equals("getScheduledIds")) {
-                //     getScheduledIds(command);
-                // } else
-                // if (action.equals("getTriggeredIds")) {
-                //     getTriggeredIds(command);
-                // } else
-                // if (action.equals("getSingle")) {
-                //     getSingle(args, command);
-                // } else
-                // if (action.equals("getSingleScheduled")) {
-                //     getSingleScheduled(args, command);
-                // } else
-                // if (action.equals("getSingleTriggered")) {
-                //     getSingleTriggered(args, command);
-                // } else
-                // if (action.equals("getAll")) {
-                //     getAll(args, command);
-                // } else
-                // if (action.equals("getScheduled")) {
-                //     getScheduled(args, command);
-                // } else
-                // if (action.equals("getTriggered")) {
-                //     getTriggered(args, command);
-                // }
             }
         });
 
@@ -292,7 +284,9 @@ public class LocalNotification extends CordovaPlugin {
             Notification notification =
                     mgr.schedule(request, TriggerReceiver.class);
 
-            fireEvent("add", notification);
+            if (notification != null) {
+                fireEvent("add", notification);
+            }
         }
     }
 
@@ -317,53 +311,51 @@ public class LocalNotification extends CordovaPlugin {
     //     }
     // }
 
-    // /**
-    //  * Cancel multiple local notifications.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  */
-    // private void cancel (JSONArray ids) {
-    //     for (int i = 0; i < ids.length(); i++) {
-    //         int id = ids.optInt(i, 0);
+    /**
+     * Cancel multiple local notifications.
+     *
+     * @param ids Set of local notification IDs
+     */
+    private void cancel (JSONArray ids) {
+        for (int i = 0; i < ids.length(); i++) {
+            int id = ids.optInt(i, 0);
 
-    //         Notification notification =
-    //                 getNotMgr().cancel(id);
+            Notification notification =
+                    getNotMgr().cancel(id);
 
-    //         if (notification == null)
-    //             continue;
+            if (notification == null)
+                continue;
 
-    //         fireEvent("cancel", notification);
-    //     }
-    // }
+            fireEvent("cancel", notification);
+        }
+    }
 
-    // /**
-    //  * Cancel all scheduled notifications.
-    //  */
-    // private void cancelAll() {
-    //     getNotMgr().cancelAll();
-    //     fireEvent("cancelall");
-    // }
+    /**
+     * Cancel all scheduled notifications.
+     */
+    private void cancelAll() {
+        getNotMgr().cancelAll();
+        fireEvent("cancelall");
+    }
 
-    // /**
-    //  * Clear multiple local notifications without canceling them.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  */
-    // private void clear(JSONArray ids){
-    //     for (int i = 0; i < ids.length(); i++) {
-    //         int id = ids.optInt(i, 0);
+    /**
+     * Clear multiple local notifications without canceling them.
+     *
+     * @param ids Set of local notification IDs
+     */
+    private void clear(JSONArray ids){
+        for (int i = 0; i < ids.length(); i++) {
+            int id = ids.optInt(i, 0);
 
-    //         Notification notification =
-    //                 getNotMgr().clear(id);
+            Notification notification =
+                    getNotMgr().clear(id);
 
-    //         if (notification == null)
-    //             continue;
+            if (notification == null)
+                continue;
 
-    //         fireEvent("clear", notification);
-    //     }
-    // }
+            fireEvent("clear", notification);
+        }
+    }
 
     /**
      * Clear all triggered notifications without canceling them.
@@ -373,222 +365,124 @@ public class LocalNotification extends CordovaPlugin {
         fireEvent("clearall");
     }
 
-    // /**
-    //  * If a notification with an ID is present.
-    //  *
-    //  * @param id
-    //  *      Notification ID
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void isPresent (int id, CallbackContext command) {
-    //     boolean exist = getNotMgr().exist(id);
+    /**
+     * Get the type of the notification (unknown, scheduled, triggered).
+     *
+     * @param id      The ID of the notification to check.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void type (int id, CallbackContext command) {
+        Notification toast = getNotMgr().get(id);
 
-    //     PluginResult result = new PluginResult(
-    //             PluginResult.Status.OK, exist);
+        if (toast == null) {
+            command.success("unknown");
+            return;
+        }
 
-    //     command.sendPluginResult(result);
-    // }
+        switch (toast.getType()) {
+            case SCHEDULED:
+                command.success("scheduled");
+                break;
+            case TRIGGERED:
+                command.success("triggered");
+                break;
+            default:
+                command.success("unknown");
+                break;
+        }
+    }
 
-    // /**
-    //  * If a notification with an ID is scheduled.
-    //  *
-    //  * @param id
-    //  *      Notification ID
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void isScheduled (int id, CallbackContext command) {
-    //     boolean exist = getNotMgr().exist(
-    //             id, Notification.Type.SCHEDULED);
+    /**
+     * Set of IDs from all existent notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void ids (CallbackContext command) {
+        List<Integer> ids = getNotMgr().getIds();
+        command.success(new JSONArray(ids));
+    }
 
-    //     PluginResult result = new PluginResult(
-    //             PluginResult.Status.OK, exist);
+    /**
+     * Set of IDs from all scheduled notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void scheduledIds (CallbackContext command) {
+        List<Integer> ids = getNotMgr().getIdsByType(SCHEDULED);
+        command.success(new JSONArray(ids));
+    }
 
-    //     command.sendPluginResult(result);
-    // }
+    /**
+     * Set of IDs from all triggered notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void triggeredIds (CallbackContext command) {
+        List<Integer> ids = getNotMgr().getIdsByType(TRIGGERED);
+        command.success(new JSONArray(ids));
+    }
 
-    // /**
-    //  * If a notification with an ID is triggered.
-    //  *
-    //  * @param id
-    //  *      Notification ID
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void isTriggered (int id, CallbackContext command) {
-    //     boolean exist = getNotMgr().exist(
-    //             id, Notification.Type.TRIGGERED);
+    /**
+     * Options from local notification.
+     *
+     * @param id      The ID of the notification.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void notification (int id, CallbackContext command) {
+        Options options = getNotMgr().getOptions(id);
 
-    //     PluginResult result = new PluginResult(
-    //             PluginResult.Status.OK, exist);
+        if (options != null) {
+            command.success(options.getDict());
+        } else {
+            command.success();
+        }
+    }
 
-    //     command.sendPluginResult(result);
-    // }
+    /**
+     * Set of options from local notification.
+     *
+     * @param ids     Set of local notification IDs.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void notifications (JSONArray ids, CallbackContext command) {
+        List<JSONObject> options;
 
-    // /**
-    //  * Set of IDs from all existent notifications.
-    //  *
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getAllIds (CallbackContext command) {
-    //     List<Integer> ids = getNotMgr().getIds();
+        if (ids.length() == 0) {
+            options = getNotMgr().getOptions();
+        } else {
+            options = getNotMgr().getOptionsById(toList(ids));
+        }
 
-    //     command.success(new JSONArray(ids));
-    // }
+        command.success(new JSONArray(options));
+    }
 
-    // /**
-    //  * Set of IDs from all scheduled notifications.
-    //  *
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getScheduledIds (CallbackContext command) {
-    //     List<Integer> ids = getNotMgr().getIdsByType(
-    //             Notification.Type.SCHEDULED);
+    /**
+     * Set of options from scheduled notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void scheduledNotifications (CallbackContext command) {
+        List<JSONObject> options = getNotMgr().getOptionsByType(SCHEDULED);
+        command.success(new JSONArray(options));
+    }
 
-    //     command.success(new JSONArray(ids));
-    // }
-
-    // /**
-    //  * Set of IDs from all triggered notifications.
-    //  *
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getTriggeredIds (CallbackContext command) {
-    //     List<Integer> ids = getNotMgr().getIdsByType(
-    //             Notification.Type.TRIGGERED);
-
-    //     command.success(new JSONArray(ids));
-    // }
-
-    // /**
-    //  * Options from local notification.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getSingle (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids.optString(0), Notification.Type.ALL, command);
-    // }
-
-    // /**
-    //  * Options from scheduled notification.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getSingleScheduled (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids.optString(0), Notification.Type.SCHEDULED, command);
-    // }
-
-    // /**
-    //  * Options from triggered notification.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getSingleTriggered (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids.optString(0), Notification.Type.TRIGGERED, command);
-    // }
-
-    // /**
-    //  * Set of options from local notification.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getAll (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids, Notification.Type.ALL, command);
-    // }
-
-    // /**
-    //  * Set of options from scheduled notifications.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getScheduled (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids, Notification.Type.SCHEDULED, command);
-    // }
-
-    // /**
-    //  * Set of options from triggered notifications.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getTriggered (JSONArray ids, CallbackContext command) {
-    //     getOptions(ids, Notification.Type.TRIGGERED, command);
-    // }
-
-    // /**
-    //  * Options from local notification.
-    //  *
-    //  * @param id
-    //  *      Set of local notification IDs
-    //  * @param type
-    //  *      The local notification life cycle type
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getOptions (String id, Notification.Type type,
-    //                          CallbackContext command) {
-
-    //     JSONArray ids = new JSONArray().put(id);
-    //     PluginResult result;
-
-    //     List<JSONObject> options =
-    //             getNotMgr().getOptionsBy(type, toList(ids));
-
-    //     if (options.isEmpty()) {
-    //         // Status.NO_RESULT led to no callback invocation :(
-    //         // Status.OK        led to no NPE and crash
-    //         result = new PluginResult(PluginResult.Status.NO_RESULT);
-    //     } else {
-    //         result = new PluginResult(PluginResult.Status.OK, options.get(0));
-    //     }
-
-    //     command.sendPluginResult(result);
-    // }
-
-    // /**
-    //  * Set of options from local notifications.
-    //  *
-    //  * @param ids
-    //  *      Set of local notification IDs
-    //  * @param type
-    //  *      The local notification life cycle type
-    //  * @param command
-    //  *      The callback context used when calling back into JavaScript.
-    //  */
-    // private void getOptions (JSONArray ids, Notification.Type type,
-    //                          CallbackContext command) {
-
-    //     List<JSONObject> options;
-
-    //     if (ids.length() == 0) {
-    //         options = getNotMgr().getOptionsByType(type);
-    //     } else {
-    //         options = getNotMgr().getOptionsBy(type, toList(ids));
-    //     }
-
-    //     command.success(new JSONArray(options));
-    // }
+    /**
+     * Set of options from triggered notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void triggeredNotifications (CallbackContext command) {
+        List<JSONObject> options = getNotMgr().getOptionsByType(TRIGGERED);
+        command.success(new JSONArray(options));
+    }
 
     /**
      * Call all pending callbacks after the deviceready event has been fired.
@@ -680,21 +574,20 @@ public class LocalNotification extends CordovaPlugin {
         });
     }
 
-    // /**
-    //  * Convert JSON array of integers to List.
-    //  *
-    //  * @param ary
-    //  *      Array of integers
-    //  */
-    // private List<Integer> toList (JSONArray ary) {
-    //     ArrayList<Integer> list = new ArrayList<Integer>();
+    /**
+     * Convert JSON array of integers to List.
+     *
+     * @param ary Array of integers.
+     */
+    private List<Integer> toList (JSONArray ary) {
+        List<Integer> list = new ArrayList<Integer>();
 
-    //     for (int i = 0; i < ary.length(); i++) {
-    //         list.add(ary.optInt(i));
-    //     }
+        for (int i = 0; i < ary.length(); i++) {
+            list.add(ary.optInt(i));
+        }
 
-    //     return list;
-    // }
+        return list;
+    }
 
     /**
      * Notification manager instance.

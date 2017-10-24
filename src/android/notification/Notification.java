@@ -21,7 +21,6 @@
 
 package de.appplant.cordova.plugin.notification;
 
-
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -30,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.ArraySet;
 import android.support.v4.util.Pair;
@@ -63,7 +63,10 @@ public final class Notification {
     public static final String EXTRA_ID = "NOTIFICATION_ID";
 
     // Key for private preferences
-    static final String PREF_KEY = "LocalNotification";
+    static final String PREF_KEY_ID = "NOTIFICATION_ID";
+
+    // Key for private preferences
+    private static final String PREF_KEY_PID = "NOTIFICATION_PID";
 
     // Application context passed by constructor
     private final Context context;
@@ -127,42 +130,21 @@ public final class Notification {
         return getOptions().getTrigger().has("every");
     }
 
-    // /**
-    //  * If the notification is scheduled.
-    //  */
-    // public boolean isScheduled () {
-    //     return isRepeating() || !wasInThePast();
-    // }
+    /**
+     * Notification type can be one of triggered or scheduled.
+     */
+    public Type getType () {
+        StatusBarNotification[] toasts = getNotMgr().getActiveNotifications();
+        int id = getId();
 
-    // /**
-    //  * If the notification is triggered.
-    //  */
-    // public boolean isTriggered () {
-    //     return wasInThePast();
-    // }
+        for (StatusBarNotification toast : toasts) {
+            if (toast.getId() == id) {
+                return Type.TRIGGERED;
+            }
+        }
 
-    // /**
-    //  * If the notification is an update.
-    //  *
-    //  * @param keepFlag
-    //  *      Set to false to remove the flag from the option map
-    //  */
-    // protected boolean isUpdate (boolean keepFlag) {
-    //     boolean updated = options.getDict().optBoolean("updated", false);
-
-    //     if (!keepFlag) {
-    //         options.getDict().remove("updated");
-    //     }
-
-    //     return updated;
-    // }
-
-    // /**
-    //  * Notification type can be one of pending or scheduled.
-    //  */
-    // public Type getType () {
-    //     return isScheduled() ? Type.SCHEDULED : Type.TRIGGERED;
-    // }
+        return Type.SCHEDULED;
+    }
 
     /**
      * Schedule the local notification.
@@ -172,8 +154,8 @@ public final class Notification {
      */
     void schedule(Request request, Class<?> receiver) {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
-        Set<String> ids = new ArraySet<String>();
-        AlarmManager mgr = getAlarmMgr();
+        Set<String> ids                  = new ArraySet<String>();
+        AlarmManager mgr                 = getAlarmMgr();
 
         do {
             Date date = request.getTriggerDate();
@@ -182,16 +164,19 @@ public final class Notification {
                 continue;
 
             Intent intent = new Intent(context, receiver)
-                    .setAction(PREF_KEY + "#" + request.getIdentifier())
+                    .setAction(PREF_KEY_ID + request.getIdentifier())
                     .putExtra(Notification.EXTRA_ID, options.getId())
                     .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
 
+            ids.add(intent.getAction());
             intents.add(new Pair<Date, Intent>(date, intent));
         }
         while (request.moveNext());
 
         if (intents.isEmpty())
             return;
+
+        persist(ids);
 
         Intent last = intents.get(intents.size() - 1).second;
         last.putExtra(Request.EXTRA_LAST, true);
@@ -219,14 +204,11 @@ public final class Notification {
                         mgr.setExact(RTC_WAKEUP, time, pi);
                         break;
                 }
-                ids.add(intent.getAction());
             } catch (Exception ignore) {
                 // Samsung devices have a known bug where a 500 alarms limit
                 // can crash the app
             }
         }
-
-        persist(ids);
     }
 
     /**
@@ -253,7 +235,7 @@ public final class Notification {
     /**
      * Clear the local notification without canceling repeating alarms.
      */
-    public void clear () {
+    public void clear() {
         getNotMgr().cancel(getId());
 
         if (isRepeating())
@@ -271,8 +253,9 @@ public final class Notification {
      * method and cancel it.
      */
     public void cancel() {
-        Set<String> actions = getPrefs().getStringSet(
-                "#" + options.getIdentifier(), null);
+        SharedPreferences prefs = getPrefs(PREF_KEY_PID);
+        String id               = options.getIdentifier();
+        Set<String> actions     = prefs.getStringSet(id, null);
 
         unpersist();
         getNotMgr().cancel(options.getId());
@@ -295,7 +278,7 @@ public final class Notification {
     /**
      * Present the local notification to user.
      */
-    public void show () {
+    public void show() {
 
         if (builder == null)
             return;
@@ -303,22 +286,6 @@ public final class Notification {
         grantPermissionToPlaySoundFromExternal();
         getNotMgr().notify(getId(), builder.build());
     }
-
-    // /**
-    //  * Count of triggers since schedule.
-    //  */
-    // public int getTriggerCountSinceSchedule() {
-    //     long now = System.currentTimeMillis();
-    //     long triggerTime = options.getTriggerTime();
-
-    //     if (!wasInThePast())
-    //         return 0;
-
-    //     if (!isRepeating())
-    //         return 1;
-
-    //     return (int) ((now - triggerTime) / options.getRepeatInterval());
-    // }
 
     /**
      * Encode options to JSON.
@@ -344,11 +311,15 @@ public final class Notification {
      * @param ids List of intent actions to persist.
      */
     private void persist (Set<String> ids) {
-        SharedPreferences.Editor editor = getPrefs().edit();
         String id = options.getIdentifier();
+        SharedPreferences.Editor editor;
 
+        editor = getPrefs(PREF_KEY_ID).edit();
         editor.putString(id, options.toString());
-        editor.putStringSet("#" + id, ids);
+        editor.apply();
+
+        editor = getPrefs(PREF_KEY_PID).edit();
+        editor.putStringSet(id, ids);
         editor.apply();
     }
 
@@ -356,12 +327,15 @@ public final class Notification {
      * Remove the notification from the Android shared Preferences.
      */
     private void unpersist () {
-        SharedPreferences.Editor editor = getPrefs().edit();
-        String id = options.getIdentifier();
+        String[] keys = { PREF_KEY_ID, PREF_KEY_PID };
+        String id     = options.getIdentifier();
+        SharedPreferences.Editor editor;
 
-        editor.remove(id);
-        editor.remove("#" + id);
-        editor.apply();
+        for (String key : keys) {
+            editor = getPrefs(key).edit();
+            editor.remove(id);
+            editor.apply();
+        }
     }
 
     /**
@@ -383,8 +357,8 @@ public final class Notification {
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getPrefs () {
-        return context.getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+    private SharedPreferences getPrefs (String key) {
+        return context.getSharedPreferences(key, Context.MODE_PRIVATE);
     }
 
     /**

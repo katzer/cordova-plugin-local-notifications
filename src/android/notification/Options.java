@@ -106,7 +106,7 @@ public final class Options {
     /**
      * Wrapped JSON object.
      */
-    JSONObject getDict () {
+    public JSONObject getDict() {
         return options;
     }
 

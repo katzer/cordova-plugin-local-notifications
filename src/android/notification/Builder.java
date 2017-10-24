@@ -35,6 +35,9 @@ import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
 
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+
 /**
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
@@ -46,6 +49,9 @@ public final class Builder {
 
     // Notification options passed by JS
     private final Options options;
+
+    // To generate unique request codes
+    private final Random random = new Random();
 
     // Receiver to handle the clear event
     private Class<?> clearReceiver;
@@ -283,8 +289,10 @@ public final class Builder {
                 .setAction(options.getIdentifier())
                 .putExtra(Notification.EXTRA_ID, options.getId());
 
+        int reqCode = random.nextInt();
+
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -307,10 +315,10 @@ public final class Builder {
                 .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int reqCode = new Random().nextInt();
+        int reqCode = random.nextInt();
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
     }
@@ -354,10 +362,10 @@ public final class Builder {
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int reqCode = new Random().nextInt();
+        int reqCode = random.nextInt();
 
         return PendingIntent.getActivity(
-                context, reqCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                context, reqCode, intent, FLAG_CANCEL_CURRENT);
     }
 
 }
