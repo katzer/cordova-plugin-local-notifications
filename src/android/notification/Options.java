@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -614,6 +615,22 @@ public final class Options {
         }
 
         return messages;
+    }
+
+    /**
+     * Gets the token for the specified media session.
+     *
+     * @return null if there no session.
+     */
+    MediaSessionCompat.Token getMediaSessionToken() {
+        String tag = options.optString("mediaSession", null);
+
+        if (tag == null)
+            return null;
+
+        MediaSessionCompat session = new MediaSessionCompat(context, tag);
+
+        return session.getSessionToken();
     }
 
     /**

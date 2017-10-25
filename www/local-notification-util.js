@@ -69,6 +69,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.number       = 0;
         defaults.channel      = undefined;
         defaults.launch       = true;
+        defaults.mediaSession = undefined;
         break;
     }
 };

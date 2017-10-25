@@ -25,10 +25,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import java.util.List;
 import java.util.Random;
@@ -178,6 +181,13 @@ public final class Builder {
             return;
         }
 
+        MediaSessionCompat.Token token = options.getMediaSessionToken();
+
+        if (token != null) {
+            applyMediaStyle(builder, token);
+            return;
+        }
+
         List<Bitmap> pics = options.getAttachments();
 
         if (pics.size() > 0) {
@@ -274,6 +284,23 @@ public final class Builder {
     }
 
     /**
+     * Apply media style.
+     *
+     * @param builder Local notification builder instance.
+     * @param token   The media session token.
+     */
+    private void applyMediaStyle(NotificationCompat.Builder builder,
+                                 MediaSessionCompat.Token token) {
+        MediaStyle style;
+
+        style = new MediaStyle(builder)
+                .setMediaSession(token)
+                .setShowActionsInCompactView(1);
+
+        builder.setStyle(style);
+    }
+
+    /**
      * Set intent to handle the delete event. Will clean up some persisted
      * preferences.
      *
@@ -304,7 +331,7 @@ public final class Builder {
      * @param builder Local notification builder instance.
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
-
+        new MediaSessionCompat(context, "").getSessionToken();
         if (clickActivity == null)
             return;
 
