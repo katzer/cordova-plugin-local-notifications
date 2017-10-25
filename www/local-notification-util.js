@@ -28,13 +28,13 @@ exports._defaults = {
     text:    '',
     title:   '',
     sound:   true,
-    badge:   undefined,
-    data:    undefined,
-    icon:    undefined,
+    badge:   null,
+    data:    null,
+    icon:    null,
     silent:  false,
     trigger: { type: 'calendar' },
     actions: [],
-    actionGroupId: undefined,
+    actionGroupId: null,
     attachments: [],
     progressBar: false
 };
@@ -52,24 +52,24 @@ exports.applyPlatformSpecificOptions = function () {
 
     switch (device.platform) {
     case 'Android':
-        defaults.group        = undefined;
+        defaults.group        = null;
         defaults.groupSummary = false;
-        defaults.summary      = undefined;
+        defaults.summary      = null;
         defaults.icon         = 'res://icon';
-        defaults.smallIcon    = undefined;
+        defaults.smallIcon    = null;
         defaults.sticky       = false;
         defaults.autoClear    = true;
         defaults.led          = true;
-        defaults.color        = undefined;
+        defaults.color        = null;
         defaults.vibrate      = false;
         defaults.lockscreen   = true;
         defaults.showWhen     = true;
         defaults.defaults     = 0;
         defaults.priority     = 0;
         defaults.number       = 0;
-        defaults.channel      = undefined;
+        defaults.channel      = null;
         defaults.launch       = true;
-        defaults.mediaSession = undefined;
+        defaults.mediaSession = null;
         break;
     }
 };
@@ -82,37 +82,26 @@ exports.applyPlatformSpecificOptions = function () {
  * @retrun [ Object ]
  */
 exports.mergeWithDefaults = function (options) {
-    var defaults = this.getDefaults();
+    var values = this.getDefaults();
 
-    options.text = this.getValueFor(options, 'text', 'message');
-    options.data = this.getValueFor(options, 'data', 'json');
-
-    if (defaults.hasOwnProperty('autoClear')) {
-        options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
-    }
-
-    if (options.autoClear !== true && options.ongoing) {
-        options.autoClear = false;
-    }
-
-    if (defaults.hasOwnProperty('sticky')) {
+    if (values.hasOwnProperty('sticky')) {
         options.sticky = this.getValueFor(options, 'sticky', 'ongoing');
     }
 
-    for (var key in defaults) {
-        if (options[key] === null || options[key] === undefined) {
-            if (options.hasOwnProperty(key) && ['data','sound'].indexOf(key) > -1) {
-                options[key] = undefined;
-            } else {
-                var obj = defaults[key];
-                options[key] = typeof obj === 'object' ? Object.assign({}, obj) : obj;
-            }
-        }
+    if (options.sticky && options.autoClear !== true) {
+        options.autoClear = false;
     }
 
-    for (key in options) {
-        if (!defaults.hasOwnProperty(key)) {
-            // delete options[key];
+    Object.assign(values, options);
+
+    for (var key in values) {
+        if (values[key] !== null) {
+            options[key] = values[key];
+        } else {
+            delete options[key];
+        }
+
+        if (!this._defaults.hasOwnProperty(key)) {
             console.warn('Unknown property: ' + key);
         }
     }
@@ -157,9 +146,7 @@ exports.convertProperties = function (options) {
         options.defaults = parseToInt('defaults', options);
     }
 
-    if (typeof options.data == 'object') {
-        options.data = JSON.stringify(options.data);
-    }
+    options.data = JSON.stringify(options.data);
 
     this.convertTrigger(options);
     this.convertActions(options);
@@ -183,12 +170,11 @@ exports.convertActions = function (options) {
 
     var actions = [];
 
-    for (var i = 0, action; i < options.actions.length; i++) {
-        action = options.actions[i];
+    for (var action of options.actions) {
 
         if (!action.id) {
-            console.warn(
-                'Action with title ' + action.title + ' has no id and will not be added.');
+            console.warn('Action with title ' + action.title + ' ' +
+                         'has no id and will not be added.');
             continue;
         }
 
@@ -197,8 +183,8 @@ exports.convertActions = function (options) {
         actions.push(action);
     }
 
-    options.category = (options.category || 'DEFAULT_GROUP').toString();
-    options.actions  = actions;
+    options.actionGroupId = (options.actionGroupId || 'DEFAULT_GROUP').toString();
+    options.actions       = actions;
 
     return options;
 };
@@ -281,14 +267,14 @@ exports.convertProgressBar = function (options) {
     }
 
     if (typeof cfg.enabled !== 'boolean') {
-        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== undefined);
+        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
     }
 
     cfg.value = cfg.value || 0;
 
     if (isAndroid) {
         cfg.maxValue      = cfg.maxValue || 100;
-        cfg.indeterminate = cfg.indeterminate !== undefined ? cfg.indeterminate : false;
+        cfg.indeterminate = !!cfg.indeterminate;
     }
 
     cfg.enabled = !!cfg.enabled;
@@ -324,8 +310,8 @@ exports.createCallbackFn = function (fn, scope) {
 exports.convertIds = function (ids) {
     var convertedIds = [];
 
-    for (var i = 0; i < ids.length; i++) {
-        convertedIds.push(Number(ids[i]));
+    for (var id of ids) {
+        convertedIds.push(Number(id));
     }
 
     return convertedIds;
@@ -342,13 +328,24 @@ exports.convertIds = function (ids) {
 exports.getValueFor = function (options) {
     var keys = Array.apply(null, arguments).slice(1);
 
-    for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-
+    for (var key of keys) {
         if (options.hasOwnProperty(key)) {
             return options[key];
         }
     }
+
+    return null;
+};
+
+/**
+ * Convert a value to an array.
+ *
+ * @param [ Object ] obj Any kind of object.
+ *
+ * @return [ Array ] An array with the object as first item.
+ */
+exports.toArray = function (obj) {
+    return Array.isArray(obj) ? Array.from(obj) : [obj];
 };
 
 /**
@@ -365,6 +362,10 @@ exports.fireEvent = function (event) {
 
     if (!listener)
         return;
+
+    if (args[0] && typeof args[0].data === 'string') {
+        args[0].data = JSON.parse(args[0].data);
+    }
 
     for (var i = 0; i < listener.length; i++) {
         var fn    = listener[i][0],
@@ -385,7 +386,7 @@ exports.fireEvent = function (event) {
  * @return [ Void ]
  */
 exports.exec = function (action, args, callback, scope) {
-    var fn = this.createCallbackFn(callback, scope),
+    var fn     = this.createCallbackFn(callback, scope),
         params = [];
 
     if (Array.isArray(args)) {

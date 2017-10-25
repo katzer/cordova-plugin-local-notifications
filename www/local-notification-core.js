@@ -64,16 +64,14 @@ exports.schedule = function (msgs, callback, scope, args) {
 
         if (!granted) return;
 
-        var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        var toasts = this.toArray(msgs);
 
-        for (var i = 0; i < notifications.length; i++) {
-            var notification = notifications[i];
-
-            this.mergeWithDefaults(notification);
-            this.convertProperties(notification);
+        for (var toast of toasts) {
+            this.mergeWithDefaults(toast);
+            this.convertProperties(toast);
         }
 
-        this.exec('schedule', notifications, callback, scope);
+        this.exec('schedule', toasts, callback, scope);
     };
 
     if (args && args.skipPermission) {
@@ -98,15 +96,12 @@ exports.update = function (msgs, callback, scope, args) {
 
         if (!granted) return;
 
-        var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        var toasts = this.toArray(msgs);
 
-        for (var i = 0; i < notifications.length; i++) {
-            var notification = notifications[i];
+        for (var toast of toasts) {
+            this.convertProperties(toast);        }
 
-            this.convertProperties(notification);
-        }
-
-        this.exec('update', notifications, callback, scope);
+        this.exec('update', toasts, callback, scope);
     };
 
     if (args && args.skipPermission) {
@@ -126,7 +121,7 @@ exports.update = function (msgs, callback, scope, args) {
  * @return [ Void ]
  */
 exports.clear = function (ids, callback, scope) {
-    ids = Array.isArray(ids) ? ids : [ids];
+    ids = this.toArray(ids);
     ids = this.convertIds(ids);
 
     this.exec('clear', ids, callback, scope);
@@ -154,7 +149,7 @@ exports.clearAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.cancel = function (ids, callback, scope) {
-    ids = Array.isArray(ids) ? ids : [ids];
+    ids = this.toArray(ids);
     ids = this.convertIds(ids);
 
     this.exec('cancel', ids, callback, scope);
@@ -340,7 +335,15 @@ exports.addActionGroup = function (id, actions, callback, scope) {
  * @return [ Object ]
  */
 exports.getDefaults = function () {
-    return this._defaults;
+    var map = Object.create(this._defaults);
+
+    for (var key in map) {
+        if (Object.prototype.isPrototypeOf(map[key])) {
+            map[key] = Object.create(map[key]);
+        }
+    }
+
+    return map;
 };
 
 /**
@@ -351,13 +354,7 @@ exports.getDefaults = function () {
  * @return [ Void ]
  */
 exports.setDefaults = function (newDefaults) {
-    var defaults = this.getDefaults();
-
-    for (var key in defaults) {
-        if (newDefaults.hasOwnProperty(key)) {
-            defaults[key] = newDefaults[key];
-        }
-    }
+    Object.assign(this._defaults, newDefaults);
 };
 
 /**
