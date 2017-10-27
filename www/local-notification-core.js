@@ -338,6 +338,9 @@ exports.getDefaults = function () {
     var map = Object.create(this._defaults);
 
     for (var key in map) {
+        if (Array.isArray(map[key])) {
+            map[key] = Array.from(map[key]);
+        } else
         if (Object.prototype.isPrototypeOf(map[key])) {
             map[key] = Object.create(map[key]);
         }

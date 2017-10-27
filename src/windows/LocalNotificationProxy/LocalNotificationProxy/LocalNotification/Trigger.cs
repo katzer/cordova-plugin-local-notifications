@@ -143,7 +143,7 @@ namespace LocalNotificationProxy.LocalNotification
             node.SetAttribute("count", this.Count.ToString());
             node.SetAttribute("occurrence", this.Occurrence.ToString());
 
-            if (!(this.Every is Every))
+            if (this.Every != null && !(this.Every is Every))
             {
                 node.SetAttribute("every", this.Every.ToString());
             }
@@ -192,7 +192,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The fix date specified by trigger.at or trigger.in</returns>
         private DateTime? GetFixDate()
         {
-            if (this.In != 0)
+            if (this.At == 0)
             {
                 return this.AddInterval(DateTime.Now, this.Unit, this.In);
             }

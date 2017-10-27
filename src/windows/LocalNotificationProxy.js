@@ -51,8 +51,8 @@ exports.launch = function (success, error, args) {
 exports.ready = function () {
     ready = true;
 
-    for (var i = 0; i < queue.length; i++) {
-        exports.fireEvent.apply(exports, queue[i]);
+    for (var item of queue) {
+        exports.fireEvent.apply(exports, item);
     }
 
     queue = [];
@@ -96,16 +96,15 @@ exports.request = function (success, error) {
 exports.schedule = function (success, error, args) {
     var options = [];
 
-    for (var i = 0, props, opts; i < args.length; i++) {
-        props = args[i];
+    for (var props of args) {
         opts  = exports.parseOptions(props);
         options.push(opts);
     }
 
     impl.schedule(options);
 
-    for (i = 0; i < options.length; i++) {
-        exports.fireEvent('add', options[i]);
+    for (var toast of options) {
+        exports.fireEvent('add', toast);
     }
 
     success();
@@ -123,16 +122,15 @@ exports.schedule = function (success, error, args) {
 exports.update = function (success, error, args) {
     var options = [];
 
-    for (var i = 0, props, opts; i < args.length; i++) {
-        props = args[i];
+    for (var props of args) {
         opts  = exports.parseOptions(props);
         options.push(opts);
     }
 
     impl.update(options);
 
-    for (i = 0; i < options.length; i++) {
-        exports.fireEvent('update', options[i]);
+    for (var toast of options) {
+        exports.fireEvent('update', toast);
     }
 
     success();
@@ -150,8 +148,8 @@ exports.update = function (success, error, args) {
 exports.clear = function (success, error, args) {
     var toasts = impl.clear(args) || [];
 
-    for (var i = 0; i < toasts.length; i++) {
-        exports.fireEvent('clear', toasts[i]);
+    for (var toast of toasts) {
+        exports.fireEvent('clear', toast);
     }
 
     success();
@@ -183,8 +181,8 @@ exports.clearAll = function (success, error) {
 exports.cancel = function (success, error, args) {
     var toasts = impl.cancel(args) || [];
 
-    for (var i = 0; i < toasts.length; i++) {
-        exports.fireEvent('cancel', toasts[i]);
+    for (var toast of toasts) {
+        exports.fireEvent('cancel', toast);
     }
 
     success();
@@ -377,8 +375,8 @@ exports.fireEvent = function (event, toast, data) {
 exports.cloneAll = function (objs) {
     var clones = [];
 
-    for (var i = 0; i < objs.length; i++) {
-        clones.push(exports.clone(objs[i]));
+    for (var obj of objs) {
+        clones.push(exports.clone(obj));
     }
 
     return clones;
@@ -490,13 +488,11 @@ exports.parseEvery = function (spec) {
  * @return [ Array<LocalNotification.Action> ]
  */
 exports.parseActions = function (obj) {
-    var actions = [];
+    var actions = [], btn;
 
     if (!obj.actions) return actions;
 
-    for (var i = 0, action, btn; i < obj.actions.length; i++) {
-        action = obj.actions[i];
-
+    for (var action of obj.actions) {
         if (!action.type || action.type == 'button') {
             btn = new LocalNotification.Button();
         } else
