@@ -53,14 +53,6 @@
 The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.
 
 ```js
-document.addEventListener('deviceready', function () {
-    // cordova.plugins.notification.local is now available
-}, false);
-```
-
-Lets schedule a basic notification:
-
-```js
 cordova.plugins.notification.local.schedule({
     title: 'My first notification',
     text: 'Thats pretty easy...'
@@ -68,47 +60,57 @@ cordova.plugins.notification.local.schedule({
 ```
 
 <p align="center">
-    <img height="300px" src="images/ios-basic.png">
+    <img src="images/ios-basic.png">
 </p>
 
-Of course its possible to schedule multiple notifications at once:
+The plugin allows to schedule multiple notifications at once.
 
 ```js
-cordova.plugins.notification.local.schedule([{
-    id: 1,
-    title: 'My first notification',
-    text: 'Thats pretty easy...'
-},{
-    id: 2,
-    title: 'My first notification',
-    text: 'Thats pretty easy...'
-}]);
+cordova.plugins.notification.local.schedule([
+    { id: 1, title: 'My first notification' },
+    { id: 2, title: 'My first notification' }
+]);
 ```
 
-And to get informed when the user has clicked on it:
+## Properties
+
+A notification does have a set of configurable properties. Not all of them are supported across all platforms.
+
+| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
+| id            | data          | actionGroupId | summary       | led           | showWhen      | channel       | actions       |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | 
+| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         |
+
+For their default values see:
 
 ```js
-cordova.plugins.notification.local.on('click', function (toast, event) {
-    console.log(toast.title);
+cordova.plugins.notification.local.getDefaults();
+```
+
+To change some default values:
+
+```js
+cordova.plugins.notification.local.setDefaults({
+    led: { color: '#FF00FF', on: 500, off: 500 },
+    vibrate: false
 });
 ```
 
 ## Actions
 
-Great so far. Now we add some content and actions:
+The plugin knows two types of actions: _button_ and _input_.
 
 ```js
 cordova.plugins.notification.local.schedule({
     title: 'The big survey',
     text: 'Are you a fan of RB Leipzig?',
     attachments: ['file://img/rb-leipzig.jpg'],
-    actions: [{
-        id: '#he-likes-leipzig',
-        title: 'Yes'
-    },{
-        id: '#he-doesnt',
-        title: 'No'
-    }]
+    actions: [
+        { id: 'yes', title: 'Yes' },
+        { id: 'no',  title: 'No' }
+    ]
 });
 ```
 
@@ -120,22 +122,14 @@ cordova.plugins.notification.local.schedule({
     <img width="31%" src="images/windows-actions.png">
 </p>
 
-To get informed about the users choice:
-
-```js
-cordova.plugins.notification.local.on('#he-likes-leipzig', function (toast, event) {
-    console.log('Yeah!!!');
-});
-```
-
-All platforms have built-in support for interactive actions where the user can respond by some input:
+### Input
 
 ```js
 cordova.plugins.notification.local.schedule({
     title: 'Justin Rhyss',
     text: 'Do you want to go see a movie tonight?',
     actions: [{
-        id: '#reply',
+        id: 'reply',
         type: 'input',
         title: 'Reply',
         emptyText: 'Type message',
@@ -144,18 +138,8 @@ cordova.plugins.notification.local.schedule({
 ```
 
 <p align="center">
-    <img width="48%" src="images/android-reply-1.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img width="48%" src="images/android-reply-2.png">
+    <img src="images/android-reply.png">
 </p>
-
-To get informed about the users input:
-
-```js
-cordova.plugins.notification.local.on('#reply', function (toast, event) {
-    console.log(event.text);
-});
-```
 
 It is recommended to pre-define action groups rather then specifying them with each new notification of the same type.
 
@@ -176,6 +160,25 @@ cordova.plugins.notification.local.schedule({
     actionGroupId: 'yes-no'
 });
 ```
+
+### Properties
+
+Actions do have a set of configurable properties. Not all of them are supported across all platforms.
+
+| Property     | Type         | Android | iOS | Windows |
+| :----------- | :----------- | :------ | :-- | :------ |
+| id           | button+input | x       | x   | x       |
+| title        | button+input | x       | x   | x       |
+| launch       | button+input | x       | x   | x       |
+| ui           | button+input |         | x   |         |
+| needsAuth    | button+input |         | x   |         |
+| icon         | button+input | x       |     |         |
+| emptyText    | input        | x       | x   | x       |
+| submitTitle  | input        |         | x   |         |
+| editable     | input        | x       |     |         |
+| choices      | input        | x       |     |         |
+| defaultValue | input        |         |     | x       |
+
 
 ## Triggers
 
@@ -200,7 +203,9 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-Or repeat relative from now:
+### Repeating
+
+Repeat relative from now:
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -224,10 +229,42 @@ And to get informed about the event triggered:
 cordova.plugins.notification.local.on('trigger', function (toast, event) { ... });
 ```
 
+### Location based
 
-## Styles
+To trigger when the user enters a region:
 
-It's possible to split the text into multiple lines:
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Welcome to our office',
+    trigger: {
+        type: 'location',
+        center: [x, y],
+        radius: 15,
+        notifyOnEntry: true
+    }
+});
+```
+
+## Progress
+
+Notifications can include an animated progress indicator that shows users the status of an ongoing operation.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Sync in progress',
+    text: 'Copied 2 of 10 files',
+    progressBar: { value: 20 }
+});
+```
+
+<p align="center">
+    <img src="images/android-progress.png">
+</p>
+
+
+## Patterns
+
+Split the text by line breaks if the message comes from a single person and just to long to show in a single line.
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -239,12 +276,12 @@ cordova.plugins.notification.local.schedule({
 ```
 
 <p align="center">
-    <img width="48%" src="images/android-inbox-1.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img width="48%" src="images/android-inbox-2.png">
+    <img src="images/android-inbox.png">
 </p>
 
-The notification may visulate a chat conversation:
+### Summarizing
+
+Instead of displaying multiple notifications, you can create one notification that summarizes them all.
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -260,9 +297,7 @@ cordova.plugins.notification.local.schedule({
 ```
 
 <p align="center">
-    <img width="48%" src="images/android-chat-1.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img width="48%" src="images/android-chat-2.png">
+    <img src="images/android-chat.png">
 </p>
 
 To add a new message to the existing chat:
@@ -274,7 +309,12 @@ cordova.plugins.notification.local.update({
 });
 ```
 
-You can bundle connected notifications together as a single group:
+### Grouping
+
+Your app can present multiple notifications as a single group:
+
+- A parent notification displays a summary of its child notifications.
+- The child notifications are presented without duplicate header information.
 
 ```js
 cordova.plugins.notification.local.schedule([
@@ -287,10 +327,33 @@ cordova.plugins.notification.local.schedule([
 ```
 
 <p align="center">
-    <img width="48%" src="images/android-stack-1.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img width="48%" src="images/android-stack-2.png">
+    <img src="images/android-stack.png">
 </p>
+
+
+## Permissions
+
+Each platform may require the user to grant permissions first before the app is allowed to schedule notifications.
+
+```js
+cordova.plugins.notification.local.hasPermission(function (granted) { ... });
+```
+
+If requesting via plug-in, a system dialog does pop up for the first time. Later its only possible to tweak the settings through the system settings.
+
+```js
+cordova.plugins.notification.local.requestPermission(function (granted) { ... });
+```
+
+<p align="center">
+    <img src="images/ios-permission.png">
+</p>
+
+Checking the permissions is done automatically, however it's possible to skip that.
+
+```js
+cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
+```
 
 
 ## Installation
