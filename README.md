@@ -442,7 +442,7 @@ Or install a specific version:
 
 Or install the latest head version:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notification.git
+    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
 
 Or install from local source:
 
