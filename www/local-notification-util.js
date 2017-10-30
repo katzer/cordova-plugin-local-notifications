@@ -55,8 +55,8 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.group        = null;
         defaults.groupSummary = false;
         defaults.summary      = null;
-        defaults.icon         = 'res://icon';
-        defaults.smallIcon    = null;
+        defaults.icon         = null;
+        defaults.smallIcon    = 'res://icon';
         defaults.sticky       = false;
         defaults.autoClear    = true;
         defaults.led          = true;
@@ -144,6 +144,10 @@ exports.convertProperties = function (options) {
 
     if (options.defaults) {
         options.defaults = parseToInt('defaults', options);
+    }
+
+    if (options.smallIcon && !options.smallIcon.match(/^res:/)) {
+        console.warn('Property "smallIcon" must be of kind res://...');
     }
 
     options.data = JSON.stringify(options.data);

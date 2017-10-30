@@ -332,27 +332,21 @@ public final class Options {
         return assets.parse(options.optString("sound", null));
     }
 
-    public long[] getVibrate() {
-        JSONArray array = options.optJSONArray("vibrate");
-
-        if (array == null)
-            return null;
-
-        long[] rv = new long[array.length()];
-
-        for (int i = 0; i < array.length(); i++) {
-            rv[i] = array.optInt(i);
-        }
-
-        return rv;
+    /**
+     * Icon resource ID for the local notification.
+     */
+    public boolean hasLargeIcon () {
+        String icon = options.optString("icon", null);
+        return icon != null;
     }
 
     /**
      * Icon bitmap for the local notification.
      */
     Bitmap getLargeIcon() {
-        Uri uri    = assets.parse(options.optString("icon", DEFAULT_ICON));
-        Bitmap bmp = null;
+        String icon = options.optString("icon", null);
+        Uri uri     = assets.parse(icon);
+        Bitmap bmp  = null;
 
         try {
             bmp = assets.getIconFromUri(uri);
@@ -364,16 +358,11 @@ public final class Options {
     }
 
     /**
-     * Icon resource ID for the local notification.
+     * Small icon resource ID for the local notification.
      */
-    public int getIcon () {
-        String icon = options.optString("icon", DEFAULT_ICON);
-
-        int resId = assets.getResId(icon);
-
-        if (resId == 0) {
-            resId = getSmallIcon();
-        }
+    int getSmallIcon() {
+        String icon = options.optString("smallIcon", DEFAULT_ICON);
+        int resId   = assets.getResId(icon);
 
         if (resId == 0) {
             resId = assets.getResId(DEFAULT_ICON);
@@ -388,14 +377,6 @@ public final class Options {
         }
 
         return resId;
-    }
-
-    /**
-     * Small icon resource ID for the local notification.
-     */
-    int getSmallIcon() {
-        String icon = options.optString("smallIcon", "");
-        return assets.getResId(icon);
     }
 
     /**

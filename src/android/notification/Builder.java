@@ -116,7 +116,6 @@ public final class Builder {
             return new Notification(context, options);
         }
 
-        int smallIcon = options.getSmallIcon();
         Uri sound     = options.getSound();
         Bundle extras = new Bundle();
 
@@ -151,11 +150,11 @@ public final class Builder {
                     options.isIndeterminateProgress());
         }
 
-        if (smallIcon != 0) {
-            builder.setSmallIcon(smallIcon);
+        if (options.hasLargeIcon()) {
+            builder.setSmallIcon(options.getSmallIcon());
             builder.setLargeIcon(options.getLargeIcon());
         } else {
-            builder.setSmallIcon(options.getIcon());
+            builder.setSmallIcon(options.getSmallIcon());
         }
 
         applyStyle(builder);

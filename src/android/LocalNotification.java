@@ -293,8 +293,7 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Update multiple local notifications.
      *
-     * @param updates
-     *      Notification properties including their IDs
+     * @param updates Notification properties including their IDs
      */
     private void update (JSONArray updates) {
         for (int i = 0; i < updates.length(); i++) {
