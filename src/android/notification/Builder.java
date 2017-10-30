@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,8 +17,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 package de.appplant.cordova.plugin.notification;
@@ -26,18 +24,27 @@ package de.appplant.cordova.plugin.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import android.support.v4.media.session.MediaSessionCompat;
 
-import org.json.JSONObject;
-
+import java.util.List;
 import java.util.Random;
+
+import de.appplant.cordova.plugin.notification.action.Action;
+
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 /**
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
  */
-public class Builder {
+public final class Builder {
 
     // Application context passed by constructor
     private final Context context;
@@ -45,33 +52,22 @@ public class Builder {
     // Notification options passed by JS
     private final Options options;
 
-    // Receiver to handle the trigger event
-    private Class<?> triggerReceiver;
+    // To generate unique request codes
+    private final Random random = new Random();
 
     // Receiver to handle the clear event
-    private Class<?> clearReceiver = ClearReceiver.class;
+    private Class<?> clearReceiver;
 
     // Activity to handle the click event
-    private Class<?> clickActivity = ClickActivity.class;
+    private Class<?> clickActivity;
+
+    // Additional extras to merge into each intent
+    private Bundle extras;
 
     /**
      * Constructor
      *
-     * @param context
-     *      Application context
-     * @param options
-     *      Notification options
-     */
-    public Builder(Context context, JSONObject options) {
-        this.context = context;
-        this.options = new Options(context).parse(options);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param options
-     *      Notification options
+     * @param options Notification options
      */
     public Builder(Options options) {
         this.context = options.getContext();
@@ -79,21 +75,9 @@ public class Builder {
     }
 
     /**
-     * Set trigger receiver.
-     *
-     * @param receiver
-     *      Broadcast receiver
-     */
-    public Builder setTriggerReceiver(Class<?> receiver) {
-        this.triggerReceiver = receiver;
-        return this;
-    }
-
-    /**
      * Set clear receiver.
      *
-     * @param receiver
-     *      Broadcast receiver
+     * @param receiver Broadcast receiver for the clear event.
      */
     public Builder setClearReceiver(Class<?> receiver) {
         this.clearReceiver = receiver;
@@ -103,8 +87,7 @@ public class Builder {
     /**
      * Set click activity.
      *
-     * @param activity
-     *      Activity
+     * @param activity The activity to handler the click event.
      */
     public Builder setClickActivity(Class<?> activity) {
         this.clickActivity = activity;
@@ -112,56 +95,215 @@ public class Builder {
     }
 
     /**
+     * Set bundle extras.
+     *
+     * @param extras The bundled extras to merge into.
+     */
+    public Builder setExtras(Bundle extras) {
+        this.extras = extras;
+        return this;
+    }
+
+    /**
      * Creates the notification with all its options passed through JS.
+     *
+     * @return The final notification to display.
      */
     public Notification build() {
-        Uri sound     = options.getSoundUri();
-        int smallIcon = options.getSmallIcon();
-        int ledColor  = options.getLedColor();
-        long[] vibrate = options.getVibrate();
         NotificationCompat.Builder builder;
 
-        builder = new NotificationCompat.Builder(context)
-                .setDefaults(0)
+        if (options.isSilent()) {
+            return new Notification(context, options);
+        }
+
+        int smallIcon = options.getSmallIcon();
+        Uri sound     = options.getSound();
+        Bundle extras = new Bundle();
+
+        extras.putInt(Notification.EXTRA_ID, options.getId());
+        extras.putString(Options.EXTRA_SOUND, sound.toString());
+
+        builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
+                .setDefaults(options.getDefaults())
+                .setExtras(extras)
+                .setOnlyAlertOnce(true)
+                .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
-                .setNumber(options.getBadgeNumber())
                 .setTicker(options.getText())
+                .setNumber(options.getNumber())
                 .setAutoCancel(options.isAutoClear())
-                .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setOngoing(options.isSticky())
+                .setColor(options.getColor())
+                .setSound(sound)
+                .setVisibility(options.getVisibility())
+                .setPriority(options.getPriority())
+                .setShowWhen(options.getShowWhen())
+                .setUsesChronometer(options.isWithProgressBar())
+                .setGroup(options.getGroup())
+                .setGroupSummary(options.getGroupSummary())
+                .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (ledColor != 0) {
-            builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
+        if (options.isWithProgressBar()) {
+            builder.setProgress(
+                    options.getProgressMaxValue(),
+                    options.getProgressValue(),
+                    options.isIndeterminateProgress());
         }
 
-        if (sound != null) {
-            builder.setSound(sound);
-        }
-
-        if (vibrate != null) {
-            builder.setVibrate(vibrate);
-        }
-
-        if (smallIcon == 0) {
-            builder.setSmallIcon(options.getIcon());
+        if (smallIcon != 0) {
+            builder.setSmallIcon(smallIcon);
+            builder.setLargeIcon(options.getLargeIcon());
         } else {
-            builder.setSmallIcon(options.getSmallIcon());
-            builder.setLargeIcon(options.getIconBitmap());
+            builder.setSmallIcon(options.getIcon());
         }
 
+        applyStyle(builder);
+        applyActions(builder);
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
-        return new Notification(context, options, builder, triggerReceiver);
+        return new Notification(context, options, builder);
+    }
+
+    /**
+     * Find out and set the notification style.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyStyle(NotificationCompat.Builder builder) {
+        Message[] messages = options.getMessages();
+        String summary     = options.getSummary();
+
+        if (messages != null) {
+            applyMessagingStyle(builder, messages);
+            return;
+        }
+
+        MediaSessionCompat.Token token = options.getMediaSessionToken();
+
+        if (token != null) {
+            applyMediaStyle(builder, token);
+            return;
+        }
+
+        List<Bitmap> pics = options.getAttachments();
+
+        if (pics.size() > 0) {
+            applyBigPictureStyle(builder, pics);
+            return;
+        }
+
+        String text = options.getText();
+
+        if (text != null && text.contains("\n")) {
+            applyInboxStyle(builder);
+            return;
+        }
+
+        if (text == null || summary == null && text.length() < 45)
+            return;
+
+        applyBigTextStyle(builder);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder  Local notification builder instance.
+     * @param messages The messages to add to the conversation.
+     */
+    private void applyMessagingStyle(NotificationCompat.Builder builder,
+                                     Message[] messages) {
+
+        NotificationCompat.MessagingStyle style;
+
+        style = new NotificationCompat.MessagingStyle("Me")
+                .setConversationTitle(options.getTitle());
+
+        for (Message msg : messages) {
+            style.addMessage(msg);
+        }
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder Local notification builder instance.
+     * @param pics    The pictures to show.
+     */
+    private void applyBigPictureStyle(NotificationCompat.Builder builder,
+                                      List<Bitmap> pics) {
+
+        NotificationCompat.BigPictureStyle style;
+        String summary = options.getSummary();
+        String text    = options.getText();
+
+        style = new NotificationCompat.BigPictureStyle(builder)
+                .setSummaryText(summary == null ? text : summary)
+                .bigPicture(pics.get(0));
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply inbox style.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyInboxStyle(NotificationCompat.Builder builder) {
+        NotificationCompat.InboxStyle style;
+        String text = options.getText();
+
+        style = new NotificationCompat.InboxStyle(builder)
+                .setSummaryText(options.getSummary());
+
+        for (String line : text.split("\n")) {
+            style.addLine(line);
+        }
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply big text style.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyBigTextStyle(NotificationCompat.Builder builder) {
+        NotificationCompat.BigTextStyle style;
+
+        style = new NotificationCompat.BigTextStyle(builder)
+                .setSummaryText(options.getSummary())
+                .bigText(options.getText());
+
+        builder.setStyle(style);
+    }
+
+    /**
+     * Apply media style.
+     *
+     * @param builder Local notification builder instance.
+     * @param token   The media session token.
+     */
+    private void applyMediaStyle(NotificationCompat.Builder builder,
+                                 MediaSessionCompat.Token token) {
+        MediaStyle style;
+
+        style = new MediaStyle(builder)
+                .setMediaSession(token)
+                .setShowActionsInCompactView(1);
+
+        builder.setStyle(style);
     }
 
     /**
      * Set intent to handle the delete event. Will clean up some persisted
      * preferences.
      *
-     * @param builder
-     *      Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyDeleteReceiver(NotificationCompat.Builder builder) {
 
@@ -169,11 +311,14 @@ public class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
-                .setAction(options.getIdStr())
-                .putExtra(Options.EXTRA, options.toString());
+                .putExtras(extras)
+                .setAction(options.getIdentifier())
+                .putExtra(Notification.EXTRA_ID, options.getId());
+
+        int reqCode = random.nextInt();
 
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -182,8 +327,7 @@ public class Builder {
      * Set intent to handle the click event. Will bring the app to
      * foreground.
      *
-     * @param builder
-     *      Local notification builder instance
+     * @param builder Local notification builder instance.
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
 
@@ -191,15 +335,63 @@ public class Builder {
             return;
 
         Intent intent = new Intent(context, clickActivity)
-                .putExtra(Options.EXTRA, options.toString())
+                .putExtras(extras)
+                .putExtra(Notification.EXTRA_ID, options.getId())
+                .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
+                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        int reqCode = new Random().nextInt();
+        int reqCode = random.nextInt();
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
+    }
+
+    /**
+     * Add all actions to the builder if there are any actions.
+     *
+     * @param builder Local notification builder instance.
+     */
+    private void applyActions (NotificationCompat.Builder builder) {
+        Action[] actions = options.getActions();
+        NotificationCompat.Action.Builder btn;
+
+        if (actions == null || actions.length == 0)
+            return;
+
+        for (Action action : actions) {
+             btn = new NotificationCompat.Action.Builder(
+                     action.getIcon(), action.getTitle(),
+                     getPendingIntentForAction(action));
+
+            if (action.isWithInput()) {
+                btn.addRemoteInput(action.getInput());
+            }
+
+            builder.addAction(btn.build());
+        }
+    }
+
+    /**
+     * Returns a new PendingIntent for a notification action, including the
+     * action's identifier.
+     *
+     * @param action Notification action needing the PendingIntent
+     */
+    private PendingIntent getPendingIntentForAction (Action action) {
+        Intent intent = new Intent(context, clickActivity)
+                .putExtras(extras)
+                .putExtra(Notification.EXTRA_ID, options.getId())
+                .putExtra(Action.EXTRA_ID, action.getId())
+                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        int reqCode = random.nextInt();
+
+        return PendingIntent.getActivity(
+                context, reqCode, intent, FLAG_CANCEL_CURRENT);
     }
 
 }

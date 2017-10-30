@@ -1,119 +1,452 @@
 
-[![npm version](https://badge.fury.io/js/de.appplant.cordova.plugin.local-notification.svg)](http://badge.fury.io/js/de.appplant.cordova.plugin.local-notification)
-[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal")
+<p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example">SAMPLE APP</a> :point_right:</b></p>
 
-## Important notice
-1. Its been a while that the plugin has received major updates and bug fixes. My (free)time is limited and I have multiple projects to maintain. Once I've updated my background-mode plugin the local-notification plugin will get an official release supporting ios10. The ios10 branch will be merged into the master as well.
+<br>
 
-2. For the future I am looking for other opportunities to support and enhance the plugin. That might be a crowdfunding campain or adding other core maintainers. Everyone with an serious interest is welcome to contact me!
+<p align="center">
+    <img src="images/logo.png">
+</p>
 
-3. I am aware of the growing number of open issues and pull. Therefore, there's a new ticket template that can be found [here][ticket_template]. For every new issue please add an filled template. That will help rwillett and me to faster response to your issue. If you ignore this template, we'll ignore your issue.
+<p align="center">
+    <a href="https://www.npmjs.com/package/de.appplant.cordova.plugin.local-notification">
+        <img src="https://badge.fury.io/js/de.appplant.cordova.plugin.local-notification.svg" alt="npm version" />
+    </a>
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
+        <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
+    </a>
+</p>
 
-__UPDATE (22.05.2017)__ I've released v0.8.5 with contains the code from ios10 branch as it is. I will start working on a new major version while dropping support for older SDKs. I will try to include all you PRs.
+<br>
 
-Thanks for using my plugin and for your support!</br>
-Sebastián Katzer
+> A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
 
-Cordova Local-Notification Plugin
-=================================
+<br>
 
-The essential purpose of local notifications is to enable an application to inform its users that it has something for them — for example, a message or an upcoming appointment — when the application isn’t running in the foreground.<br>
-They are scheduled by an application and delivered on the same device.
+<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
+<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
 
-<img width="35%" align="right" hspace="19" vspace="12" src="https://raw.githubusercontent.com/katzer/cordova-plugin-local-notifications/example/images/android.png"></img>
+### Notification components
 
-### How they appear to the user
-Users see notifications in the following ways:
-- Displaying an alert or banner
-- Badging the app’s icon
-- Playing a sound
+- Header area
+- Content area
+- Action area
 
+### How notifications may be noticed
 
-### Examples of Notification Usage
-Local notifications are ideally suited for applications with time-based behaviors, such as calendar and to-do list applications. Applications that run in the background for the limited period allowed by iOS might also find local notifications useful.<br>
-For example, applications that depend on servers for messages or data can poll their servers for incoming items while running in the background; if a message is ready to view or an update is ready to download, they can then present a local notification immediately to inform their users.
+- Showing a status bar icon
+- Appearing on the lock screen
+- Playing a sound or vibrating
+- Peeking onto the current screen
+- Blinking the device's LED
 
+### Supported platforms
 
-## Supported Platforms
-The current 0.8 branch supports the following platforms:
-- __iOS__ _(>= 8)_<br>
-- __Android__ _(SDK >=7)_
-- __Windows 8.1__ _(added with v0.8.2)_
-- __Windows Phone 8.1__ _(added with v0.8.2)_
-- __Windows 10__ _(added with v0.8.3)_
+- Android
+- iOS
+- Windows
 
-Find out more information [here][wiki_platforms] in our wiki.
+<br>
+<br>
 
+## Important Notice
 
-## Installation
-The plugin is installable from source and available on Cordova Plugin Registry and PhoneGap Build.
+The _x_ branch has been merged into _master_ (30.10.2017)
 
-Find out more information [here][wiki_installation] in our wiki.
+See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
 
+Known issues 
+- Support for Android Orio is limited yet
+- v0.9 and v0.8 aren't compatible with each other (Wont fix)
 
-## I want to get a quick overview
-All wiki pages contain samples, but for a quick overview, the sample section may be the fastest way.
-
-Find out more information [here][wiki_samples] in our wiki.
-
-
-## I want to get a deep overview
-The plugin supports scheduling local notifications in various ways with a single interface. It also allows you to update, clear or cancel them. There are different interfaces to query for local notifications and a complete set of events to hook into the life cycle of local notifications.
-
-Find out more about how to schedule single, multiple, delayed or repeating local notifications [here][wiki_schedule].<br>
-Information about events like _click_ or _trigger_ can be found [here][wiki_events].
-
-To get a deep overview we recommend to read about all the topics in our [wiki][wiki] and try out the [Kitchen Sink App][wiki_kitchensink]
+Please report bugs or missing features!
 
 
-## I want to see the plugin in action
-The plugin offers a kitchen sink sample app. Check out the Cordova project and run the app directly from your command line or preferred IDE.
+## Basics
 
-Find out more information [here][wiki_kitchensink] in our wiki.
+The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.
 
-
-## What's new
-We are proud to announce our newest release version 0.8.x. Besides the hard work at the office and at the weekends it contains a lot of goodies, new features and easy to use APIs.
-
-Find out more information [here][wiki_changelog] in our wiki.
-
-
-## Sample
-The sample demonstrates how to schedule a local notification which repeats every week. The listener will be called when the user has clicked on the local notification.
-
-```javascript
-var date = new Date();
-
+```js
 cordova.plugins.notification.local.schedule({
-    id: 1,
-    title: "Message Title",
-    message: "Message Text",
-    firstAt: date, // firstAt and at properties must be an IETF-compliant RFC 2822 timestamp
-    every: "week", // this also could be minutes i.e. 25 (int)
-    sound: "file://sounds/reminder.mp3",
-    icon: "http://icons.com/?cal_id=1",
-    data: { meetingId:"123#fg8" }
-});
-
-cordova.plugins.notification.local.on("click", function (notification) {
-    joinMeeting(notification.data.meetingId);
+    title: 'My first notification',
+    text: 'Thats pretty easy...'
 });
 ```
 
-Find out more information [here][wiki_samples] in our wiki.
+<p align="center">
+    <img src="images/ios-basic.png">
+</p>
+
+The plugin allows to schedule multiple notifications at once.
+
+```js
+cordova.plugins.notification.local.schedule([
+    { id: 1, title: 'My first notification' },
+    { id: 2, title: 'My first notification' }
+]);
+```
+
+## Properties
+
+A notification does have a set of configurable properties. Not all of them are supported across all platforms.
+
+| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
+| id            | data          | actionGroupId | summary       | led           | showWhen      | channel       | actions       |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | 
+| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         |
+
+For their default values see:
+
+```js
+cordova.plugins.notification.local.getDefaults();
+```
+
+To change some default values:
+
+```js
+cordova.plugins.notification.local.setDefaults({
+    led: { color: '#FF00FF', on: 500, off: 500 },
+    vibrate: false
+});
+```
+
+## Actions
+
+The plugin knows two types of actions: _button_ and _input_.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'The big survey',
+    text: 'Are you a fan of RB Leipzig?',
+    attachments: ['file://img/rb-leipzig.jpg'],
+    actions: [
+        { id: 'yes', title: 'Yes' },
+        { id: 'no',  title: 'No' }
+    ]
+});
+```
+
+<p align="center">
+    <img width="31%" src="images/android-actions.png">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <img width="31%" src="images/ios-actions.png">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <img width="31%" src="images/windows-actions.png">
+</p>
+
+### Input
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Justin Rhyss',
+    text: 'Do you want to go see a movie tonight?',
+    actions: [{
+        id: 'reply',
+        type: 'input',
+        title: 'Reply',
+        emptyText: 'Type message',
+    }, ... ]
+});
+```
+
+<p align="center">
+    <img src="images/android-reply.png">
+</p>
+
+It is recommended to pre-define action groups rather then specifying them with each new notification of the same type.
 
 
-## I would like to propose new features
-We appreciate any feature proposal and support for their development. Please describe them [here][feature_proposal_issue].
+```js
+cordova.plugins.notification.local.addActionGroup('yes-no', [
+    { id: 'yes', title: 'Yes' },
+    { id: 'no',  title: 'No'  }
+]);
+```
 
-Find out more information [here][wiki_next] in our wiki.
+Once you have defined an action group, you can reference it when scheduling notifications: 
 
-## Supporting
-Your support is needed. If you use the plugin please send us a drop through the donation button.
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Justin Rhyss',
+    text: 'Do you want to go see a movie tonight?',
+    actionGroupId: 'yes-no'
+});
+```
 
-Thank you!
+### Properties
 
-[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal")
+Actions do have a set of configurable properties. Not all of them are supported across all platforms.
+
+| Property     | Type         | Android | iOS | Windows |
+| :----------- | :----------- | :------ | :-- | :------ |
+| id           | button+input | x       | x   | x       |
+| title        | button+input | x       | x   | x       |
+| launch       | button+input | x       | x   | x       |
+| ui           | button+input |         | x   |         |
+| needsAuth    | button+input |         | x   |         |
+| icon         | button+input | x       |     |         |
+| emptyText    | input        | x       | x   | x       |
+| submitTitle  | input        |         | x   |         |
+| editable     | input        | x       |     |         |
+| choices      | input        | x       |     |         |
+| defaultValue | input        |         |     | x       |
+
+
+## Triggers
+
+Notifications may trigger immediately or depend on calendar or location.
+
+To trigger at a fix date:
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Design team meeting',
+    text: '3:00 - 4:00 PM',
+    trigger: { at: new Date(2017, 10, 27, 15) }
+});
+```
+
+Or relative from now:
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Design team meeting',
+    trigger: { in: 1, unit: 'hour' }
+});
+```
+
+### Repeating
+
+Repeat relative from now:
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Design team meeting',
+    trigger: { every: 'day', count: 5 }
+});
+```
+
+Or trigger every time the date matches:
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Happy Birthday!!!',
+    trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
+});
+```
+
+### Location based
+
+To trigger when the user enters a region:
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Welcome to our office',
+    trigger: {
+        type: 'location',
+        center: [x, y],
+        radius: 15,
+        notifyOnEntry: true
+    }
+});
+```
+
+## Progress
+
+Notifications can include an animated progress indicator that shows users the status of an ongoing operation.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Sync in progress',
+    text: 'Copied 2 of 10 files',
+    progressBar: { value: 20 }
+});
+```
+
+<p align="center">
+    <img src="images/android-progress.png">
+</p>
+
+
+## Patterns
+
+Split the text by line breaks if the message comes from a single person and just to long to show in a single line.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'The Big Meeting',
+    text: '4:15 - 5:15 PM\nBig Conference Room',
+    smallIcon: 'res://calendar',
+    icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzfXKe6Yfjr6rCtR6cMPJB8CqMAYWECDtDqH-eMnerHHuXv9egrw'
+});
+```
+
+<p align="center">
+    <img src="images/android-inbox.png">
+</p>
+
+### Summarizing
+
+Instead of displaying multiple notifications, you can create one notification that summarizes them all.
+
+```js
+cordova.plugins.notification.local.schedule({
+    id: 15,
+    title: 'Chat with Irish',
+    icon: 'http://climberindonesia.com/assets/icon/ionicons-2.0.1/png/512/android-chat.png',
+    text: [
+        { message: 'I miss you' },
+        { person: 'Irish', message: 'I miss you more!' },
+        { message: 'I always miss you more by 10%' }
+    ]
+});
+```
+
+<p align="center">
+    <img src="images/android-chat.png">
+</p>
+
+To add a new message to the existing chat:
+
+```js
+cordova.plugins.notification.local.update({
+    id: 15,
+    text: [{ person: 'Irish', message: 'Bye bye' }]
+});
+```
+
+### Grouping
+
+Your app can present multiple notifications as a single group:
+
+- A parent notification displays a summary of its child notifications.
+- The child notifications are presented without duplicate header information.
+
+```js
+cordova.plugins.notification.local.schedule([
+    { id: 0, title: 'Design team meeting', ... },
+    { id: 1, summary: 'me@gmail.com', group: 'email', groupSummary: true },
+    { id: 2, title: 'Please take all my money', ... group: 'email' },
+    { id: 3, title: 'A question regarding this plugin', ... group: 'email' },
+    { id: 4, title: 'Wellcome back home', ... group: 'email' }
+]);
+```
+
+<p align="center">
+    <img src="images/android-stack.png">
+</p>
+
+
+## Permissions
+
+Each platform may require the user to grant permissions first before the app is allowed to schedule notifications.
+
+```js
+cordova.plugins.notification.local.hasPermission(function (granted) { ... });
+```
+
+If requesting via plug-in, a system dialog does pop up for the first time. Later its only possible to tweak the settings through the system settings.
+
+```js
+cordova.plugins.notification.local.requestPermission(function (granted) { ... });
+```
+
+<p align="center">
+    <img src="images/ios-permission.png">
+</p>
+
+Checking the permissions is done automatically, however it's possible to skip that.
+
+```js
+cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
+```
+
+
+## Events
+
+The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
+
+```js
+cordova.plugins.notification.local.on(event, callback, scope);
+```
+
+To unsubscribe from events:
+
+```js
+cordova.plugins.notification.local.un(event, callback, scope);
+```
+
+### Custom
+
+The plugin also fires events specified by actions.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Do you want to go see a movie tonight?',
+    actions: [{ id: 'yes', title: 'Yes' }]
+});
+```
+
+The name of the event is the id of the action.
+
+```js
+cordova.plugins.notification.local.on('yes', function (notification, eopts) { ... });
+```
+
+### Fire manually
+
+Not an official interface, however its possible to manually fire events.
+
+```js
+cordova.plugins.notification.local.core.fireEvent(event, args);
+```
+
+
+## Launch Details
+
+Check the `launchDetails` to find out if the app was launched by clicking on a notification.
+
+```js
+document.addEventListener('deviceready', function () {
+    console.log(cordova.plugins.notification.local.launchDetails);
+}, false);
+```
+
+
+## Methods
+
+All methods work asynchron and accept callback methods.
+See the sample app for how to use them.
+
+| Method   | Method            | Method          | Method         | Method      |
+| :------- | :---------------- | :-------------- | :------------- | :---------- |
+| schedule | cancelAll         | isTriggered     | get            | getDefaults |
+| update   | hasPermission     | getType         | getAll         | setDefaults |
+| clear    | requestPermission | getIds          | getScheduled   | on          |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | un          |
+| cancel   | isScheduled       | getTriggeredIds | addActionGroup |
+
+
+## Installation
+
+The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
+
+Execute from the projects root folder:
+
+    $ cordova plugin add cordova-plugin-local-notification
+
+Or install a specific version:
+
+    $ cordova plugin add cordova-plugin-local-notification@VERSION
+
+Or install the latest head version:
+
+    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notification.git
+
+Or install from local source:
+
+    $ cordova plugin add cordova-plugin-local-notification --nofetch --searchpath <path>
 
 
 ## Contributing
@@ -129,19 +462,14 @@ Thank you!
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-© 2013-2016 appPlant UG, Inc. All rights reserved
+Made with :yum: from Leipzig
+
+© 2013 [appPlant GmbH][appplant]
 
 
 [ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
-[wiki]: https://github.com/katzer/cordova-plugin-local-notifications/wiki
-[wiki_platforms]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/02.-Platforms
-[wiki_installation]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/03.-Installation
-[wiki_kitchensink]: https://github.com/katzer/cordova-plugin-local-notifications/tree/example
-[wiki_schedule]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/04.-Scheduling
-[wiki_events]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/09.-Events
-[wiki_samples]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/11.-Samples
-[wiki_changelog]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide
-[wiki_next]: https://github.com/katzer/cordova-plugin-local-notifications/wiki/Feature-Requests
-[feature_proposal_issue]: https://github.com/katzer/cordova-plugin-local-notifications/issues/451
+[CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
+[npm]: https://www.npmjs.com/package/cordova-plugin-local-notification
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
+[appplant]: http://appplant.de

@@ -1,311 +1,540 @@
 /*
-    Copyright 2013-2015 appPlant UG
+ * Apache 2.0 License
+ *
+ * Copyright (c) Sebastian Katzer 2017
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ */
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+var LocalNotification = LocalNotificationProxy.LocalNotification,
+       ActivationKind = Windows.ApplicationModel.Activation.ActivationKind;
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-*/
+var impl  = new LocalNotificationProxy.LocalNotificationProxy(),
+    queue = [],
+    ready = false;
 
 /**
- * Executes all queued events.
+ * Set launchDetails object.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.deviceready  = function () {
-    exports.core.deviceready();
+exports.launch = function (success, error, args) {
+    var plugin = cordova.plugins.notification.local;
+
+    if (args.length === 0 || plugin.launchDetails) return;
+
+    plugin.launchDetails = { id: args[0], action: args[1] };
 };
 
 /**
- * Schedule a new local notification.
+ * To execute all queued events.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {Object[]} notifications
- *      Array of local notifications
+ * @return [ Void ]
  */
-exports.schedule = function (success, error, notifications) {
-    exports.core.schedule(notifications, 'schedule');
+exports.ready = function () {
+    ready = true;
+
+    for (var item of queue) {
+        exports.fireEvent.apply(exports, item);
+    }
+
+    queue = [];
+};
+
+/**
+ * Check permission to show notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.check = function (success, error) {
+    var granted = impl.hasPermission();
+
+    success(granted);
+};
+
+/**
+ * Request permission to show notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
+ */
+exports.request = function (success, error) {
+    exports.check(success, error);
+};
+
+/**
+ * Schedule notifications.
+ *
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
+ */
+exports.schedule = function (success, error, args) {
+    var options = [];
+
+    for (var props of args) {
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.schedule(options);
+
+    for (var toast of options) {
+        exports.fireEvent('add', toast);
+    }
 
     success();
 };
 
 /**
- * Update existing notifications specified by IDs in options.
+ * Update notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {Object[]} notifications
- *      Array of local notifications
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.update = function (success, error, notifications) {
-    exports.core.update(notifications);
+exports.update = function (success, error, args) {
+    var options = [];
+
+    for (var props of args) {
+        opts  = exports.parseOptions(props);
+        options.push(opts);
+    }
+
+    impl.update(options);
+
+    for (var toast of options) {
+        exports.fireEvent('update', toast);
+    }
 
     success();
 };
 
 /**
- * Clear the specified notification.
+ * Clear the notifications specified by id.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.clear = function (success, error, ids) {
-    exports.core.clear(ids, true);
+exports.clear = function (success, error, args) {
+    var toasts = impl.clear(args) || [];
+
+    for (var toast of toasts) {
+        exports.fireEvent('clear', toast);
+    }
 
     success();
 };
 
 /**
- * Clear all previously sheduled notifications.
+ * Clear all notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
 exports.clearAll = function (success, error) {
-    exports.core.clearAll();
-
+    impl.clearAll();
+    exports.fireEvent('clearall');
     success();
 };
 
 /**
- * Cancel the specified notifications.
+ * Cancel the notifications specified by id.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.cancel = function (success, error, ids) {
-    exports.core.cancel(ids, true);
+exports.cancel = function (success, error, args) {
+    var toasts = impl.cancel(args) || [];
+
+    for (var toast of toasts) {
+        exports.fireEvent('cancel', toast);
+    }
 
     success();
 };
 
 /**
- * Remove all previously registered notifications.
+ * Cancel all notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
 exports.cancelAll = function (success, error) {
-    exports.core.cancelAll();
-
+    impl.cancelAll();
+    exports.fireEvent('cancelall');
     success();
 };
 
 /**
- * Check if a notification with an ID is present.
+ * Get the type of notification.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int} id
- *      Local notification ID
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.isPresent = function (success, error, args) {
-    var found = exports.core.isPresent(args[0]);
+exports.type = function (success, error, args) {
+    var type = impl.type(args[0]);
 
-    success(found);
+    success(type);
 };
 
 /**
- * Check if a notification with an ID is scheduled.
+ * List of all notification ids.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int} id
- *      Local notification ID
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
-exports.isScheduled = function (success, error, args) {
-    var found = exports.core.isScheduled(args[0]);
+exports.ids = function (success, error) {
+    var ids = impl.ids() || [];
 
-    success(found);
+    success(Array.from(ids));
 };
 
 /**
- * Check if a notification with an ID was triggered.
+ * List of all scheduled notification ids.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int} id
- *      Local notification ID
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
-exports.isTriggered = function (success, error, args) {
-    var found = exports.core.isTriggered(args[0]);
+exports.scheduledIds = function (success, error) {
+    var ids = impl.scheduledIds() || [];
 
-    success(found);
+    success(Array.from(ids));
 };
 
 /**
- * List all local notification IDs.
+ * List of all triggered notification ids.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
-exports.getAllIds = function (success, error) {
-    var ids = exports.core.getAllIds();
+exports.triggeredIds = function (success, error) {
+    var ids = impl.triggeredIds() || [];
 
-    success(ids);
+    success(Array.from(ids));
 };
 
 /**
- * List all scheduled notification IDs.
+ * Get a single notification by id.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.getScheduledIds = function (success, error) {
-    var ids = exports.core.getScheduledIds();
+exports.notification = function (success, error, args) {
+    var obj = impl.notification(args[0]);
 
-    success(ids);
+    success(exports.clone(obj));
 };
 
 /**
- * List all triggered notification IDs.
+ * List of (all) notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
+ *
+ * @return [ Void ]
  */
-exports.getTriggeredIds = function (success, error) {
-    var ids = exports.core.getTriggeredIds();
+exports.notifications = function (success, error, args) {
+    var objs = impl.notifications(args) || [];
 
-    success(ids);
+    success(exports.cloneAll(objs));
 };
 
 /**
- * Propertys for given notification.
+ * List of all scheduled notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
-exports.getSingle = function (success, error, ids) {
-    var notification = exports.core.getAll(ids)[0];
+exports.scheduledNotifications = function (success, error) {
+    var objs = impl.scheduledNotifications() || [];
 
-    success(notification);
+    success(exports.cloneAll(objs));
 };
 
 /**
- * Propertys for given scheduled notification.
+ * List of all triggered notifications.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Function ] success Success callback
+ * @param [ Function ] error   Error callback
+ *
+ * @return [ Void ]
  */
-exports.getSingleScheduled = function (success, error, ids) {
-    var notification = exports.core.getScheduled(ids)[0];
+exports.triggeredNotifications = function (success, error) {
+    var objs = impl.triggeredNotifications() || [];
 
-    success(notification);
+    success(exports.cloneAll(objs));
 };
 
 /**
- * Propertys for given triggered notification.
+ * Inform the user through the click event that a notification was clicked.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ String ] xml The launch identifier.
+ *
+ * @return [ Void ]
  */
-exports.getSingleTriggered = function (success, error, ids) {
-    var notification = exports.core.getTriggered(ids)[0];
+exports.clicked = function (xml, input) {
+    var toast = LocalNotification.Options.parse(xml),
+        event = toast.action || 'click',
+        meta  = Object.assign({}, input);
 
-    success(notification);
+    if (input && input.size > 0) {
+        meta.text = input.first().current.value;
+    }
+
+    if (!ready) {
+        exports.launch(null, null, [toast.id, event]);
+    }
+
+    exports.fireEvent(event, toast, meta);
 };
 
 /**
- * Property list for given notifications.
- * If called without IDs, all notification will be returned.
+ * Invoke listeners for the given event.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ String ] event The name of the event.
+ * @param [ Object ] toast Optional notification object.
+ * @param [ Object ] data  Optional meta data about the event.
+ *
+ * @return [ Void ]
  */
-exports.getAll = function (success, error, ids) {
-    var notifications = exports.core.getAll(ids);
+exports.fireEvent = function (event, toast, data) {
+    var meta   = Object.assign({ event: event }, data),
+        plugin = cordova.plugins.notification.local.core;
 
-    success(notifications);
+    if (!ready) {
+        queue.push(arguments);
+        return;
+    }
+
+    if (toast) {
+        plugin.fireEvent(event, exports.clone(toast), meta);
+    } else {
+        plugin.fireEvent(event, meta);
+    }
 };
 
 /**
- * Property list for given triggered notifications.
- * If called without IDs, all notification will be returned.
+ * Clone the objects and delete internal properties.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Array<Object> ] objs The objects to clone for.
+ *
+ * @return [ Array<Object> ]
  */
-exports.getScheduled = function (success, error, ids) {
-    var notifications = exports.core.getScheduled(ids);
+exports.cloneAll = function (objs) {
+    var clones = [];
 
-    success(notifications);
+    for (var obj of objs) {
+        clones.push(exports.clone(obj));
+    }
+
+    return clones;
 };
 
 /**
- * Property list for given triggered notifications.
- * If called without IDs, all notification will be returned.
+ * Clone the object and delete internal properties.
  *
- * @param {Function} success
- *      Success callback
- * @param {Function} error
- *      Error callback
- * @param {int[]} ids
- *      List of local notification IDs
+ * @param [ Object ] obj The object to clone for.
+ *
+ * @return [ Object ]
  */
-exports.getTriggered = function (success, error, ids) {
-    var notifications = exports.core.getTriggered(ids);
+exports.clone = function (obj) {
+    var ignore = ['action'],
+        dclone = ['trigger'],
+        clone  = {};
 
-    success(notifications);
+    if (obj === null) return null;
+
+    for (var prop in obj) {
+        if (ignore.includes(prop) || typeof obj[prop] === 'function')
+            continue;
+
+        try {
+            clone[prop] = dclone.includes(prop) ? exports.clone(obj[prop]) : obj[prop];
+        } catch (e) {
+            clone[prop] = null;
+        }
+    }
+
+    return clone;
 };
 
+/**
+ * Parse notification spec into an instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Options ]
+ */
+exports.parseOptions = function (obj) {
+    var opts   = new LocalNotification.Options(),
+        ignore = ['progressBar', 'actions', 'trigger'];
+
+    for (var prop in opts) {
+        if (!ignore.includes(prop) && obj[prop]) {
+            opts[prop] = obj[prop];
+        }
+    }
+
+    var progressBar  = exports.parseProgressBar(obj);
+    opts.progressBar = progressBar;
+
+    var trigger  = exports.parseTrigger(obj);
+    opts.trigger = trigger;
+
+    var actions  = exports.parseActions(obj);
+    opts.actions = actions;
+
+    return opts;
+};
+
+/**
+ * Parse trigger spec into instance of prefered type.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.Trigger ]
+ */
+exports.parseTrigger = function (obj) {
+    var trigger = new LocalNotification.Trigger(),
+        spec    = obj.trigger, val;
+
+    if (!spec) return trigger;
+
+    for (var prop in trigger) {
+        val = spec[prop];
+        if (!val) continue;
+        trigger[prop] = prop == 'every' ? exports.parseEvery(val) : val;
+    }
+
+    return trigger;
+};
+
+/**
+ * Parse trigger.every spec into instance of prefered type.
+ *
+ * @param [ Object ] spec The trigger.every object.
+ *
+ * @return [ LocalNotification.Every|String ]
+ */
+exports.parseEvery = function (spec) {
+    var every = new LocalNotification.Every();
+
+    if (typeof spec !== 'object') return spec;
+
+    for (var prop in every) {
+        if (spec[prop]) every[prop] = parseInt(spec[prop]);
+    }
+
+    return every;
+};
+
+/**
+ * Parse action specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ Array<LocalNotification.Action> ]
+ */
+exports.parseActions = function (obj) {
+    var actions = [], btn;
+
+    if (!obj.actions) return actions;
+
+    for (var action of obj.actions) {
+        if (!action.type || action.type == 'button') {
+            btn = new LocalNotification.Button();
+        } else
+        if (action.type == 'input') {
+            btn = new LocalNotification.Input();
+        }
+
+        for (var prop in btn) {
+            if (action[prop]) btn[prop] = action[prop];
+        }
+
+        actions.push(btn);
+    }
+
+    return actions;
+};
+
+/**
+ * Parse progressBar specs into instances of prefered types.
+ *
+ * @param [ Object ] obj The notification options map.
+ *
+ * @return [ LocalNotification.ProgressBar ]
+ */
+exports.parseProgressBar = function (obj) {
+    var bar  = new LocalNotification.ProgressBar(),
+        spec = obj.progressBar;
+
+    if (!spec) return bar;
+
+    for (var prop in bar) {
+        if (spec[prop]) bar[prop] = spec[prop];
+    }
+
+    return bar;
+};
+
+// Handle onclick event
+document.addEventListener('activated', function (e) {
+    if (e.kind == ActivationKind.toastNotification) {
+        exports.clicked(e.raw.argument, e.raw.userInput);
+    }
+}, false);
 
 cordova.commandProxy.add('LocalNotification', exports);

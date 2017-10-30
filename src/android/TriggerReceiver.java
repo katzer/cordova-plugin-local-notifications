@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,14 +17,16 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.os.Bundle;
+
 import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -32,38 +34,39 @@ import de.appplant.cordova.plugin.notification.Notification;
  * Android notification bar. The notification uses the default notification
  * sound and it vibrates the phone.
  */
-public class TriggerReceiver extends de.appplant.cordova.plugin.notification.TriggerReceiver {
+public class TriggerReceiver extends AbstractTriggerReceiver {
 
     /**
      * Called when a local notification was triggered. Does present the local
      * notification, re-schedule the alarm if necessary and fire trigger event.
      *
-     * @param notification
-     *      Wrapper around the local notification
-     * @param updated
-     *      If an update has triggered or the original
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, boolean updated) {
-        super.onTrigger(notification, updated);
+    public void onTrigger (Notification notification, Bundle bundle) {
+        int badge = notification.getOptions().getBadgeNumber();
 
-        if (!updated) {
-            LocalNotification.fireEvent("trigger", notification);
+        if (badge > 0) {
+            Manager.getInstance(notification.getContext()).setBadge(badge);
         }
+
+        notification.show();
+        LocalNotification.fireEvent("trigger", notification);
     }
 
     /**
      * Build notification specified by options.
      *
-     * @param builder
-     *      Notification builder
+     * @param builder Notification builder.
+     * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder) {
+    public Notification buildNotification (Builder builder, Bundle bundle) {
         return builder
-                .setTriggerReceiver(TriggerReceiver.class)
-                .setClickActivity(ClickActivity.class)
+                .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)
+                .setExtras(bundle)
                 .build();
     }
 

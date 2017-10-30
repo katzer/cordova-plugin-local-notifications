@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,267 +17,249 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 var exec = require('cordova/exec');
 
-
-/********
- * CORE *
- ********/
-
 /**
- * Returns the default settings.
+ * Check permission to show notifications.
  *
- * @return {Object}
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
-exports.getDefaults = function () {
-    return this._defaults;
+exports.hasPermission = function (callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
+
+    exec(fn, null, 'LocalNotification', 'check', []);
 };
 
 /**
- * Overwrite default settings.
+ * Request permission to show notifications.
  *
- * @param {Object} defaults
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
-exports.setDefaults = function (newDefaults) {
-    var defaults = this.getDefaults();
+exports.requestPermission = function (callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
 
-    for (var key in defaults) {
-        if (newDefaults.hasOwnProperty(key)) {
-            defaults[key] = newDefaults[key];
-        }
-    }
+    exec(fn, null, 'LocalNotification', 'request', []);
 };
 
 /**
- * Schedule a new local notification.
+ * Schedule notifications.
  *
- * @param {Object} msgs
- *      The notification properties
- * @param {Function} callback
- *      A function to be called after the notification has been canceled
- * @param {Object?} scope
- *      The scope for the callback function
- * @param {Object?} args
- *      skipPermission:true schedules the notifications immediatly without
- *                          registering or checking for permission
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
  */
 exports.schedule = function (msgs, callback, scope, args) {
-    var fn = function(granted) {
+    var fn = function (granted) {
 
         if (!granted) return;
 
-        var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        var toasts = this.toArray(msgs);
 
-        for (var i = 0; i < notifications.length; i++) {
-            var notification = notifications[i];
-
-            this.mergeWithDefaults(notification);
-            this.convertProperties(notification);
+        for (var toast of toasts) {
+            this.mergeWithDefaults(toast);
+            this.convertProperties(toast);
         }
 
-        this.exec('schedule', notifications, callback, scope);
+        this.exec('schedule', toasts, callback, scope);
     };
 
     if (args && args.skipPermission) {
         fn.call(this, true);
     } else {
-        this.registerPermission(fn, this);
+        this.requestPermission(fn, this);
     }
 };
 
 /**
- * Update existing notifications specified by IDs in options.
+ * Schedule notifications.
  *
- * @param {Object} notifications
- *      The notification properties to update
- * @param {Function} callback
- *      A function to be called after the notification has been updated
- * @param {Object?} scope
- *      The scope for the callback function
- * @param {Object?} args
- *      skipPermission:true schedules the notifications immediatly without
- *                          registering or checking for permission
+ * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Function ] callback      The function to be exec as the callback.
+ * @param [ Object ]   scope         The callback function's scope.
+ * @param [ Object ]   args          Optional flags how to schedule.
+ *
+ * @return [ Void ]
  */
 exports.update = function (msgs, callback, scope, args) {
     var fn = function(granted) {
 
         if (!granted) return;
 
-        var notifications = Array.isArray(msgs) ? msgs : [msgs];
+        var toasts = this.toArray(msgs);
 
-        for (var i = 0; i < notifications.length; i++) {
-            var notification = notifications[i];
+        for (var toast of toasts) {
+            this.convertProperties(toast);        }
 
-            this.convertProperties(notification);
-        }
-
-        this.exec('update', notifications, callback, scope);
+        this.exec('update', toasts, callback, scope);
     };
 
     if (args && args.skipPermission) {
         fn.call(this, true);
     } else {
-        this.registerPermission(fn, this);
+        this.requestPermission(fn, this);
     }
 };
 
 /**
- * Clear the specified notification.
+ * Clear the specified notifications by id.
  *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A function to be called after the notification has been cleared
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Array<Int> ] ids      The IDs of the notifications.
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.clear = function (ids, callback, scope) {
-    ids = Array.isArray(ids) ? ids : [ids];
+    ids = this.toArray(ids);
     ids = this.convertIds(ids);
 
     this.exec('clear', ids, callback, scope);
 };
 
 /**
- * Clear all previously sheduled notifications.
+ * Clear all triggered notifications.
  *
- * @param {Function} callback
- *      A function to be called after all notifications have been cleared
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.clearAll = function (callback, scope) {
     this.exec('clearAll', null, callback, scope);
 };
 
 /**
- * Cancel the specified notifications.
+ * Clear the specified notifications by id.
  *
- * @param {String[]} ids
- *      The IDs of the notifications
- * @param {Function} callback
- *      A function to be called after the notifications has been canceled
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Array<Int> ] ids      The IDs of the notifications.
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.cancel = function (ids, callback, scope) {
-    ids = Array.isArray(ids) ? ids : [ids];
+    ids = this.toArray(ids);
     ids = this.convertIds(ids);
 
     this.exec('cancel', ids, callback, scope);
 };
 
 /**
- * Remove all previously registered notifications.
+ * Cancel all scheduled notifications.
  *
- * @param {Function} callback
- *      A function to be called after all notifications have been canceled
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.cancelAll = function (callback, scope) {
     this.exec('cancelAll', null, callback, scope);
 };
 
 /**
- * Check if a notification with an ID is present.
+ * Check if a notification is present.
  *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.isPresent = function (id, callback, scope) {
-    this.exec('isPresent', id || 0, callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type) {
+        fn(type != 'unknown');
+    });
 };
 
 /**
- * Check if a notification with an ID is scheduled.
+ * Check if a notification has a given type.
  *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
- */
-exports.isScheduled = function (id, callback, scope) {
-    this.exec('isScheduled', id || 0, callback, scope);
-};
-
-/**
- * Check if a notification with an ID was triggered.
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ String ]   type     The type of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
  *
- * @param {String} id
- *      The ID of the notification
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @return [ Void ]
  */
-exports.isTriggered = function (id, callback, scope) {
-    this.exec('isTriggered', id || 0, callback, scope);
+exports.hasType = function (id, type, callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type2) {
+        fn(type == type2);
+    });
 };
 
 /**
- * List all local notification IDs.
+ * Get the type (triggered, scheduled) for the notification.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
- */
-exports.getAllIds = function (callback, scope) {
-    this.exec('getAllIds', null, callback, scope);
-};
-
-/**
- * Alias for `getAllIds`.
- */
-exports.getIds = function () {
-    this.getAllIds.apply(this, arguments);
-};
-
-/**
- * List all scheduled notification IDs.
+ * @param [ Int ]      id       The ID of the notification.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @return [ Void ]
+ */
+exports.getType = function (id, callback, scope) {
+    this.exec('type', id, callback, scope);
+};
+
+/**
+ * List of all notification ids.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.getIds = function (callback, scope) {
+    this.exec('ids', null, callback, scope);
+};
+
+/**
+ * List of all scheduled notification IDs.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.getScheduledIds = function (callback, scope) {
-    this.exec('getScheduledIds', null, callback, scope);
+    this.exec('scheduledIds', null, callback, scope);
 };
 
 /**
- * List all triggered notification IDs.
+ * List of all triggered notification IDs.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.getTriggeredIds = function (callback, scope) {
-    this.exec('getTriggeredIds', null, callback, scope);
+    this.exec('triggeredIds', null, callback, scope);
 };
 
 /**
- * Property list for given local notifications.
+ * List of local notifications specified by id.
  * If called without IDs, all notification will be returned.
  *
- * @param {Number[]?} ids
- *      Set of notification IDs
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Array<Int> ] ids      The IDs of the notifications.
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.get = function () {
     var args = Array.apply(null, arguments);
@@ -291,182 +273,101 @@ exports.get = function () {
         scope    = args[2];
 
     if (!Array.isArray(ids)) {
-        this.exec('getSingle', Number(ids), callback, scope);
+        this.exec('notification', Number(ids), callback, scope);
         return;
     }
 
     ids = this.convertIds(ids);
 
-    this.exec('getAll', ids, callback, scope);
+    this.exec('notifications', ids, callback, scope);
 };
 
 /**
- * Property list for all local notifications.
+ * List for all notifications.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.getAll = function (callback, scope) {
-    this.exec('getAll', null, callback, scope);
+    this.exec('notifications', null, callback, scope);
 };
 
 /**
- * Property list for given scheduled notifications.
- * If called without IDs, all notification will be returned.
+ * List of all scheduled notifications.
  *
- * @param {Number[]?} ids
- *      Set of notification IDs
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getScheduled = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('getSingleScheduled', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('getScheduled', ids, callback, scope);
+exports.getScheduled = function (callback, scope) {
+    this.exec('scheduledNotifications', null, callback, scope);
 };
 
 /**
- * Property list for all scheduled notifications.
+ * List of all triggered notifications.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ Function ]   callback The function to be exec as the callback.
+ * @param [ Object ]     scope    The callback function's scope.
  */
-exports.getAllScheduled = function (callback, scope) {
-    this.exec('getScheduled', null, callback, scope);
+exports.getTriggered = function (callback, scope) {
+    this.exec('triggeredNotifications', null, callback, scope);
 };
 
 /**
- * Property list for given triggered notifications.
- * If called without IDs, all notification will be returned.
+ * Register an group of actions by id.
  *
- * @param {Number[]?} ids
- *      Set of notification IDs
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Array]     actions  The action config settings.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
-exports.getTriggered = function () {
-    var args = Array.apply(null, arguments);
-
-    if (typeof args[0] == 'function') {
-        args.unshift([]);
-    }
-
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
-
-    if (!Array.isArray(ids)) {
-        ids = [ids];
-    }
-
-    if (!Array.isArray(ids)) {
-        this.exec('getSingleTriggered', Number(ids), callback, scope);
-        return;
-    }
-
-    ids = this.convertIds(ids);
-
-    this.exec('getTriggered', ids, callback, scope);
+exports.addActionGroup = function (id, actions, callback, scope) {
+    var config = { actionGroupId: id, actions: actions };
+    this.exec('actions', config, callback, scope);
 };
 
 /**
- * Property list for all triggered notifications.
+ * The (platform specific) default settings.
  *
- * @param {Function} callback
- *      A callback function to be called with the list
- * @param {Object?} scope
- *      The scope for the callback function
+ * @return [ Object ]
  */
-exports.getAllTriggered = function (callback, scope) {
-    this.exec('getTriggered', null, callback, scope);
+exports.getDefaults = function () {
+    var map = Object.create(this._defaults);
+
+    for (var key in map) {
+        if (Array.isArray(map[key])) {
+            map[key] = Array.from(map[key]);
+        } else
+        if (Object.prototype.isPrototypeOf(map[key])) {
+            map[key] = Object.create(map[key]);
+        }
+    }
+
+    return map;
 };
 
 /**
- * Informs if the app has the permission to show notifications.
+ * Overwrite default settings.
  *
- * @param {Function} callback
- *      The function to be exec as the callback
- * @param {Object?} scope
- *      The callback function's scope
- */
-exports.hasPermission = function (callback, scope) {
-    var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS' && device.platform != 'Android') {
-        fn(true);
-        return;
-    }
-
-    exec(fn, null, 'LocalNotification', 'hasPermission', []);
-};
-
-/**
- * Register permission to show notifications if not already granted.
+ * @param [ Object ] newDefaults New default values.
  *
- * @param {Function} callback
- *      The function to be exec as the callback
- * @param {Object?} scope
- *      The callback function's scope
+ * @return [ Void ]
  */
-exports.registerPermission = function (callback, scope) {
-
-    if (this._registered) {
-        return this.hasPermission(callback, scope);
-    } else {
-        this._registered = true;
-    }
-
-    var fn = this.createCallbackFn(callback, scope);
-
-    if (device.platform != 'iOS') {
-        fn(true);
-        return;
-    }
-
-    exec(fn, null, 'LocalNotification', 'registerPermission', []);
+exports.setDefaults = function (newDefaults) {
+    Object.assign(this._defaults, newDefaults);
 };
-
-
-/**********
- * EVENTS *
- **********/
 
 /**
  * Register callback for given event.
  *
- * @param {String} event
- *      The event's name
- * @param {Function} callback
- *      The function to be exec as callback
- * @param {Object?} scope
- *      The callback function's scope
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
  */
 exports.on = function (event, callback, scope) {
 
@@ -485,10 +386,10 @@ exports.on = function (event, callback, scope) {
 /**
  * Unregister callback for given event.
  *
- * @param {String} event
- *      The event's name
- * @param {Function} callback
- *      The function to be exec as callback
+ * @param [ String ]   event    The name of the event.
+ * @param [ Function ] callback The function to be exec as callback.
+ *
+ * @return [ Void ]
  */
 exports.un = function (event, callback) {
     var listener = this._listener[event];
