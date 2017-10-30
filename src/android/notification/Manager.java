@@ -120,33 +120,23 @@ public final class Manager {
         mgr.createNotificationChannel(channel);
     }
 
-    // /**
-    //  * Clear local notification specified by ID.
-    //  *
-    //  * @param id
-    //  *      The notification ID
-    //  * @param updates
-    //  *      JSON object with notification options
-    //  * @param receiver
-    //  *      Receiver to handle the trigger event
-    //  */
-    // public Notification update (int id, JSONObject updates, Class<?> receiver) {
-    //     Notification notification = get(id);
+    /**
+     * Update local notification specified by ID.
+     *
+     * @param id       The notification ID.
+     * @param updates  JSON object with notification options.
+     * @param receiver Receiver to handle the trigger event.
+     */
+    public Notification update (int id, JSONObject updates, Class<?> receiver) {
+        Notification notification = get(id);
 
-    //     if (notification == null)
-    //         return null;
+        if (notification == null)
+            return null;
 
-    //     notification.cancel();
+        notification.update(updates, receiver);
 
-    //     JSONObject options = mergeJSONObjects(
-    //             notification.getOptions().getDict(), updates);
-
-    //     try {
-    //         options.put("updated", true);
-    //     } catch (JSONException ignore) {}
-
-    //     return schedule(options, receiver);
-    // }
+        return notification;
+    }
 
     /**
      * Clear local notification specified by ID.
@@ -386,30 +376,6 @@ public final class Manager {
         return new Notification(context, options);
     }
 
-    // /**
-    //  * Merge two JSON objects.
-    //  *
-    //  * @param obj1
-    //  *      JSON object
-    //  * @param obj2
-    //  *      JSON object with new options
-    //  */
-    // private JSONObject mergeJSONObjects (JSONObject obj1, JSONObject obj2) {
-    //     Iterator it = obj2.keys();
-
-    //     while (it.hasNext()) {
-    //         try {
-    //             String key = (String)it.next();
-
-    //             obj1.put(key, obj2.opt(key));
-    //         } catch (JSONException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-
-    //     return obj1;
-    // }
-
     /**
      * Set the badge number of the app icon.
      *
@@ -444,7 +410,7 @@ public final class Manager {
     private NotificationManagerCompat getNotCompMgr() {
         return NotificationManagerCompat.from(context);
     }
-    
+
     /**
      * Notification manager compat for the application.
      */

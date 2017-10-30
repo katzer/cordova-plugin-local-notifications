@@ -31,7 +31,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.ArrayList;

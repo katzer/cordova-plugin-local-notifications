@@ -45,14 +45,18 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger (Notification notification, Bundle bundle) {
-        int badge = notification.getOptions().getBadgeNumber();
+        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
+        int badge        = notification.getOptions().getBadgeNumber();
 
         if (badge > 0) {
             Manager.getInstance(notification.getContext()).setBadge(badge);
         }
 
         notification.show();
-        LocalNotification.fireEvent("trigger", notification);
+
+        if (!isUpdate) {
+            LocalNotification.fireEvent("trigger", notification);
+        }
     }
 
     /**

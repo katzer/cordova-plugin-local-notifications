@@ -164,11 +164,10 @@ exports.convertProperties = function (options) {
  * @return [ Map ] Interaction object with category & actions.
  */
 exports.convertActions = function (options) {
+    var actions = [];
 
     if (!options.actions)
         return null;
-
-    var actions = [];
 
     for (var action of options.actions) {
 
@@ -199,6 +198,9 @@ exports.convertActions = function (options) {
 exports.convertTrigger = function (options) {
     var trigger  = options.trigger || {},
         date     = this.getValueFor(trigger, 'at', 'firstAt', 'date');
+
+    if (!options.trigger)
+        return;
 
     if (!trigger.type) {
         trigger.type = trigger.center ? 'location' : 'calendar';
@@ -261,6 +263,9 @@ exports.convertTrigger = function (options) {
 exports.convertProgressBar = function (options) {
     var isAndroid = device.platform == 'Android',
         cfg       = options.progressBar;
+
+    if (cfg === undefined)
+        return;
 
     if (typeof cfg === 'boolean') {
         cfg = options.progressBar = { enabled: cfg };

@@ -39,6 +39,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +62,9 @@ public final class Notification {
 
     // Extra key for the id
     public static final String EXTRA_ID = "NOTIFICATION_ID";
+
+    // Extra key for the update flag
+    public static final String EXTRA_UPDATE = "NOTIFICATION_UPDATE";
 
     // Key for private preferences
     static final String PREF_KEY_ID = "NOTIFICATION_ID";
@@ -288,6 +292,27 @@ public final class Notification {
     }
 
     /**
+     * Update the notification properties.
+     *
+     * @param updates  The properties to update.
+     * @param receiver Receiver to handle the trigger event.
+     */
+    void update (JSONObject updates, Class<?> receiver) {
+        mergeJSONObjects(updates);
+        persist(null);
+
+        if (getType() != Type.TRIGGERED)
+            return;
+
+        Intent intent = new Intent(context, receiver)
+                .setAction(PREF_KEY_ID + options.getId())
+                .putExtra(Notification.EXTRA_ID, options.getId())
+                .putExtra(Notification.EXTRA_UPDATE, true);
+
+        trigger(intent, receiver);
+    }
+
+    /**
      * Encode options to JSON.
      */
     public String toString() {
@@ -317,6 +342,9 @@ public final class Notification {
         editor = getPrefs(PREF_KEY_ID).edit();
         editor.putString(id, options.toString());
         editor.apply();
+
+        if (ids == null)
+            return;
 
         editor = getPrefs(PREF_KEY_PID).edit();
         editor.putStringSet(id, ids);
@@ -352,6 +380,23 @@ public final class Notification {
         context.grantUriPermission(
                 "com.android.systemui", soundUri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    /**
+     * Merge two JSON objects.
+     */
+    private void mergeJSONObjects (JSONObject updates) {
+        JSONObject dict = options.getDict();
+        Iterator it     = updates.keys();
+
+        while (it.hasNext()) {
+            try {
+                String key = (String)it.next();
+                dict.put(key, updates.opt(key));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

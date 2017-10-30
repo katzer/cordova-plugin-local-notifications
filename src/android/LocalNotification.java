@@ -157,10 +157,10 @@ public class LocalNotification extends CordovaPlugin {
                     schedule(args);
                     command.success();
                 } else
-                // if (action.equals("update")) {
-                //     update(args);
-                //     command.success();
-                // } else
+                if (action.equals("update")) {
+                    update(args);
+                    command.success();
+                } else
                 if (action.equals("cancel")) {
                     cancel(args);
                     command.success();
@@ -290,26 +290,26 @@ public class LocalNotification extends CordovaPlugin {
         }
     }
 
-    // /**
-    //  * Update multiple local notifications.
-    //  *
-    //  * @param updates
-    //  *      Notification properties including their IDs
-    //  */
-    // private void update (JSONArray updates) {
-    //     for (int i = 0; i < updates.length(); i++) {
-    //         JSONObject update = updates.optJSONObject(i);
-    //         int id = update.optInt("id", 0);
+    /**
+     * Update multiple local notifications.
+     *
+     * @param updates
+     *      Notification properties including their IDs
+     */
+    private void update (JSONArray updates) {
+        for (int i = 0; i < updates.length(); i++) {
+            JSONObject update = updates.optJSONObject(i);
+            int id            = update.optInt("id", 0);
 
-    //         Notification notification =
-    //                 getNotMgr().update(id, update, TriggerReceiver.class);
+            Notification notification =
+                    getNotMgr().update(id, update, TriggerReceiver.class);
 
-    //         if (notification == null)
-    //             continue;
+            if (notification == null)
+                continue;
 
-    //         fireEvent("update", notification);
-    //     }
-    // }
+            fireEvent("update", notification);
+        }
+    }
 
     /**
      * Cancel multiple local notifications.
