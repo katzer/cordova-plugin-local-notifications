@@ -223,12 +223,6 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-And to get informed about the event triggered:
-
-```js
-cordova.plugins.notification.local.on('trigger', function (toast, event) { ... });
-```
-
 ### Location based
 
 To trigger when the user enters a region:
@@ -354,6 +348,71 @@ Checking the permissions is done automatically, however it's possible to skip th
 ```js
 cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
 ```
+
+
+## Events
+
+The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
+
+```js
+cordova.plugins.notification.local.on(event, callback, scope);
+```
+
+To unsubscribe from events:
+
+```js
+cordova.plugins.notification.local.un(event, callback, scope);
+```
+
+### Custom
+
+The plugin also fires events specified by actions.
+
+```js
+cordova.plugins.notification.local.schedule({
+    title: 'Do you want to go see a movie tonight?',
+    actions: [{ id: 'yes', title: 'Yes' }]
+});
+```
+
+The name of the event is the id of the action.
+
+```js
+cordova.plugins.notification.local.on('yes', function (notification, eopts) { ... });
+```
+
+### Fire manually
+
+Not an official interface, however its possible to manually fire events.
+
+```js
+cordova.plugins.notification.local.core.fireEvent(event, args);
+```
+
+
+## Launch Details
+
+Check the `launchDetails` to find out if the app was launched by clicking on a notification.
+
+```js
+document.addEventListener('deviceready', function () {
+    console.log(cordova.plugins.notification.local.launchDetails);
+}, false);
+```
+
+
+## Methods
+
+All methods work asynchron and accept callback methods.
+See the sample app for how to use them.
+
+| Method   | Method            | Method          | Method         | Method      |
+| :------- | :---------------- | :-------------- | :------------- | :---------- |
+| schedule | cancelAll         | isTriggered     | get            | getDefaults |
+| update   | hasPermission     | getType         | getAll         | setDefaults |
+| clear    | requestPermission | getIds          | getScheduled   | on          |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | un          |
+| cancel   | isScheduled       | getTriggeredIds | addActionGroup |
 
 
 ## Installation
