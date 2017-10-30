@@ -46,6 +46,19 @@
 - Windows
 
 <br>
+<br>
+
+## Important Notice
+
+The _x_ branch has been merged into _master_ (30.10.2017)
+
+See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
+
+Known issues 
+- Support for Android Orio is limited yet
+- v0.9 and v0.8 aren't compatible with each other (Wont fix)
+
+Please report bugs or missing features!
 
 
 ## Basics
