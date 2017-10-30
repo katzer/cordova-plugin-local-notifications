@@ -262,7 +262,7 @@ public final class AssetUtil {
     }
 
     /**
-     * Resource ID for drawable.
+     * Get resource ID.
      *
      * @param res     The resources where to look for.
      * @param resPath The name of the resource.
@@ -278,6 +278,10 @@ public final class AssetUtil {
 
         if (resId == 0) {
             resId = res.getIdentifier(resName, "drawable", pkgName);
+        }
+
+        if (resId == 0) {
+            resId = res.getIdentifier(resName, "raw", pkgName);
         }
 
         return resId;
