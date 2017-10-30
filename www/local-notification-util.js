@@ -55,7 +55,6 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.group        = null;
         defaults.groupSummary = false;
         defaults.summary      = null;
-        defaults.icon         = null;
         defaults.smallIcon    = 'res://icon';
         defaults.sticky       = false;
         defaults.autoClear    = true;

@@ -91,6 +91,8 @@ public final class AssetUtil {
             return getUriFromAsset(path);
         } else if (path.startsWith("http")){
             return getUriFromRemote(path);
+        } else if (path.startsWith("content://")){
+            return Uri.parse(path);
         }
 
         return Uri.EMPTY;
