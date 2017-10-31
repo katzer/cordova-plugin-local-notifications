@@ -504,14 +504,18 @@
         willPresentNotification:(UNNotification *)notification
           withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
+    APPNotificationOptions* options = notification.request.options;
+
     if (![notification.request wasUpdated]) {
         [self fireEvent:@"trigger" notification:notification.request];
     }
 
-    if (notification.request.options.silent) {
+    if (options.silent) {
         completionHandler(UNNotificationPresentationOptionNone);
-    } else {
+    } else if (!isActive || options.priority > 0) {
         completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert);
+    } else {
+        completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound);
     }
 }
 

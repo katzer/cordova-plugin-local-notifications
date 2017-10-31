@@ -68,7 +68,8 @@ The plugin creates the object `cordova.plugins.notification.local` and is access
 ```js
 cordova.plugins.notification.local.schedule({
     title: 'My first notification',
-    text: 'Thats pretty easy...'
+    text: 'Thats pretty easy...',
+    foreground: true
 });
 ```
 
@@ -93,7 +94,7 @@ A notification does have a set of configurable properties. Not all of them are s
 | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
 | id            | data          | actionGroupId | summary       | led           | showWhen      | channel       | actions       |
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | 
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         |
 
 For their default values see:

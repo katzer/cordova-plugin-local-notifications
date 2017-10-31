@@ -31,6 +31,7 @@
 @property (readonly, getter=badge)       NSNumber*            badge;
 @property (readonly, getter=text)        NSString*            text;
 @property (readonly, getter=silent)      BOOL                 silent;
+@property (readonly, getter=priority)    int                  priority;
 @property (readonly, getter=sound)       UNNotificationSound* sound;
 @property (readonly, getter=userInfo)    NSDictionary*        userInfo;
 @property (readonly, getter=actions)     NSArray<UNNotificationAction *> * actions;

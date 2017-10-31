@@ -115,13 +115,23 @@
 }
 
 /**
- * Show notification in foreground.
+ * Show notification.
  *
  * @return [ BOOL ]
  */
 - (BOOL) silent
 {
     return [[dict objectForKey:@"silent"] boolValue];
+}
+
+/**
+ * Show notification in foreground.
+ *
+ * @return [ BOOL ]
+ */
+- (int) priority
+{
+    return [[dict objectForKey:@"priority"] intValue];
 }
 
 /**

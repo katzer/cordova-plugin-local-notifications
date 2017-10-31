@@ -33,6 +33,7 @@ exports._defaults = {
     color         : null,
     data          : null,
     defaults      : 0,
+    foreground    : false,
     group         : null,
     groupSummary  : false,
     icon          : null,
@@ -125,6 +126,14 @@ exports.convertProperties = function (options) {
 
     if (options.priority) {
         options.priority = parseToInt('priority', options);
+    }
+
+    if (options.foreground === true) {
+        options.priority = Math.max(options.priority, 1);
+    }
+
+    if (options.foreground === false) {
+        options.priority = Math.min(options.priority, 0);
     }
 
     if (options.defaults) {
