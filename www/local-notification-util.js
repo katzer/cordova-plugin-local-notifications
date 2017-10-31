@@ -416,12 +416,16 @@ exports.setLaunchDetails = function () {
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    exports.exec('ready');
+    if (['Android', 'windows', 'iOS'].indexOf(device.platform) > -1) {
+        exports.exec('ready');
+    }
 });
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
-    exports.setLaunchDetails();
+    if (['Android', 'windows', 'iOS'].indexOf(device.platform) > -1) {
+        exports.setLaunchDetails();
+    }
 
     channel.onCordovaInfoReady.subscribe(function () {
         exports.applyPlatformSpecificOptions();
