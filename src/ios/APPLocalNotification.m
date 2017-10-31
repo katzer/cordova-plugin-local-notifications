@@ -72,11 +72,12 @@
 {
     deviceready = YES;
 
-    for (NSString* js in eventQueue) {
-        [self.commandDelegate evalJs:js];
-    }
-
-    [eventQueue removeAllObjects];
+    [self.commandDelegate runInBackground:^{
+        for (NSString* js in eventQueue) {
+            [self.commandDelegate evalJs:js];
+        }
+        [eventQueue removeAllObjects];
+    }];
 }
 
 /**
