@@ -119,7 +119,7 @@ exports.convertProperties = function (options) {
     var parseToInt = function (prop, options) {
         if (isNaN(options[prop])) {
             console.warn(prop + ' is not a number: ' + options[prop]);
-            return this.getDefaults()[prop];
+            return this._defaults[prop];
         } else {
             return Number(options[prop]);
         }
