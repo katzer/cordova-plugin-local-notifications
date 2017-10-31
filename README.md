@@ -434,11 +434,11 @@ The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on 
 
 Execute from the projects root folder:
 
-    $ cordova plugin add cordova-plugin-local-notification
+    $ cordova plugin add cordova-plugin-local-notifications
 
 Or install a specific version:
 
-    $ cordova plugin add cordova-plugin-local-notification@VERSION
+    $ cordova plugin add cordova-plugin-local-notifications@VERSION
 
 Or install the latest head version:
 
@@ -446,7 +446,7 @@ Or install the latest head version:
 
 Or install from local source:
 
-    $ cordova plugin add cordova-plugin-local-notification --nofetch --searchpath <path>
+    $ cordova plugin add <path> --nofetch --nosave --link
 
 
 ## Contributing
