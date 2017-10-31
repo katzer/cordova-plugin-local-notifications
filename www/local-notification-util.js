@@ -24,54 +24,40 @@ var exec    = require('cordova/exec'),
 
 // Default values
 exports._defaults = {
-    id:      0,
-    text:    '',
-    title:   '',
-    sound:   true,
-    badge:   null,
-    data:    null,
-    icon:    null,
-    silent:  false,
-    trigger: { type: 'calendar' },
-    actions: [],
-    actionGroupId: null,
-    attachments: [],
-    progressBar: false
+    actionGroupId : null,
+    actions       : [],
+    attachments   : [],
+    autoClear     : true,
+    badge         : null,
+    channel       : null,
+    color         : null,
+    data          : null,
+    defaults      : 0,
+    group         : null,
+    groupSummary  : false,
+    icon          : null,
+    id            : 0,
+    launch        : true,
+    led           : true,
+    lockscreen    : true,
+    mediaSession  : null,
+    number        : 0,
+    priority      : 0,
+    progressBar   : false,
+    showWhen      : true,
+    silent        : false,
+    smallIcon     : 'res://icon',
+    sound         : true,
+    sticky        : false,
+    summary       : null,
+    text          : '',
+    title         : '',
+    trigger       : { type : 'calendar' },
+    vibrate       : false
 };
 
 // Listener
 exports._listener = {};
-
-/**
- * Merge platform specific properties into the default ones.
- *
- * @return [ Void ]
- */
-exports.applyPlatformSpecificOptions = function () {
-    var defaults = this._defaults;
-
-    switch (device.platform) {
-    case 'Android':
-        defaults.group        = null;
-        defaults.groupSummary = false;
-        defaults.summary      = null;
-        defaults.smallIcon    = 'res://icon';
-        defaults.sticky       = false;
-        defaults.autoClear    = true;
-        defaults.led          = true;
-        defaults.color        = null;
-        defaults.vibrate      = false;
-        defaults.lockscreen   = true;
-        defaults.showWhen     = true;
-        defaults.defaults     = 0;
-        defaults.priority     = 0;
-        defaults.number       = 0;
-        defaults.channel      = null;
-        defaults.launch       = true;
-        defaults.mediaSession = null;
-        break;
-    }
-};
 
 /**
  * Merge custom properties with the default values.
@@ -423,11 +409,9 @@ channel.deviceready.subscribe(function () {
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
-    if (['Android', 'windows', 'iOS'].indexOf(device.platform) > -1) {
-        exports.setLaunchDetails();
-    }
-
     channel.onCordovaInfoReady.subscribe(function () {
-        exports.applyPlatformSpecificOptions();
+        if (['Android', 'windows', 'iOS'].indexOf(device.platform) > -1) {
+            exports.setLaunchDetails();
+        }
     });
 });
