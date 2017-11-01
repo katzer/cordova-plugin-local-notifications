@@ -180,8 +180,7 @@ exports.convertActions = function (options) {
         actions.push(action);
     }
 
-    options.actionGroupId = (options.actionGroupId || 'DEFAULT_GROUP').toString();
-    options.actions       = actions;
+    options.actions = actions;
 
     return options;
 };
