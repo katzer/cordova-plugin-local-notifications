@@ -96,7 +96,7 @@
 
     <!-- android -->
     <platform name="android">
-        <framework src="com.android.support:support-v4:26.+" value="gradle" />
+        <framework src="com.android.support:support-v4:26.+" />
         <framework src="src/android/build/localnotification.gradle" custom="true" type="gradleReference"/>
 
         <config-file target="res/xml/config.xml" parent="/*">

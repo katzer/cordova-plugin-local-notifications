@@ -17,6 +17,10 @@
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
 }
 
 if (!project.ext.has('appShortcutBadgerVersion')) {
