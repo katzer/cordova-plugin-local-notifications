@@ -14,6 +14,9 @@
     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
         <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
     </a>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
+    </a>
 </p>
 
 <br>
