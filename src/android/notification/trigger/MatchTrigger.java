@@ -29,7 +29,11 @@ import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.D
 import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.HOUR;
 import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.MINUTE;
 import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.MONTH;
+import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.WEEK;
 import static de.appplant.cordova.plugin.notification.trigger.DateTrigger.Unit.YEAR;
+import static java.util.Calendar.DAY_OF_WEEK;
+import static java.util.Calendar.WEEK_OF_MONTH;
+import static java.util.Calendar.WEEK_OF_YEAR;
 
 /**
  * Trigger for date matching components.
@@ -39,18 +43,48 @@ public class MatchTrigger extends IntervalTrigger {
     // Used to determine the interval
     private static Unit[] INTERVALS = { null, MINUTE, HOUR, DAY, MONTH, YEAR };
 
+    // Maps these crap where Sunday is the 1st day of the week
+    private static int[] WEEKDAYS = { 0, 2, 3, 4, 5, 6, 7, 1 };
+
+    // Maps these crap where Sunday is the 1st day of the week
+    private static int[] WEEKDAYS_REV = { 0, 7, 1, 2, 3, 4, 5, 6 };
+
     // The date matching components
     private final List<Integer> matchers;
+
+    // The special matching components
+    private final List<Integer> specials;
+
+    private static Unit getUnit(List<Integer> matchers, List<Integer> specials) {
+        Unit unit1 = INTERVALS[1 + matchers.indexOf(null)], unit2 = null;
+
+        if (specials.get(0) != null) {
+            unit2 = WEEK;
+        }
+
+        if (unit2 == null)
+            return unit1;
+
+        return (unit1.compareTo(unit2) < 0) ? unit2 : unit1;
+    }
 
     /**
      * Date matching trigger from now.
      *
      * @param matchers Describes the date matching parts.
      *                 { day: 15, month: ... }
+     * @param specials Describes the date matching parts.
+     *                 { weekday: 1, weekOfMonth: ... }
      */
-    public MatchTrigger(List<Integer> matchers) {
-        super(1, INTERVALS[1 + matchers.indexOf(null)]);
+    public MatchTrigger(List<Integer> matchers, List<Integer> specials) {
+        super(1, getUnit(matchers, specials));
+
+        if (specials.get(0) != null) {
+            specials.set(0, WEEKDAYS[specials.get(0)]);
+        }
+
         this.matchers = matchers;
+        this.specials = specials;
     }
 
     /**
@@ -78,7 +112,7 @@ public class MatchTrigger extends IntervalTrigger {
         }
 
         if (matchers.get(3) != null) {
-            cal.set(Calendar.MONTH, matchers.get(3));
+            cal.set(Calendar.MONTH, matchers.get(3) - 1);
         }
 
         if (matchers.get(4) != null) {
@@ -96,80 +130,111 @@ public class MatchTrigger extends IntervalTrigger {
      * @return null if there's none trigger date.
      */
     private Date getTriggerDate (Date base) {
-        Calendar date = getBaseTriggerDate(base);
-        Calendar now  = getCal(base);
+        Calendar cal = getBaseTriggerDate(base);
+        Calendar now = getCal(base);
 
-        if (date.compareTo(now) >= 0)
-            return date.getTime();
+        if (cal.compareTo(now) >= 0)
+            return applySpecials(cal);
 
-        if (unit == null || date.get(Calendar.YEAR) < now.get(Calendar.YEAR))
+        if (unit == null || cal.get(Calendar.YEAR) < now.get(Calendar.YEAR))
             return null;
 
-        if (date.get(Calendar.MONTH) < now.get(Calendar.MONTH)) {
+        if (cal.get(Calendar.MONTH) < now.get(Calendar.MONTH)) {
             switch (unit) {
                 case MINUTE:
                 case HOUR:
                 case DAY:
+                case WEEK:
                     if (matchers.get(4) == null) {
-                        return addToDate(date, now, Calendar.YEAR, 1);
-                    } else break;
+                        addToDate(cal, now, Calendar.YEAR, 1);
+                        break;
+                    } else
+                        return null;
                 case YEAR:
-                    return addToDate(date, now, Calendar.YEAR, 1);
+                    addToDate(cal, now, Calendar.YEAR, 1);
+                    break;
             }
         } else
-        if (date.get(Calendar.DAY_OF_YEAR) < now.get(Calendar.DAY_OF_YEAR)) {
+        if (cal.get(Calendar.DAY_OF_YEAR) < now.get(Calendar.DAY_OF_YEAR)) {
             switch (unit) {
                 case MINUTE:
                 case HOUR:
                     if (matchers.get(3) == null) {
-                        return addToDate(date, now, Calendar.MONTH, 1);
+                        addToDate(cal, now, Calendar.MONTH, 1);
+                        break;
                     } else
                     if (matchers.get(4) == null) {
-                        return addToDate(date, now, Calendar.YEAR, 1);
+                        addToDate(cal, now, Calendar.YEAR, 1);
+                        break;
                     }
-                    else break;
+                    else
+                        return null;
                 case MONTH:
-                    return addToDate(date, now, Calendar.MONTH, 1);
+                    addToDate(cal, now, Calendar.MONTH, 1);
+                    break;
                 case YEAR:
-                    return addToDate(date, now, Calendar.YEAR, 1);
+                    addToDate(cal, now, Calendar.YEAR, 1);
+                    break;
             }
         } else
-        if (date.get(Calendar.HOUR_OF_DAY) < now.get(Calendar.HOUR_OF_DAY)) {
+        if (cal.get(Calendar.HOUR_OF_DAY) < now.get(Calendar.HOUR_OF_DAY)) {
             switch (unit) {
                 case MINUTE:
                     if (matchers.get(2) == null) {
-                        return addToDate(date, now, Calendar.DAY_OF_YEAR, 1);
+                        addToDate(cal, now, Calendar.DAY_OF_YEAR, 1);
+                        break;
                     } else
                     if (matchers.get(3) == null) {
-                        return addToDate(date, now, Calendar.MONTH, 1);
+                        addToDate(cal, now, Calendar.MONTH, 1);
+                        break;
                     }
-                    else break;
+                    else
+                        return null;
                 case HOUR:
-                    return addToDate(date, now, Calendar.HOUR_OF_DAY, 0);
+                    addToDate(cal, now, Calendar.HOUR_OF_DAY, 0);
+                    break;
                 case DAY:
-                    return addToDate(date, now, Calendar.DAY_OF_YEAR, 1);
+                    addToDate(cal, now, Calendar.DAY_OF_YEAR, 1);
+                    break;
                 case MONTH:
-                    return addToDate(date, now, Calendar.MONTH, 1);
+                    addToDate(cal, now, Calendar.MONTH, 1);
+                    break;
                 case YEAR:
-                    return addToDate(date, now, Calendar.YEAR, 1);
+                    addToDate(cal, now, Calendar.YEAR, 1);
+                    break;
             }
         } else
-        if (date.get(Calendar.MINUTE) < now.get(Calendar.MINUTE)) {
+        if (cal.get(Calendar.MINUTE) < now.get(Calendar.MINUTE)) {
             switch (unit) {
                 case MINUTE:
-                    return addToDate(date, now, Calendar.MINUTE, 1);
+                    addToDate(cal, now, Calendar.MINUTE, 1);
+                    break;
                 case HOUR:
-                    return addToDate(date, now, Calendar.HOUR_OF_DAY, 1);
+                    addToDate(cal, now, Calendar.HOUR_OF_DAY, 1);
+                    break;
                 case DAY:
-                    return addToDate(date, now, Calendar.DAY_OF_YEAR, 1);
+                    addToDate(cal, now, Calendar.DAY_OF_YEAR, 1);
+                    break;
                 case MONTH:
-                    return addToDate(date, now, Calendar.MONTH, 1);
+                    addToDate(cal, now, Calendar.MONTH, 1);
+                    break;
                 case YEAR:
-                    return addToDate(date, now, Calendar.YEAR, 1);
+                    addToDate(cal, now, Calendar.YEAR, 1);
+                    break;
             }
         }
 
-        return null;
+        return applySpecials(cal);
+    }
+
+    private Date applySpecials (Calendar cal) {
+        if (specials.get(2) != null && !setWeekOfMonth(cal))
+            return null;
+
+        if (specials.get(0) != null && !setDayOfWeek(cal))
+            return null;
+
+        return cal.getTime();
     }
 
     /**
@@ -196,13 +261,93 @@ public class MatchTrigger extends IntervalTrigger {
 
     /**
      * Sets the field value of now to date and adds by count.
-     *
-     * @return The new date.
      */
-    private Date addToDate(Calendar date, Calendar now, int field, int count) {
-        date.set(field, now.get(field));
-        date.add(field, count);
-        return date.getTime();
+    private void addToDate (Calendar cal, Calendar now, int field, int count) {
+        cal.set(field, now.get(field));
+        cal.add(field, count);
     }
 
+    /**
+     * Set the day of the year but ensure that the calendar does point to a
+     * date in future.
+     *
+     * @param cal   The calendar to manipulate.
+     *
+     * @return true if the operation could be made.
+     */
+    private boolean setDayOfWeek (Calendar cal) {
+        cal.setFirstDayOfWeek(Calendar.MONDAY);
+        int day      = WEEKDAYS_REV[cal.get(DAY_OF_WEEK)];
+        int month    = cal.get(Calendar.MONTH);
+        int year     = cal.get(Calendar.YEAR);
+        int dayToSet = WEEKDAYS_REV[specials.get(0)];
+
+        if (matchers.get(2) != null)
+            return false;
+
+        if (day > dayToSet) {
+            if (specials.get(2) == null) {
+                cal.add(WEEK_OF_YEAR, 1);
+            } else
+            if (matchers.get(3) == null) {
+                cal.add(Calendar.MONTH, 1);
+            } else
+            if (matchers.get(4) == null) {
+                cal.add(Calendar.YEAR, 1);
+            } else
+                return false;
+        }
+
+        cal.set(DAY_OF_WEEK, specials.get(0));
+
+        if (matchers.get(3) != null && cal.get(Calendar.MONTH) != month)
+            return false;
+
+        //noinspection RedundantIfStatement
+        if (matchers.get(4) != null && cal.get(Calendar.YEAR) != year)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Set the week of the month but ensure that the calendar does point to a
+     * date in future.
+     *
+     * @param cal The calendar to manipulate.
+     *
+     * @return true if the operation could be made.
+     */
+    private boolean setWeekOfMonth (Calendar cal) {
+        int week      = cal.get(WEEK_OF_MONTH);
+        int year      = cal.get(Calendar.YEAR);
+        int weekToSet = specials.get(2);
+
+        if (week > weekToSet) {
+            if (matchers.get(3) == null) {
+                cal.add(Calendar.MONTH, 1);
+            } else
+            if (matchers.get(4) == null) {
+                cal.add(Calendar.YEAR, 1);
+            } else
+                return false;
+
+            if (matchers.get(4) != null && cal.get(Calendar.YEAR) != year)
+                return false;
+        }
+
+        int month = cal.get(Calendar.MONTH);
+
+        cal.set(WEEK_OF_MONTH, weekToSet);
+
+        if (cal.get(Calendar.MONTH) != month) {
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            cal.set(Calendar.MONTH, month);
+        } else
+        if (matchers.get(2) == null && week != weekToSet) {
+            cal.set(DAY_OF_WEEK, 2);
+        }
+
+        return true;
+    }
 }

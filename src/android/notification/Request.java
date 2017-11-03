@@ -151,7 +151,10 @@ public final class Request {
         Object every = spec.opt("every");
 
         if (every instanceof JSONObject) {
-            return new MatchTrigger(getDateMatchingComponents());
+            List<Integer> cmp1 = getMatchingComponents();
+            List<Integer> cmp2 = getSpecialMatchingComponents();
+
+            return new MatchTrigger(cmp1, cmp2);
         }
 
         Unit unit = getUnit();
@@ -205,7 +208,7 @@ public final class Request {
      *
      * @return [min, hour, day, month, year]
      */
-    private List<Integer> getDateMatchingComponents() {
+    private List<Integer> getMatchingComponents() {
         JSONObject every = spec.optJSONObject("every");
 
         return Arrays.asList(
@@ -214,6 +217,22 @@ public final class Request {
                 (Integer) every.opt("day"),
                 (Integer) every.opt("month"),
                 (Integer) every.opt("year")
+        );
+    }
+
+    /**
+     * Gets an array of all date parts to construct a datetime instance.
+     *
+     * @return [min, hour, day, month, year]
+     */
+    private List<Integer> getSpecialMatchingComponents() {
+        JSONObject every = spec.optJSONObject("every");
+
+        return Arrays.asList(
+                (Integer) every.opt("weekday"),
+                (Integer) every.opt("weekdayOrdinal"),
+                (Integer) every.opt("weekOfMonth"),
+                (Integer) every.opt("quarter")
         );
     }
 
