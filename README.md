@@ -256,6 +256,57 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
+### Properties
+
+The properties depend on the trigger type. Not all of them are supported across all platforms.
+
+| Type         | Property      | Type    | Value            | Android | iOS | Windows |
+| :----------- | :------------ | :------ | :--------------- | :------ | :-- | :------ |
+| Fix          | 
+|              | at            | Date    |                  |  x      | x   | x       |
+| Timespan     |
+|              | in            | Int     |                  | x       | x   | x       |
+|              | unit          | String  | `second`         | x       | x   | x       |
+|              | unit          | String  | `minute`         | x       | x   | x       |
+|              | unit          | String  | `hour`           | x       | x   | x       |
+|              | unit          | String  | `day`            | x       | x   | x       |
+|              | unit          | String  | `week`           | x       | x   | x       |
+|              | unit          | String  | `month`          | x       | x   | x       |
+|              | unit          | String  | `quarter`        |         | x   |
+|              | unit          | String  | `year`           | x       | x   | x       |
+| Repeat       |
+|              | count         | Int     |                  | x       |     | x       |
+|              | every         | String  | `minute`         | x       | x   | x       |
+|              | every         | String  | `hour`           | x       | x   | x       |
+|              | every         | String  | `day`            | x       | x   | x       |
+|              | every         | String  | `week`           | x       | x   | x       |
+|              | every         | String  | `month`          | x       | x   | x       |
+|              | every         | String  | `year`           | x       | x   | x       |
+|              | before        | Date    |                  |
+|              | firstAt       | Date    |                  |
+|              | after         | Date    |                  |
+| Match        |
+|              | count         | Int     |                  | x       |     | x       |
+|              | every         | Object  | `minute`         | x       | x   | x       |
+|              | every         | Object  | `hour`           | x       | x   | x       |
+|              | every         | Object  | `day`            | x       | x   | x       |
+|              | every         | Object  | `weekday`        | x       | x   |
+|              | every         | Object  | `weekdayOrdinal` |         | x   |
+|              | every         | Object  | `week`           | x       | x   | x       |
+|              | every         | Object  | `weekOfMonth`    | x       | x   |
+|              | every         | Object  | `month`          | x       | x   | x       |
+|              | every         | Object  | `quarter`        |         | x   |
+|              | every         | Object  | `year`           | x       | x   | x       |
+|              | before        | Date    |                  |
+|              | after         | Date    |                  |
+| Location     |
+|              | center        | Array   | `[lat, long]`    |         | x   |
+|              | radius        | Int     |                  |         | x   |
+|              | notifyOnEntry | Boolean |                  |         | x   |
+|              | notifyOnExit  | Boolean |                  |         | x   |
+|              | repeat        | Boolean |                  |
+
+
 ## Progress
 
 Notifications can include an animated progress indicator that shows users the status of an ongoing operation.
