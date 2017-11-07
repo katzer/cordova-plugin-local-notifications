@@ -129,10 +129,8 @@ public final class AssetUtil {
         String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
         File file       = getTmpFile(fileName);
 
-        if (file == null) {
-            Log.e("Asset", "Missing external cache dir");
+        if (file == null)
             return Uri.EMPTY;
-        }
 
         try {
             AssetManager assets = context.getAssets();
@@ -189,10 +187,8 @@ public final class AssetUtil {
     private Uri getUriFromRemote(String path) {
         File file = getTmpFile();
 
-        if (file == null) {
-            Log.e("Asset", "Missing external cache dir");
+        if (file == null)
             return Uri.EMPTY;
-        }
 
         try {
             URL url = new URL(path);
@@ -340,7 +336,11 @@ public final class AssetUtil {
         File dir = context.getExternalCacheDir();
 
         if (dir == null) {
-            Log.e("Asset", "Missing external cache dir");
+            dir = context.getCacheDir();
+        }
+
+        if (dir == null) {
+            Log.e("Asset", "Missing cache dir");
             return null;
         }
 
@@ -360,8 +360,13 @@ public final class AssetUtil {
      * @return content://...
      */
     private Uri getUriFromFile(File file) {
-        String authority = context.getPackageName() + ".provider";
-        return AssetProvider.getUriForFile(context, authority, file);
+        try {
+            String authority = context.getPackageName() + ".provider";
+            return AssetProvider.getUriForFile(context, authority, file);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return Uri.EMPTY;
+        }
     }
 
     /**
