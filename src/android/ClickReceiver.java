@@ -48,8 +48,8 @@ public class ClickReceiver extends AbstractClickReceiver {
      */
     @Override
     public void onClick(Notification notification, Bundle bundle) {
-        String action    = getAction();
-        JSONObject data  = new JSONObject();
+        String action   = getAction();
+        JSONObject data = new JSONObject();
 
         setTextInput(action, data);
         launchAppIf();

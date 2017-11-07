@@ -23,7 +23,10 @@ package de.appplant.cordova.plugin.localnotification;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.util.Pair;
+import android.view.View;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -34,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +64,6 @@ public class LocalNotification extends CordovaPlugin {
     // Indicates if the device is ready (to receive events)
     private static Boolean deviceready = false;
 
-    // To inform the user about the state of the app in callbacks
-    private static Boolean isInBackground = true;
-
     // Queues all events before deviceready
     private static ArrayList<String> eventQueue = new ArrayList<String>();
 
@@ -80,26 +81,13 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Called when the system is about to start resuming a previous activity.
+     * Called when the activity will start interacting with the user.
      *
      * @param multitasking Flag indicating if multitasking is turned on for app.
      */
     @Override
-    public void onPause(boolean multitasking) {
-        super.onPause(multitasking);
-        isInBackground = true;
-    }
-
-    /**
-     * Called when the activity will start interacting with the user.
-     *
-     * @param multitasking
-     *      Flag indicating if multitasking is turned on for app
-     */
-    @Override
-    public void onResume(boolean multitasking) {
+    public void onResume (boolean multitasking) {
         super.onResume(multitasking);
-        isInBackground = false;
         deviceready();
     }
 
@@ -108,8 +96,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void onDestroy() {
-        deviceready    = false;
-        isInBackground = true;
+        deviceready = false;
     }
 
     /**
@@ -487,7 +474,6 @@ public class LocalNotification extends CordovaPlugin {
      * Call all pending callbacks after the deviceready event has been fired.
      */
     private static synchronized void deviceready () {
-        isInBackground = false;
         deviceready = true;
 
         for (String js : eventQueue) {
@@ -528,7 +514,7 @@ public class LocalNotification extends CordovaPlugin {
 
         try {
             data.put("event", event);
-            data.put("foreground", !isInBackground);
+            data.put("foreground", isInForeground());
             data.put("queued", !deviceready);
 
             if (toast != null) {
@@ -571,6 +557,24 @@ public class LocalNotification extends CordovaPlugin {
                 webView.loadUrl("javascript:" + js);
             }
         });
+    }
+
+    /**
+     * If the app is running in foreground.
+     */
+    private static boolean isInForeground() {
+
+        if (!deviceready)
+            return false;
+
+        KeyguardManager km = (KeyguardManager) webView.getContext()
+                .getSystemService(Context.KEYGUARD_SERVICE);
+
+        //noinspection SimplifiableIfStatement
+        if (km.isKeyguardLocked())
+            return false;
+
+        return webView.getView().getWindowVisibility() == View.VISIBLE;
     }
 
     /**
