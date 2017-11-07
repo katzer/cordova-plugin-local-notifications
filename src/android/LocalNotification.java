@@ -59,7 +59,7 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
 public class LocalNotification extends CordovaPlugin {
 
     // Reference to the web view for static access
-    private static CordovaWebView webView = null;
+    private static WeakReference<CordovaWebView> webView = null;
 
     // Indicates if the device is ready (to receive events)
     private static Boolean deviceready = false;
@@ -77,7 +77,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
-        LocalNotification.webView = super.webView;
+        LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
     }
 
     /**
@@ -547,14 +547,16 @@ public class LocalNotification extends CordovaPlugin {
      */
     private static synchronized void sendJavascript(final String js) {
 
-        if (!deviceready) {
+        if (!deviceready || webView == null) {
             eventQueue.add(js);
             return;
         }
 
-        ((Activity)(webView.getContext())).runOnUiThread(new Runnable() {
+        final CordovaWebView view = webView.get();
+
+        ((Activity)(view.getContext())).runOnUiThread(new Runnable() {
             public void run() {
-                webView.loadUrl("javascript:" + js);
+                view.loadUrl("javascript:" + js);
             }
         });
     }
@@ -564,17 +566,19 @@ public class LocalNotification extends CordovaPlugin {
      */
     private static boolean isInForeground() {
 
-        if (!deviceready)
+        if (!deviceready || webView == null)
             return false;
 
-        KeyguardManager km = (KeyguardManager) webView.getContext()
+        CordovaWebView view = webView.get();
+
+        KeyguardManager km = (KeyguardManager) view.getContext()
                 .getSystemService(Context.KEYGUARD_SERVICE);
 
         //noinspection SimplifiableIfStatement
         if (km.isKeyguardLocked())
             return false;
 
-        return webView.getView().getWindowVisibility() == View.VISIBLE;
+        return view.getView().getWindowVisibility() == View.VISIBLE;
     }
 
     /**
