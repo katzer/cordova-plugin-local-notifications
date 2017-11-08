@@ -103,7 +103,7 @@ public final class Request {
      * If there's one more trigger date to calculate.
      */
     private boolean hasNext() {
-        return triggerDate != null && getOccurrence() < count;
+        return triggerDate != null && getOccurrence() <= count;
     }
 
     /**
