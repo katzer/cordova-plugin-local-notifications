@@ -304,7 +304,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | radius        | Int     |                  |         | x   |
 |              | notifyOnEntry | Boolean |                  |         | x   |
 |              | notifyOnExit  | Boolean |                  |         | x   |
-|              | repeat        | Boolean |                  |
+|              | single        | Boolean |                  |         | x   |
 
 
 ## Progress

@@ -234,6 +234,7 @@ exports.convertTrigger = function (options) {
         trigger.notifyOnEntry = !!trigger.notifyOnEntry;
         trigger.notifyOnExit  = trigger.notifyOnExit === true;
         trigger.radius        = trigger.radius || 5;
+        trigger.single        = !!trigger.single;
     }
 
     if (!isCal || trigger.at) {

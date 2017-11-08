@@ -461,6 +461,7 @@
 {
     NSArray* center = [self valueForTriggerOption:@"center"];
     double radius   = [[self valueForTriggerOption:@"radius"] doubleValue];
+    BOOL single     = [[self valueForTriggerOption:@"single"] boolValue];
 
     CLLocationCoordinate2D coord =
     CLLocationCoordinate2DMake([center[0] doubleValue], [center[1] doubleValue]);
@@ -474,7 +475,7 @@
     region.notifyOnExit  = [[self valueForTriggerOption:@"notifyOnExit"] boolValue];
 
     return [UNLocationNotificationTrigger triggerWithRegion:region
-                                                    repeats:YES];
+                                                    repeats:!single];
 }
 
 /**
