@@ -504,10 +504,15 @@
         willPresentNotification:(UNNotification *)notification
           withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-    APPNotificationOptions* options = notification.request.options;
+    UNNotificationRequest* toast = notification.request;
+
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
+        return;
+    
+    APPNotificationOptions* options = toast.options;
 
     if (![notification.request wasUpdated]) {
-        [self fireEvent:@"trigger" notification:notification.request];
+        [self fireEvent:@"trigger" notification:toast];
     }
 
     if (options.silent) {
@@ -525,14 +530,18 @@
  */
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center
  didReceiveNotificationResponse:(UNNotificationResponse *)response
-          withCompletionHandler:(void (^)())completionHandler
+          withCompletionHandler:(void (^)(void))completionHandler
 {
-    UNNotificationRequest* notification = response.notification.request;
-    NSMutableDictionary* data           = [[NSMutableDictionary alloc] init];
-    NSString* action                    = response.actionIdentifier;
-    NSString* event                     = action;
+    UNNotificationRequest* toast = response.notification.request;
 
     completionHandler();
+    
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
+        return;
+
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    NSString* action          = response.actionIdentifier;
+    NSString* event           = action;
 
     if ([action isEqualToString:UNNotificationDefaultActionIdentifier]) {
         event = @"click";
@@ -542,11 +551,11 @@
     }
 
     if (!deviceready && [event isEqualToString:@"click"]) {
-        _launchDetails = @[notification.options.id, event];
+        _launchDetails = @[toast.options.id, event];
     }
 
     if (![event isEqualToString:@"clear"]) {
-        [self fireEvent:@"clear" notification:notification];
+        [self fireEvent:@"clear" notification:toast];
     }
 
     if ([response isKindOfClass:UNTextInputNotificationResponse.class]) {
@@ -554,7 +563,7 @@
                  forKey:@"text"];
     }
 
-    [self fireEvent:event notification:notification data:data];
+    [self fireEvent:event notification:toast data:data];
 }
 
 #pragma mark -
