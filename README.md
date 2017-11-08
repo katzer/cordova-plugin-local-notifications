@@ -263,7 +263,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 | Type         | Property      | Type    | Value            | Android | iOS | Windows |
 | :----------- | :------------ | :------ | :--------------- | :------ | :-- | :------ |
 | Fix          | 
-|              | at            | Date    |                  |  x      | x   | x       |
+|              | at            | Date    |                  | x       | x   | x       |
 | Timespan     |
 |              | in            | Int     |                  | x       | x   | x       |
 |              | unit          | String  | `second`         | x       | x   | x       |
@@ -283,8 +283,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | String  | `month`          | x       | x   | x       |
 |              | every         | String  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  |
-|              | firstAt       | Date    |                  |
-|              | after         | Date    |                  |
+|              | firstAt       | Date    |                  | x       |
 | Match        |
 |              | count         | Int     |                  | x       |     | x       |
 |              | every         | Object  | `minute`         | x       | x   | x       |
@@ -298,7 +297,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | Object  | `quarter`        |         | x   |
 |              | every         | Object  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  |
-|              | after         | Date    |                  |
+|              | after         | Date    |                  | x       |
 | Location     |
 |              | center        | Array   | `[lat, long]`    |         | x   |
 |              | radius        | Int     |                  |         | x   |

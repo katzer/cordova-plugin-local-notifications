@@ -241,7 +241,13 @@ public final class Request {
      */
     private Date getBaseDate() {
         if (spec.has("at")) {
-            return new Date(spec.optLong("at", 0) * 1000);
+            return new Date(1000 * spec.optLong("at", 0));
+        } else
+        if (spec.has("firstAt")) {
+            return new Date(1000 * spec.optLong("firstAt", 0));
+        } else
+        if (spec.has("after")) {
+            return new Date(1000 * spec.optLong("after", 0));
         } else {
             return new Date();
         }

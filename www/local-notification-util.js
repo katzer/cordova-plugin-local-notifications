@@ -201,6 +201,11 @@ exports.convertTrigger = function (options) {
     var trigger  = options.trigger || {},
         date     = this.getValueFor(trigger, 'at', 'firstAt', 'date');
 
+    var dateToNum = function (date) {
+        var num = typeof date == 'object' ? date.getTime() : date;
+        return Math.round(num / 1000);
+    };
+
     if (!options.trigger)
         return;
 
@@ -223,8 +228,19 @@ exports.convertTrigger = function (options) {
     }
 
     if (isCal && date) {
-        date       = typeof date == 'object' ? date.getTime() : date;
-        trigger.at = Math.round(date / 1000);
+        trigger.at = dateToNum(date);
+    }
+
+    if (isCal && trigger.firstAt) {
+        trigger.firstAt = dateToNum(trigger.firstAt);
+    }
+
+    if (isCal && trigger.before) {
+        trigger.before = dateToNum(trigger.before);
+    }
+
+    if (isCal && trigger.after) {
+        trigger.after = dateToNum(trigger.after);
     }
 
     if (!trigger.count && device.platform == 'windows') {
