@@ -92,6 +92,11 @@ exports.mergeWithDefaults = function (options) {
         }
     }
 
+    options.meta = {
+        plugin:  'cordova-plugin-local-notifications',
+        version: '0.9-beta'
+    };
+
     return options;
 };
 
