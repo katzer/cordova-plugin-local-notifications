@@ -272,7 +272,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | unit          | String  | `day`            | x       | x   | x       |
 |              | unit          | String  | `week`           | x       | x   | x       |
 |              | unit          | String  | `month`          | x       | x   | x       |
-|              | unit          | String  | `quarter`        |         | x   |
+|              | unit          | String  | `quarter`        | x       | x   | x       |
 |              | unit          | String  | `year`           | x       | x   | x       |
 | Repeat       |
 |              | count         | Int     |                  | x       |     | x       |
@@ -281,6 +281,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | String  | `day`            | x       | x   | x       |
 |              | every         | String  | `week`           | x       | x   | x       |
 |              | every         | String  | `month`          | x       | x   | x       |
+|              | every         | String  | `quarter`        | x       |     | x       |
 |              | every         | String  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  |
 |              | firstAt       | Date    |                  | x       |
