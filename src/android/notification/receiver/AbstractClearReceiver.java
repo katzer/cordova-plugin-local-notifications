@@ -44,6 +44,10 @@ abstract public class AbstractClearReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle      = intent.getExtras();
+
+        if (bundle == null)
+            return;
+
         int toastId        = bundle.getInt(Notification.EXTRA_ID);
         Notification toast = Manager.getInstance(context).get(toastId);
 

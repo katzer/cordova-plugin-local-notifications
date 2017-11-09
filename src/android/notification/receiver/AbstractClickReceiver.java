@@ -52,6 +52,10 @@ abstract public class AbstractClickReceiver extends Activity {
         Intent intent      = getIntent();
         Bundle bundle      = intent.getExtras();
         Context context    = getApplicationContext();
+
+        if (bundle == null)
+            return;
+
         int toastId        = bundle.getInt(Notification.EXTRA_ID);
         Notification toast = Manager.getInstance(context).get(toastId);
 
@@ -96,6 +100,9 @@ abstract public class AbstractClickReceiver extends Activity {
         Intent intent = context
                 .getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
+
+        if (intent == null)
+            return;
 
         intent.addFlags(
                 FLAG_ACTIVITY_REORDER_TO_FRONT | FLAG_ACTIVITY_SINGLE_TOP);

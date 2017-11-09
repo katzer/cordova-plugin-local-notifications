@@ -46,7 +46,11 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle   = intent.getExtras();
-        int toastId     = bundle.getInt(Notification.EXTRA_ID);
+
+        if (bundle == null)
+            return;
+
+        int toastId     = bundle.getInt(Notification.EXTRA_ID, 0);
         Options options = Manager.getInstance(context).getOptions(toastId);
 
         if (options == null)

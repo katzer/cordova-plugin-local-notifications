@@ -68,10 +68,8 @@ public class IntervalTrigger extends DateTrigger {
      * Adds the amount of ticks to the calendar.
      *
      * @param cal The calendar to manipulate.
-     *
-     * @return The calendar instance.
      */
-    Calendar addInterval(Calendar cal) {
+    void addInterval(Calendar cal) {
         switch (unit) {
             case SECOND:
                 cal.add(Calendar.SECOND, ticks);
@@ -98,8 +96,6 @@ public class IntervalTrigger extends DateTrigger {
                 cal.add(Calendar.YEAR, ticks);
                 break;
         }
-
-        return cal;
     }
 
 }
