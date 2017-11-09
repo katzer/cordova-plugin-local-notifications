@@ -575,7 +575,7 @@ public class LocalNotification extends CordovaPlugin {
                 .getSystemService(Context.KEYGUARD_SERVICE);
 
         //noinspection SimplifiableIfStatement
-        if (km.isKeyguardLocked())
+        if (km != null && km.isKeyguardLocked())
             return false;
 
         return view.getView().getWindowVisibility() == View.VISIBLE;
