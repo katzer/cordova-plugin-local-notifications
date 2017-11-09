@@ -193,6 +193,13 @@ public final class Options {
     }
 
     /**
+     * wakeup flag for the notification.
+     */
+    public boolean shallWakeUp() {
+        return options.optBoolean("wakeup", true);
+    }
+
+    /**
      * The channel id of that notification.
      */
     String getChannel() {
@@ -335,7 +342,7 @@ public final class Options {
     /**
      * Icon resource ID for the local notification.
      */
-    public boolean hasLargeIcon () {
+    boolean hasLargeIcon() {
         String icon = options.optString("icon", null);
         return icon != null;
     }

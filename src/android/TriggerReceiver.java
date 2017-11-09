@@ -21,12 +21,18 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.PowerManager;
 
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
+
+import static android.content.Context.POWER_SERVICE;
+import static android.os.PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -46,10 +52,16 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     @Override
     public void onTrigger (Notification notification, Bundle bundle) {
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        int badge        = notification.getOptions().getBadgeNumber();
+        Context context  = notification.getContext();
+        Options options  = notification.getOptions();
+        int badge        = options.getBadgeNumber();
 
         if (badge > 0) {
-            Manager.getInstance(notification.getContext()).setBadge(badge);
+            Manager.getInstance(context).setBadge(badge);
+        }
+
+        if (options.shallWakeUp()) {
+            wakeUp(context);
         }
 
         notification.show();
@@ -57,6 +69,28 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         if (!isUpdate) {
             LocalNotification.fireEvent("trigger", notification);
         }
+    }
+
+    /**
+     * Wakeup the device.
+     *
+     * @param context The application context.
+     */
+    private void wakeUp (Context context) {
+        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
+
+        if (pm == null)
+            return;
+
+        int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
+
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(
+                level,"LocalNotification");
+
+        wakeLock.setReferenceCounted(false);
+        wakeLock.acquire(1000);
+        wakeLock.release(RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
     }
 
     /**
