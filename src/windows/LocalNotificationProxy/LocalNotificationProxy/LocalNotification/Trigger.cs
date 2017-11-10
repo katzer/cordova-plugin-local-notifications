@@ -34,9 +34,19 @@ namespace LocalNotificationProxy.LocalNotification
         public string Type { get; } = "calendar";
 
         /// <summary>
-        /// Gets or sets the trigger date.
+        /// Gets or sets the fix trigger date.
         /// </summary>
         public long At { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the first trigger date.
+        /// </summary>
+        public long FirstAt { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the after trigger date.
+        /// </summary>
+        public long After { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the relative trigger date from now.
@@ -116,6 +126,8 @@ namespace LocalNotificationProxy.LocalNotification
             var node = doc.DocumentElement;
 
             trigger.At = int.Parse(node.GetAttribute("at"));
+            trigger.FirstAt = int.Parse(node.GetAttribute("firstAt"));
+            trigger.After = int.Parse(node.GetAttribute("after"));
             trigger.In = int.Parse(node.GetAttribute("in"));
             trigger.Unit = node.GetAttribute("unit");
             trigger.Count = int.Parse(node.GetAttribute("count"));
@@ -138,6 +150,8 @@ namespace LocalNotificationProxy.LocalNotification
             var node = new XmlDocument().CreateElement("trigger");
 
             node.SetAttribute("at", this.At.ToString());
+            node.SetAttribute("firstAt", this.FirstAt.ToString());
+            node.SetAttribute("after", this.After.ToString());
             node.SetAttribute("in", this.In.ToString());
             node.SetAttribute("unit", this.Unit);
             node.SetAttribute("count", this.Count.ToString());
@@ -166,21 +180,21 @@ namespace LocalNotificationProxy.LocalNotification
                 case "":
                     return null;
                 case "second":
-                    return DateTime.Now.AddSeconds(ticks);
+                    return date.AddSeconds(ticks);
                 case "minute":
-                    return DateTime.Now.AddMinutes(ticks);
+                    return date.AddMinutes(ticks);
                 case "hour":
-                    return DateTime.Now.AddHours(ticks);
+                    return date.AddHours(ticks);
                 case "day":
-                    return DateTime.Now.AddDays(ticks);
+                    return date.AddDays(ticks);
                 case "week":
-                    return DateTime.Now.AddDays(ticks * 7);
+                    return date.AddDays(ticks * 7);
                 case "month":
-                    return DateTime.Now.AddMonths(ticks);
+                    return date.AddMonths(ticks);
                 case "quarter":
-                    return DateTime.Now.AddMonths(ticks * 3);
+                    return date.AddMonths(ticks * 3);
                 case "year":
-                    return DateTime.Now.AddYears(ticks);
+                    return date.AddYears(ticks);
                 default:
                     return null;
             }
@@ -192,12 +206,17 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The fix date specified by trigger.at or trigger.in</returns>
         private DateTime? GetFixDate()
         {
-            if (this.At == 0)
+            if (this.At != 0)
             {
-                return this.AddInterval(DateTime.Now, this.Unit, this.In);
+                return this.GetDateTime(this.At);
             }
 
-            return DateTimeOffset.FromUnixTimeMilliseconds(this.At * 1000).LocalDateTime;
+            if (this.FirstAt != 0)
+            {
+                return this.GetDateTime(this.FirstAt);
+            }
+
+            return this.AddInterval(DateTime.Now, this.Unit, this.In);
         }
 
         /// <summary>
@@ -206,6 +225,11 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The first matching date specified by trigger.every</returns>
         private DateTime? GetRelDate()
         {
+            if (this.After != 0)
+            {
+                return this.GetDateTime(this.After);
+            }
+
             return this.GetRelDate(DateTime.Now);
         }
 
@@ -319,16 +343,21 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The next valid trigger date</returns>
         private DateTime? GetNextTriggerDate()
         {
+            var every = this.Every;
+            var multiple = this.Occurrence;
             var date = this.triggerDate.Value;
-            var multiple = this.Occurrence - 1;
+            DateTime? nextDate;
 
-            if (multiple == 0)
+            if (this.Every is Every)
+            {
+                every = (this.Every as Every).Interval;
+                multiple -= 1;
+            }
+
+            if (every == null)
             {
                 return date;
             }
-
-            var every = this.Every is Every ? (this.Every as Every).Interval : this.Every;
-            DateTime? nextDate;
 
             if (every is double)
             {
@@ -353,5 +382,16 @@ namespace LocalNotificationProxy.LocalNotification
 
             return nextDate;
         }
+
+        /// <summary>
+        /// Convert the milliseconds into a date time object.
+        /// </summary>
+        /// <param name="time">The milli seconds since unix zero.</param>
+        /// <returns>The date time</returns>
+        private DateTime GetDateTime(long time)
+        {
+            return DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
+        }
     }
+
 }

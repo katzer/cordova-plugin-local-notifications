@@ -248,10 +248,6 @@ exports.convertTrigger = function (options) {
         trigger.count = trigger.every ? 5 : 1;
     }
 
-    if (trigger.every && device.platform == 'windows') {
-        trigger.every = trigger.every.toString();
-    }
-
     if (!isCal) {
         trigger.notifyOnEntry = !!trigger.notifyOnEntry;
         trigger.notifyOnExit  = trigger.notifyOnExit === true;
