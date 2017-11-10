@@ -107,7 +107,7 @@ exports.schedule = function (success, error, args) {
         exports.fireEvent('add', toast);
     }
 
-    success();
+    exports.check(success, error);
 };
 
 /**
@@ -133,7 +133,7 @@ exports.update = function (success, error, args) {
         exports.fireEvent('update', toast);
     }
 
-    success();
+    exports.check(success, error);
 };
 
 /**

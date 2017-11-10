@@ -142,11 +142,11 @@ public class LocalNotification extends CordovaPlugin {
                 } else
                 if (action.equalsIgnoreCase("schedule")) {
                     schedule(args);
-                    command.success();
+                    check(command);
                 } else
                 if (action.equals("update")) {
                     update(args);
-                    command.success();
+                    check(command);
                 } else
                 if (action.equals("cancel")) {
                     cancel(args);

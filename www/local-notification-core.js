@@ -61,10 +61,12 @@ exports.requestPermission = function (callback, scope) {
  */
 exports.schedule = function (msgs, callback, scope, args) {
     var fn = function (granted) {
-
-        if (!granted) return;
-
         var toasts = this.toArray(msgs);
+
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
 
         for (var toast of toasts) {
             this.mergeWithDefaults(toast);
@@ -93,13 +95,16 @@ exports.schedule = function (msgs, callback, scope, args) {
  */
 exports.update = function (msgs, callback, scope, args) {
     var fn = function(granted) {
-
-        if (!granted) return;
-
         var toasts = this.toArray(msgs);
 
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
+
         for (var toast of toasts) {
-            this.convertProperties(toast);        }
+            this.convertProperties(toast);
+        }
 
         this.exec('update', toasts, callback, scope);
     };

@@ -101,7 +101,7 @@
             [self scheduleNotification:notification];
         }
 
-        [self execCallback:command];
+        [self check:command];
      }];
 }
 
@@ -131,8 +131,8 @@
 
             [self fireEvent:@"update" notification:notification];
         }
-
-        [self execCallback:command];
+        
+        [self check:command];
     }];
 }
 
@@ -613,7 +613,9 @@
 }
 
 /**
- * Simply invokes the callback without any parameter.
+ * Invokes the callback without any parameter.
+ *
+ * @return [ Void ]
  */
 - (void) execCallback:(CDVInvokedUrlCommand*)command
 {
