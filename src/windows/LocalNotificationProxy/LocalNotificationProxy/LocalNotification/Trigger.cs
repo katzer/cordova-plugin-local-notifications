@@ -390,7 +390,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <returns>The date time</returns>
         private DateTime GetDateTime(long time)
         {
-            return DateTimeOffset.FromUnixTimeMilliseconds(time * 1000).LocalDateTime;
+            return DateTimeOffset.FromUnixTimeMilliseconds(time).LocalDateTime;
         }
     }
 

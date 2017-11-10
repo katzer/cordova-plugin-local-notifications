@@ -338,7 +338,7 @@
 {
     double timestamp = [[self valueForTriggerOption:@"at"] doubleValue];
 
-    return [NSDate dateWithTimeIntervalSince1970:timestamp];
+    return [NSDate dateWithTimeIntervalSince1970:(timestamp / 1000)];
 }
 
 /**

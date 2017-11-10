@@ -204,7 +204,7 @@ exports.convertTrigger = function (options) {
 
     var dateToNum = function (date) {
         var num = typeof date == 'object' ? date.getTime() : date;
-        return Math.round(num / 1000);
+        return Math.round(num);
     };
 
     if (!options.trigger)
