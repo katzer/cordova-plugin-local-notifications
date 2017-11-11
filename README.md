@@ -1,5 +1,5 @@
 
-<p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example">SAMPLE APP</a> :point_right:</b></p>
+<p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
 
 <br>
 
@@ -8,8 +8,8 @@
 </p>
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/de.appplant.cordova.plugin.local-notification">
-        <img src="https://badge.fury.io/js/de.appplant.cordova.plugin.local-notification.svg" alt="npm version" />
+    <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
+        <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
     </a>
     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
         <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
@@ -489,11 +489,11 @@ The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on 
 
 Execute from the projects root folder:
 
-    $ cordova plugin add cordova-plugin-local-notifications
+    $ cordova plugin add cordova-plugin-local-notification
 
 Or install a specific version:
 
-    $ cordova plugin add cordova-plugin-local-notifications@VERSION
+    $ cordova plugin add cordova-plugin-local-notification@VERSION
 
 Or install the latest head version:
 
