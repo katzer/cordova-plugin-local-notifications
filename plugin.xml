@@ -71,8 +71,7 @@
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
-                <param name="ios-package" value="APPLocalNotification" onload="true" />
-                <param name="onload" value="true" />
+                <param name="ios-package" value="APPLocalNotification" />
             </feature>
         </config-file>
 
