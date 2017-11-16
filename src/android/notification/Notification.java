@@ -46,6 +46,8 @@ import java.util.Set;
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MAX;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
 
@@ -138,8 +140,9 @@ public final class Notification {
      * Notification type can be one of triggered or scheduled.
      */
     public Type getType () {
-        StatusBarNotification[] toasts = getNotMgr().getActiveNotifications();
-        int id = getId();
+        Manager mgr                    = Manager.getInstance(context);
+        StatusBarNotification[] toasts = mgr.getActiveNotifications();
+        int id                         = getId();
 
         for (StatusBarNotification toast : toasts) {
             if (toast.getId() == id) {
@@ -202,7 +205,11 @@ public final class Notification {
                         mgr.setExact(RTC, time, pi);
                         break;
                     case IMPORTANCE_MAX:
-                        mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                        if (SDK_INT >= M) {
+                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                        } else {
+                            mgr.setExact(RTC, time, pi);
+                        }
                         break;
                     default:
                         mgr.setExact(RTC_WAKEUP, time, pi);

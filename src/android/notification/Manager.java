@@ -21,6 +21,7 @@
 
 package de.appplant.cordova.plugin.notification;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -38,6 +39,7 @@ import java.util.Set;
 import de.appplant.cordova.plugin.badge.BadgeImpl;
 
 import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
@@ -103,6 +105,7 @@ public final class Manager {
     /**
      * TODO: temporary
      */
+    @SuppressLint("WrongConstant")
     private void createDefaultChannel() {
         NotificationManager mgr = getNotMgr();
 
@@ -224,8 +227,8 @@ public final class Manager {
         if (type == Notification.Type.ALL)
             return getIds();
 
-        StatusBarNotification[] activeToasts = getNotMgr().getActiveNotifications();
-        List<Integer> activeIds = new ArrayList<Integer>();
+        StatusBarNotification[] activeToasts = getActiveNotifications();
+        List<Integer> activeIds              = new ArrayList<Integer>();
 
         for (StatusBarNotification toast : activeToasts) {
             activeIds.add(toast.getId());
@@ -390,6 +393,17 @@ public final class Manager {
     }
 
     /**
+     * Get all active status bar notifications.
+     */
+    StatusBarNotification[] getActiveNotifications() {
+        if (SDK_INT >= M) {
+            return getNotMgr().getActiveNotifications();
+        } else {
+            return new StatusBarNotification[0];
+        }
+    }
+
+    /**
      * Shared private preferences for the application.
      */
     private SharedPreferences getPrefs () {
@@ -408,13 +422,6 @@ public final class Manager {
      * Notification compat manager for the application.
      */
     private NotificationManagerCompat getNotCompMgr() {
-        return NotificationManagerCompat.from(context);
-    }
-
-    /**
-     * Notification manager compat for the application.
-     */
-    private NotificationManagerCompat getNotMgrCompat () {
         return NotificationManagerCompat.from(context);
     }
 
