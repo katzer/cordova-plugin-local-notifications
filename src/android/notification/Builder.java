@@ -125,7 +125,7 @@ public final class Builder {
         builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID)
                 .setDefaults(options.getDefaults())
                 .setExtras(extras)
-                .setOnlyAlertOnce(true)
+                .setOnlyAlertOnce(false)
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
