@@ -266,7 +266,7 @@ exports.getTriggered = function (callback, scope) {
  * @return [ Void ]
  */
 exports.addActionGroup = function (id, actions, callback, scope) {
-    this.core.registerActionGroup(id, actions, callback, scope);
+    this.core.addActionGroup(id, actions, callback, scope);
 };
 
 /**
