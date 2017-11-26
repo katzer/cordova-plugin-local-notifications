@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 
@@ -32,6 +33,8 @@ import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 
 import static android.content.Context.POWER_SERVICE;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY;
 
 /**
@@ -86,11 +89,16 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
                     | PowerManager.ACQUIRE_CAUSES_WAKEUP;
 
         PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                level,"LocalNotification");
+                level, "LocalNotification");
 
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
-        wakeLock.release(RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
+
+        if (SDK_INT >= LOLLIPOP) {
+            wakeLock.release(RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
+        } else {
+            wakeLock.release();
+        }
     }
 
     /**
