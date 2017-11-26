@@ -248,6 +248,10 @@ exports.convertTrigger = function (options) {
         trigger.count = trigger.every ? 5 : 1;
     }
 
+    if (trigger.count && device.platform == 'iOS') {
+        console.warn('trigger: { count: } is not supported on iOS.');
+    }
+
     if (!isCal) {
         trigger.notifyOnEntry = !!trigger.notifyOnEntry;
         trigger.notifyOnExit  = trigger.notifyOnExit === true;
