@@ -528,6 +528,15 @@ public final class Options {
     }
 
     /**
+     * If the trigger shall be infinite.
+     */
+    public boolean isInfiniteTrigger() {
+        JSONObject trigger = options.optJSONObject("trigger");
+
+        return trigger.has("every") && trigger.optInt("count", -1) < 0;
+    }
+
+    /**
      * The summary for inbox style notifications.
      */
     String getSummary() {

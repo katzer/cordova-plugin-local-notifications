@@ -71,7 +71,7 @@ public final class Request {
     public Request(Options options) {
         this.options     = options;
         this.spec        = options.getTrigger();
-        this.count       = spec.optInt("count", 1);
+        this.count       = Math.max(spec.optInt("count"), 1);
         this.trigger     = buildTrigger();
         this.triggerDate = trigger.getNextTriggerDate(getBaseDate());
     }
