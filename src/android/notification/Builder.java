@@ -39,6 +39,7 @@ import de.appplant.cordova.plugin.notification.action.Action;
 
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -134,7 +135,6 @@ public final class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())
-                .setSound(sound)
                 .setVisibility(options.getVisibility())
                 .setPriority(options.getPriority())
                 .setShowWhen(options.getShowWhen())
@@ -142,6 +142,10 @@ public final class Builder {
                 .setGroup(options.getGroup())
                 .setGroupSummary(options.getGroupSummary())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
+
+        if (sound != Uri.EMPTY && !isUpdate()) {
+            builder.setSound(sound);
+        }
 
         if (options.isWithProgressBar()) {
             builder.setProgress(
@@ -391,6 +395,15 @@ public final class Builder {
 
         return PendingIntent.getActivity(
                 context, reqCode, intent, FLAG_CANCEL_CURRENT);
+    }
+
+    /**
+     * If the builder shall build an notification or an updated version.
+     *
+     * @return true in case of an updated version.
+     */
+    private boolean isUpdate() {
+        return extras != null && extras.getBoolean(EXTRA_UPDATE, false);
     }
 
 }
