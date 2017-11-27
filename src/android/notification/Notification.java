@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.annotation.RequiresApi;
 
 import org.json.JSONException;
 import org.json.JSONObject;
