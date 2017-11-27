@@ -121,7 +121,7 @@ public class Builder {
         long[] vibrate = options.getVibrate();
         NotificationCompat.Builder builder;
 
-        builder = new NotificationCompat.Builder(context)
+        builder = new NotificationCompat.Builder(context, options.getChannelID())
                 .setDefaults(0)
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
@@ -129,7 +129,8 @@ public class Builder {
                 .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setColor(options.getColor())
+                .setChannelId(options.getChannelID());
 
         if (ledColor != 0) {
             builder.setLights(ledColor, options.getLedOnTime(), options.getLedOffTime());
