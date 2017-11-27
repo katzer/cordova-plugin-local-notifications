@@ -38,7 +38,8 @@ exports._defaults = {
     id:    0,
     data:  undefined,
     every: undefined,
-    at:    undefined
+    at:    undefined,
+    channelParams: {}
 };
 
 // listener
@@ -93,6 +94,7 @@ exports.mergeWithDefaults = function (options) {
     options.at   = this.getValueFor(options, 'at', 'firstAt', 'date');
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
+    options.channelParams = this.getValueFor(options, 'channelParams');
 
     if (defaults.hasOwnProperty('autoClear')) {
         options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');
