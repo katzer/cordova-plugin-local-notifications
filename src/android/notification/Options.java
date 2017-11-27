@@ -24,9 +24,11 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import org.json.JSONException;
@@ -57,6 +59,11 @@ public class Options {
     // Asset util instance
     private final AssetUtil assets;
 
+    //notification channel options for API>=O
+    private String channelID = "default";
+    private String channelName = "Miscellaneous";
+    private String channelDescription = "";
+    private int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
     /**
      * Constructor
@@ -75,13 +82,43 @@ public class Options {
      * @param options
      *      JSON properties
      */
-    public Options parse (JSONObject options) {
+    public Options parse(JSONObject options) {
         this.options = options;
 
         parseInterval();
         parseAssets();
+        //parse notification channel params if android version>=O
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            parseChannelParams();
 
         return this;
+    }
+
+    /**
+     * parse notification channel params
+     * for api>=android O
+     */
+    private void parseChannelParams() {
+        JSONObject channelOptions = options.optJSONObject("channelParams");
+        if (channelOptions != null) {
+            String id = channelOptions.optString("channelID");
+            String name = channelOptions.optString("channelName");
+            String description = channelOptions.optString("description");
+            int imp = channelOptions.optInt("importance");
+            if (!id.isEmpty()) {
+                channelID = id;
+            }
+            if (!name.isEmpty()) {
+                channelName = name;
+            }
+            if (!description.isEmpty()) {
+                channelDescription = description;
+            }
+            if (imp >= NotificationManager.IMPORTANCE_NONE
+                    && imp < NotificationManager.IMPORTANCE_MAX) {
+                importance = imp;
+            }
+        }
     }
 
     /**
@@ -377,6 +414,34 @@ public class Options {
         String icon = options.optString("smallIcon", "");
 
         return assets.getResIdForDrawable(icon);
+    }
+
+    /**
+     * get channel ID
+     */
+    public String getChannelID() {
+        return channelID;
+    }
+
+    /**
+     * get channel name
+     */
+    public String getChannelName() {
+        return channelName;
+    }
+
+    /**
+     * get channel description
+     */
+    public String getChannelDescription() {
+        return channelDescription;
+    }
+
+    /**
+     * get importance
+     */
+    public int getImportance() {
+        return importance;
     }
 
     /**
