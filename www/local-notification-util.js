@@ -38,8 +38,7 @@ exports._defaults = {
     id:    0,
     data:  undefined,
     every: undefined,
-    at:    undefined,
-    channelParams: {}
+    at:    undefined
 };
 
 // listener
@@ -73,6 +72,7 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.ledOffTime = undefined;
         defaults.color     = undefined;
         defaults.vibrate   = undefined;
+        defaults.channelParams = {};
         break;
     }
 
