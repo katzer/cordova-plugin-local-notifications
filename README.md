@@ -22,7 +22,7 @@ Its also possible to open and debug the project with [Xcode][xcode], [VS Express
 
 Scroll down to see more buttons!
 
-The following code snippet will schedule a local notification every day wich will be displayed within the notification center.
+The following code snippet will schedule a local notification every day which will be displayed within the notification center.
 
 ```javascript
 cordova.plugins.notification.local.schedule({
