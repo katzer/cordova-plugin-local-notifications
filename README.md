@@ -326,7 +326,7 @@ cordova.plugins.notification.local.schedule({
 
 ## Patterns
 
-Split the text by line breaks if the message comes from a single person and just to long to show in a single line.
+Split the text by line breaks if the message comes from a single person and just too long to show in a single line.
 
 ```js
 cordova.plugins.notification.local.schedule({
