@@ -432,6 +432,9 @@ To unsubscribe from events:
 cordova.plugins.notification.local.un(event, callback, scope);
 ```
 
+__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.  
+Hence you should define your callback as a separate function, not inline. If you want to use `this` inside of your callback, you also have to provide `this` as `scope` to `cordova.plugins.notification.local.on`.
+
 ### Custom
 
 The plugin also fires events specified by actions.
