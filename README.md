@@ -44,9 +44,9 @@
 
 ### Supported platforms
 
-- Android
-- iOS
-- Windows
+- Android 4.4+
+- iOS 10+
+- Windows 10
 
 <br>
 <br>
