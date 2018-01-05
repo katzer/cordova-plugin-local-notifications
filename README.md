@@ -290,15 +290,15 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | Object  | `minute`         | x       | x   | x       |
 |              | every         | Object  | `hour`           | x       | x   | x       |
 |              | every         | Object  | `day`            | x       | x   | x       |
-|              | every         | Object  | `weekday`        | x       | x   |
+|              | every         | Object  | `weekday`        | x       | x   | x       |
 |              | every         | Object  | `weekdayOrdinal` |         | x   |
-|              | every         | Object  | `week`           | x       | x   | x       |
-|              | every         | Object  | `weekOfMonth`    | x       | x   |
+|              | every         | Object  | `week`           |         | x   |
+|              | every         | Object  | `weekOfMonth`    | x       | x   | x       |
 |              | every         | Object  | `month`          | x       | x   | x       |
 |              | every         | Object  | `quarter`        |         | x   |
 |              | every         | Object  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  |
-|              | after         | Date    |                  | x       | x   |
+|              | after         | Date    |                  | x       | x   | x       |
 | Location     |
 |              | center        | Array   | `[lat, long]`    |         | x   |
 |              | radius        | Int     |                  |         | x   |

@@ -19,33 +19,30 @@
  * limitations under the License.
  */
 
-namespace LocalNotificationProxy.LocalNotification
+namespace LocalNotificationProxy.LocalNotification.Trigger
 {
-    public sealed class ProgressBar
+    using System;
+
+    internal abstract class DateTrigger
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the notification has a progress bar.
+        /// Default unit is SECOND
         /// </summary>
-        public bool Enabled { get; set; } = false;
+        public enum Unit : byte
+        {
+            NULL, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR
+        }
 
         /// <summary>
-        /// Gets or sets the title.
+        /// Gets or sets the occurrence counter.
         /// </summary>
-        public string Title { get; set; } = string.Empty;
+        public int Occurrence { get; protected set; } = 1;
 
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets the next trigger date.
         /// </summary>
-        public double Value { get; set; } = 0;
-
-        /// <summary>
-        /// Gets or sets the status.
-        /// </summary>
-        public string Status { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
+        /// <param name="date">The date from where to calculate the next one.</param>
+        /// <returns>Null if there is no next trigger date.</returns>
+        public abstract DateTime? GetNextTriggerDate(DateTime date);
     }
 }

@@ -21,6 +21,7 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
+    using global::LocalNotificationProxy.LocalNotification.Toast;
     using Windows.Data.Xml.Dom;
 
     public sealed class Options
@@ -68,7 +69,7 @@ namespace LocalNotificationProxy.LocalNotification
         /// <summary>
         /// Gets or sets the notification trigger.
         /// </summary>
-        public Trigger Trigger { get; set; }
+        public Toast.Trigger Trigger { get; set; }
 
         /// <summary>
         /// Gets or sets the notification user data.
@@ -105,7 +106,7 @@ namespace LocalNotificationProxy.LocalNotification
 
             options.Id = int.Parse(node.GetAttribute("id"));
             options.Badge = int.Parse(node.GetAttribute("badge"));
-            options.Trigger = Trigger.Parse(node.GetAttribute("trigger"));
+            options.Trigger = Toast.Trigger.Parse(node.GetAttribute("trigger"));
 
             if (node.GetAttributeNode("text") != null)
             {

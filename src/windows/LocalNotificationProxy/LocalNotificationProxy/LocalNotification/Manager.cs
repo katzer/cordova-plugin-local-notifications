@@ -46,7 +46,8 @@ namespace LocalNotificationProxy.LocalNotification
         {
             foreach (Options options in notifications)
             {
-                var builder = new Builder(options);
+                var request = new Request(options);
+                var builder = new Builder(request);
 
                 do
                 {
@@ -58,9 +59,8 @@ namespace LocalNotificationProxy.LocalNotification
                     }
 
                     ToastNotifier.AddToSchedule(toast);
-                    builder.MoveNext();
                 }
-                while (builder.HasNext());
+                while (request.MoveNext());
             }
         }
 

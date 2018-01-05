@@ -12,7 +12,7 @@
     <DefaultLanguage>de-DE</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -112,15 +112,19 @@
   <ItemGroup>
     <Compile Include="LocalNotificationProxy.cs" />
     <Compile Include="LocalNotification\Builder.cs" />
-    <Compile Include="LocalNotification\Button.cs" />
-    <Compile Include="LocalNotification\Every.cs" />
+    <Compile Include="LocalNotification\Request.cs" />
+    <Compile Include="LocalNotification\Toast\Button.cs" />
+    <Compile Include="LocalNotification\Toast\Every.cs" />
     <Compile Include="LocalNotification\Notification.cs" />
-    <Compile Include="LocalNotification\IAction.cs" />
-    <Compile Include="LocalNotification\Input.cs" />
+    <Compile Include="LocalNotification\Toast\IAction.cs" />
+    <Compile Include="LocalNotification\Toast\Input.cs" />
     <Compile Include="LocalNotification\Manager.cs" />
     <Compile Include="LocalNotification\Options.cs" />
-    <Compile Include="LocalNotification\ProgressBar.cs" />
-    <Compile Include="LocalNotification\Trigger.cs" />
+    <Compile Include="LocalNotification\Toast\ProgressBar.cs" />
+    <Compile Include="LocalNotification\Toast\Trigger.cs" />
+    <Compile Include="LocalNotification\Trigger\DateTrigger.cs" />
+    <Compile Include="LocalNotification\Trigger\IntervalTrigger.cs" />
+    <Compile Include="LocalNotification\Trigger\MatchTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +141,7 @@
       <Name>Microsoft.Toolkit.Uwp.Notifications.UWP</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

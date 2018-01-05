@@ -19,14 +19,10 @@
  * limitations under the License.
  */
 
-namespace LocalNotificationProxy.LocalNotification
+namespace LocalNotificationProxy.LocalNotification.Toast
 {
-    using System;
-
     public sealed class Every
     {
-        private static readonly string[] Intervals = { null, "minute", "hour", "day", "month", "year" };
-
         /// <summary>
         /// Gets or sets the minute.
         /// </summary>
@@ -43,46 +39,38 @@ namespace LocalNotificationProxy.LocalNotification
         public int? Day { get; set; }
 
         /// <summary>
+        /// Gets or sets the day of week.
+        /// </summary>
+        public int? Weekday { get; set; }
+
+        /// <summary>
+        /// Gets or sets the week of year.
+        /// </summary>
+        public int? Week { get; set; }
+
+        /// <summary>
+        /// Gets or sets the day of ordinal week.
+        /// </summary>
+        public int? WeekdayOrdinal { get; set; }
+
+        /// <summary>
+        /// Gets or sets the week of month.
+        /// </summary>
+        public int? WeekOfMonth { get; set; }
+
+        /// <summary>
         /// Gets or sets the month.
         /// </summary>
         public int? Month { get; set; }
 
         /// <summary>
+        /// Gets or sets the quarter.
+        /// </summary>
+        public int? Quarter { get; set; }
+
+        /// <summary>
         /// Gets or sets the year.
         /// </summary>
         public int? Year { get; set; }
-
-        /// <summary>
-        /// Gets the interval as a string representation.
-        /// </summary>
-        /// <returns>year, month, ...</returns>
-        internal string Interval { get => Intervals[Array.IndexOf(this.ToArray(), null) + 1]; }
-
-        /// <summary>
-        /// Converts the date time components into a datetime object.
-        /// </summary>
-        /// <param name="now">The relative date to calculate the date from.</param>
-        /// <returns>A datetime object</returns>
-        internal DateTime ToDateTime(DateTime now)
-        {
-            var p = this.ToArray();
-
-            p[0] = this.Minute.GetValueOrDefault();
-            p[1] = this.Hour.GetValueOrDefault();
-            p[2] = this.Day.GetValueOrDefault(now.Day);
-            p[3] = this.Month.GetValueOrDefault(now.Month);
-            p[4] = this.Year.GetValueOrDefault(now.Year);
-
-            return new DateTime(p[4].Value, p[3].Value, p[2].Value, p[1].Value, p[0].Value, 0);
-        }
-
-        /// <summary>
-        /// Gets an array of all date parts to construct a datetime instance.
-        /// </summary>
-        /// <returns>[min, hour, day, month, year]</returns>
-        private int?[] ToArray()
-        {
-            return new int?[] { this.Minute, this.Hour, this.Day, this.Month, this.Year };
-        }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using global::LocalNotificationProxy.LocalNotification.Toast;
     using Microsoft.Toolkit.Uwp.Notifications;
     using Windows.UI.Notifications;
 
@@ -282,17 +283,6 @@
                     ValueStringOverride = new BindableString("progress.description"),
                     Status = new BindableString("progress.status")
                 };
-            }
-        }
-
-        /// <summary>
-        /// Gets the date when to trigger the notification.
-        /// </summary>
-        public DateTime? Date
-        {
-            get
-            {
-                return this.Options.Trigger.Date;
             }
         }
 

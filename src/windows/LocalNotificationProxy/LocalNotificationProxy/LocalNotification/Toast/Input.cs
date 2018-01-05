@@ -19,23 +19,38 @@
  * limitations under the License.
  */
 
-namespace LocalNotificationProxy.LocalNotification
+namespace LocalNotificationProxy.LocalNotification.Toast
 {
-    public interface IAction
+    public sealed class Input : IAction
     {
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
-        string ID { get; set; }
+        public string ID { get; set; }
 
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
-        string Title { get; set; }
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the title of the submit button.
+        /// </summary>
+        public string SubmitTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets placeholder text.
+        /// </summary>
+        public string EmptyText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default text.
+        /// </summary>
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to launch the app.
         /// </summary>
-        bool Launch { get; set; }
+        public bool Launch { get; set; } = true;
     }
 }

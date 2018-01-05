@@ -447,7 +447,7 @@ exports.parseOptions = function (obj) {
  * @return [ LocalNotification.Trigger ]
  */
 exports.parseTrigger = function (obj) {
-    var trigger = new LocalNotification.Trigger(),
+    var trigger = new LocalNotification.Toast.Trigger(),
         spec    = obj.trigger, val;
 
     if (!spec) return trigger;
@@ -469,12 +469,12 @@ exports.parseTrigger = function (obj) {
  * @return [ LocalNotification.Every|String ]
  */
 exports.parseEvery = function (spec) {
-    var every = new LocalNotification.Every();
+    var every = new LocalNotification.Toast.Every();
 
     if (typeof spec !== 'object') return spec;
 
     for (var prop in every) {
-        if (spec[prop]) every[prop] = parseInt(spec[prop]);
+        if (spec.hasOwnProperty(prop)) every[prop] = parseInt(spec[prop]);
     }
 
     return every;
@@ -494,10 +494,10 @@ exports.parseActions = function (obj) {
 
     for (var action of obj.actions) {
         if (!action.type || action.type == 'button') {
-            btn = new LocalNotification.Button();
+            btn = new LocalNotification.Toast.Button();
         } else
         if (action.type == 'input') {
-            btn = new LocalNotification.Input();
+            btn = new LocalNotification.Toast.Input();
         }
 
         for (var prop in btn) {
@@ -518,7 +518,7 @@ exports.parseActions = function (obj) {
  * @return [ LocalNotification.ProgressBar ]
  */
 exports.parseProgressBar = function (obj) {
-    var bar  = new LocalNotification.ProgressBar(),
+    var bar  = new LocalNotification.Toast.ProgressBar(),
         spec = obj.progressBar;
 
     if (!spec) return bar;

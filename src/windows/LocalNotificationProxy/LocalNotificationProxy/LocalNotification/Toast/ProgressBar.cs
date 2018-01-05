@@ -19,23 +19,33 @@
  * limitations under the License.
  */
 
-namespace LocalNotificationProxy.LocalNotification
+namespace LocalNotificationProxy.LocalNotification.Toast
 {
-    public sealed class Button : IAction
+    public sealed class ProgressBar
     {
         /// <summary>
-        /// Gets or sets the ID.
+        /// Gets or sets a value indicating whether the notification has a progress bar.
         /// </summary>
-        public string ID { get; set; }
+        public bool Enabled { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to launch the app.
+        /// Gets or sets the value.
         /// </summary>
-        public bool Launch { get; set; } = true;
+        public double Value { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        public string Status { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
     }
 }
