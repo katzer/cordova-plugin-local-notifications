@@ -97,9 +97,13 @@ namespace LocalNotificationProxy.LocalNotification.Toast
                 trigger.Unit = node.GetAttribute("unit");
             }
 
-            if (node.GetAttributeNode("every") != null)
+            if (node.GetAttributeNode("strEvery") != null)
             {
-                trigger.Every = node.GetAttribute("every");
+                trigger.Every = node.GetAttribute("strEvery");
+            }
+            else if (node.GetAttributeNode("hshEvery") != null)
+            {
+                trigger.Every = Toast.Every.Parse(node.GetAttribute("hshEvery"));
             }
 
             return trigger;
@@ -125,9 +129,16 @@ namespace LocalNotificationProxy.LocalNotification.Toast
                 node.SetAttribute("unit", this.Unit);
             }
 
-            if (this.Every != null && !(this.Every is Every))
+            if (this.Every != null)
             {
-                node.SetAttribute("every", this.Every.ToString());
+                if (this.Every is Every)
+                {
+                    node.SetAttribute("hshEvery", (this.Every as Every).GetXml());
+                }
+                else
+                {
+                    node.SetAttribute("strEvery", this.Every.ToString());
+                }
             }
 
             return node.GetXml();
