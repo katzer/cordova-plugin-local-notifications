@@ -151,8 +151,8 @@ public final class Request {
         Object every = spec.opt("every");
 
         if (every instanceof JSONObject) {
-            List<Integer> cmp1 = getMatchingComponents();
-            List<Integer> cmp2 = getSpecialMatchingComponents();
+            List<Integer> cmp1 = getMatchers();
+            List<Integer> cmp2 = getSpecials();
 
             return new MatchTrigger(cmp1, cmp2);
         }
@@ -208,7 +208,7 @@ public final class Request {
      *
      * @return [min, hour, day, month, year]
      */
-    private List<Integer> getMatchingComponents() {
+    private List<Integer> getMatchers() {
         JSONObject every = spec.optJSONObject("every");
 
         return Arrays.asList(
@@ -223,9 +223,9 @@ public final class Request {
     /**
      * Gets an array of all date parts to construct a datetime instance.
      *
-     * @return [min, hour, day, month, year]
+     * @return [weekday, weekdayOrdinal, weekOfMonth, quarter]
      */
-    private List<Integer> getSpecialMatchingComponents() {
+    private List<Integer> getSpecials() {
         JSONObject every = spec.optJSONObject("every");
 
         return Arrays.asList(
