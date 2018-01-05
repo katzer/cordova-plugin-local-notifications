@@ -178,7 +178,7 @@ namespace LocalNotificationProxy.LocalNotification
             notification.Tag = this.Options.Id.ToString();
             notification.SuppressPopup = this.Options.Silent;
 
-            if (this.request.Occurrence > 1)
+            if (this.request.Occurrence > 2)
             {
                 notification.Group = notification.Tag;
             }
