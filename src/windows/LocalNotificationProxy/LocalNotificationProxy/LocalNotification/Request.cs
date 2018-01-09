@@ -242,7 +242,7 @@ namespace LocalNotificationProxy.LocalNotification
             }
             else if (this.spec.FirstAt != 0)
             {
-                return DateTimeOffset.FromUnixTimeMilliseconds(this.spec.At).LocalDateTime;
+                return DateTimeOffset.FromUnixTimeMilliseconds(this.spec.FirstAt).LocalDateTime;
             }
             else if (this.spec.After != 0)
             {
