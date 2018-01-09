@@ -286,7 +286,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | String  | `quarter`        | x       |     | x       |
 |              | every         | String  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  |
-|              | firstAt       | Date    |                  | x       | x   |
+|              | firstAt       | Date    |                  | x       | x   | x       |
 | Match        |
 |              | count         | Int     |                  | x       |     | x       |
 |              | every         | Object  | `minute`         | x       | x   | x       |
