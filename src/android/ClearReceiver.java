@@ -28,7 +28,6 @@ import de.appplant.cordova.plugin.notification.receiver.AbstractClearReceiver;
 
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
-
 /**
  * The clear intent receiver is triggered when the user clears a
  * notification manually. It un-persists the cleared notification from the

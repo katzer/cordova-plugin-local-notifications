@@ -56,6 +56,7 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
  * care of firing the event. When the event is processed, a notification is put
  * in the Android notification center and status bar.
  */
+@SuppressWarnings({"Convert2Diamond", "Convert2Lambda"})
 public class LocalNotification extends CordovaPlugin {
 
     // Reference to the web view for static access
