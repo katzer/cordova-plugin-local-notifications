@@ -25,6 +25,9 @@
 @import CoreLocation;
 @import UserNotifications;
 
+// Maps these crap where Sunday is the 1st day of the week
+static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
+
 @interface APPNotificationOptions ()
 
 // The dictionary which contains all notification properties
@@ -421,9 +424,7 @@
  */
 - (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents:(BOOL)repeats
 {
-    NSCalendar* cal = [[NSCalendar alloc]
-                       initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-
+    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
     NSDateComponents *date = [cal components:[self repeatInterval]
                                     fromDate:[self triggerDate]];
 
@@ -440,9 +441,7 @@
  */
 - (UNCalendarNotificationTrigger*) triggerWithCustomDateMatchingComponents
 {
-    NSCalendar* cal = [[NSCalendar alloc]
-                       initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-
+    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
     NSDateComponents *date = [self customDateComponents];
 
     date.calendar = cal;
@@ -548,7 +547,7 @@
             date.day = value;
         } else
         if ([key isEqualToString:@"weekday"]) {
-            date.weekday = value;
+            date.weekday = WEEKDAYS[value];
         } else
         if ([key isEqualToString:@"weekdayOrdinal"]) {
             date.weekdayOrdinal = value;
@@ -827,6 +826,22 @@
     }
 
     return 0;
+}
+
+/**
+ * Instance if a calendar where the monday is the first day of the week.
+ *
+ * @return [ NSCalendar* ]
+ */
+- (NSCalendar*) calendarWithMondayAsFirstDay
+{
+    NSCalendar* cal = [[NSCalendar alloc]
+                       initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+
+    cal.firstWeekday = 2;
+    cal.minimumDaysInFirstWeek = 1;
+
+    return cal;
 }
 
 @end
