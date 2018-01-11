@@ -88,7 +88,7 @@ public final class Request {
      *
      * @return The notification ID as the string
      */
-    public String getIdentifier() {
+    String getIdentifier() {
         return options.getId().toString() + "-" + getOccurrence();
     }
 
@@ -130,9 +130,13 @@ public final class Request {
         if (triggerDate == null)
             return null;
 
-        if ((now.getTimeInMillis() - triggerDate.getTime()) > 60000) {
+        long time = triggerDate.getTime();
+
+        if ((now.getTimeInMillis() - time) > 60000)
             return null;
-        }
+
+        if (time >= spec.optLong("before", time + 1))
+            return null;
 
         return triggerDate;
     }
@@ -151,8 +155,8 @@ public final class Request {
         Object every = spec.opt("every");
 
         if (every instanceof JSONObject) {
-            List<Integer> cmp1 = getMatchers();
-            List<Integer> cmp2 = getSpecials();
+            List<Integer> cmp1 = getMatchingComponents();
+            List<Integer> cmp2 = getSpecialMatchingComponents();
 
             return new MatchTrigger(cmp1, cmp2);
         }
@@ -208,7 +212,7 @@ public final class Request {
      *
      * @return [min, hour, day, month, year]
      */
-    private List<Integer> getMatchers() {
+    private List<Integer> getMatchingComponents() {
         JSONObject every = spec.optJSONObject("every");
 
         return Arrays.asList(
@@ -223,9 +227,9 @@ public final class Request {
     /**
      * Gets an array of all date parts to construct a datetime instance.
      *
-     * @return [weekday, weekdayOrdinal, weekOfMonth, quarter]
+     * @return [min, hour, day, month, year]
      */
-    private List<Integer> getSpecials() {
+    private List<Integer> getSpecialMatchingComponents() {
         JSONObject every = spec.optJSONObject("every");
 
         return Arrays.asList(

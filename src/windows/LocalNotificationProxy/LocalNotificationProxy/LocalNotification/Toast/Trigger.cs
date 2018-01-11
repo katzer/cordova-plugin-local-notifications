@@ -43,6 +43,11 @@ namespace LocalNotificationProxy.LocalNotification.Toast
         public long FirstAt { get; set; } = 0;
 
         /// <summary>
+        /// Gets or sets the before trigger date.
+        /// </summary>
+        public long Before { get; set; } = 0;
+
+        /// <summary>
         /// Gets or sets the after trigger date.
         /// </summary>
         public long After { get; set; } = 0;
@@ -85,9 +90,10 @@ namespace LocalNotificationProxy.LocalNotification.Toast
             var trigger = new Trigger();
             var node = doc.DocumentElement;
 
-            trigger.At = int.Parse(node.GetAttribute("at"));
-            trigger.FirstAt = int.Parse(node.GetAttribute("firstAt"));
-            trigger.After = int.Parse(node.GetAttribute("after"));
+            trigger.At = long.Parse(node.GetAttribute("at"));
+            trigger.FirstAt = long.Parse(node.GetAttribute("firstAt"));
+            trigger.Before = long.Parse(node.GetAttribute("before"));
+            trigger.After = long.Parse(node.GetAttribute("after"));
             trigger.In = int.Parse(node.GetAttribute("in"));
             trigger.Count = int.Parse(node.GetAttribute("count"));
             trigger.Occurrence = int.Parse(node.GetAttribute("occurrence"));
@@ -119,6 +125,7 @@ namespace LocalNotificationProxy.LocalNotification.Toast
 
             node.SetAttribute("at", this.At.ToString());
             node.SetAttribute("firstAt", this.FirstAt.ToString());
+            node.SetAttribute("before", this.Before.ToString());
             node.SetAttribute("after", this.After.ToString());
             node.SetAttribute("in", this.In.ToString());
             node.SetAttribute("count", this.Count.ToString());

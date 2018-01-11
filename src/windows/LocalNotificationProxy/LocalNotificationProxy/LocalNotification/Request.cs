@@ -85,6 +85,16 @@ namespace LocalNotificationProxy.LocalNotification
                     return null;
                 }
 
+                if (this.spec.Before != 0)
+                {
+                    var before = this.ToDateTime(this.spec.Before);
+
+                    if (this.triggerDate.Value >= before)
+                    {
+                        return null;
+                    }
+                }
+
                 var minDate = DateTime.Now.AddSeconds(0.2);
 
                 if (this.triggerDate >= minDate)
@@ -238,18 +248,28 @@ namespace LocalNotificationProxy.LocalNotification
         {
             if (this.spec.At != 0)
             {
-                return DateTimeOffset.FromUnixTimeMilliseconds(this.spec.At).LocalDateTime;
+                return this.ToDateTime(this.spec.At);
             }
             else if (this.spec.FirstAt != 0)
             {
-                return DateTimeOffset.FromUnixTimeMilliseconds(this.spec.FirstAt).LocalDateTime;
+                return this.ToDateTime(this.spec.FirstAt);
             }
             else if (this.spec.After != 0)
             {
-                return DateTimeOffset.FromUnixTimeMilliseconds(this.spec.After).LocalDateTime;
+                return this.ToDateTime(this.spec.After);
             }
 
             return DateTime.Now;
+        }
+
+        /// <summary>
+        /// Unix time from milliseconds.
+        /// </summary>
+        /// <param name="ms">Milliseconds </param>
+        /// <returns>DateTime object.</returns>
+        private DateTime ToDateTime(long ms)
+        {
+            return DateTimeOffset.FromUnixTimeMilliseconds(ms).LocalDateTime;
         }
     }
 }
