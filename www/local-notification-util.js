@@ -173,7 +173,8 @@ exports.convertActions = function (options) {
     if (!options.actions)
         return null;
 
-    for (var action of options.actions) {
+    for (var i = 0, len = options.actions.length; i < len; i++) {
+        var action = options.actions[i];
 
         if (!action.id) {
             console.warn('Action with title ' + action.title + ' ' +
@@ -335,8 +336,8 @@ exports.createCallbackFn = function (fn, scope) {
 exports.convertIds = function (ids) {
     var convertedIds = [];
 
-    for (var id of ids) {
-        convertedIds.push(Number(id));
+    for (var i = 0, len = ids.length; i < len; i++) {
+        convertedIds.push(Number(ids[i]));
     }
 
     return convertedIds;
@@ -353,7 +354,7 @@ exports.convertIds = function (ids) {
 exports.getValueFor = function (options) {
     var keys = Array.apply(null, arguments).slice(1);
 
-    for (var key of keys) {
+    for (var i = 0, key = keys[i], len = keys.length; i < len; key = keys[++i]) {
         if (options.hasOwnProperty(key)) {
             return options[key];
         }
