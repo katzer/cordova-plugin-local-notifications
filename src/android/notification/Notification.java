@@ -56,7 +56,6 @@ import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
  * Wrapper class around OS notification class. Handles basic operations
  * like show, delete, cancel for a single local notification instance.
  */
-@SuppressWarnings("Convert2Diamond")
 public final class Notification {
 
     // Used to differ notifications by their life cycle state
@@ -77,7 +76,7 @@ public final class Notification {
     private static final String PREF_KEY_PID = "NOTIFICATION_PID";
 
     // Cache for the builder instances
-    static SparseArray<NotificationCompat.Builder> cache = null;
+    private static SparseArray<NotificationCompat.Builder> cache = null;
 
     // Application context passed by constructor
     private final Context context;
@@ -246,7 +245,9 @@ public final class Notification {
 
         try {
             receiver = (BroadcastReceiver) cls.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+            return false;
+        } catch (IllegalAccessException e) {
             return false;
         }
 

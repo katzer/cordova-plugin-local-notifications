@@ -45,7 +45,6 @@ import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
  */
-@SuppressWarnings("Convert2Diamond")
 public final class Builder {
 
     // Application context passed by constructor

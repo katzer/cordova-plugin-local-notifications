@@ -50,7 +50,6 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
  * state like triggered or scheduled. Offers shortcut ways to schedule,
  * cancel or clear local notifications.
  */
-@SuppressWarnings("Convert2Diamond")
 public final class Manager {
 
     // TODO: temporary

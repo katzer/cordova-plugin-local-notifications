@@ -54,7 +54,6 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
  * possible option values. Class provides simple readers and more advanced
  * methods to convert independent values into platform specific values.
  */
-@SuppressWarnings("Convert2Diamond")
 public final class Options {
 
     // Key name for bundled sound extra
@@ -322,7 +321,11 @@ public final class Options {
 
             int aRGB = Integer.parseInt(hex, 16);
             return aRGB + 0xFF000000;
-        } catch (NumberFormatException | NoSuchFieldException | IllegalAccessException e) {
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
