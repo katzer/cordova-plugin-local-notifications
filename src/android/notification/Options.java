@@ -54,6 +54,7 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
  * possible option values. Class provides simple readers and more advanced
  * methods to convert independent values into platform specific values.
  */
+@SuppressWarnings("Convert2Diamond")
 public final class Options {
 
     // Key name for bundled sound extra
@@ -91,7 +92,7 @@ public final class Options {
      * @param context The application context.
      * @param options The options dict map.
      */
-    public Options(Context context, JSONObject options) {
+    Options(Context context, JSONObject options) {
         this.context = context;
         this.options = options;
         this.assets  = AssetUtil.getInstance(context);
@@ -132,7 +133,7 @@ public final class Options {
      *
      * @return The notification ID as the string
      */
-    public String getIdentifier() {
+    String getIdentifier() {
         return getId().toString();
     }
 
@@ -321,11 +322,7 @@ public final class Options {
 
             int aRGB = Integer.parseInt(hex, 16);
             return aRGB + 0xFF000000;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (NumberFormatException | NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -335,7 +332,7 @@ public final class Options {
     /**
      * Sound file path for the local notification.
      */
-    public Uri getSound() {
+    Uri getSound() {
         return assets.parse(options.optString("sound", null));
     }
 

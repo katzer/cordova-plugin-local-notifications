@@ -50,6 +50,7 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
  * state like triggered or scheduled. Offers shortcut ways to schedule,
  * cancel or clear local notifications.
  */
+@SuppressWarnings("Convert2Diamond")
 public final class Manager {
 
     // TODO: temporary
@@ -282,17 +283,6 @@ public final class Manager {
         List<Integer> ids = getIdsByType(type);
 
         return getByIds(ids);
-    }
-
-    /**
-     * If a notification with an ID exists.
-     *
-     * @param id Notification ID
-     *
-     * @return true if found.
-     */
-    public boolean exist (int id) {
-        return get(id) != null;
     }
 
     /**

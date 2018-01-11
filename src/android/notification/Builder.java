@@ -31,7 +31,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.util.SparseArray;
 
 import java.util.List;
 import java.util.Random;
@@ -48,9 +47,6 @@ import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
  */
 @SuppressWarnings("Convert2Diamond")
 public final class Builder {
-
-    // Cache for the builder instances
-    private static SparseArray<NotificationCompat.Builder> cache = null;
 
     // Application context passed by constructor
     private final Context context;
@@ -153,7 +149,6 @@ public final class Builder {
         }
 
         if (options.isWithProgressBar()) {
-            cacheBuilder(builder);
             builder.setProgress(
                     options.getProgressMaxValue(),
                     options.getProgressValue(),
@@ -416,31 +411,14 @@ public final class Builder {
      * Returns a cached builder instance or creates a new one.
      */
     private NotificationCompat.Builder findOrCreateBuilder() {
-        NotificationCompat.Builder builder = null;
         int key = options.getId();
-
-        if (cache != null) {
-            builder = cache.get(key);
-        }
+        NotificationCompat.Builder builder = Notification.getCachedBuilder(key);
 
         if (builder == null) {
-            builder = new NotificationCompat.Builder(context, Manager.CHANNEL_ID);
+            builder = new NotificationCompat.Builder(context, options.getChannel());
         }
 
         return builder;
-    }
-
-    /**
-     * Caches the builder instance so it can be used later.
-     *
-     * @param builder The instance to cache.
-     */
-    private void cacheBuilder (NotificationCompat.Builder builder) {
-        if (cache == null) {
-            cache = new SparseArray<NotificationCompat.Builder>();
-        }
-
-        cache.put(options.getId(), builder);
     }
 
 }
