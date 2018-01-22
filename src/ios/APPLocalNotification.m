@@ -28,6 +28,7 @@
 @interface APPLocalNotification ()
 
 @property (strong, nonatomic) UNUserNotificationCenter* center;
+@property (NS_NONATOMIC_IOSONLY, nullable, weak) id <UNUserNotificationCenterDelegate> delegate;
 @property (readwrite, assign) BOOL deviceready;
 @property (readwrite, assign) BOOL isActive;
 @property (readonly, nonatomic, retain) NSArray* launchDetails;
@@ -131,7 +132,7 @@
 
             [self fireEvent:@"update" notification:notification];
         }
-        
+
         [self check:command];
     }];
 }
@@ -506,9 +507,11 @@
 {
     UNNotificationRequest* toast = notification.request;
 
-    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
+        [_delegate userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
         return;
-    
+    }
+
     APPNotificationOptions* options = toast.options;
 
     if (![notification.request wasUpdated]) {
@@ -535,9 +538,11 @@
     UNNotificationRequest* toast = response.notification.request;
 
     completionHandler();
-    
-    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
+
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
+        [_delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
         return;
+    }
 
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     NSString* action          = response.actionIdentifier;
@@ -577,6 +582,7 @@
     eventQueue = [[NSMutableArray alloc] init];
     _center    = [UNUserNotificationCenter currentNotificationCenter];
 
+    _delegate = _center.delegate;
     _center.delegate = self;
     [_center registerGeneralNotificationCategory];
 
