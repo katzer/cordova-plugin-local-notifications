@@ -103,7 +103,7 @@
         }
 
         [self check:command];
-     }];
+    }];
 }
 
 /**
@@ -245,7 +245,7 @@
 
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                     messageAsString:type];
+                                   messageAsString:type];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
@@ -508,7 +508,9 @@
     UNNotificationRequest* toast = notification.request;
 
     if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
-        [_delegate userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
+        [_delegate userNotificationCenter:center
+                  willPresentNotification:notification
+                    withCompletionHandler:completionHandler];
         return;
     }
 
@@ -540,7 +542,9 @@
     completionHandler();
 
     if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
-        [_delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+        [_delegate userNotificationCenter:center
+           didReceiveNotificationResponse:response
+                    withCompletionHandler:completionHandler];
         return;
     }
 
@@ -711,3 +715,4 @@
 }
 
 @end
+
