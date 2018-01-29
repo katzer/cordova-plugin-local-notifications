@@ -59,9 +59,9 @@ See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` 
 
 __Known issues__
 
-- Support for Android Orio is limited yet.
+- Support for Android Oreo is limited yet.
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
-- __Not compatible yet with Ionic__. Their wrapper is not part of this plugin. In future I will contribute to them to fix such issues in time. But for the moment I am busy enough with the plugin itself.
+- __Not compatible yet with Ionic Native__. Their wrapper is not part of this plugin. In future I will contribute to them to fix such issues in time. But for the moment I am busy enough with the plugin itself.
 
 Please report bugs or missing features!
 
@@ -476,7 +476,7 @@ document.addEventListener('deviceready', function () {
 
 ## Methods
 
-All methods work asynchron and accept callback methods.
+All methods work asynchronous and accept callback methods.
 See the sample app for how to use them.
 
 | Method   | Method            | Method          | Method         | Method      |
