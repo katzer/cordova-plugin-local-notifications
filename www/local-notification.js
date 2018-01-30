@@ -439,8 +439,9 @@ exports.setDefaults = function (newDefaults) {
  * @return [ Void ]
  */
 exports.on = function (event, callback, scope) {
+    var type = typeof callback;
 
-    if (typeof callback !== "function")
+    if (type !== 'function' && type !== 'string')
         return;
 
     if (!this._listener[event]) {
@@ -498,6 +499,10 @@ exports.fireEvent = function (event) {
     for (var i = 0; i < listener.length; i++) {
         var fn    = listener[i][0],
             scope = listener[i][1];
+
+        if (typeof fn !== 'function') {
+            fn = scope[fn];
+        }
 
         fn.apply(scope, args);
     }
