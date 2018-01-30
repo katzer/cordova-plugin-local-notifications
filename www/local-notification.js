@@ -504,6 +504,15 @@ exports.fireEvent = function (event) {
 };
 
 /**
+ * Fire queued events once the device is ready and all listeners are registered.
+ *
+ * @return [ Void ]
+ */
+exports.fireQueuedEvents = function() {
+    exports._exec('ready');
+};
+
+/**
  * Merge custom properties with the default values.
  *
  * @param [ Object ] options Set of custom values.
@@ -957,7 +966,9 @@ if (!Array.from) {
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    exports._exec('ready');
+    if (!window.skipLocalNotificationReady) {
+        exports.fireQueuedEvents();
+    }
 });
 
 // Called before 'deviceready' event
