@@ -137,10 +137,11 @@ public final class Builder {
                 .setColor(options.getColor())
                 .setVisibility(options.getVisibility())
                 .setPriority(options.getPriority())
-                .setShowWhen(options.getShowWhen())
-                .setUsesChronometer(options.isWithProgressBar())
+                .setShowWhen(options.showClock())
+                .setUsesChronometer(options.showChronometer())
                 .setGroup(options.getGroup())
                 .setGroupSummary(options.getGroupSummary())
+                .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
         if (sound != Uri.EMPTY && !isUpdate()) {

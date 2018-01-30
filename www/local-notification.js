@@ -30,6 +30,7 @@ exports._defaults = {
     autoClear     : true,
     badge         : null,
     channel       : null,
+    clock         : true,
     color         : null,
     data          : null,
     defaults      : 0,
@@ -45,13 +46,13 @@ exports._defaults = {
     number        : 0,
     priority      : 0,
     progressBar   : false,
-    showWhen      : true,
     silent        : false,
     smallIcon     : 'res://icon',
     sound         : true,
     sticky        : false,
     summary       : null,
     text          : '',
+    timeout       : false,
     title         : '',
     trigger       : { type : 'calendar' },
     vibrate       : false,
@@ -606,6 +607,14 @@ exports._convertProperties = function (options) {
         console.warn('Property "smallIcon" must be of kind res://...');
     }
 
+    if (typeof options.timeout === 'boolean') {
+        options.timeout = options.timeout ? 3600000 : null;
+    }
+
+    if (options.timeout) {
+        options.timeout = parseToInt('timeout', options);
+    }
+
     options.data = JSON.stringify(options.data);
 
     this._convertTrigger(options);
@@ -760,6 +769,10 @@ exports._convertProgressBar = function (options) {
     }
 
     cfg.enabled = !!cfg.enabled;
+
+    if (cfg.enabled && options.clock === true) {
+        options.clock = 'chronometer';
+    }
 
     return options;
 };

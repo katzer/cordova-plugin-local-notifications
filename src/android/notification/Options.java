@@ -200,6 +200,13 @@ public final class Options {
     }
 
     /**
+     * Gets the value for the timeout flag.
+     */
+    long getTimeout() {
+        return options.optLong("timeout");
+    }
+
+    /**
      * The channel id of that notification.
      */
     String getChannel() {
@@ -481,8 +488,19 @@ public final class Options {
     /**
      * If the notification shall show the when date.
      */
-    boolean getShowWhen() {
-        return options.optBoolean("showWhen", true);
+    boolean showClock() {
+        Object clock = options.opt("clock");
+
+        return (clock instanceof Boolean) ? (Boolean) clock : true;
+    }
+
+    /**
+     * If the notification shall show the when date.
+     */
+    boolean showChronometer() {
+        Object clock = options.opt("clock");
+
+        return (clock instanceof String) && clock.equals("chronometer");
     }
 
     /**

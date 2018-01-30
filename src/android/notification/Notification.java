@@ -308,7 +308,7 @@ public final class Notification {
     public void show() {
         if (builder == null) return;
 
-        if (options.isWithProgressBar()) {
+        if (options.showChronometer()) {
             cacheBuilder();
         }
 
@@ -427,7 +427,7 @@ public final class Notification {
     /**
      * Caches the builder instance so it can be used later.
      */
-    private void cacheBuilder () {
+    private void cacheBuilder() {
 
         if (cache == null) {
             cache = new SparseArray<NotificationCompat.Builder>();
