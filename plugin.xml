@@ -57,16 +57,6 @@
         <clobbers target="cordova.plugins.notification.local" />
     </js-module>
 
-    <js-module src="www/local-notification-core.js" name="LocalNotification.Core">
-        <clobbers target="cordova.plugins.notification.local.core" />
-        <clobbers target="plugin.notification.local.core" />
-    </js-module>
-
-    <js-module src="www/local-notification-util.js" name="LocalNotification.Util">
-        <merges target="cordova.plugins.notification.local.core" />
-        <merges target="plugin.notification.local.core" />
-    </js-module>
-
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
