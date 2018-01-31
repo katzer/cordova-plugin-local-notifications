@@ -587,18 +587,6 @@ exports._convertProperties = function (options) {
         options.badge = parseToInt('badge', options);
     }
 
-    if (options.priority) {
-        options.priority = parseToInt('priority', options);
-    }
-
-    if (options.foreground === true) {
-        options.priority = Math.max(options.priority, 1);
-    }
-
-    if (options.foreground === false) {
-        options.priority = Math.min(options.priority, 0);
-    }
-
     if (options.defaults) {
         options.defaults = parseToInt('defaults', options);
     }
@@ -617,9 +605,37 @@ exports._convertProperties = function (options) {
 
     options.data = JSON.stringify(options.data);
 
+    this._convertPriority(options);
     this._convertTrigger(options);
     this._convertActions(options);
     this._convertProgressBar(options);
+
+    return options;
+};
+
+/**
+ * Convert the passed values for the priority to their required type.
+ *
+ * @param [ Map ] options Set of custom values.
+ *
+ * @return [ Map ] Interaction object with trigger spec.
+ */
+exports._convertPriority = function (options) {
+    var prio = options.priority || options.prio || 0;
+
+    if (typeof prio === 'string') {
+        prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
+    }
+
+    if (options.foreground === true) {
+        prio = Math.max(prio, 1);
+    }
+
+    if (options.foreground === false) {
+        prio = Math.min(prio, 0);
+    }
+
+    options.priority = prio;
 
     return options;
 };
