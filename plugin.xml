@@ -120,17 +120,18 @@
                 android:launchMode="singleInstance"
                 android:theme="@android:style/Theme.Translucent"
                 android:exported="false" />
-<!--
-            <receiver android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver" android:exported="false" >
+
+            <receiver
+                android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
+                android:exported="false" >
                 <intent-filter>
-                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                    <action android:name="android.intent.action.BOOT_COMPLETED" android:priority="500" />
                 </intent-filter>
             </receiver>
- -->
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
-            <!-- <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
         </config-file>
 
@@ -153,11 +154,11 @@
         <source-file
             src="src/android/ClearReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
-<!--
+
         <source-file
             src="src/android/RestoreReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
- -->
+
         <source-file
             src="src/android/notification/action/Action.java"
             target-dir="src/de/appplant/cordova/plugin/notification/action" />
@@ -173,11 +174,11 @@
         <source-file
             src="src/android/notification/receiver/AbstractClickReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
-<!--
+
         <source-file
             src="src/android/notification/receiver/AbstractRestoreReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
- -->
+
         <source-file
             src="src/android/notification/receiver/AbstractTriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />

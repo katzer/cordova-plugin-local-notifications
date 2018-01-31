@@ -34,7 +34,7 @@ exports._defaults = {
     color         : null,
     data          : null,
     defaults      : 0,
-    foreground    : false,
+    foreground    : null,
     group         : null,
     groupSummary  : false,
     icon          : null,

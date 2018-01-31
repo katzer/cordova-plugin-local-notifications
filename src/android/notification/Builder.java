@@ -136,7 +136,7 @@ public final class Builder {
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())
                 .setVisibility(options.getVisibility())
-                .setPriority(options.getPriority())
+                .setPriority(options.getPrio())
                 .setShowWhen(options.showClock())
                 .setUsesChronometer(options.showChronometer())
                 .setGroup(options.getGroup())
@@ -315,9 +315,12 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
-                .putExtras(extras)
                 .setAction(options.getIdentifier())
                 .putExtra(Notification.EXTRA_ID, options.getId());
+
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
 
         int reqCode = random.nextInt();
 
@@ -339,11 +342,14 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clickActivity)
-                .putExtras(extras)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
                 .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
 
         int reqCode = random.nextInt();
 
@@ -386,11 +392,14 @@ public final class Builder {
      */
     private PendingIntent getPendingIntentForAction (Action action) {
         Intent intent = new Intent(context, clickActivity)
-                .putExtras(extras)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
 
         int reqCode = random.nextInt();
 

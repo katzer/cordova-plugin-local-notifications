@@ -91,7 +91,7 @@ public final class Options {
      * @param context The application context.
      * @param options The options dict map.
      */
-    Options(Context context, JSONObject options) {
+    public Options(Context context, JSONObject options) {
         this.context = context;
         this.options = options;
         this.assets  = AssetUtil.getInstance(context);
@@ -479,7 +479,7 @@ public final class Options {
     /**
      * Gets the notifications priority.
      */
-    int getPriority() {
+    int getPrio() {
         int prio = options.optInt("priority");
 
         return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
