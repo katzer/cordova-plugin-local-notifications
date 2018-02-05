@@ -38,6 +38,11 @@
 
 @implementation APPLocalNotification
 
+UNNotificationPresentationOptions const OptionNone  = UNNotificationPresentationOptionNone;
+UNNotificationPresentationOptions const OptionBadge = UNNotificationPresentationOptionBadge;
+UNNotificationPresentationOptions const OptionSound = UNNotificationPresentationOptionSound;
+UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentationOptionAlert;
+
 @synthesize deviceready, isActive, eventQueue;
 
 #pragma mark -
@@ -503,13 +508,13 @@
  */
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center
         willPresentNotification:(UNNotification *)notification
-          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
+          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))handler
 {
     UNNotificationRequest* toast = notification.request;
 
     [_delegate userNotificationCenter:center
               willPresentNotification:notification
-                withCompletionHandler:completionHandler];
+                withCompletionHandler:handler];
 
     if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
         return;
@@ -521,11 +526,11 @@
     }
 
     if (options.silent) {
-        completionHandler(UNNotificationPresentationOptionNone);
+        handler(OptionNone);
     } else if (!isActive || options.priority > 0) {
-        completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert);
+        handler(OptionBadge|OptionSound|OptionAlert);
     } else {
-        completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound);
+        handler(OptionBadge|OptionSound);
     }
 }
 
@@ -535,15 +540,15 @@
  */
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center
  didReceiveNotificationResponse:(UNNotificationResponse *)response
-          withCompletionHandler:(void (^)(void))completionHandler
+          withCompletionHandler:(void (^)(void))handler
 {
     UNNotificationRequest* toast = response.notification.request;
 
     [_delegate userNotificationCenter:center
        didReceiveNotificationResponse:response
-                withCompletionHandler:completionHandler];
+                withCompletionHandler:handler];
 
-    completionHandler();
+    handler();
 
     if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
         return;
