@@ -507,12 +507,12 @@
 {
     UNNotificationRequest* toast = notification.request;
 
-    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
-        [_delegate userNotificationCenter:center
-                  willPresentNotification:notification
-                    withCompletionHandler:completionHandler];
+    [_delegate userNotificationCenter:center
+              willPresentNotification:notification
+                withCompletionHandler:completionHandler];
+
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
         return;
-    }
 
     APPNotificationOptions* options = toast.options;
 
@@ -539,14 +539,14 @@
 {
     UNNotificationRequest* toast = response.notification.request;
 
+    [_delegate userNotificationCenter:center
+       didReceiveNotificationResponse:response
+                withCompletionHandler:completionHandler];
+
     completionHandler();
 
-    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
-        [_delegate userNotificationCenter:center
-           didReceiveNotificationResponse:response
-                    withCompletionHandler:completionHandler];
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class])
         return;
-    }
 
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     NSString* action          = response.actionIdentifier;
@@ -585,8 +585,8 @@
 {
     eventQueue = [[NSMutableArray alloc] init];
     _center    = [UNUserNotificationCenter currentNotificationCenter];
+    _delegate  = _center.delegate;
 
-    _delegate = _center.delegate;
     _center.delegate = self;
     [_center registerGeneralNotificationCategory];
 
@@ -715,4 +715,3 @@
 }
 
 @end
-
