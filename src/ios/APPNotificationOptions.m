@@ -413,8 +413,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
         seconds = 60;
     }
 
-    return [UNTimeIntervalNotificationTrigger
-            triggerWithTimeInterval:seconds repeats:YES];
+    UNTimeIntervalNotificationTrigger* trigger =
+    [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds
+                                                       repeats:YES];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
 }
 
 /**
@@ -430,8 +435,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    return [UNCalendarNotificationTrigger
-            triggerWithDateMatchingComponents:date repeats:repeats];
+    UNCalendarNotificationTrigger* trigger =
+    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                             repeats:repeats];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
 }
 
 /**
@@ -447,8 +457,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
     date.calendar = cal;
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    return [UNCalendarNotificationTrigger
-            triggerWithDateMatchingComponents:date repeats:YES];
+    UNCalendarNotificationTrigger* trigger =
+    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                             repeats:YES];
+
+    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
+
+    return trigger;
 }
 
 /**
