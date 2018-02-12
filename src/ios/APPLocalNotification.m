@@ -468,7 +468,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 {
     __weak APPLocalNotification* weakSelf  = self;
     UNNotificationRequest* request = notification.request;
-    NSString* event = [notification.request wasUpdated] ? @"update" : @"add";
+    NSString* event = [request wasUpdated] ? @"update" : @"add";
 
     [_center addNotificationCategory:notification.category];
 
