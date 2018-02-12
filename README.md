@@ -287,7 +287,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | String  | `quarter`        | x       |     | x       |
 |              | every         | String  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  | x       |     | x       |
-|              | firstAt       | Date    |                  | x       | x   | x       |
+|              | firstAt       | Date    |                  | x       |     | x       |
 | Match        |
 |              | count         | Int     |                  | x       |     | x       |
 |              | every         | Object  | `minute`         | x       | x   | x       |
@@ -301,7 +301,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | Object  | `quarter`        |         | x   |
 |              | every         | Object  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  | x       |     | x       |
-|              | after         | Date    |                  | x       | x   | x       |
+|              | after         | Date    |                  | x       |     | x       |
 | Location     |
 |              | center        | Array   | `[lat, long]`    |         | x   |
 |              | radius        | Int     |                  |         | x   |
