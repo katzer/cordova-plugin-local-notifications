@@ -101,7 +101,7 @@ A notification does have a set of configurable properties. Not all of them are s
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
-| timeout       |
+| timeoutAfter  |
 
 For their default values see:
 

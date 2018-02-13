@@ -203,7 +203,7 @@ public final class Options {
      * Gets the value for the timeout flag.
      */
     long getTimeout() {
-        return options.optLong("timeout");
+        return options.optLong("timeoutAfter");
     }
 
     /**

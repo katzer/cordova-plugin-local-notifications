@@ -52,7 +52,7 @@ exports._defaults = {
     sticky        : false,
     summary       : null,
     text          : '',
-    timeout       : false,
+    timeoutAfter  : false,
     title         : '',
     trigger       : { type : 'calendar' },
     vibrate       : false,
