@@ -37,6 +37,9 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 
+import static android.content.Intent.ACTION_BOOT_COMPLETED;
+import static android.os.Build.VERSION.SDK_INT;
+
 /**
  * This class is triggered upon reboot of the device. It needs to re-register
  * the alarms with the AlarmManager since these alarms are lost in case of
@@ -52,6 +55,11 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive (Context context, Intent intent) {
+        String action = intent.getAction();
+
+        if (action.equals(ACTION_BOOT_COMPLETED) && SDK_INT >= 24)
+            return;
+
         Manager mgr               = Manager.getInstance(context);
         List<JSONObject> toasts = mgr.getOptions();
 

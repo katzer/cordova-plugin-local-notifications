@@ -23,6 +23,11 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.util.Date;
+
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
@@ -44,15 +49,19 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      */
     @Override
     public void onRestore (Request request, Notification toast) {
-        Manager mgr = Manager.getInstance(toast.getContext());
+        Date date     = request.getTriggerDate();
+        boolean after = date != null && date.after(new Date());
 
-        if (toast.isHighPrio()) {
+        if (!after && toast.isHighPrio()) {
             toast.show();
         } else {
             toast.clear();
         }
 
-        if (toast.isRepeating()) {
+        Context ctx = toast.getContext();
+        Manager mgr = Manager.getInstance(ctx);
+
+        if (after || toast.isRepeating()) {
             mgr.schedule(request, TriggerReceiver.class);
         }
     }

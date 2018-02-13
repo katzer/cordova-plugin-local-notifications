@@ -138,7 +138,7 @@ public final class Request {
      *
      * @return null if there's no trigger date.
      */
-    Date getTriggerDate() {
+    public Date getTriggerDate() {
         Calendar now = Calendar.getInstance();
 
         if (triggerDate == null)
