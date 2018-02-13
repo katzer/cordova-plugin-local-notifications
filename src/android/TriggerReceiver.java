@@ -37,6 +37,8 @@ import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
 import static java.util.Calendar.MINUTE;
 
 /**
@@ -72,8 +74,8 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
 
         notification.show();
 
-        if (!isUpdate) {
-            LocalNotification.fireEvent("trigger", notification);
+        if (!isUpdate && isAppRunning()) {
+            fireEvent("trigger", notification);
         }
 
         if (!options.isInfiniteTrigger())

@@ -583,6 +583,13 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * If the app is running.
+     */
+    static boolean isAppRunning() {
+        return webView != null;
+    }
+
+    /**
      * Convert JSON array of integers to List.
      *
      * @param ary Array of integers.
