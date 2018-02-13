@@ -233,6 +233,10 @@
         <framework src="src/windows/lib.UW/x64/LocalNotificationProxy.winmd" target-dir="x64" arch="x64" custom="true"/>
         <framework src="src/windows/lib.UW/ARM/LocalNotificationProxy.winmd" target-dir="ARM" arch="ARM" custom="true"/>
 
+        <framework src="src/windows/lib.UW/x86/Microsoft.Toolkit.Uwp.Notifications.dll" target-dir="x86" arch="x86" custom="true"/>
+        <framework src="src/windows/lib.UW/x64/Microsoft.Toolkit.Uwp.Notifications.dll" target-dir="x64" arch="x64" custom="true"/>
+        <framework src="src/windows/lib.UW/ARM/Microsoft.Toolkit.Uwp.Notifications.dll" target-dir="ARM" arch="ARM" custom="true"/>
+
         <js-module src="src/windows/LocalNotificationProxy.js" name="LocalNotification.Proxy" >
             <merges target="" />
         </js-module>
