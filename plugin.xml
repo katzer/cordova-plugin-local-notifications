@@ -123,9 +123,11 @@
 
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
+                android:directBootAware="true"
                 android:exported="false" >
                 <intent-filter>
-                    <action android:name="android.intent.action.BOOT_COMPLETED" android:priority="500" />
+                    <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
         </config-file>
