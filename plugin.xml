@@ -115,10 +115,8 @@
                 android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
                 android:exported="false" />
 
-            <activity
+            <service
                 android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
-                android:launchMode="singleInstance"
-                android:theme="@android:style/Theme.Translucent"
                 android:exported="false" />
 
             <receiver
