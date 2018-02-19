@@ -64,7 +64,7 @@ static char optionsKey;
     self.sound              = options.sound;
     self.badge              = options.badge;
     self.attachments        = options.attachments;
-    self.categoryIdentifier = options.categoryId;
+    self.categoryIdentifier = options.actionGroupId;
 }
 
 #pragma mark -

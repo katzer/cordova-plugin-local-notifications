@@ -176,7 +176,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 - (void) clearAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        [_center clearAllNotifications];
+        [_center clearNotifications];
         [self clearApplicationIconBadgeNumber];
         [self fireEvent:@"clearall"];
         [self execCallback:command];
@@ -217,7 +217,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 - (void) cancelAll:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        [_center cancelAllNotifications];
+        [_center cancelNotifications];
         [self clearApplicationIconBadgeNumber];
         [self fireEvent:@"cancelall"];
         [self execCallback:command];
@@ -408,15 +408,10 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 {
     [_center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings* settings) {
         BOOL authorized = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
-        BOOL enabled = settings.notificationCenterSetting == UNNotificationSettingEnabled;
-        BOOL permitted = authorized && enabled;
+        BOOL enabled    = settings.notificationCenterSetting == UNNotificationSettingEnabled;
+        BOOL permitted  = authorized && enabled;
 
-        CDVPluginResult* result;
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                     messageAsBool:permitted];
-
-        [self.commandDelegate sendPluginResult:result
-                                    callbackId:command.callbackId];
+        [self execCallback:command arg:permitted];
     }];
 }
 
@@ -443,14 +438,37 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 - (void) actions:(CDVInvokedUrlCommand *)command
 {
     [self.commandDelegate runInBackground:^{
-        NSDictionary* options = command.arguments[0];
+        int task              = [command.arguments[0] intValue];
         APPNotificationContent* notification;
+        NSDictionary* options;
+        NSString* identifier;
+        BOOL found;
 
-        notification = [[APPNotificationContent alloc]
-                        initWithOptions:options];
+        switch (task) {
+            case 1:
+                options      = command.arguments[1];
+                notification = [[APPNotificationContent alloc]
+                                initWithOptions:options];
 
-        [_center addNotificationCategory:notification.category];
-        [self execCallback:command];
+                [_center addActionGroup:notification.category];
+                [self execCallback:command];
+
+                break;
+            case -1:
+                identifier = command.arguments[1];
+
+                [_center removeActionGroup:identifier];
+                [self execCallback:command];
+
+                break;
+            case 0:
+                identifier = command.arguments[1];
+
+                found = [_center hasActionGroup:identifier];
+                [self execCallback:command arg:found];
+
+                break;
+        }
     }];
 }
 
@@ -466,11 +484,9 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
  */
 - (void) scheduleNotification:(APPNotificationContent*)notification
 {
-    __weak APPLocalNotification* weakSelf  = self;
-    UNNotificationRequest* request = notification.request;
-    NSString* event = [request wasUpdated] ? @"update" : @"add";
-
-    [_center addNotificationCategory:notification.category];
+    __weak APPLocalNotification* weakSelf = self;
+    UNNotificationRequest* request        = notification.request;
+    NSString* event                       = [request wasUpdated] ? @"update" : @"add";
 
     [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
         __strong APPLocalNotification* strongSelf = weakSelf;
@@ -636,6 +652,21 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 {
     CDVPluginResult *result = [CDVPluginResult
                                resultWithStatus:CDVCommandStatus_OK];
+
+    [self.commandDelegate sendPluginResult:result
+                                callbackId:command.callbackId];
+}
+
+/**
+ * Invokes the callback with a single boolean parameter.
+ *
+ * @return [ Void ]
+ */
+- (void) execCallback:(CDVInvokedUrlCommand*)command arg:(BOOL)arg
+{
+    CDVPluginResult *result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK
+                               messageAsBool:arg];
 
     [self.commandDelegate sendPluginResult:result
                                 callbackId:command.callbackId];

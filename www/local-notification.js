@@ -24,7 +24,6 @@ var exec    = require('cordova/exec'),
 
 // Defaults
 exports._defaults = {
-    actionGroupId : null,
     actions       : [],
     attachments   : [],
     autoClear     : true,
@@ -384,7 +383,7 @@ exports.getTriggered = function (callback, scope) {
 };
 
 /**
- * Register an group of actions by id.
+ * Add an group of actions by id.
  *
  * @param [ String ]   id       The Id of the group.
  * @param [ Array]     actions  The action config settings.
@@ -393,10 +392,35 @@ exports.getTriggered = function (callback, scope) {
  *
  * @return [ Void ]
  */
-exports.addActionGroup = function (id, actions, callback, scope) {
+exports.addActions = function (id, actions, callback, scope) {
     var config = { actionGroupId: id, actions: actions };
+    this._exec('actions', [1, config], callback, scope);
+};
 
-    this._exec('actions', config, callback, scope);
+/**
+ * Remove an group of actions by id.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.removeActions = function (id, callback, scope) {
+    this._exec('actions', [-1, id], callback, scope);
+};
+
+/**
+ * Check if a group of actions is defined.
+ *
+ * @param [ String ]   id       The Id of the group.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.hasActions = function (id, callback, scope) {
+    this._exec('actions', [0, id], callback, scope);
 };
 
 /**
@@ -651,8 +675,8 @@ exports._convertPriority = function (options) {
 exports._convertActions = function (options) {
     var actions = [];
 
-    if (!options.actions)
-        return null;
+    if (!options.actions || typeof options.actions === 'string')
+        return options;
 
     for (var i = 0, len = options.actions.length; i < len; i++) {
         var action = options.actions[i];

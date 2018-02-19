@@ -106,7 +106,7 @@ public final class AssetUtil {
      */
     private Uri getUriFromPath(String path) {
         String absPath = path.replaceFirst("file://", "")
-                             .replaceFirst("\\?.*$", "");
+                .replaceFirst("\\?.*$", "");
         File file      = new File(absPath);
 
         if (!file.exists()) {
@@ -126,7 +126,7 @@ public final class AssetUtil {
      */
     private Uri getUriFromAsset(String path) {
         String resPath  = path.replaceFirst("file:/", "www")
-                              .replaceFirst("\\?.*$", "");
+                .replaceFirst("\\?.*$", "");
         String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
         File file       = getTmpFile(fileName);
 

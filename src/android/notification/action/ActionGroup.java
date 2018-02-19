@@ -73,6 +73,24 @@ public final class ActionGroup {
     }
 
     /**
+     * Unregister the action group.
+     *
+     * @param id The id of the action group to remove.
+     */
+    public static void unregister (String id) {
+        groups.remove(id);
+    }
+
+    /**
+     * Check if a action group with that id is registered.
+     *
+     * @param id The id of the action group to check for.
+     */
+    public static boolean isRegistered (String id) {
+        return groups.containsKey(id);
+    }
+
+    /**
      * Creates an action group by parsing the specified action specs.
      *
      * @param spec The action group spec containing the id and list of actions.

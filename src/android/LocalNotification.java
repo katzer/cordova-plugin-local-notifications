@@ -131,17 +131,16 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equals("ready")) {
                     deviceready();
                 } else
-                if (action.equalsIgnoreCase("check")) {
+                if (action.equals("check")) {
                     check(command);
                 } else
-                if (action.equalsIgnoreCase("request")) {
+                if (action.equals("request")) {
                     request(command);
                 } else
-                if (action.equalsIgnoreCase("actions")) {
-                    actions(args.optJSONObject(0));
-                    command.success();
+                if (action.equals("actions")) {
+                    actions(args, command);
                 } else
-                if (action.equalsIgnoreCase("schedule")) {
+                if (action.equals("schedule")) {
                     schedule(args);
                     check(command);
                 } else
@@ -227,10 +226,8 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void check (CallbackContext command) {
-        boolean allowed     = getNotMgr().hasPermission();
-        PluginResult result = new PluginResult(PluginResult.Status.OK, allowed);
-
-        command.sendPluginResult(result);
+        boolean allowed = getNotMgr().hasPermission();
+        success(command, allowed);
     }
 
     /**
@@ -246,13 +243,41 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Register action group.
      *
-     * @param args The action group spec.
+     * @param args    The exec() arguments in JSON form.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
      */
-    private void actions (JSONObject args) {
-        ActionGroup group = ActionGroup.parse(cordova.getActivity(), args);
+    private void actions (JSONArray args, CallbackContext command) {
+        int task = args.optInt(0);
 
-        if (group != null) {
-            ActionGroup.register(group);
+        ActionGroup group;
+        JSONObject spec;
+        boolean found;
+        String id;
+
+        switch (task) {
+            case 1:
+                spec  = args.optJSONObject(1);
+                group = ActionGroup.parse(cordova.getActivity(), spec);
+
+                if (group != null) ActionGroup.register(group);
+                command.success();
+
+                break;
+            case -1:
+                id = args.optString(1);
+
+                ActionGroup.unregister(id);
+                command.success();
+
+                break;
+            case 0:
+                id = args.optString(1);
+
+                found = ActionGroup.isRegistered(id);
+                success(command, found);
+
+                break;
         }
     }
 
@@ -482,6 +507,18 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         eventQueue.clear();
+    }
+
+    /**
+     * Invoke success callback with a single boolean argument.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     * @param arg     The single argument to pass through.
+     */
+    private void success(CallbackContext command, boolean arg) {
+        PluginResult result = new PluginResult(PluginResult.Status.OK, arg);
+        command.sendPluginResult(result);
     }
 
     /**

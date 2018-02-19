@@ -56,7 +56,7 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
  *
  * @return [ Void ]
  */
-- (void) addNotificationCategory:(UNNotificationCategory*)category
+- (void) addActionGroup:(UNNotificationCategory*)category
 {
     if (!category)
         return;
@@ -64,7 +64,8 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
     [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
         NSMutableSet* categories = [NSMutableSet setWithSet:set];
 
-        for (UNNotificationCategory* item in categories) {
+        for (UNNotificationCategory* item in categories)
+        {
             if ([category.identifier isEqualToString:item.identifier]) {
                 [categories removeObject:item];
                 break;
@@ -74,6 +75,58 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
         [categories addObject:category];
         [self setNotificationCategories:categories];
     }];
+}
+
+/**
+ * Remove if the specified category does exist.
+ *
+ * @param [ NSString* ] identifier The category id to remove.
+ *
+ * @return [ Void ]
+ */
+- (void) removeActionGroup:(NSString*)identifier
+{
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
+        NSMutableSet* categories = [NSMutableSet setWithSet:set];
+        
+        for (UNNotificationCategory* item in categories)
+        {
+            if ([item.identifier isEqualToString:identifier]) {
+                [categories removeObject:item];
+                break;
+            }
+        }
+
+        [self setNotificationCategories:categories];
+    }];
+}
+
+/**
+ * Check if the specified category does exist.
+ *
+ * @param [ NSString* ] identifier The category id to check for.
+ *
+ * @return [ Void ]
+ */
+- (BOOL) hasActionGroup:(NSString*)identifier
+{
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    __block BOOL found        = NO;
+
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *items) {
+        for (UNNotificationCategory* item in items)
+        {
+            if ([item.identifier isEqualToString:identifier]) {
+                found = YES;
+                dispatch_semaphore_signal(sema);
+                break;
+            }
+        }
+    }];
+    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    return found;
 }
 
 #pragma mark -
@@ -101,7 +154,8 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     [self getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *delivered) {
-        for (UNNotification* notification in delivered) {
+        for (UNNotification* notification in delivered)
+        {
             [notifications addObject:notification.request];
         }
         dispatch_semaphore_signal(sema);
@@ -276,7 +330,7 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
 /*
  * Clear all notfications.
  */
-- (void) clearAllNotifications
+- (void) clearNotifications
 {
     [self removeAllDeliveredNotifications];
 }
@@ -298,7 +352,7 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
 /*
  * Cancel all notfications.
  */
-- (void) cancelAllNotifications
+- (void) cancelNotifications
 {
     [self removeAllPendingNotificationRequests];
     [self removeAllDeliveredNotifications];

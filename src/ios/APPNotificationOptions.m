@@ -51,11 +51,8 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (id) initWithDict:(NSDictionary*)dictionary
 {
-    self = [self init];
-
+    self      = [self init];
     self.dict = dictionary;
-
-    [self actions];
 
     return self;
 }
@@ -154,8 +151,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  *
  * @return [ NSString* ]
  */
-- (NSString*) categoryId
+- (NSString*) actionGroupId
 {
+    id actions = [dict objectForKey:@"actions"];
+    
+    if ([actions isKindOfClass:NSString.class])
+        return actions;
+    
     NSString* value = [dict objectForKey:@"actionGroupId"];
 
     return value.length ? value : kAPPGeneralCategory;
