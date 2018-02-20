@@ -37,7 +37,6 @@ import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
 
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
