@@ -393,8 +393,7 @@ exports.getTriggered = function (callback, scope) {
  * @return [ Void ]
  */
 exports.addActions = function (id, actions, callback, scope) {
-    var config = { actionGroupId: id, actions: actions };
-    this._exec('actions', [0, id, config], callback, scope);
+    this._exec('actions', [0, id, actions], callback, scope);
 };
 
 /**

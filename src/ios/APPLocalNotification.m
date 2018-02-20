@@ -20,10 +20,11 @@
  */
 
 #import "APPLocalNotification.h"
+#import "APPNotificationContent.h"
 #import "APPNotificationOptions.h"
+#import "APPNotificationCategory.h"
 #import "UNUserNotificationCenter+APPLocalNotification.h"
 #import "UNNotificationRequest+APPLocalNotification.h"
-#import "APPNotificationContent.h"
 
 @interface APPLocalNotification ()
 
@@ -398,18 +399,16 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 - (void) actions:(CDVInvokedUrlCommand *)command
 {
     [self.commandDelegate runInBackground:^{
-        int code              = [command.arguments[0] intValue];
-        NSString* identifier  = [command argumentAtIndex:1];
-        NSDictionary* options = [command argumentAtIndex:2];
-        APPNotificationContent* notification;
+        int code             = [command.arguments[0] intValue];
+        NSString* identifier = [command argumentAtIndex:1];
+        NSArray* actions     = [command argumentAtIndex:2];
+        UNNotificationCategory* group;
         BOOL found;
         
         switch (code) {
             case 0:
-                notification = [[APPNotificationContent alloc]
-                                initWithOptions:options];
-                
-                [_center addActionGroup:notification.category];
+                group = [APPNotificationCategory parse:actions withId:identifier];
+                [_center addActionGroup:group];
                 [self execCallback:command];
                 break;
             case 1:

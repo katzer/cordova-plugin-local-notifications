@@ -271,12 +271,12 @@ exports.actions = function (success, error, args) {
         code        = args[0],
         id          = args[1],
         res         = [],
-        opts, group;
+        list, group;
 
     switch (code) {
         case 0:
-            opts  = exports.parseOptions(args[2]);
-            group = new ActionGroup(id, opts.actions);
+            list  = exports.parseActions({ actions:args[2] });
+            group = new ActionGroup(id, list);
 
             ActionGroup.register(group);
             break;

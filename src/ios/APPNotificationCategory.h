@@ -19,14 +19,10 @@
  * limitations under the License.
  */
 
-#import "APPNotificationOptions.h"
-
 @import UserNotifications;
 
-@interface APPNotificationContent : UNMutableNotificationContent
+@interface APPNotificationCategory : NSObject
 
-- (id) initWithOptions:(NSDictionary*)dict;
-- (APPNotificationOptions*) options;
-- (UNNotificationRequest*) request;
++ (UNNotificationCategory*) parse:(NSArray*)list withId:(NSString*)groupId;
 
 @end

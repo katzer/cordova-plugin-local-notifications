@@ -34,7 +34,6 @@
 @property (readonly, getter=priority)      int                  priority;
 @property (readonly, getter=sound)         UNNotificationSound* sound;
 @property (readonly, getter=userInfo)      NSDictionary*        userInfo;
-@property (readonly, getter=actions)       NSArray<UNNotificationAction*>*actions;
 @property (readonly, getter=attachments)   NSArray<UNNotificationAttachment*>*attachments;
 
 - (id) initWithDict:(NSDictionary*) dict;

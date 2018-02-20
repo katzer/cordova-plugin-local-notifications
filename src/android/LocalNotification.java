@@ -232,12 +232,13 @@ public class LocalNotification extends CordovaPlugin {
     private void actions (JSONArray args, CallbackContext command) {
         int task        = args.optInt(0);
         String id       = args.optString(1);
-        JSONObject spec = args.optJSONObject(2);
+        JSONArray list  = args.optJSONArray(2);
+        Context context = cordova.getActivity();
 
         switch (task) {
             case 0:
-                ActionGroup group = ActionGroup.parse(cordova.getActivity(), spec);
-                if (group != null) ActionGroup.register(group);
+                ActionGroup group = ActionGroup.parse(context, id, list);
+                ActionGroup.register(group);
                 command.success();
                 break;
             case 1:

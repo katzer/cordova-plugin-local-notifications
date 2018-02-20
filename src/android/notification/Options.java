@@ -612,7 +612,7 @@ public final class Options {
             group = ActionGroup.lookup(groupId);
         } else
         if (actions != null && actions.length() > 0) {
-            group = ActionGroup.parse(context, options);
+            group = ActionGroup.parse(context, actions);
         }
 
         return (group != null) ? group.getActions() : null;

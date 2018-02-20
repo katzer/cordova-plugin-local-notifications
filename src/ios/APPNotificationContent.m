@@ -104,25 +104,6 @@ static char optionsKey;
                                                 trigger:opts.trigger];
 }
 
-/**
- * The category for the notification with all the actions.
- *
- * @return [ UNNotificationCategory* ]
- */
-- (UNNotificationCategory*) category
-{
-    NSString* categoryId = self.categoryIdentifier;
-    NSArray* actions     = self.options.actions;
-
-    if (!actions.count)
-        return NULL;
-
-    return [UNNotificationCategory categoryWithIdentifier:categoryId
-                                                  actions:actions
-                                        intentIdentifiers:@[]
-                                                  options:UNNotificationCategoryOptionCustomDismissAction];
-}
-
 #pragma mark -
 #pragma mark Private
 
