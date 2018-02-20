@@ -21,8 +21,8 @@
 
 namespace LocalNotificationProxy.LocalNotification
 {
-    using Microsoft.Toolkit.Uwp.Notifications;
     using System.Diagnostics;
+    using Microsoft.Toolkit.Uwp.Notifications;
     using Windows.UI.Notifications;
 
     internal class Builder
