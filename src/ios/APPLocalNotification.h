@@ -25,50 +25,28 @@
 
 @interface APPLocalNotification : CDVPlugin <UNUserNotificationCenterDelegate>
 
-// Set launchDetails object
 - (void) launch:(CDVInvokedUrlCommand*)command;
-// Execute all queued events
 - (void) ready:(CDVInvokedUrlCommand*)command;
 
-// Check permission to show notifications
-- (void) check:(CDVInvokedUrlCommand*)command;
-// Request permission to show notifications
-- (void) request:(CDVInvokedUrlCommand*)command;
-
-// Register/update an action group
 - (void) actions:(CDVInvokedUrlCommand*)command;
 
-// Schedule notifications
+- (void) check:(CDVInvokedUrlCommand*)command;
+- (void) request:(CDVInvokedUrlCommand*)command;
+
 - (void) schedule:(CDVInvokedUrlCommand*)command;
-// Update set of notifications
 - (void) update:(CDVInvokedUrlCommand*)command;
-// Clear notifications by id
+
 - (void) clear:(CDVInvokedUrlCommand*)command;
-// Clear all notifications
 - (void) clearAll:(CDVInvokedUrlCommand*)command;
-// Cancel notifications by id
+
 - (void) cancel:(CDVInvokedUrlCommand*)command;
-// Cancel all notifications
 - (void) cancelAll:(CDVInvokedUrlCommand*)command;
 
-// Notification type
 - (void) type:(CDVInvokedUrlCommand*)command;
 
-// List of all notification IDs
 - (void) ids:(CDVInvokedUrlCommand*)command;
-// List of all scheduled notification IDs
-- (void) scheduledIds:(CDVInvokedUrlCommand*)command;
-// List of all triggered notification IDs
-- (void) triggeredIds:(CDVInvokedUrlCommand*)command;
 
-// Notification by id
 - (void) notification:(CDVInvokedUrlCommand*)command;
-
-// List of notifications by id
 - (void) notifications:(CDVInvokedUrlCommand*)command;
-// List of scheduled notifications by id
-- (void) scheduledNotifications:(CDVInvokedUrlCommand*)command;
-// List of triggered notifications by id
-- (void) triggeredNotifications:(CDVInvokedUrlCommand*)command;
 
 @end
