@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+// codebeat:disable[TOO_MANY_FUNCTIONS]
+
 #import "APPLocalNotification.h"
 #import "APPNotificationContent.h"
 #import "APPNotificationOptions.h"
@@ -268,7 +270,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
     [self.commandDelegate runInBackground:^{
         int code                 = [command.arguments[0] intValue];
         APPNotificationType type = NotifcationTypeUnknown;
-        
+
         switch (code) {
             case 0:
                 type = NotifcationTypeAll;
@@ -280,13 +282,13 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
                 type = NotifcationTypeTriggered;
                 break;
         }
-        
+
         NSArray* ids = [_center getNotificationIdsByType:type];
-        
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:ids];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -330,7 +332,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
         APPNotificationType type = NotifcationTypeUnknown;
         NSArray* toasts;
         NSArray* ids;
-        
+
         switch (code) {
             case 0:
                 type = NotifcationTypeAll;
@@ -346,15 +348,15 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
                 toasts = [_center getNotificationOptionsById:ids];
                 break;
         }
-        
+
         if (toasts == nil) {
             toasts = [_center getNotificationOptionsByType:type];
         }
-        
+
         CDVPluginResult* result;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                     messageAsArray:toasts];
-        
+
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
@@ -404,7 +406,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
         NSArray* actions     = [command argumentAtIndex:2];
         UNNotificationCategory* group;
         BOOL found;
-        
+
         switch (code) {
             case 0:
                 group = [APPNotificationCategory parse:actions withId:identifier];
@@ -618,7 +620,7 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
     CDVPluginResult *result = [CDVPluginResult
                                resultWithStatus:CDVCommandStatus_OK
                                messageAsBool:arg];
-    
+
     [self.commandDelegate sendPluginResult:result
                                 callbackId:command.callbackId];
 }
@@ -702,3 +704,5 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
 }
 
 @end
+
+// codebeat:enable[TOO_MANY_FUNCTIONS]

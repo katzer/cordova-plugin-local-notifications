@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+// codebeat:disable[TOO_MANY_FUNCTIONS]
+
 package de.appplant.cordova.plugin.localnotification;
 
 import android.annotation.SuppressLint;
@@ -634,3 +636,5 @@ public class LocalNotification extends CordovaPlugin {
     }
 
 }
+
+// codebeat:enable[TOO_MANY_FUNCTIONS]

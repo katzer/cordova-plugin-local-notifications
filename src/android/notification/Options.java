@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+// codebeat:disable[TOO_MANY_FUNCTIONS]
+
 package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
@@ -677,3 +679,5 @@ public final class Options {
     }
 
 }
+
+// codebeat:enable[TOO_MANY_FUNCTIONS]
