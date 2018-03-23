@@ -50,7 +50,7 @@
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-badge" version=">=0.8.5" />
+    <dependency id="cordova-plugin-badge" url="https://github.com/SymetriaSpJ/cordova-plugin-badge.git#0b4032a" version=">=0.8.5" />
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
