@@ -571,7 +571,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param js JS code snippet as string.
      */
     private static synchronized void sendJavascript(final String js) {
-
+        
         if (!deviceready || webView == null) {
             eventQueue.add(js);
             return;
@@ -579,9 +579,18 @@ public class LocalNotification extends CordovaPlugin {
 
         final CordovaWebView view = webView.get();
 
+        final String jsEncoded;
+
+        try {
+            jsEncoded = URLEncoder.encode(js, "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return;
+        }
+
         ((Activity)(view.getContext())).runOnUiThread(new Runnable() {
             public void run() {
-                view.loadUrl("javascript:" + js);
+                view.loadUrl("javascript:" + jsEncoded);
             }
         });
     }
