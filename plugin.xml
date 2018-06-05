@@ -80,7 +80,6 @@
     <!-- android -->
     <platform name="android">
 
-        <!--<framework src="com.android.support:support-v4:+" value="gradle" /> -->
         <framework src="src/android/local-notifications-build.gradle" custom="true" type="gradleReference" />
 
         <config-file target="res/xml/config.xml" parent="/*">

@@ -5,5 +5,5 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-core-utils:26.0.1'
+    compile 'com.android.support:support-core-utils:26.+'
 }
