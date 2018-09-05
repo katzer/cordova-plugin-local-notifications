@@ -71,6 +71,8 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         if (options.shallWakeUp()) {
             wakeUp(context);
         }
+		
+		manager.createDefaultChannel(options);
 
         notification.show();
 

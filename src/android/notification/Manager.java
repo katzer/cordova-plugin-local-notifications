@@ -43,9 +43,10 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
+import static de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Central way to access all or single local notifications set by specific
@@ -70,7 +71,7 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
+        //createDefaultChannel();
     }
 
     /**
@@ -108,7 +109,7 @@ public final class Manager {
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+    private void createDefaultChannel(Options options) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
@@ -120,7 +121,16 @@ public final class Manager {
             return;
 
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_HIGH);
+		if(!options.isSilent()) channel.setBypassDnd(true);
+		if(!options.isWithoutLights()) channel.enableLights(true);
+		channel.enableVibration(options.isWithVibration());
+		channel.setLightColor(options.getLedColor());
+        if(options.isWithoutSound()) {
+			channel.setSound(null, null);
+		} else {
+			channel.setSound(options.getSound());
+		}
 
         mgr.createNotificationChannel(channel);
     }
