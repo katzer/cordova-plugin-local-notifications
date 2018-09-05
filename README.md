@@ -59,7 +59,6 @@ See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` 
 
 __Known issues__
 
-- Support for Android Oreo is limited yet.
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
 - __Not compatible yet with Ionic Native__. Their wrapper is not part of this plugin. In future I will contribute to them to fix such issues in time. But for the moment I am busy enough with the plugin itself.
 
