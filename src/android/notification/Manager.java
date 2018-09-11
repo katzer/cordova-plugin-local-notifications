@@ -109,7 +109,7 @@ public final class Manager {
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    private void createDefaultChannel(Options options) {
+    public void createDefaultChannel(Options options) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
@@ -129,7 +129,7 @@ public final class Manager {
         if(options.isWithoutSound()) {
 			channel.setSound(null, null);
 		} else {
-			channel.setSound(options.getSound());
+			channel.setSound(options.getSound(), null);
 		}
 
         mgr.createNotificationChannel(channel);
