@@ -398,14 +398,14 @@ public final class Options {
     /**
      * If the phone should vibrate.
      */
-    private boolean isWithVibration() {
+    public boolean isWithVibration() {
         return options.optBoolean("vibrate", true);
     }
 
     /**
      * If the phone should play no sound.
      */
-    private boolean isWithoutSound() {
+    public boolean isWithoutSound() {
         Object value = options.opt("sound");
         return value == null || value.equals(false);
     }
@@ -413,7 +413,7 @@ public final class Options {
     /**
      * If the phone should play the default sound.
      */
-    private boolean isWithDefaultSound() {
+    public boolean isWithDefaultSound() {
         Object value = options.opt("sound");
         return value != null && value.equals(true);
     }
@@ -421,7 +421,7 @@ public final class Options {
     /**
      * If the phone should show no LED light.
      */
-    private boolean isWithoutLights() {
+    public boolean isWithoutLights() {
         Object value = options.opt("led");
         return value == null || value.equals(false);
     }
@@ -429,7 +429,7 @@ public final class Options {
     /**
      * If the phone should show the default LED lights.
      */
-    private boolean isWithDefaultLights() {
+    public boolean isWithDefaultLights() {
         Object value = options.opt("led");
         return value != null && value.equals(true);
     }
