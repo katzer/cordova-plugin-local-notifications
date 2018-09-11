@@ -46,7 +46,7 @@ import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
-import static de.appplant.cordova.plugin.notification.Options;
+import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Central way to access all or single local notifications set by specific
