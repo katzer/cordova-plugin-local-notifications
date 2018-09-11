@@ -137,6 +137,7 @@ public final class Builder {
                 .setVisibility(options.getVisibility())
                 .setPriority(options.getPrio())
                 .setShowWhen(options.showClock())
+                .setWhen(options.getWhen())
                 .setUsesChronometer(options.showChronometer())
                 .setGroup(options.getGroup())
                 .setGroupSummary(options.getGroupSummary())

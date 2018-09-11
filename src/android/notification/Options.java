@@ -34,6 +34,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.System;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -487,6 +488,15 @@ public final class Options {
         return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
     }
 
+    /**
+     * Set the when date for the notification.
+     */
+    long getWhen() {
+        long when = options.optLong("when");
+
+        return (when != 0) ? when : System.currentTimeMillis();
+    }
+	
     /**
      * If the notification shall show the when date.
      */
