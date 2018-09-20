@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+ // codebeat:disable[TOO_MANY_FUNCTIONS] 
+
 package de.appplant.cordova.plugin.notification;
 
 import android.annotation.SuppressLint;
@@ -416,3 +418,5 @@ public final class Manager {
     }
 
 }
+
+ // codebeat:enable[TOO_MANY_FUNCTIONS] 
