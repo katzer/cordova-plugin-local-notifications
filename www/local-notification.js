@@ -618,12 +618,12 @@ exports._convertProperties = function (options) {
         console.warn('Property "smallIcon" must be of kind res://...');
     }
 
-    if (typeof options.timeout === 'boolean') {
-        options.timeout = options.timeout ? 3600000 : null;
+    if (typeof options.timeoutAfter === 'boolean') {
+        options.timeoutAfter = options.timeoutAfter ? 3600000 : null;
     }
 
-    if (options.timeout) {
-        options.timeout = parseToInt('timeout', options);
+    if (options.timeoutAfter) {
+        options.timeoutAfter = parseToInt('timeoutAfter', options);
     }
 
     options.data = JSON.stringify(options.data);
