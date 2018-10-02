@@ -23,11 +23,12 @@
 
 package de.appplant.cordova.plugin.notification;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -44,6 +45,8 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
@@ -53,13 +56,6 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
  * cancel or clear local notifications.
  */
 public final class Manager {
-
-    // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
-
-    // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
-
     // The application context
     private Context context;
 
@@ -70,7 +66,6 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
     }
 
     /**
@@ -105,22 +100,74 @@ public final class Manager {
     }
 
     /**
-     * TODO: temporary
+     * Build channel with options
+     * @param soundUri Uri for custom sound (empty to use default)
+     * @param shouldVibrate whether not vibration should occur during the notification
+     * @param hasSound whether or not sound should play during the notification
+     * @param channelName the name of the channel (null will pick an appropriate default name
+     *                    for the options provided).
+     * @return channel ID of newly created (or reused) channel
      */
-    @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+    public String buildChannelWithOptions(Uri soundUri, boolean shouldVibrate,
+                                        boolean hasSound, CharSequence channelName) {
+        String channelId;
+        CharSequence defaultChannelName;
+        int importance;
+
+        if (hasSound && shouldVibrate) {
+            channelId = Options.CHANNEL_ID_SOUND_VIBRATE;
+            defaultChannelName = Options.CHANNEL_NAME_SOUND_VIBRATE;
+            importance = IMPORTANCE_HIGH;
+            shouldVibrate = true;
+        } else if (hasSound) {
+            channelId = Options.CHANNEL_ID_SOUND;
+            defaultChannelName = Options.CHANNEL_NAME_SOUND;
+            importance = IMPORTANCE_DEFAULT;
+            shouldVibrate = false;
+        } else if (shouldVibrate) {
+            channelId = Options.CHANNEL_ID_VIBRATE;
+            defaultChannelName = Options.CHANNEL_NAME_VIBRATE;
+            importance = IMPORTANCE_LOW;
+            shouldVibrate = true;
+        } else {
+            channelId = Options.CHANNEL_ID_SILENT;
+            defaultChannelName = Options.CHANNEL_NAME_SILENT;
+            importance = IMPORTANCE_LOW;
+            shouldVibrate = false;
+        }
+
+        createChannel(channelId, channelName != null ? channelName : defaultChannelName,
+            importance, shouldVibrate, soundUri);
+
+        return channelId;
+    }
+
+    /**
+     * Create a channel
+     */
+    public void createChannel(String channelId, CharSequence channelName, int importance,
+                               Boolean shouldVibrate, Uri soundUri) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
             return;
 
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+        NotificationChannel channel = mgr.getNotificationChannel(channelId);
 
         if (channel != null)
             return;
 
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+            channelId, channelName, importance);
+
+        channel.enableVibration(shouldVibrate);
+
+        if (!soundUri.equals(Uri.EMPTY)) {
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build();
+            channel.setSound(soundUri, attributes);
+        }
 
         mgr.createNotificationChannel(channel);
     }
