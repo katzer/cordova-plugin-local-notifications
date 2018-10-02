@@ -143,7 +143,7 @@ public final class Builder {
                 .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (sound != Uri.EMPTY && !isUpdate()) {
+        if (!sound.equals(Uri.EMPTY) && !isUpdate()) {
             builder.setSound(sound);
         }
 
