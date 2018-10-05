@@ -28,6 +28,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
@@ -44,6 +45,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
@@ -89,6 +92,11 @@ public final class Notification {
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
 
+    // AudioManager for volume
+    private static AudioManager audioMgr;
+
+    private static SharedPreferences settings;
+
     /**
      * Constructor
      *
@@ -100,6 +108,7 @@ public final class Notification {
         this.context  = context;
         this.options  = options;
         this.builder  = builder;
+        this.settings = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
     }
 
     /**
@@ -112,6 +121,7 @@ public final class Notification {
         this.context  = context;
         this.options  = options;
         this.builder  = null;
+        this.settings = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
     }
 
     /**
@@ -324,6 +334,7 @@ public final class Notification {
         }
 
         grantPermissionToPlaySoundFromExternal();
+        adjustAlarmVolume(options);
         getNotMgr().notify(getId(), builder.build());
     }
 
@@ -489,4 +500,86 @@ public final class Notification {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
+    /**
+     * Adjusts alarm Volume
+     * @param options
+     *      Options object.  Contains our volume, reset and vibration settings.
+     */
+    private void adjustAlarmVolume (Options options) {
+        Integer volume = options.getVolume();
+
+        if (!volume.equals(options.VOLUME_NOT_SET)) {
+            audioMgr = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+
+            NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            Boolean vibrate = options.isWithVibration();
+
+            Integer delay = options.getResetDelay();
+
+            if (delay <= 0) {
+                delay = options.DEFAULT_RESET_DELAY;
+            }
+
+            // Count of all alarms currently sounding
+            Integer count = settings.getInt("alarmCount", 0);
+
+            // Get current phone volume
+            Integer userVolume = audioMgr.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+
+            // Get Ringer mode
+            Integer userRingerMode = audioMgr.getRingerMode();
+
+            // If this is the first alarm store the users ringer and volume settings
+            if (count.equals(0)) {
+                settings.edit().putInt("userVolume", userVolume).apply();
+                settings.edit().putInt("userRingerMode", userRingerMode).apply();
+            }
+
+            Boolean canChangeRinger = SDK_INT < M || mNotificationManager.isNotificationPolicyAccessGranted()
+                || audioMgr.getRingerMode() != AudioManager.RINGER_MODE_SILENT;
+
+            // Calculates a new volume based on the study configure volume percentage and the devices max volume integer
+            if (volume > 0 && canChangeRinger) {
+                // Gets devices max volume integer
+                Integer maxVolume = audioMgr.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION);
+
+                // Calculates new volume based on devices max volume
+                Double newVolume = Math.ceil(maxVolume * (volume / 100.00));
+
+                // Change ringer mode
+                audioMgr.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+
+                // Change to new Volume
+                audioMgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, newVolume.intValue(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            } else if (canChangeRinger) {
+                // Volume of 0
+                if (vibrate) {
+                    // Change mode to vibrate
+                    audioMgr.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                }
+            }
+
+            // Timer to change users sound back
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    Integer currentCount = settings.getInt("alarmCount", 0);
+
+                    currentCount = (currentCount - 1 <= 0) ? 0 : (currentCount - 1);
+
+                    if (currentCount == 0) {
+                        Integer ringMode = settings.getInt("userRingerMode", -1);
+                        Integer volume = settings.getInt("userVolume", -1);
+
+                        audioMgr.setRingerMode(ringMode);
+                        audioMgr.setStreamVolume(AudioManager.STREAM_NOTIFICATION, volume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                    }
+
+                    settings.edit().putInt("alarmCount", currentCount).apply();
+                }
+            }, delay * 1000);
+        }
+    }
 }

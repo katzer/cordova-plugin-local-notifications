@@ -25,6 +25,7 @@ var exec    = require('cordova/exec'),
 // Defaults
 exports._defaults = {
     actions       : [],
+    alarmVolume   : -1,
     attachments   : [],
     autoClear     : true,
     badge         : null,
@@ -45,6 +46,7 @@ exports._defaults = {
     number        : 0,
     priority      : 0,
     progressBar   : false,
+    resetDelay   : 5,
     silent        : false,
     smallIcon     : 'res://icon',
     sound         : true,
@@ -84,6 +86,29 @@ exports.hasPermission = function (callback, scope) {
 exports.requestPermission = function (callback, scope) {
     this._exec('request', null, callback, scope);
 };
+
+/**
+ * Check to see if the user has allowed "Do Not Disturb" permissions for this app.
+ * This is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.hasDoNotDisturbPermissions = function (callback, scope) {
+    this._exec('hasDoNotDisturbPermissions', null, callback, scope);
+}
+
+/**
+ * Request "Do Not Disturb" permissions for this app.
+ * The only way to do this is to launch the global do not distrub settings for all apps.
+ * This permission is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope.
+ */
+exports.requestDoNotDisturbPermissions = function (callback, scope) {
+    this._exec('requestDoNotDisturbPermissions', null, callback, scope);
+}
 
 /**
  * Schedule notifications.

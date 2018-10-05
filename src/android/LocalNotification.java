@@ -26,7 +26,9 @@ package de.appplant.cordova.plugin.localnotification;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Pair;
 import android.view.View;
 
@@ -43,14 +45,19 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.callback.Callback;
+
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
+
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
@@ -72,6 +79,10 @@ public class LocalNotification extends CordovaPlugin {
 
     // Launch details
     private static Pair<Integer, String> launchDetails;
+
+    private static int REQUEST_PERMISSIONS_CALL = 10;
+
+    private CallbackContext callbackContext;
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -172,10 +183,73 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equals("notifications")) {
                     notifications(args, command);
                 }
+                else if (action.equals("hasDoNotDisturbPermissions")) {
+                    hasDoNotDisturbPermissions(command);
+                }
+                else if (action.equals("requestDoNotDisturbPermissions")) {
+                    requestDoNotDisturbPermissions(command);
+                }
             }
         });
 
         return true;
+    }
+
+    /**
+     * Determine if do not disturb permissions have been granted
+     * @return true if we still need to acquire do not disturb permissions.
+     */
+    private boolean needsDoNotDisturbPermissions () {
+        Context mContext = this.cordova.getActivity().getApplicationContext();
+
+        NotificationManager mNotificationManager =
+            (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        return SDK_INT >= M
+            && !mNotificationManager.isNotificationPolicyAccessGranted();
+    }
+
+    /**
+     * Determine if we have do not disturb permissions.
+     * @param command callback context.  Returns with true if the we have permissions,
+     * false if we do not.
+     */
+    private void hasDoNotDisturbPermissions (CallbackContext command) {
+        success(command, !needsDoNotDisturbPermissions());
+    }
+
+    /**
+     * Launch an activity to request do not disturb permissions
+     * @param command callback context.  Returns with results of hasDoNotDisturbPermissions
+     * after the activity is closed.
+     */
+    private void requestDoNotDisturbPermissions (CallbackContext command) {
+        if (needsDoNotDisturbPermissions()) {
+            this.callbackContext = command;
+
+            PluginResult pluginResult = new  PluginResult(PluginResult.Status.NO_RESULT);
+            pluginResult.setKeepCallback(true); // Keep callback
+            command.sendPluginResult(pluginResult);
+
+            Intent intent = new Intent(
+                android.provider.Settings
+                    .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+
+            cordova.startActivityForResult(this, intent, REQUEST_PERMISSIONS_CALL);
+            return;
+        }
+        success(command, true);
+    }
+
+    @Override
+    public void onActivityResult (int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_PERMISSIONS_CALL && this.callbackContext != null) {
+            hasDoNotDisturbPermissions(this.callbackContext);
+
+            // clean up callback context.
+            this.callbackContext = null;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

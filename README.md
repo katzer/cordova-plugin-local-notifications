@@ -95,10 +95,10 @@ cordova.plugins.notification.local.schedule([
 
 A notification does have a set of configurable properties. Not all of them are supported across all platforms.
 
-| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
-| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
+| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       | alarmVolume   |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay   |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
 
@@ -409,6 +409,23 @@ If requesting via plug-in, a system dialog does pop up for the first time. Later
 cordova.plugins.notification.local.requestPermission(function (granted) { ... });
 ```
 
+On Android 8, special permissions are required to exit "do not disturb mode" (in case alarmVolume is defined).
+You can check these by using:
+
+```js
+cordova.plugins.notification.local.hasDoNotDisturbPermissions(function (granted) { ... })
+```
+
+... and you can request them by using:
+
+```js
+cordova.plugins.notification.local.requestDoNotDisturbPermissions(function (granted) { ... })
+```
+
+The only downside to not having these permissions granted is that alarmVolume and vibrate may not be
+honored on Android 8+ devices if the device is currently on silent when the notification fires (silent, not vibrate).
+In this situation, the notification will fire silently but still appear in the notification bar.
+
 <p align="center">
     <img src="images/ios-permission.png">
 </p>
@@ -495,10 +512,10 @@ See the sample app for how to use them.
 
 | Method   | Method            | Method          | Method         | Method        | Method           |
 | :------- | :---------------- | :-------------- | :------------- | :------------ | :--------------- |
-| schedule | cancelAll         | isTriggered     | get            | removeActions | un               |
-| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents |
-| clear    | requestPermission | getIds          | getScheduled   | getDefaults   |
-| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   |
+| schedule | cancelAll         | isTriggered     | get            | removeActions | un                              |
+| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents                |
+| clear    | requestPermission | getIds          | getScheduled   | getDefaults   | requestDoNotDisturbPermissions  |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
 

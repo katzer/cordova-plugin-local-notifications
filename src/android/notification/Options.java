@@ -87,6 +87,10 @@ public final class Options {
     // Default icon path
     private static final String DEFAULT_ICON = "res://icon";
 
+    public final static Integer DEFAULT_RESET_DELAY = 5;
+
+    public final static Integer VOLUME_NOT_SET = -1;
+
     // The original JSON object
     private final JSONObject options;
 
@@ -429,6 +433,21 @@ public final class Options {
     }
 
     /**
+     * Get the volume
+     */
+    public Integer getVolume() {
+        return options.optInt("alarmVolume", VOLUME_NOT_SET);
+    }
+
+    /**
+     * Returns the resetDelay until the sound changes revert back to the users settings.
+     * @return resetDelay
+     */
+    public Integer getResetDelay() {
+        return options.optInt("resetDelay", DEFAULT_RESET_DELAY);
+    }
+
+    /**
      * If the phone should vibrate.
      */
     public boolean isWithVibration() {
@@ -440,7 +459,8 @@ public final class Options {
      */
     public boolean isWithoutSound() {
         Object value = options.opt("sound");
-        return value == null || value.equals(false);
+        return value == null || value.equals(false)
+            || options.optInt("alarmVolume") == 0;
     }
 
     /**

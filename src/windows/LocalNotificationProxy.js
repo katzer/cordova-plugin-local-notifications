@@ -84,6 +84,33 @@ exports.request = function (success, error) {
 };
 
 /**
+ * Check to see if the user has allowed "Do Not Disturb" permissions for this app.
+ * This is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback contains true or false for whether or not we have this permission.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.hasDoNotDisturbPermission = function (success, error) {
+    impl.hasDoNotDisturbPermission(success, error);
+}
+
+/**
+ * Request "Do Not Disturb" permissions for this app.
+ * The only way to do this is to launch the global do not distrub settings for all apps.
+ * This permission is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback is deferred until 
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.requestDoNotDisturbPermissions = function (success, error) {
+    impl.requestDoNotDisturbPermissions(success, error);
+}
+
+/**
  * Schedule notifications.
  *
  * @param [ Function ] success Success callback
