@@ -32,6 +32,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.app.NotificationChannel;//Modificação requerida - Issue #1240 - Maycon
+import android.support.annotation.RequiresApi;//Modificação requerida - Issue #1240 - Maycon
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -230,7 +232,15 @@ public class Notification {
     @SuppressWarnings("deprecation")
     private void showNotification () {
         int id = getOptions().getId();
-
+        
+        //Modificação requerida - Issue #1240 - Maycon
+        NotificationManager mgr = getNotMgr();
+        /**
+         * create a channel before notify for API >= Android O
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createChannel(mgr);
+        //--------------------------------------------
         if (Build.VERSION.SDK_INT <= 15) {
             // Notification for HoneyComb to ICS
             getNotMgr().notify(id, builder.getNotification());
@@ -239,7 +249,23 @@ public class Notification {
             getNotMgr().notify(id, builder.build());
         }
     }
-
+    //Modificação requerida - Issue #1240 - Maycon
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createChannel(NotificationManager mgr) {
+        NotificationChannel mChannel = new NotificationChannel(
+                getOptions().getChannelID(),
+                getOptions().getChannelName(),
+                getOptions().getImportance());
+        mChannel.setDescription(getOptions().getChannelDescription());
+        mChannel.enableLights(true);
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.setLightColor(getOptions().getLedColor());
+        mChannel.enableVibration(true);
+        mChannel.setVibrationPattern(getOptions().getVibrate());
+        mgr.createNotificationChannel(mChannel);
+    }
+    //--------------------------------------------
     /**
      * Count of triggers since schedule.
      */

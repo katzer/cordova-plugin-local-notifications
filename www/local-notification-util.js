@@ -69,6 +69,12 @@ exports.applyPlatformSpecificOptions = function () {
         defaults.autoClear = true;
         defaults.led       = undefined;
         defaults.color     = undefined;
+        //Modificação requerida - Issue #1240 - Maycon
+        defaults.ledOnTime = undefined;
+        defaults.ledOffTime = undefined;
+        defaults.vibrate   = undefined;
+        defaults.channelParams = {};
+        //--------------------------------------------
         break;
     }
 
@@ -90,6 +96,9 @@ exports.mergeWithDefaults = function (options) {
     options.at   = this.getValueFor(options, 'at', 'firstAt', 'date');
     options.text = this.getValueFor(options, 'text', 'message');
     options.data = this.getValueFor(options, 'data', 'json');
+    //Modificação requerida - Issue #1240 - Maycon
+    options.channelParams = this.getValueFor(options, 'channelParams');
+    //--------------------------------------------
 
     if (defaults.hasOwnProperty('autoClear')) {
         options.autoClear = this.getValueFor(options, 'autoClear', 'autoCancel');

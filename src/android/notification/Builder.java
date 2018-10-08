@@ -118,6 +118,9 @@ public class Builder {
         Uri sound     = options.getSoundUri();
         int smallIcon = options.getSmallIcon();
         int ledColor  = options.getLedColor();
+        //Modificação 	
+        long[] vibrate = options.getVibrate();
+        //--------------------------------------------
         NotificationCompat.Builder builder;
 
         builder = new NotificationCompat.Builder(context)
@@ -128,7 +131,8 @@ public class Builder {
                 .setTicker(options.getText())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
-                .setColor(options.getColor());
+                .setColor(options.getColor())
+                .setChannelId(options.getChannelID());//Modificação requerida - Issue #1240 - Maycon
 
         if (ledColor != 0) {
             builder.setLights(ledColor, 100, 100);
@@ -137,6 +141,12 @@ public class Builder {
         if (sound != null) {
             builder.setSound(sound);
         }
+
+        //Modificação requerida - Issue #1240 - Maycon
+        if (vibrate != null) {
+            builder.setVibrate(vibrate);
+        }
+        //--------------------------------------------
 
         if (smallIcon == 0) {
             builder.setSmallIcon(options.getIcon());

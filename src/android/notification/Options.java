@@ -34,6 +34,12 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+//Modificação requerida - Issue #1240 - Maycon
+import android.app.NotificationManager;
+import android.os.Build;
+import org.json.JSONArray;
+//--------------------------------------------
+
 /**
  * Wrapper around the JSON object passed through JS which contains all
  * possible option values. Class provides simple readers and more advanced
@@ -55,6 +61,14 @@ public class Options {
 
     // Asset util instance
     private final AssetUtil assets;
+
+    //Modificação requerida - Issue #1240 - Maycon
+    //notification channel options for API>=O
+    private String channelID = "default";
+    private String channelName = "Notificação";
+    private String channelDescription = "Notificação de vencimento do rotativo";
+    private int importance = NotificationManager.IMPORTANCE_HIGH;
+    //--------------------------------------------
 
 
     /**
@@ -79,9 +93,43 @@ public class Options {
 
         parseInterval();
         parseAssets();
+        //Modificação requerida - Issue #1240 - Maycon
+        //parse notification channel params if android version>=O
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            parseChannelParams();
+        //--------------------------------------------
 
         return this;
     }
+
+    //Modificação requerida - Issue #1240 - Maycon
+    /**
+     * parse notification channel params
+     * for api>=android O
+     */
+    private void parseChannelParams() {
+        JSONObject channelOptions = options.optJSONObject("channelParams");
+        if (channelOptions != null) {
+            String id = channelOptions.optString("channelID");
+            String name = channelOptions.optString("channelName");
+            String description = channelOptions.optString("description");
+            int imp = channelOptions.optInt("importance");
+            if (!id.isEmpty()) {
+                channelID = id;
+            }
+            if (!name.isEmpty()) {
+                channelName = name;
+            }
+            if (!description.isEmpty()) {
+                channelDescription = description;
+            }
+            /*if (imp >= NotificationManager.IMPORTANCE_NONE
+                    && imp < NotificationManager.IMPORTANCE_MAX) {
+                importance = imp;
+            }*/
+        }
+    }
+    //--------------------------------------------
 
     /**
      * Parse repeat interval.
@@ -250,6 +298,44 @@ public class Options {
         return aRGB + 0xFF000000;
     }
 
+    //Modificação requerida - Issue #1240 - Maycon
+     /**
+     * @return
+     *      The time that the LED should be on (in milliseconds).
+     */
+    public int getLedOnTime() {
+        String timeOn = options.optString("ledOnTime", null);
+
+        if (timeOn == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOn);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+
+    /**
+     * @return
+     *      The time that the LED should be off (in milliseconds).
+     */
+    public int getLedOffTime() {
+        String timeOff = options.optString("ledOffTime", null);
+
+        if (timeOff == null) {
+            return 1000;
+        }
+
+        try {
+            return Integer.parseInt(timeOff);
+        } catch (NumberFormatException e) {
+           return 1000;
+        }
+    }
+    //--------------------------------------------
+
     /**
      * @return
      *      The notification background color for the small icon
@@ -281,6 +367,23 @@ public class Options {
 
         return uri;
     }
+
+    //Modificação requerida - Issue #1240 - Maycon
+    public long[] getVibrate() {
+        JSONArray array = options.optJSONArray("vibrate");
+
+        if (array == null)
+            return null;
+
+        long[] rv = new long[array.length()];
+
+        for (int i = 0; i < array.length(); i++) {
+            rv[i] = array.optInt(i);
+        }
+
+        return rv;
+    }
+    //--------------------------------------------
 
     /**
      * Icon bitmap for the local notification.
@@ -326,6 +429,36 @@ public class Options {
 
         return assets.getResIdForDrawable(icon);
     }
+
+    //Modificação requerida - Issue #1240 - Maycon
+    /**
+     * get channel ID
+     */
+    public String getChannelID() {
+        return channelID;
+    }
+
+    /**
+     * get channel name
+     */
+    public String getChannelName() {
+        return channelName;
+    }
+
+    /**
+     * get channel description
+     */
+    public String getChannelDescription() {
+        return channelDescription;
+    }
+
+    /**
+     * get importance
+     */
+    public int getImportance() {
+        return importance;
+    }
+    //--------------------------------------------
 
     /**
      * JSON object as string.
