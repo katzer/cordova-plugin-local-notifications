@@ -33,6 +33,7 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
+import de.appplant.cordova.plugin.notification.util.LaunchUtils;
 
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
@@ -72,9 +73,13 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
             wakeUp(context);
         }
 
+        if (options.isAutoLaunchingApp()) {
+            LaunchUtils.launchApp(context);
+        }
+
         notification.show();
 
-        if (!isUpdate && isAppRunning()) {
+        if (!isUpdate && (isAppRunning() || options.isAutoLaunchingApp())) {
             fireEvent("trigger", notification);
         }
 

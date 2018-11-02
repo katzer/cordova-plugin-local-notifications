@@ -208,6 +208,10 @@
             target-dir="src/de/appplant/cordova/plugin/notification/util" />
 
         <source-file
+            src="src/android/notification/util/LaunchUtils.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/util" />
+
+        <source-file
             src="src/android/notification/Builder.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 

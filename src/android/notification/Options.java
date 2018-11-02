@@ -219,6 +219,13 @@ public final class Options {
     }
 
     /**
+     * flag to auto-launch the application as the notification fires
+     */
+    public boolean isAutoLaunchingApp() {
+        return options.optBoolean("autoLaunch", true);
+    }
+
+    /**
      * wakeup flag for the notification.
      */
     public boolean shallWakeUp() {

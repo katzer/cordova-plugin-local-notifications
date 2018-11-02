@@ -98,8 +98,8 @@ A notification does have a set of configurable properties. Not all of them are s
 | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
 | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
 | id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       | alarmVolume   |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay   |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
 
 For their default values see:

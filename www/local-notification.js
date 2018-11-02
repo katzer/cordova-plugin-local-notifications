@@ -27,6 +27,7 @@ exports._defaults = {
     actions       : [],
     alarmVolume   : -1,
     attachments   : [],
+    autoLaunch    : false,
     autoClear     : true,
     badge         : null,
     channel       : null,
