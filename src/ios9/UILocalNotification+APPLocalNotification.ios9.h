@@ -21,27 +21,39 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import <UserNotifications/UNNotificationSound.h>
-#import <UserNotifications/UNNotificationRequest.h>
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "APPLocalNotificationOptions.ios9.h"
 
-@interface APPLocalNotificationOptions : NSObject
+#ifndef APPNotificationType_DEFINED
+typedef NS_ENUM(NSUInteger, APPNotificationType) {
+    NotifcationTypeAll = 0,
+    NotifcationTypeScheduled = 1,
+    NotifcationTypeTriggered = 2
+};
+#endif
 
-- (id) initWithDict:(NSDictionary*)dict;
+@interface UILocalNotification (APPLocalNotification)
 
-@property (readonly, getter=id) NSNumber* id;
-@property (readonly, getter=identifier) NSString* identifier;
-@property (readonly, getter=title) NSString* title;
-@property (readonly, getter=subtitle) NSString* subtitle;
-@property (readonly, getter=badge) NSNumber* badge;
-@property (readonly, getter=text) NSString* text;
-@property (readonly, getter=sound) UNNotificationSound* sound;
-@property (readonly, getter=userInfo) NSDictionary* userInfo;
-
+// Initialize a new local notification
+- (id) initWithOptions:(NSDictionary*)dict;
+// The options provided by the plug-in
+- (APPLocalNotificationOptions9*) options;
+// Timeinterval since last trigger date
+- (double) timeIntervalSinceLastTrigger;
+// Timeinterval since fire date
+- (double) timeIntervalSinceFireDate;
+// If the fire date was in the past
+- (BOOL) wasInThePast;
+// If the notification was already scheduled
+- (BOOL) isScheduled;
+// If the notification was already triggered
+- (BOOL) isTriggered;
+// If the notification was updated
+- (BOOL) wasUpdated;
 // If it's a repeating notification
 - (BOOL) isRepeating;
-// how and when to trigger the notification
-- (UNNotificationTrigger*) trigger;
+// Notifciation type
+- (APPNotificationType) type;
+// Encode the user info dict to JSON
+- (NSString*) encodeToJSON;
 
 @end
