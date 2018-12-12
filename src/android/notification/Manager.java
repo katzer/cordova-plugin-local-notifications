@@ -28,6 +28,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -129,7 +131,15 @@ public final class Manager {
         if(options.isWithoutSound()) {
 			channel.setSound(null, null);
 		} else {
-			channel.setSound(options.getSound(), null);
+			AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
+			
+			if(options.isWithDefaultSound()) {
+				channel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
+			} else {
+				channel.setSound(options.getSound(), audioAttributes);
+			}
 		}
 
         mgr.createNotificationChannel(channel);
