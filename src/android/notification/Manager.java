@@ -126,7 +126,12 @@ public final class Manager {
                 CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_HIGH);
 		if(!options.isSilent()) channel.setBypassDnd(true);
 		if(!options.isWithoutLights()) channel.enableLights(true);
-		channel.enableVibration(options.isWithVibration());
+		if(options.isWithVibration()) {
+			channel.enableVibration(true);
+		} else {
+			channel.setVibrationPattern(new long[]{ 0 });
+			channel.enableVibration(true);
+		}
 		channel.setLightColor(options.getLedColor());
         if(options.isWithoutSound()) {
 			channel.setSound(null, null);
