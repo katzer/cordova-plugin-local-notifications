@@ -437,10 +437,9 @@ public final class Manager {
     /**
      * Notification compat manager for the application.
      */
-    private NotificationManagerCompat getNotCompMgr() {
+    public NotificationManagerCompat getNotCompMgr() {
         return NotificationManagerCompat.from(context);
     }
-
 }
 
 // codebeat:enable[TOO_MANY_FUNCTIONS]
