@@ -212,9 +212,8 @@ public final class Options {
     /**
      * The channel id of that notification.
      */
-    String getChannel() {
-        return options.optString("channel", Manager.CHANNEL_ID);
-    }
+    String getChannel() { return options.optString("channel", Manager.DEFAULT_CHANNEL_ID); }
+    String getChannelDescription() { return options.optString("channelDescription", Manager.DEFAULT_CHANNEL_DESCRIPTION); }
 
     /**
      * If the group shall show a summary.
@@ -483,9 +482,7 @@ public final class Options {
      * Gets the notifications priority.
      */
     int getPrio() {
-        int prio = options.optInt("priority");
-
-        return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
+        return Math.min(Math.max(options.optInt("priority"), PRIORITY_MIN), PRIORITY_MAX);
     }
 
     /**

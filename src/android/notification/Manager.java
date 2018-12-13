@@ -45,6 +45,14 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
@@ -57,11 +65,9 @@ import de.appplant.cordova.plugin.notification.Options;
  */
 public final class Manager {
 
-    // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
+    static final String DEFAULT_CHANNEL_ID = "default-channel-id";
 
-    // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
+    static final String DEFAULT_CHANNEL_DESCRIPTION = "Default channel";
 
     // The application context
     private Context context;
@@ -111,20 +117,39 @@ public final class Manager {
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    public void createDefaultChannel(Options options) {
+    public void createChannel(Options options) {
         NotificationManager mgr = getNotMgr();
+        int importance = IMPORTANCE_DEFAULT;
 
         if (SDK_INT < O)
             return;
 
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+        NotificationChannel channel = mgr.getNotificationChannel(options.getChannel());
 
         if (channel != null)
             return;
 
+        switch (options.getPrio()) {
+            case PRIORITY_MIN:
+                importance = IMPORTANCE_MIN;
+                break;
+            case PRIORITY_LOW:
+                importance = IMPORTANCE_LOW;
+                break;
+            case PRIORITY_DEFAULT:
+                importance = IMPORTANCE_DEFAULT;
+                break;
+            case PRIORITY_HIGH:
+                importance = IMPORTANCE_HIGH;
+                break;
+            case PRIORITY_MAX:
+                importance = IMPORTANCE_HIGH;
+                break;
+        }
+
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_HIGH);
-		if(!options.isSilent()) channel.setBypassDnd(true);
+                options.getChannel(), options.getChannelDescription(), importance);
+		if(!options.isSilent() && importance > IMPORTANCE_DEFAULT) channel.setBypassDnd(true);
 		if(!options.isWithoutLights()) channel.enableLights(true);
 		if(options.isWithVibration()) {
 			channel.enableVibration(true);
