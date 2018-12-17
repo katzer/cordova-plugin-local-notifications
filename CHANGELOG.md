@@ -1,8 +1,20 @@
-ChangeLog
 ---------
 
-Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
+#### Version 0.9.1 (13.12.2018)
+- Addedd support for mutliple channels
+- Added new property `channelDescription` to specify the name / description of the channel
+- Channels will now use the priority level based on the settings given to the notification
+- Fixed default notification sound (Android)
+- Fixed permission check (Android)
+- Fixed (silent) vibration (Android)
 
+#### Version 0.8.6 (11.09.2018)
+- Added support for Android 8+ (Oreo)
+- Add property `when` (Android)
+
+Old changelog below
+---------
+ 
 #### Version 0.8.5 (22.05.2017)
 - iOS 10
 
