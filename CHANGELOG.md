@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+#### Version 0.9.2 (20.12.2018)
+- Prevent progressbar timer from being reset when updating the progress value.
+
 #### Version 0.9.1 (13.12.2018)
 - Addedd support for mutliple channels
 - Added new property `channelDescription` to specify the name / description of the channel
