@@ -207,8 +207,7 @@ public class Notification {
         if (!isRepeating() && wasInThePast())
             unpersist();
 
-        if (!isRepeating())
-            getNotMgr().cancel(getId());
+        getNotMgr().cancel(getId());
     }
 
     /**
