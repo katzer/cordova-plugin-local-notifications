@@ -132,14 +132,10 @@
                 if (!notification)
                     continue;
 
-                //            [self updateNotification:[notification copy]
-                //                         withOptions:options];
-                //
-                //            [self fireEvent:@"update" notification:notification];
-                //
-                //            if (notifications.count > 1) {
-                //                [NSThread sleepForTimeInterval:0.01];
-                //            }
+                [self updateNotification:[notification copy]
+                         withOptions:options];
+
+                [self fireEvent:@"update" notification:notification];
             }
         } else {
             for (NSDictionary* options in notifications) {
@@ -619,18 +615,20 @@
 /**
  * Update the local notification.
  */
-- (void) updateNotification:(UILocalNotification*)notification
+- (void) updateNotification:(UNNotificationRequest*)notification
                 withOptions:(NSDictionary*)newOptions
 {
-    NSMutableDictionary* options = [notification.userInfo mutableCopy];
+    NSMutableDictionary* options = [notification.content.userInfo mutableCopy];
 
     [options addEntriesFromDictionary:newOptions];
     [options setObject:[NSDate date] forKey:@"updatedAt"];
 
-//    notification = [[UILocalNotification alloc]
-//                    initWithOptions:options];
-//
-//    [self scheduleLocalNotification:notification];
+    UNMutableNotificationContent* notification;
+
+    notification = [[UNMutableNotificationContent alloc]
+                    initWithOptions:options];
+
+    [self scheduleNotification:notification];
 }
 
 /**
