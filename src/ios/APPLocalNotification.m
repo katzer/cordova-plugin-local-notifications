@@ -619,16 +619,16 @@
                 withOptions:(NSDictionary*)newOptions
 {
     NSMutableDictionary* options = [notification.content.userInfo mutableCopy];
-
+    
     [options addEntriesFromDictionary:newOptions];
     [options setObject:[NSDate date] forKey:@"updatedAt"];
-
-    UNMutableNotificationContent* notification;
-
-    notification = [[UNMutableNotificationContent alloc]
+    
+    UNMutableNotificationContent* content;
+    
+    content = [[UNMutableNotificationContent alloc]
                     initWithOptions:options];
-
-    [self scheduleNotification:notification];
+    
+    [self scheduleNotification:content];
 }
 
 /**
