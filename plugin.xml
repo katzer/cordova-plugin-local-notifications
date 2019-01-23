@@ -22,7 +22,7 @@
         <engine name="cordova" version=">=3.6.0" />
         <engine name="cordova-plugman" version=">=4.3.0" />
         <engine name="cordova-windows" version=">=4.2.0" />
-        <engine name="apple-ios" version=">=10.0.0" />
+        <engine name="apple-ios" version=">=8.0.0" />
     </engines>
 
     <!-- dependencies -->
