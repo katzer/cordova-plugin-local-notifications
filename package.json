@@ -1,7 +1,7 @@
 {
   "name": "de.appplant.cordova.plugin.local-notification",
   "cordova_name": "Cordova LocalNotification Plugin",
-  "version": "0.8.9-OS4",
+  "version": "0.8.9-OS5",
   "description": "Schedules and queries for local notifications",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
