@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.local-notification"
-        version="0.8.9-OS4">
+        version="0.8.9-OS5">
 
     <name>LocalNotification</name>
 
@@ -22,7 +22,7 @@
         <engine name="cordova" version=">=3.6.0" />
         <engine name="cordova-plugman" version=">=4.3.0" />
         <engine name="cordova-windows" version=">=4.2.0" />
-        <engine name="apple-ios" version=">=10.0.0" />
+        <engine name="apple-ios" version=">=8.0.0" />
     </engines>
 
     <!-- dependencies -->
