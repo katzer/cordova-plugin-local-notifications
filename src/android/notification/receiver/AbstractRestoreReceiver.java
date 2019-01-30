@@ -59,8 +59,8 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
         String action = intent.getAction();
 
         if (SDK_INT >= 24) {
-			UserManager um = (UserManager) context.getSystemService(UserManager.class);
-			if (um == null || um.isUserUnlocked() == false) return;
+          UserManager um = (UserManager) context.getSystemService(UserManager.class);
+          if (um == null || um.isUserUnlocked() == false) return;
         }
 
         Manager mgr               = Manager.getInstance(context);
