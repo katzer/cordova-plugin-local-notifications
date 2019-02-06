@@ -25,11 +25,13 @@ package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -353,13 +355,21 @@ public final class Options {
      */
     boolean hasLargeIcon() {
         String icon = options.optString("icon", null);
-        return icon != null;
+        String iconData = options.optString("iconData", null);
+        return icon != null || iconData != null;
     }
 
     /**
      * Icon bitmap for the local notification.
      */
     Bitmap getLargeIcon() {
+        String iconData = options.optString("iconData", null);
+
+        if (iconData != null) {
+            byte[] data = Base64.decode(iconData, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(data, 0, data.length);
+        }
+
         String icon = options.optString("icon", null);
         Uri uri     = assets.parse(icon);
         Bitmap bmp  = null;
