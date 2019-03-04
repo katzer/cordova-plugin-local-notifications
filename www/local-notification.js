@@ -898,7 +898,7 @@ exports._exec = function (action, args, callback, scope) {
 
     if (Array.isArray(args)) {
         params = args;
-    } else if (args) {
+    } else if (args !== null) {
         params.push(args);
     }
 
