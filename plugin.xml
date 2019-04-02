@@ -103,7 +103,7 @@
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <provider
                 android:name="de.appplant.cordova.plugin.notification.util.AssetProvider"
-                android:authorities="${applicationId}.provider"
+                android:authorities="${applicationId}.localnotifications.provider"
                 android:exported="false"
                 android:grantUriPermissions="true" >
                 <meta-data
