@@ -37,6 +37,7 @@ exports._defaults = {
     group         : null,
     groupSummary  : false,
     icon          : null,
+    iconType      : null,
     id            : 0,
     launch        : true,
     led           : true,
