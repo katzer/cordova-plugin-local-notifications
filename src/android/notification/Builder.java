@@ -38,6 +38,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Paint;
 import android.graphics.Canvas;
+import android.app.NotificationManager;
+import android.service.notification.StatusBarNotification;
 
 import java.util.List;
 import java.util.Random;
@@ -261,7 +263,7 @@ public final class Builder {
     }
 
     /**
-     * Apply inbox style.
+     * Apply messaging style.
      *
      * @param builder  Local notification builder instance.
      * @param messages The messages to add to the conversation.
@@ -270,14 +272,43 @@ public final class Builder {
                                      Message[] messages) {
 
         NotificationCompat.MessagingStyle style;
+        String title = options.getTitle();
 
-        style = new NotificationCompat.MessagingStyle("Me")
-                .setConversationTitle(options.getTitle());
+        // Find if there is a notification already displayed with this ID.
+        android.app.Notification notification = findActiveNotification(options.getId());
 
+        if (notification != null) {
+            // Notification already displayed. Extract the MessagingStyle to add the message.
+            style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(notification);
+        } else {
+            // There is no notification, create a new style.
+            style = new NotificationCompat.MessagingStyle("");
+        }
+
+        // Add the new messages to the style.
         for (Message msg : messages) {
             style.addMessage(msg);
         }
 
+        // Add the count of messages to the title if there is more than 1.
+        Integer sizeList = style.getMessages().size();
+
+        if (sizeList > 1) {
+            String count = "(" + sizeList + ")"; // Default value.
+
+            if (options.getTitleCount() != null) {
+                count = options.getTitleCount();
+                count = count.replace("%n%", "" + sizeList);
+            }
+
+            if (!count.trim().equals("")) {
+                title += " " + count;
+            }
+        }
+
+        style.setConversationTitle(title);
+
+        // Use the style.
         builder.setStyle(style);
     }
 
@@ -477,6 +508,26 @@ public final class Builder {
         }
 
         return builder;
+    }
+
+    /**
+     * Find an active notification with a certain ID.
+     *
+     * @param  notId   Notification ID to find.
+     * @return Notification The active notification, null if not found.
+     */
+    private android.app.Notification findActiveNotification(Integer notId) {
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
+
+        // Find the notification.
+        for (int i = 0; i < notifications.length; i++) {
+            if (notifications[i].getId() == notId) {
+                return notifications[i].getNotification();
+            }
+        }
+
+        return null;
     }
 
 }
