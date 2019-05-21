@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+#### Version 0.9.3 (09.05.2019)
+- Add namespace to provider authority to prevent crashes on Android.
+
 #### Version 0.9.2 (20.12.2018)
 - Prevent progressbar timer from being reset when updating the progress value.
 
