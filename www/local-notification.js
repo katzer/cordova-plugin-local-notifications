@@ -894,12 +894,12 @@ exports._toArray = function (obj) {
  */
 exports._exec = function (action, args, callback, scope) {
     var fn     = this._createCallbackFn(callback, scope),
-        params = [];
+        params;
 
     if (Array.isArray(args)) {
         params = args;
-    } else if (args) {
-        params.push(args);
+    } else {
+        params = [args];
     }
 
     exec(fn, null, 'LocalNotification', action, params);
