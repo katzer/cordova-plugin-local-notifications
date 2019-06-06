@@ -248,10 +248,6 @@ public final class AssetUtil {
     public int getResId(String resPath) {
         int resId = getResId(context.getResources(), resPath);
 
-        if (resId == 0) {
-            resId = getResId(Resources.getSystem(), resPath);
-        }
-
         return resId;
     }
 
