@@ -1021,12 +1021,13 @@ if (!Array.from) {
   }());
 }
 
-// Called after 'deviceready' event
-channel.deviceready.subscribe(function () {
-    if (!window.skipLocalNotificationReady) {
-        exports.fireQueuedEvents();
-    }
-});
+/**
+ * Inform that webapp is ready, listeneres are registered
+ * and all queued event can be executed
+ */
+exports.deviceReady = function() {
+    exports._exec('deviceready');
+}
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
