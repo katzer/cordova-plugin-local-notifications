@@ -3,6 +3,8 @@
 
 <br>
 
+:warning: This plugin is SUPPORTED by OutSystems. Customers entitled to Support Services may obtain assistance through Support.
+s
 <p align="center">
     <img src="images/logo.png">
 </p>
