@@ -89,6 +89,16 @@ public final class Notification {
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
 
+    public String getApplicationState() {
+        return applicationState;
+    }
+
+    public void setApplicationState(String applicationState) {
+        this.applicationState = applicationState;
+    }
+
+    private String applicationState;
+
     /**
      * Constructor
      *
@@ -317,6 +327,9 @@ public final class Notification {
      * Present the local notification to user.
      */
     public void show() {
+        // Don't show notification if the application is in foreground
+        if(applicationState == null || applicationState.equalsIgnoreCase("foreground")) return;
+
         if (builder == null) return;
 
         if (options.showChronometer()) {

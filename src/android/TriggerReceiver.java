@@ -58,6 +58,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger (Notification notification, Bundle bundle) {
+        notification.setApplicationState(LocalNotification.getApplicationState());
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
         Context context  = notification.getContext();
         Options options  = notification.getOptions();
