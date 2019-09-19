@@ -566,6 +566,16 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Current application state.
+     *
+     * @return
+     *      "background" or "foreground"
+     */
+    static String getApplicationState () {
+        return isInForeground() ? "foreground" : "background";
+    }
+
+    /**
      * Use this instead of deprecated sendJavascript
      *
      * @param js JS code snippet as string.
