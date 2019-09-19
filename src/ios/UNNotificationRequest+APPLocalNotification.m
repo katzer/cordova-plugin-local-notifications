@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,13 +17,11 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import "UNMutableNotificationContent+APPLocalNotification.h"
-#import "APPLocalNotificationOptions.h"
+#import "APPNotificationOptions.h"
 #import "UNNotificationRequest+APPLocalNotification.h"
+#import "APPNotificationContent.h"
 #import <objc/runtime.h>
 
 @import UserNotifications;
@@ -35,7 +33,7 @@ static char optionsKey;
 /**
  * Get associated option object
  */
-- (APPLocalNotificationOptions*) getOptions
+- (APPNotificationOptions*) getOptions
 {
     return objc_getAssociatedObject(self, &optionsKey);
 }
@@ -43,7 +41,7 @@ static char optionsKey;
 /**
  * Set associated option object
  */
-- (void) setOptions:(APPLocalNotificationOptions*)options
+- (void) setOptions:(APPNotificationOptions*)options
 {
     objc_setAssociatedObject(self, &optionsKey,
                              options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -52,18 +50,28 @@ static char optionsKey;
 /**
  * The options provided by the plug-in.
  */
-- (APPLocalNotificationOptions*) options
+- (APPNotificationOptions*) options
 {
-    APPLocalNotificationOptions* options = [self getOptions];
+    APPNotificationOptions* options = [self getOptions];
 
     if (!options) {
-        options = [[APPLocalNotificationOptions alloc]
+        options = [[APPNotificationOptions alloc]
                    initWithDict:[self.content userInfo]];
 
         [self setOptions:options];
     }
 
     return options;
+}
+
+/**
+ * If the notification was updated.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) wasUpdated
+{
+    return [self.content userInfo][@"updatedAt"] != NULL;
 }
 
 /**

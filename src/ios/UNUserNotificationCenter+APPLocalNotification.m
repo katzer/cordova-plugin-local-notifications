@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,8 +17,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 #import "UNUserNotificationCenter+APPLocalNotification.h"
@@ -26,13 +24,118 @@
 
 @import UserNotifications;
 
+NSString * const kAPPGeneralCategory = @"GENERAL";
+
 @implementation UNUserNotificationCenter (APPLocalNotification)
+
+#pragma mark -
+#pragma mark NotificationCategory
+
+/**
+ * Register general notification category to listen for dismiss actions.
+ *
+ * @return [ Void ]
+ */
+- (void) registerGeneralNotificationCategory
+{
+    UNNotificationCategory* category;
+
+    category = [UNNotificationCategory
+                categoryWithIdentifier:kAPPGeneralCategory
+                actions:@[]
+                intentIdentifiers:@[]
+                options:UNNotificationCategoryOptionCustomDismissAction];
+
+    [self setNotificationCategories:[NSSet setWithObject:category]];
+}
+
+/**
+ * Add the specified category to the list of categories.
+ *
+ * @param [ UNNotificationCategory* ] category The category to add.
+ *
+ * @return [ Void ]
+ */
+- (void) addActionGroup:(UNNotificationCategory*)category
+{
+    if (!category)
+        return;
+
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
+        NSMutableSet* categories = [NSMutableSet setWithSet:set];
+
+        for (UNNotificationCategory* item in categories)
+        {
+            if ([category.identifier isEqualToString:item.identifier]) {
+                [categories removeObject:item];
+                break;
+            }
+        }
+
+        [categories addObject:category];
+        [self setNotificationCategories:categories];
+    }];
+}
+
+/**
+ * Remove if the specified category does exist.
+ *
+ * @param [ NSString* ] identifier The category id to remove.
+ *
+ * @return [ Void ]
+ */
+- (void) removeActionGroup:(NSString*)identifier
+{
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *set) {
+        NSMutableSet* categories = [NSMutableSet setWithSet:set];
+        
+        for (UNNotificationCategory* item in categories)
+        {
+            if ([item.identifier isEqualToString:identifier]) {
+                [categories removeObject:item];
+                break;
+            }
+        }
+
+        [self setNotificationCategories:categories];
+    }];
+}
+
+/**
+ * Check if the specified category does exist.
+ *
+ * @param [ NSString* ] identifier The category id to check for.
+ *
+ * @return [ BOOL ]
+ */
+- (BOOL) hasActionGroup:(NSString*)identifier
+{
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    __block BOOL found        = NO;
+
+    [self getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *items) {
+        for (UNNotificationCategory* item in items)
+        {
+            if ([item.identifier isEqualToString:identifier]) {
+                found = YES;
+                dispatch_semaphore_signal(sema);
+                break;
+            }
+        }
+    }];
+    
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    return found;
+}
 
 #pragma mark -
 #pragma mark LocalNotifications
 
 /**
  * List of all delivered or still pending notifications.
+ *
+ * @return [ NSArray<UNNotificationRequest*>* ]
  */
 - (NSArray*) getNotifications
 {
@@ -46,6 +149,8 @@
 
 /**
  * List of all triggered notifications.
+ *
+ * @return [ NSArray<UNNotificationRequest*>* ]
  */
 - (NSArray*) getDeliveredNotifications
 {
@@ -53,7 +158,8 @@
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     [self getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *delivered) {
-        for (UNNotification* notification in delivered) {
+        for (UNNotification* notification in delivered)
+        {
             [notifications addObject:notification.request];
         }
         dispatch_semaphore_signal(sema);
@@ -66,6 +172,8 @@
 
 /**
  * List of all pending notifications.
+ *
+ * @return [ NSArray<UNNotificationRequest*>* ]
  */
 - (NSArray*) getPendingNotifications
 {
@@ -85,8 +193,9 @@
 /**
  * List of all notifications from given type.
  *
- * @param type
- *      Notification life cycle type
+ * @param [ APPNotificationType ] type Notification life cycle type.
+ *
+ * @return [ NSArray<UNNotificationRequest>* ]
  */
 - (NSArray*) getNotificationsByType:(APPNotificationType)type
 {
@@ -104,6 +213,8 @@
 
 /**
  * List of all local notifications IDs.
+ *
+ * @return [ NSArray<int>* ]
  */
 - (NSArray*) getNotificationIds
 {
@@ -121,8 +232,9 @@
 /**
  * List of all notifications IDs from given type.
  *
- * @param type
- *      Notification life cycle type
+ * @param [ APPNotificationType ] type Notification life cycle type.
+ *
+ * @return [ NSArray<int>* ]
  */
 - (NSArray*) getNotificationIdsByType:(APPNotificationType)type
 {
@@ -137,66 +249,55 @@
     return ids;
 }
 
-/*
- * If the notification with the specified ID does exists.
- *
- * @param id
- *      Notification ID
- */
-- (BOOL) notificationExist:(NSNumber*)id
-{
-    return [self getNotificationWithId:id] != NULL;
-}
-
-/* If the notification with specified ID and type exists.
- *
- * @param id
- *      Notification ID
- * @param type
- *      Notification life cycle type
- */
-- (BOOL) notificationExist:(NSNumber*)id type:(APPNotificationType)type
-{
-    return [self getNotificationWithId:id andType:type] != NULL;
-}
-
 /**
  * Find notification by ID.
  *
- * @param id
- *      Notification ID
+ * @param id Notification ID
+ *
+ * @return [ UNNotificationRequest* ]
  */
 - (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id
 {
-    return [self getNotificationWithId:id andType:NotifcationTypeAll];
-}
-
-/*
- * Find notification by ID and type.
- *
- * @param id
- *      Notification ID
- * @param type
- *      Notification life cycle type
- */
-- (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id andType:(APPNotificationType)type
-{
-    NSArray* notifications = [self getNotificationsByType:type];
+    NSArray* notifications = [self getNotifications];
 
     for (UNNotificationRequest* notification in notifications)
     {
         NSString* fid = [NSString stringWithFormat:@"%@", notification.options.id];
-
+        
         if ([fid isEqualToString:[id stringValue]]) {
             return notification;
         }
     }
-
+    
     return NULL;
 }
 
 /**
+ * Find notification type by ID.
+ *
+ * @param [ NSNumber* ] id The ID of the notification.
+ *
+ * @return [ APPNotificationType ]
+ */
+- (APPNotificationType) getTypeOfNotificationWithId:(NSNumber*)id
+{
+    NSArray* ids = [self getNotificationIdsByType:NotifcationTypeTriggered];
+    
+    if ([ids containsObject:id])
+        return NotifcationTypeTriggered;
+
+    ids = [self getNotificationIdsByType:NotifcationTypeScheduled];
+    
+    if ([ids containsObject:id])
+        return NotifcationTypeScheduled;
+    
+    return NotifcationTypeUnknown;
+}
+
+/**
  * List of properties from all notifications.
+ *
+ * @return [ NSArray<APPNotificationOptions*>* ]
  */
 - (NSArray*) getNotificationOptions
 {
@@ -206,8 +307,9 @@
 /**
  * List of properties from all notifications of given type.
  *
- * @param type
- *      Notification life cycle type
+ * @param [ APPNotificationType ] type Notification life cycle type.
+ *
+ * @return [ NSArray<APPNotificationOptions*>* ]
  */
 - (NSArray*) getNotificationOptionsByType:(APPNotificationType)type
 {
@@ -225,41 +327,31 @@
 /**
  * List of properties from given local notifications.
  *
- * @param ids
- *      Notification IDs
+ * @param [ NSArray<int> ] ids The ids of the notifications to find.
+ *
+ * @return [ NSArray<APPNotificationOptions*>* ]
  */
 - (NSArray*) getNotificationOptionsById:(NSArray*)ids
 {
-    return [self getNotificationOptionsByType:NotifcationTypeAll andId:ids];
-}
-
-/**
- * List of properties from given local notifications.
- *
- * @param type
- *      Notification life cycle type
- * @param ids
- *      Notification IDs
- */
-- (NSArray*) getNotificationOptionsByType:(APPNotificationType)type andId:(NSArray*)ids
-{
-    NSArray* notifications  = [self getNotificationsByType:type];
+    NSArray* notifications  = [self getNotifications];
     NSMutableArray* options = [[NSMutableArray alloc] init];
-
+    
     for (UNNotificationRequest* notification in notifications)
     {
         if ([ids containsObject:notification.options.id]) {
             [options addObject:notification.options.userInfo];
         }
     }
-
+    
     return options;
 }
 
 /*
  * Clear all notfications.
+ *
+ * @return [ Void ]
  */
-- (void) clearAllNotifications
+- (void) clearNotifications
 {
     [self removeAllDeliveredNotifications];
 }
@@ -267,21 +359,21 @@
 /*
  * Clear Specified notfication.
  *
- * @param notification
- *      The notification object
+ * @param [ UNNotificationRequest* ] notification The notification object.
+ *
+ * @return [ Void ]
  */
-- (void) clearNotification:(UNNotificationRequest*)notification
+- (void) clearNotification:(UNNotificationRequest*)toast
 {
-    NSArray* ids = [[NSArray alloc]
-                    initWithObjects:notification.identifier, nil];
-
-    [self removeDeliveredNotificationsWithIdentifiers:ids];
+    [self removeDeliveredNotificationsWithIdentifiers:@[toast.identifier]];
 }
 
 /*
  * Cancel all notfications.
+ *
+ * @return [ Void ]
  */
-- (void) cancelAllNotifications
+- (void) cancelNotifications
 {
     [self removeAllPendingNotificationRequests];
     [self removeAllDeliveredNotifications];
@@ -290,14 +382,14 @@
 /*
  * Cancel specified notfication.
  *
- * @param notification
- *      The notification object
+ * @param [ UNNotificationRequest* ] notification The notification object.
+ *
+ * @return [ Void ]
  */
-- (void) cancelNotification:(UNNotificationRequest*)notification
+- (void) cancelNotification:(UNNotificationRequest*)toast
 {
-    NSArray* ids = [[NSArray alloc]
-                    initWithObjects:notification.identifier, nil];
-
+    NSArray* ids = @[toast.identifier];
+                    
     [self removeDeliveredNotificationsWithIdentifiers:ids];
     [self removePendingNotificationRequestsWithIdentifiers:ids];
 }

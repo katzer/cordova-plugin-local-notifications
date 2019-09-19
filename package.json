@@ -1,29 +1,28 @@
 {
-  "name": "de.appplant.cordova.plugin.local-notification",
-  "cordova_name": "Cordova LocalNotification Plugin",
-  "version": "0.8.9-OS6",
+  "name": "cordova-plugin-local-notification",
+  "version": "0.9.0-beta.3",
   "description": "Schedules and queries for local notifications",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "cordova": {
+    "id": "cordova-plugin-local-notification",
+    "platforms": [
+      "android",
+      "ios",
+      "windows"
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git#ios10"
+    "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git"
   },
   "keywords": [
     "appplant",
     "notification",
     "local notification",
-    "cordova",
+    "user notification",
     "ecosystem:cordova",
-    "cordova-android",
     "cordova-ios",
+    "cordova-android",
     "cordova-windows"
-  ],
-  "platforms": [
-    "ios",
-    "android",
-    "windows"
   ],
   "engines": [
     {
@@ -31,20 +30,24 @@
       "version": ">=3.6.0"
     },
     {
-      "name": "cordova-plugman",
-      "version": ">=4.3.0"
+      "name": "cordova-android",
+      "version": ">=6.0.0"
     },
     {
       "name": "cordova-windows",
       "version": ">=4.2.0"
+    },
+    {
+      "name": "android-sdk",
+      "version": ">=26"
+    },
+    {
+      "name": "apple-ios",
+      "version": ">=10.0.0"
     }
   ],
-  "dependencies": {
-    "cordova-plugin-device": "*",
-    "cordova-plugin-app-event": ">=1.1.0"
-  },
   "author": "Sebastián Katzer",
-  "license": "Apache-2.0",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
   },
