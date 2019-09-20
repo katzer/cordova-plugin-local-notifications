@@ -711,6 +711,9 @@ exports._convertTrigger = function (options) {
 
     var dateToNum = function (date) {
         var num = typeof date == 'object' ? date.getTime() : date;
+        if(num.length === 10){
+            num *= 1000;
+        }
         return Math.round(num);
     };
 
