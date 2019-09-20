@@ -266,7 +266,7 @@ public class LocalNotification extends CordovaPlugin {
 
         for (int i = 0; i < toasts.length(); i++) {
             JSONObject dict    = toasts.optJSONObject(i);
-            Options options    = new Options(dict);
+            Options options    = new Options(cordova.getContext(), dict);
             Request request    = new Request(options);
             Notification toast = mgr.schedule(request, TriggerReceiver.class);
 

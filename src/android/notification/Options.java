@@ -25,7 +25,9 @@ package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
@@ -368,8 +370,19 @@ public final class Options {
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
             e.printStackTrace();
+            //Use application icon as default icon
+            Drawable largeIcon = context.getResources().getDrawable(context.getApplicationInfo().icon);
+            bmp = getBitmapFromDrawable(largeIcon);
         }
 
+        return bmp;
+    }
+
+    private Bitmap getBitmapFromDrawable(Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
         return bmp;
     }
 
