@@ -361,7 +361,7 @@ exports.get = function () {
  * @return [ Void ]
  */
 exports.getAll = function (callback, scope) {
-    this._exec('notifications', 0, callback, scope);
+    this._exec('notifications', [0], callback, scope);
 };
 
 /**
@@ -371,7 +371,7 @@ exports.getAll = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getScheduled = function (callback, scope) {
-    this._exec('notifications', 1, callback, scope);
+    this._exec('notifications', [1], callback, scope);
 };
 
 /**
@@ -381,7 +381,7 @@ exports.getScheduled = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getTriggered = function (callback, scope) {
-    this._exec('notifications', 2, callback, scope);
+    this._exec('notifications', [2], callback, scope);
 };
 
 /**
