@@ -25,6 +25,7 @@ var exec    = require('cordova/exec'),
 // Defaults
 exports._defaults = {
     actions       : [],
+    at            : null,
     attachments   : [],
     autoClear     : true,
     badge         : null,
@@ -33,6 +34,7 @@ exports._defaults = {
     color         : null,
     data          : null,
     defaults      : 0,
+    every         : null,
     foreground    : null,
     group         : null,
     groupSummary  : false,
@@ -1027,7 +1029,7 @@ if (!Array.from) {
  */
 exports.deviceReady = function() {
     exports._exec('deviceready');
-}
+};
 
 // Called before 'deviceready' event
 channel.onCordovaReady.subscribe(function () {
