@@ -381,6 +381,11 @@ public final class Options {
         int resId   = assets.getResId(icon);
 
         if (resId == 0) {
+            //Use application icon as default icon
+            resId = context.getApplicationInfo().icon;
+        }
+
+        if (resId == 0) {
             resId = assets.getResId(DEFAULT_ICON);
         }
 
