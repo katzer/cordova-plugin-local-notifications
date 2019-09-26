@@ -67,6 +67,9 @@ public final class Options {
     // Default icon path
     private static final String DEFAULT_ICON = "res://icon";
 
+    // Default icon type
+    private static final String DEFAULT_ICON_TYPE = "square";
+
     // The original JSON object
     private final JSONObject options;
 
@@ -371,6 +374,13 @@ public final class Options {
         }
 
         return bmp;
+    }
+
+    /**
+     * Type of the large icon.
+     */
+    String getLargeIconType() {
+        return options.optString("iconType", DEFAULT_ICON_TYPE);
     }
 
     /**
