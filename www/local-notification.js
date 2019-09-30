@@ -1027,11 +1027,11 @@ if (!Array.from) {
 }
 
 /**
- * Inform that webapp is ready, listeneres are registered
+ * Inform that webapp is ready, listeners are registered
  * and all queued event can be executed
  */
 exports.deviceReady = function() {
-    exports._exec('deviceready');
+    exports._exec('ready');
 };
 
 // Called before 'deviceready' event
