@@ -347,6 +347,19 @@ public final class Manager {
             String json     = prefs.getString(toastId, null);
             JSONObject dict = new JSONObject(json);
 
+            //compatibility with versiono 0.8
+            if (dict.has("trigger")) {
+                JSONObject trigger = dict.getJSONObject("trigger");
+                //copy trigger.at to at
+                if (trigger.has("at")) {
+                    dict.put("at", (long) trigger.get("at") / 1000);
+                }
+                //copy trigger.every to every
+                if (trigger.has("every")) {
+                    dict.put("every", trigger.get("every"));
+                }
+            }
+
             return new Options(context, dict);
         } catch (JSONException e) {
             e.printStackTrace();

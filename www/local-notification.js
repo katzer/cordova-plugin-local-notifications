@@ -710,7 +710,7 @@ exports._convertTrigger = function (options) {
         date     = this._getValueFor(trigger, 'at', 'firstAt', 'date');
 
     var dateToNum = function (date) {
-        var num = typeof date == 'object' ? date.getTime() : date;
+        var num = typeof date == 'object' ? date.getTime() : (typeof date == 'string' ? Date.parse(date) : date);
         if(num.length === 10){
             num *= 1000;
         }

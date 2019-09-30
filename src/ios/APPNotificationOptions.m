@@ -154,7 +154,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 - (NSString*) actionGroupId
 {
     id actions = dict[@"actions"];
-    
+
     return ([actions isKindOfClass:NSString.class]) ? actions : kAPPGeneralCategory;
 }
 
@@ -251,6 +251,22 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
         NSMutableDictionary* data = [dict mutableCopy];
 
         [data removeObjectForKey:@"updatedAt"];
+
+        return data;
+    }
+
+    //compatibility
+    NSDictionary* trigger = [dict objectForKey:@"trigger"];
+    if(trigger != nil){
+        NSMutableDictionary* data = [dict mutableCopy];
+        //copy trigger.at to at
+        if([trigger objectForKey:@"at"] != nil){
+            [data setObject:[NSNumber numberWithLong:[[trigger objectForKey:@"at"] longValue]/ 1000]  forKey:@"at"] ;
+        }
+        //copy trigger.every to every
+        if([trigger objectForKey:@"every"] != nil){
+            [data setObject:[trigger objectForKey:@"every"]  forKey:@"every"];
+        }
 
         return data;
     }
