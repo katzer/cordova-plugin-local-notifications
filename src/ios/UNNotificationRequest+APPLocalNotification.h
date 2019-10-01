@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,17 +17,16 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
+
+#import "APPNotificationOptions.h"
 
 @import UserNotifications;
 
 @interface UNNotificationRequest (APPLocalNotification)
 
-// The options provided by the plug-in
-- (APPLocalNotificationOptions*) options;
-// Encode the user info dict to JSON
+- (APPNotificationOptions*) options;
+- (BOOL) wasUpdated;
 - (NSString*) encodeToJSON;
 
 @end
