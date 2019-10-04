@@ -352,7 +352,7 @@ public final class Manager {
                 JSONObject trigger = dict.getJSONObject("trigger");
                 //copy trigger.at to at
                 if (trigger.has("at")) {
-                    dict.put("at", (long) trigger.get("at") / 1000);
+                    dict.put("at", trigger.getLong("at") / 1000);
                 }
                 //copy trigger.every to every
                 if (trigger.has("every")) {
