@@ -409,6 +409,17 @@ If requesting via plug-in, a system dialog does pop up for the first time. Later
 cordova.plugins.notification.local.requestPermission(function (granted) { ... });
 ```
 
+<p align="center">
+    <img src="images/ios-permission.png">
+</p>
+
+Checking the permissions is done automatically, however it's possible to skip that.
+
+```js
+cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
+```
+
+
 On Android 8, special permissions are required to exit "do not disturb mode" (in case alarmVolume is defined).
 You can check these by using:
 
@@ -442,16 +453,6 @@ cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (g
 The request method here will work one of two ways.
 1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
 2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
-
-<p align="center">
-    <img src="images/ios-permission.png">
-</p>
-
-Checking the permissions is done automatically, however it's possible to skip that.
-
-```js
-cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
-```
 
 
 ## Events
