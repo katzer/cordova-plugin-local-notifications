@@ -58,12 +58,12 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, Bundle bundle) {
+    public void onTrigger(Notification notification, Bundle bundle) {
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        Context context  = notification.getContext();
-        Options options  = notification.getOptions();
-        Manager manager  = Manager.getInstance(context);
-        int badge        = options.getBadgeNumber();
+        Context context = notification.getContext();
+        Options options = notification.getOptions();
+        Manager manager = Manager.getInstance(context);
+        int badge = options.getBadgeNumber();
 
         if (badge > 0) {
             manager.setBadge(badge);
@@ -80,6 +80,9 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         notification.show();
 
         if (!isUpdate && (isAppRunning() || options.isAutoLaunchingApp())) {
+            if (!options.shallWakeUp()) {
+                wakeUp(context);
+            }
             fireEvent("trigger", notification);
         }
 
@@ -88,7 +91,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
 
         Calendar cal = Calendar.getInstance();
         cal.add(MINUTE, 1);
-        Request req  = new Request(options, cal.getTime());
+        Request req = new Request(options, cal.getTime());
 
         manager.schedule(req, this.getClass());
     }
@@ -98,26 +101,18 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      *
      * @param context The application context.
      */
-    private void wakeUp (Context context) {
+    private void wakeUp(Context context) {
         PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
 
         if (pm == null)
             return;
 
-        int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
-                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
+        int level = PowerManager.PARTIAL_WAKE_LOCK;
 
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                level, "LocalNotification");
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(level, "LocalNotification");
 
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
-
-        if (SDK_INT >= LOLLIPOP) {
-            wakeLock.release(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
-        } else {
-            wakeLock.release();
-        }
     }
 
     /**
@@ -127,11 +122,8 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder, Bundle bundle) {
-        return builder
-                .setClickActivity(ClickReceiver.class)
-                .setClearReceiver(ClearReceiver.class)
-                .setExtras(bundle)
+    public Notification buildNotification(Builder builder, Bundle bundle) {
+        return builder.setClickActivity(ClickReceiver.class).setClearReceiver(ClearReceiver.class).setExtras(bundle)
                 .build();
     }
 

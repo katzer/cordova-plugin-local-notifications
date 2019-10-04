@@ -97,10 +97,10 @@ A notification does have a set of configurable properties. Not all of them are s
 
 | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
 | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       | alarmVolume   |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName       | actions       | alarmVolume   |
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
-| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
+| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
 
 For their default values see:
 
@@ -425,6 +425,23 @@ cordova.plugins.notification.local.requestDoNotDisturbPermissions(function (gran
 The only downside to not having these permissions granted is that alarmVolume and vibrate may not be
 honored on Android 8+ devices if the device is currently on silent when the notification fires (silent, not vibrate).
 In this situation, the notification will fire silently but still appear in the notification bar.
+
+Also on Android 8, it is helpful for alarms that autolaunch the app with an event, if the app can
+ignore battery saving mode (otherwise alarms won't trigger reliably).  You can check to see if the app is whitelisted for this with the following method.
+
+```js
+cordova.plugins.notification.local.isIgnoringBatteryOptimizations(function (granted) { ... })
+```
+
+... and you can request to be whitelisted by using:
+
+```js
+cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (granted) { ... })
+```
+
+The request method here will work one of two ways.
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
 
 <p align="center">
     <img src="images/ios-permission.png">

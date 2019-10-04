@@ -30,7 +30,7 @@ exports._defaults = {
     autoLaunch    : false,
     autoClear     : true,
     badge         : null,
-    channel       : null,
+    channelName   : null,
     clock         : true,
     color         : null,
     data          : null,
@@ -58,7 +58,8 @@ exports._defaults = {
     title         : '',
     trigger       : { type : 'calendar' },
     vibrate       : false,
-    wakeup        : true
+    wakeup        : true,
+    channelId     : null
 };
 
 // Event listener
@@ -109,6 +110,33 @@ exports.hasDoNotDisturbPermissions = function (callback, scope) {
  */
 exports.requestDoNotDisturbPermissions = function (callback, scope) {
     this._exec('requestDoNotDisturbPermissions', null, callback, scope);
+}
+
+/**
+ * Check to see if the app is ignoring battery optimizations.  This needs
+ * to be whitelisted by the user.
+ *
+ * Callback contains true or false for whether or not we have this permission.
+ *
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope
+ */
+exports.isIgnoringBatteryOptimizations = function (callback, scope) {
+    this._exec('isIgnoringBatteryOptimizations', null, callback, scope);
+}
+
+/**
+ * Request permission to ignore battery optimizations.
+ * The only way to do this is to launch the global battery optimization settings for all apps.
+ * This permission is required to allow alarm to trigger logic within the app while the app is dead.
+ *
+ * Callback is deferred until user returns.
+ *
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope
+ */
+exports.requestIgnoreBatteryOptimizations = function (callback, scope) {
+    this._exec('requestIgnoreBatteryOptimizations', null, callback, scope);
 }
 
 /**
