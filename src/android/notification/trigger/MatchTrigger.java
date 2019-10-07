@@ -304,6 +304,7 @@ public class MatchTrigger extends IntervalTrigger {
                 return false;
         }
 
+        cal.set(Calendar.SECOND, 0);
         cal.set(DAY_OF_WEEK, specials.get(0));
 
         if (matchers.get(3) != null && cal.get(Calendar.MONTH) != month)
