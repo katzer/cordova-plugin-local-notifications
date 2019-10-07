@@ -27,8 +27,21 @@ if (!project.ext.has('appShortcutBadgerVersion')) {
     ext.appShortcutBadgerVersion = '1.1.19'
 }
 
+String getVersion() {
+  def compileSdkVersion = Integer.parseInt(project.android.compileSdkVersion.split("-")[1])
+  return compileSdkVersion >= 28 ? "28.0.0" : "26.+" 
+}
+
 dependencies {
     implementation "me.leolin:ShortcutBadger:${appShortcutBadgerVersion}@aar"
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support:support-core-utils:28.0.0'
 }
+
+// Defer the definition of the dependencies to the end
+// of the "configuration" phase from the app build.gradle file
+// so that we can inquire the proper compile sdk version being used.
+cdvPluginPostBuildExtras.push({
+  dependencies {
+    implementation "com.android.support:support-v4:${getVersion()}"
+    implementation "com.android.support:support-core-utils:${getVersion()}"
+  }
+})
