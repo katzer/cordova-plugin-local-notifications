@@ -353,7 +353,7 @@ public final class AssetUtil {
      */
     private Uri getUriFromFile(File file) {
         try {
-            String authority = context.getPackageName() + ".provider";
+            String authority = context.getPackageName() + "localnotifications.provider";
             return AssetProvider.getUriForFile(context, authority, file);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
