@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.ArraySet;
 import android.support.v4.util.Pair;
@@ -160,20 +159,32 @@ public final class Notification {
     }
 
     /**
-     * Notification type can be one of triggered or scheduled.
+     * Previous implementation of getType method. A notification is of type triggered if it was already triggered and is not a repeating notification
      */
     public Type getType() {
-        Manager mgr                    = Manager.getInstance(context);
-        StatusBarNotification[] toasts = mgr.getActiveNotifications();
-        int id                         = getId();
+        return isScheduled() ? Type.SCHEDULED : Type.TRIGGERED;
+    }
 
-        for (StatusBarNotification toast : toasts) {
-            if (toast.getId() == id) {
-                return Type.TRIGGERED;
-            }
-        }
+    /**
+     * If the notification is scheduled.
+     */
+    public boolean isScheduled() {
+        return isRepeating() || !wasInThePast();
+    }
 
-        return Type.SCHEDULED;
+    /**
+     * If the notification was in the past.
+     */
+    public boolean wasInThePast() {
+        return new Date().after(getTriggerDate());
+    }
+
+    /**
+     * Trigger date.
+     */
+    public Date getTriggerDate() {
+        Long dateTime = options.getTrigger().optLong("at", 0);
+        return new Date(dateTime);
     }
 
     /**
