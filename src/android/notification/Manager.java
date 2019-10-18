@@ -271,7 +271,7 @@ public final class Manager {
         if (type == Notification.Type.ALL)
             return allNotifications;
 
-        List<Notification> scheduled = new ArrayList<>();
+        List<Notification> scheduled = new ArrayList<Notification>();
 
         for (Notification toast : allNotifications) {
             if(toast.isScheduled()){
