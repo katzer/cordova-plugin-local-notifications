@@ -45,6 +45,7 @@ import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
+import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 /**
@@ -220,28 +221,17 @@ public final class Manager {
     }
 
     /**
-     * All local notification IDs for given type.
+     * All local notification ids for given type following the legacy TRIGGERED
      *
      * @param type The notification life cycle type
      */
     public List<Integer> getIdsByType(Notification.Type type) {
+        List<Notification> notifications = getByType(type);
+        List<Integer> ids              = new ArrayList<Integer>();
 
-        if (type == Notification.Type.ALL)
-            return getIds();
-
-        StatusBarNotification[] activeToasts = getActiveNotifications();
-        List<Integer> activeIds              = new ArrayList<Integer>();
-
-        for (StatusBarNotification toast : activeToasts) {
-            activeIds.add(toast.getId());
+        for (Notification toast : notifications) {
+            ids.add(toast.getId());
         }
-
-        if (type == TRIGGERED)
-            return activeIds;
-
-        List<Integer> ids = getIds();
-        ids.removeAll(activeIds);
-
         return ids;
     }
 
@@ -277,13 +267,24 @@ public final class Manager {
      * @param type The notification life cycle type
      */
     private List<Notification> getByType(Notification.Type type) {
-
+        List<Notification> allNotifications = getAll();
         if (type == Notification.Type.ALL)
-            return getAll();
+            return allNotifications;
 
-        List<Integer> ids = getIdsByType(type);
+        List<Notification> scheduled = new ArrayList<>();
 
-        return getByIds(ids);
+        for (Notification toast : allNotifications) {
+            if(toast.isScheduled()){
+                scheduled.add(toast);
+            }
+        }
+
+        if (type == SCHEDULED)
+            return scheduled;
+
+        allNotifications.removeAll(scheduled);
+
+        return allNotifications;
     }
 
     /**
