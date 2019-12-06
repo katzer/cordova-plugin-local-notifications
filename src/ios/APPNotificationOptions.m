@@ -466,6 +466,9 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
     NSString* interval = [self valueForTriggerOption:@"every"];
     NSCalendarUnit units = NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond;
 
+    if ([interval isEqualToString:@"second"])
+        return NSCalendarUnitSecond;
+
     if ([interval isEqualToString:@"minute"])
         return NSCalendarUnitSecond;
 
