@@ -45,6 +45,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import de.appplant.cordova.plugin.localnotification.TriggerReceiver;
+
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
@@ -88,6 +90,9 @@ public final class Notification {
 
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
+
+    // Receiver to handle the trigger event
+    private Class<?> receiver = TriggerReceiver.class;
 
     /**
      * Constructor
@@ -176,6 +181,8 @@ public final class Notification {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
         Set<String> ids                  = new ArraySet<String>();
         AlarmManager mgr                 = getAlarmMgr();
+
+        this.receiver = receiver;
 
         cancelScheduledAlarms();
 
@@ -302,7 +309,8 @@ public final class Notification {
             return;
 
         for (String action : actions) {
-            Intent intent = new Intent(action);
+            Intent intent = new Intent(context, this.receiver)
+                    .setAction(action);
 
             PendingIntent pi = PendingIntent.getBroadcast(
                     context, 0, intent, 0);
@@ -336,6 +344,8 @@ public final class Notification {
     void update (JSONObject updates, Class<?> receiver) {
         mergeJSONObjects(updates);
         persist(null);
+
+        this.receiver = receiver;
 
         if (getType() != Type.TRIGGERED)
             return;
