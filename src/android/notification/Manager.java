@@ -55,10 +55,10 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
 public final class Manager {
 
     // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
+    static final String CHANNEL_ID = "102";
 
     // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
+    private static final CharSequence CHANNEL_NAME = "VirGo";
 
     // The application context
     private Context context;
