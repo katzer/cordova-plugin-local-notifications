@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
-
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
@@ -141,7 +141,7 @@ public final class Builder {
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())
-                .setVisibility(options.getVisibility())
+                .setVisibility(VISIBILITY_PUBLIC)
                 .setPriority(options.getPrio())
                 .setShowWhen(options.showClock())
                 .setUsesChronometer(options.showChronometer())
