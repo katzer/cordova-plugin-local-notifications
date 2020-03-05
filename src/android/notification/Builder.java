@@ -131,13 +131,14 @@ public final class Builder {
         extras.putString(Options.EXTRA_SOUND, sound.toString());
 
         builder = findOrCreateBuilder()
-                // .setDefaults(options.getDefaults())
+                .setDefaults(options.getDefaults())
                 .setExtras(extras)
                 .setOnlyAlertOnce(false)
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setTicker(options.getText())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(options.getText()));
                 .setNumber(options.getNumber())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
