@@ -138,7 +138,7 @@ public final class Builder {
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setTicker(options.getText())
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(options.getText()));
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(options.getText()))
                 .setNumber(options.getNumber())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isSticky())
