@@ -173,7 +173,12 @@ public final class Options {
      * Gets the raw trigger spec as provided by the user.
      */
     public JSONObject getTrigger() {
-        return options.optJSONObject("trigger");
+        JSONObject triggerObject = options.optJSONObject("trigger");
+
+        if (triggerObject == null)
+          return new JSONObject();
+
+        return triggerObject;
     }
 
     /**
