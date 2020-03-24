@@ -175,7 +175,6 @@ public final class Notification {
      * @param receiver Receiver to handle the trigger event.
      */
     void schedule(Request request, Class<?> receiver) {
-        Log.e("schedule", "1");
         List<Pair<Date, Data>> datas = new ArrayList<Pair<Date, Data>>();
         Set<String> ids                  = new ArraySet<String>();
         do {
@@ -194,21 +193,7 @@ public final class Notification {
                     .putInt(Notification.EXTRA_ID, options.getId())
                     .putInt(Request.EXTRA_OCCURRENCE, request.getOccurrence())
                     .build();
-            datas.add(new Pair<>(date, data));
 
-        }
-        while (request.moveNext());
-
-        if (datas.isEmpty()) {
-            unpersist();
-            return;
-        }
-
-        persist(ids);
-
-        for (Pair<Date, Data> pair : datas) {
-            Date date     = pair.first;
-            Data data     = pair.second;
             long time     = date.getTime();
 
             if (!date.after(new Date()))
@@ -216,15 +201,24 @@ public final class Notification {
 
             try {
                 long duration = time - System.currentTimeMillis();
-                long seconds = duration/(1000*60);
-                Log.e("schedule", " " + seconds);
-                scheduleReminder(duration, data, String.valueOf(data.getInt(Notification.EXTRA_ID, 0)));
+                Log.i("Notification", " date " + date + " action " + intent.getAction());
+                scheduleReminder(duration, data, intent.getAction());
 
             } catch (Exception ignore) {
                 // Samsung devices have a known bug where a 500 alarms limit
                 // can crash the app
             }
+            datas.add(new Pair<>(date, data));
+
         }
+        while (request.moveNext());
+
+        if (ids.isEmpty()) {
+            unpersist();
+            return;
+        }
+
+        persist(ids);
     }
 
     public void scheduleReminder(long duration, Data data, String tag) {
@@ -295,14 +289,7 @@ public final class Notification {
             return;
 
         for (String action : actions) {
-            Intent intent = new Intent(action);
-
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, 0);
-
-            if (pi != null) {
-                getAlarmMgr().cancel(pi);
-            }
+            WorkManager.getInstance(context).cancelAllWorkByTag(action);
         }
     }
 

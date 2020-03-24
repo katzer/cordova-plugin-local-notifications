@@ -40,7 +40,6 @@ import android.graphics.Canvas;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import androidx.media.app.NotificationCompat.MediaStyle;
-import android.support.v4.media.session.MediaSessionCompat;;
 
 import java.util.List;
 import java.util.Random;
@@ -346,7 +345,7 @@ public final class Builder {
      */
     private void applyMediaStyle(NotificationCompat.Builder builder,
                                  MediaSessionCompat.Token token) {
-        androidx.media.app.NotificationCompat.MediaStyle style;
+        MediaStyle style;
 
         style = new MediaStyle(builder)
                 .setMediaSession(token)
