@@ -90,8 +90,8 @@
 
     <!-- android -->
     <platform name="android">
-        <preference name="ANDROID_SUPPORT_V4_VERSION" default="26.+" />
-        <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_V4_VERSION" />
+        <framework src="androidx.legacy:legacy-support-v4:1.0.0" />
+        <framework src="androidx.work:work-runtime:2.3.3" />
         <framework src="src/android/build/localnotification.gradle" custom="true" type="gradleReference"/>
 
         <config-file target="res/xml/config.xml" parent="/*">
@@ -217,6 +217,10 @@
 
         <source-file
             src="src/android/notification/Notification.java"
+            target-dir="src/de/appplant/cordova/plugin/notification" />
+
+        <source-file
+            src="src/android/notification/NotificationWorker.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
         <source-file

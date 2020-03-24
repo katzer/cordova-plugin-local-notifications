@@ -30,9 +30,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.ArraySet;
-import android.support.v4.util.Pair;
+import androidx.core.app.NotificationCompat;
+import androidx.collection.ArraySet;
+import androidx.core.util.Pair;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -44,15 +48,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
-import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
+
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -117,34 +121,32 @@ public final class Notification {
     /**
      * Get application context.
      */
-    public Context getContext() {
+    public Context getContext () {
         return context;
     }
 
     /**
      * Get notification options.
      */
-    public Options getOptions() {
+    public Options getOptions () {
         return options;
     }
 
     /**
      * Get notification ID.
      */
-    public int getId() {
+    public int getId () {
         return options.getId();
     }
 
     /**
      * If it's a repeating notification.
      */
-    public boolean isRepeating() {
+    public boolean isRepeating () {
         return getOptions().getTrigger().has("every");
     }
 
-    /**
-     * If the notifications priority is high or above.
-     */
+
     public boolean isHighPrio() {
         return getOptions().getPrio() >= PRIORITY_HIGH;
     }
@@ -173,16 +175,11 @@ public final class Notification {
      * @param receiver Receiver to handle the trigger event.
      */
     void schedule(Request request, Class<?> receiver) {
-        List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
+        Log.e("schedule", "1");
+        List<Pair<Date, Data>> datas = new ArrayList<Pair<Date, Data>>();
         Set<String> ids                  = new ArraySet<String>();
-        AlarmManager mgr                 = getAlarmMgr();
-
-        cancelScheduledAlarms();
-
         do {
             Date date = request.getTriggerDate();
-
-            Log.d("local-notification", "Next trigger at: " + date);
 
             if (date == null)
                 continue;
@@ -193,54 +190,50 @@ public final class Notification {
                     .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
 
             ids.add(intent.getAction());
-            intents.add(new Pair<Date, Intent>(date, intent));
+            Data data = new Data.Builder()
+                    .putInt(Notification.EXTRA_ID, options.getId())
+                    .putInt(Request.EXTRA_OCCURRENCE, request.getOccurrence())
+                    .build();
+            datas.add(new Pair<>(date, data));
+
         }
         while (request.moveNext());
 
-        if (intents.isEmpty()) {
+        if (datas.isEmpty()) {
             unpersist();
             return;
         }
 
         persist(ids);
 
-        if (!options.isInfiniteTrigger()) {
-            Intent last = intents.get(intents.size() - 1).second;
-            last.putExtra(Request.EXTRA_LAST, true);
-        }
-
-        for (Pair<Date, Intent> pair : intents) {
+        for (Pair<Date, Data> pair : datas) {
             Date date     = pair.first;
+            Data data     = pair.second;
             long time     = date.getTime();
-            Intent intent = pair.second;
 
-            if (!date.after(new Date()) && trigger(intent, receiver))
+            if (!date.after(new Date()))
                 continue;
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, FLAG_CANCEL_CURRENT);
-
             try {
-                switch (options.getPrio()) {
-                    case PRIORITY_MIN:
-                        mgr.setExact(RTC, time, pi);
-                        break;
-                    case PRIORITY_MAX:
-                        if (SDK_INT >= M) {
-                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
-                        } else {
-                            mgr.setExact(RTC, time, pi);
-                        }
-                        break;
-                    default:
-                        mgr.setExact(RTC_WAKEUP, time, pi);
-                        break;
-                }
+                long duration = time - System.currentTimeMillis();
+                long seconds = duration/(1000*60);
+                Log.e("schedule", " " + seconds);
+                scheduleReminder(duration, data, String.valueOf(data.getInt(Notification.EXTRA_ID, 0)));
+
             } catch (Exception ignore) {
                 // Samsung devices have a known bug where a 500 alarms limit
                 // can crash the app
             }
         }
+    }
+
+    public void scheduleReminder(long duration, Data data, String tag) {
+        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                .setInitialDelay(duration, TimeUnit.MILLISECONDS).addTag(tag)
+                .setInputData(data).build();
+
+        WorkManager instance = WorkManager.getInstance(context);
+        instance.enqueue(notificationWork);
     }
 
     /**
@@ -319,7 +312,7 @@ public final class Notification {
     public void show() {
         if (builder == null) return;
 
-        if (options.showChronometer()) {
+        if (options.isWithProgressBar()) {
             cacheBuilder();
         }
 
@@ -438,7 +431,7 @@ public final class Notification {
     /**
      * Caches the builder instance so it can be used later.
      */
-    private void cacheBuilder() {
+    private void cacheBuilder () {
 
         if (cache == null) {
             cache = new SparseArray<NotificationCompat.Builder>();
