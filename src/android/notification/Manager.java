@@ -44,6 +44,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
@@ -56,9 +57,11 @@ public final class Manager {
 
     // TODO: temporary
     static final String CHANNEL_ID = "default-channel-id";
+    static final String CHANNEL_ID_IMMEDIATE = "default-immediate-channel-id";
 
     // TODO: temporary
     private static final CharSequence CHANNEL_NAME = "Default channel";
+    private static final CharSequence CHANNEL_NAME_IMMEDIATE = "Default immediate channel";
 
     // The application context
     private Context context;
@@ -70,7 +73,7 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
+        createDefaultChannels();
     }
 
     /**
@@ -104,23 +107,28 @@ public final class Manager {
         return toast;
     }
 
+    private void createDefaultChannels() {
+        createChannel(CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+        createChannel(CHANNEL_ID_IMMEDIATE, CHANNEL_NAME_IMMEDIATE, IMPORTANCE_HIGH);
+    }
+
     /**
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+    private void createChannel(String id, CharSequence name, int importance) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
             return;
 
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+        NotificationChannel channel = mgr.getNotificationChannel(id);
 
         if (channel != null)
             return;
 
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+                id, name, importance);
 
         mgr.createNotificationChannel(channel);
     }

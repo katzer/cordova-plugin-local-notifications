@@ -154,6 +154,10 @@ public final class Builder {
             builder.setSound(sound);
         }
 
+        if (options.getCategory() != null) {
+            builder.setCategory(options.getCategory());
+        }
+
         if (options.isWithProgressBar()) {
             builder.setProgress(
                     options.getProgressMaxValue(),
@@ -404,6 +408,10 @@ public final class Builder {
 
         PendingIntent contentIntent = PendingIntent.getService(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+
+        if (options.isImmediate()) {
+            builder.setFullScreenIntent(contentIntent, true);
+        }
 
         builder.setContentIntent(contentIntent);
     }
