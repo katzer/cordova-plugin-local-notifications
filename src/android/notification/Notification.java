@@ -35,6 +35,7 @@ import androidx.collection.ArraySet;
 import androidx.core.util.Pair;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.Operation;
 import androidx.work.WorkManager;
 
 import android.util.Log;
@@ -50,11 +51,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static android.app.AlarmManager.RTC;
-import static android.app.AlarmManager.RTC_WAKEUP;
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 
 
@@ -201,13 +197,13 @@ public final class Notification {
 
             try {
                 long duration = time - System.currentTimeMillis();
-                Log.i("Notification", " date " + date + " action " + intent.getAction());
+                Log.i("Notification", options.getPrio()+ " date " + date + " action " + intent.getAction());
                 scheduleReminder(duration, data, intent.getAction());
-
             } catch (Exception ignore) {
-                // Samsung devices have a known bug where a 500 alarms limit
-                // can crash the app
+                ignore.printStackTrace();
             }
+
+
             datas.add(new Pair<>(date, data));
 
         }
@@ -225,8 +221,7 @@ public final class Notification {
         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                 .setInitialDelay(duration, TimeUnit.MILLISECONDS).addTag(tag)
                 .setInputData(data).build();
-
-        WorkManager instance = WorkManager.getInstance(context);
+        WorkManager instance = WorkManager.getInstance(context.getApplicationContext());
         instance.enqueue(notificationWork);
     }
 

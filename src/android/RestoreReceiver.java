@@ -24,7 +24,7 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import android.content.Context;
-import android.util.Log;
+import android.os.Bundle;
 
 import java.util.Date;
 
@@ -72,7 +72,9 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      * @param builder Notification builder.
      */
     @Override
-    public Notification buildNotification (Builder builder) {
+    public Notification buildNotification (Builder builder, int id) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(Notification.EXTRA_ID, id);
         return builder
                 .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)

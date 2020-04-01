@@ -7,12 +7,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import java.util.concurrent.TimeUnit;
 
 import de.appplant.cordova.plugin.localnotification.ClearReceiver;
 import de.appplant.cordova.plugin.localnotification.ClickReceiver;
@@ -30,8 +27,6 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Log.e("doWork", "1");
-
         int toastId     = getInputData().getInt(Notification.EXTRA_ID, 0);
         Options options = Manager.getInstance(getApplicationContext()).getOptions(toastId);
 
@@ -74,16 +69,6 @@ public class NotificationWorker extends Worker {
         if (!isUpdate) {
             LocalNotification.fireEvent("trigger", notification);
         }
-    }
-
-
-    public static void scheduleReminder(long duration, Data data, String tag, Context context) {
-        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                .setInitialDelay(duration, TimeUnit.MILLISECONDS).addTag(tag)
-                .setInputData(data).build();
-
-        WorkManager instance = WorkManager.getInstance(context);
-        instance.enqueue(notificationWork);
     }
 
     /**
