@@ -42,6 +42,8 @@ import static de.appplant.cordova.plugin.localnotification.LocalNotification.fir
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
 import static java.util.Calendar.MINUTE;
 
+import static android.os.Build.VERSION_CODES.P;
+
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
  * reads the information in the intent and displays this information in the
@@ -60,9 +62,14 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     @Override
     public void onTrigger(Notification notification, Bundle bundle) {
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
+        boolean didAutoLaunch = false;
         Context context = notification.getContext();
         Options options = notification.getOptions();
         Manager manager = Manager.getInstance(context);
+
+        // trigger will have more than 1 key if a timed trigger was defined
+        // (no trigger has "type": "calendar")
+        boolean immediateFire = options.getTrigger().length() < 2;
         int badge = options.getBadgeNumber();
 
         if (badge > 0) {
@@ -73,13 +80,22 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
             wakeUp(context);
         }
 
-        if (options.isAutoLaunchingApp()) {
+        if (options.isAutoLaunchingApp() && (SDK_INT <= P)) {
+            didAutoLaunch = true;
             LaunchUtils.launchApp(context);
         }
 
-        notification.show();
+        // Show notification only if we did not autoLaunch
+        // either because autoLaunch is false, or our SDK doesn't support it
+        if (!didAutoLaunch) {
+            notification.show();
+        }
 
-        if (!isUpdate && (isAppRunning() || options.isAutoLaunchingApp())) {
+        // run trigger function anytime the browser is running
+        // unless run with no trigger
+        // (which means that it came from trigger function)
+        if ((isAppRunning() || didAutoLaunch) && !immediateFire) {
+            // wake up even if we didn't set it to
             if (!options.shallWakeUp()) {
                 wakeUp(context);
             }

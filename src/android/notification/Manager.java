@@ -30,7 +30,7 @@ import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,9 +44,9 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
@@ -101,7 +101,7 @@ public final class Manager {
 
     /**
      * Build channel with options
-     * 
+     *
      * @param soundUri      Uri for custom sound (empty to use default)
      * @param shouldVibrate whether not vibration should occur during the
      *                      notification
@@ -117,23 +117,23 @@ public final class Manager {
         int importance;
 
         if (hasSound && shouldVibrate) {
-            defaultChannelId = Options.CHANNEL_ID_SOUND_VIBRATE;
-            defaultChannelName = Options.CHANNEL_NAME_SOUND_VIBRATE;
+            defaultChannelId = Options.SOUND_VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_VIBRATE_CHANNEL_NAME;
             importance = IMPORTANCE_HIGH;
             shouldVibrate = true;
         } else if (hasSound) {
-            defaultChannelId = Options.CHANNEL_ID_SOUND;
-            defaultChannelName = Options.CHANNEL_NAME_SOUND;
+            defaultChannelId = Options.SOUND_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_CHANNEL_NAME;
             importance = IMPORTANCE_DEFAULT;
             shouldVibrate = false;
         } else if (shouldVibrate) {
-            defaultChannelId = Options.CHANNEL_ID_VIBRATE;
-            defaultChannelName = Options.CHANNEL_NAME_VIBRATE;
+            defaultChannelId = Options.VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.VIBRATE_CHANNEL_NAME;
             importance = IMPORTANCE_LOW;
             shouldVibrate = true;
         } else {
-            defaultChannelId = Options.CHANNEL_ID_SILENT;
-            defaultChannelName = Options.CHANNEL_NAME_SILENT;
+            defaultChannelId = Options.SILENT_CHANNEL_ID;
+            defaultChannelName = Options.SILENT_CHANNEL_NAME;
             importance = IMPORTANCE_LOW;
             shouldVibrate = false;
         }

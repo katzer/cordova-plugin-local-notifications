@@ -27,8 +27,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import org.json.JSONArray;
@@ -45,13 +45,13 @@ import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;
-import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
-import static android.support.v4.app.NotificationCompat.DEFAULT_SOUND;
-import static android.support.v4.app.NotificationCompat.DEFAULT_VIBRATE;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
-import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
+import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
+import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;
+import static androidx.core.app.NotificationCompat.DEFAULT_VIBRATE;
+import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static androidx.core.app.NotificationCompat.VISIBILITY_SECRET;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all possible
@@ -60,23 +60,23 @@ import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
  */
 public final class Options {
     // Default Channel ID for SDK < 26
-    static final String DEFAULT_CHANNEL_ID = "channel-id-default";
+    static final String DEFAULT_CHANNEL_ID = "default-channel-id";
 
     // Silent channel
-    static final String CHANNEL_ID_SILENT = "channel-id-silent";
-    static final CharSequence CHANNEL_NAME_SILENT = "Silent Notifications";
+    static final String SILENT_CHANNEL_ID = "silent-channel-id";
+    static final CharSequence SILENT_CHANNEL_NAME = "Silent Notifications";
 
     // Vibrate only channel
-    static final String CHANNEL_ID_VIBRATE = "vibrate-channel-id";
-    static final CharSequence CHANNEL_NAME_VIBRATE = "Low Priority Notifications";
+    static final String VIBRATE_CHANNEL_ID = "vibrate-channel-id";
+    static final CharSequence VIBRATE_CHANNEL_NAME = "Low Priority Notifications";
 
     // Sound only channel
-    static final String CHANNEL_ID_SOUND = "sound-channel-id";
-    static final CharSequence CHANNEL_NAME_SOUND = "Medium Priority Notifications";
+    static final String SOUND_CHANNEL_ID = "sound-channel-id";
+    static final CharSequence SOUND_CHANNEL_NAME = "Medium Priority Notifications";
 
     // Sound and vibrate channel
-    static final String CHANNEL_ID_SOUND_VIBRATE = "sound-vibrate-channel-id";
-    static final CharSequence CHANNEL_NAME_SOUND_VIBRATE = "High Priority Notifications";
+    static final String SOUND_VIBRATE_CHANNEL_ID = "sound-vibrate-channel-id";
+    static final CharSequence SOUND_VIBRATE_CHANNEL_NAME = "High Priority Notifications";
 
     // Key name for bundled sound extra
     static final String EXTRA_SOUND = "NOTIFICATION_SOUND";
@@ -446,7 +446,7 @@ public final class Options {
     /**
      * Returns the resetDelay until the sound changes revert back to the users
      * settings.
-     * 
+     *
      * @return resetDelay
      */
     public Integer getResetDelay() {

@@ -31,9 +31,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.ArraySet;
-import android.support.v4.util.Pair;
+import android.util.Pair;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -48,14 +46,17 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.collection.ArraySet;
+import androidx.core.app.NotificationCompat;
+
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
-import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MAX;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
+import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
+import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -232,10 +233,10 @@ public final class Notification {
 
             try {
                 switch (options.getPrio()) {
-                    case IMPORTANCE_MIN:
+                    case PRIORITY_MIN:
                         mgr.setExact(RTC, time, pi);
                         break;
-                    case IMPORTANCE_MAX:
+                    case PRIORITY_MAX:
                         if (SDK_INT >= M) {
                             mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                         } else {
