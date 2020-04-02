@@ -53,7 +53,7 @@
 
 ## Important Notice
 
-Please make sure that you always read the tagged README for the version you're using. 
+Please make sure that you always read the tagged README for the version you're using.
 
 See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
 
@@ -61,7 +61,6 @@ __Known issues__
 
 - Support for Android Oreo is limited yet.
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
-- __Not compatible yet with Ionic Native__. Their wrapper is not part of this plugin. In future I will contribute to them to fix such issues in time. But for the moment I am busy enough with the plugin itself.
 
 Please report bugs or missing features!
 
@@ -101,6 +100,7 @@ A notification does have a set of configurable properties. Not all of them are s
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
+| iconType
 
 For their default values see:
 
@@ -170,7 +170,7 @@ cordova.plugins.notification.local.addActions('yes-no', [
 ]);
 ```
 
-Once you have defined an action group, you can reference it when scheduling notifications: 
+Once you have defined an action group, you can reference it when scheduling notifications:
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -264,7 +264,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 
 | Type         | Property      | Type    | Value            | Android | iOS | Windows |
 | :----------- | :------------ | :------ | :--------------- | :------ | :-- | :------ |
-| Fix          | 
+| Fix          |
 |              | at            | Date    |                  | x       | x   | x       |
 | Timespan     |
 |              | in            | Int     |                  | x       | x   | x       |
@@ -469,7 +469,7 @@ To unsubscribe from events:
 cordova.plugins.notification.local.un(event, callback, scope);
 ```
 
-__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.  
+__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.
 Hence you should define your callback as a separate function, not inline. If you want to use `this` inside of your callback, you also have to provide `this` as `scope` to `cordova.plugins.notification.local.on`.
 
 ### Custom
@@ -510,7 +510,7 @@ document.addEventListener('deviceready', function () {
 
 It might be possible that the underlying framework like __Ionic__ is not compatible with the launch process defined by cordova. With the result that the plugin fires the click event on app start before the app is able to listen for the events.
 
-Therefore its possible to fire the queued events manually by defining a global variable. 
+Therefore its possible to fire the queued events manually by defining a global variable.
 
 ```js
 window.skipLocalNotificationReady = true
