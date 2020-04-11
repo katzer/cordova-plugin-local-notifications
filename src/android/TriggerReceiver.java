@@ -123,7 +123,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         if (pm == null)
             return;
 
-        int level = PowerManager.PARTIAL_WAKE_LOCK;
+        int level = PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE;
 
         PowerManager.WakeLock wakeLock = pm.newWakeLock(level, "LocalNotification");
 
