@@ -77,7 +77,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         }
 
         if (options.shallWakeUp()) {
-            wakeUp(context);
+            wakeUp(notification);
         }
 
         if (options.isAutoLaunchingApp() && (SDK_INT <= P)) {
@@ -97,7 +97,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         if ((isAppRunning() || didAutoLaunch) && !immediateFire) {
             // wake up even if we didn't set it to
             if (!options.shallWakeUp()) {
-                wakeUp(context);
+                wakeUp(notification);
             }
             fireEvent("trigger", notification);
         }
@@ -117,7 +117,10 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      *
      * @param context The application context.
      */
-    private void wakeUp(Context context) {
+    private void wakeUp(Notification notification) {
+        Context context = notification.getContext();
+        Options options = notification.getOptions();
+        String wakeLockTag = context.getApplicationInfo().name + ":LocalNotification";
         PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
 
         if (pm == null)
@@ -125,10 +128,10 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
 
         int level = PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE;
 
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(level, "LocalNotification");
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(level, wakeLockTag);
 
         wakeLock.setReferenceCounted(false);
-        wakeLock.acquire(1000);
+        wakeLock.acquire(options.getWakeLockTimeout());
     }
 
     /**

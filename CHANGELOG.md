@@ -13,6 +13,7 @@ ChangeLog
     - App has the option to run some logic and schedule (or not schedule) an immediate alarm.
  - New `alarmVolume` attribute. Can force application to increase device notification volume prior to playing sound.
  - New `resetDelay` attribute. Delay to reset alarmVolume on the device back to its original settings
+ - New `wakeLockTimeout` attribute. Can be used to extend the wakelock to keep the device awake longer (in case an autoLaunch application trigger takes a while). 
  - **Android Channel Support**
   - New `channelName` attribute for the name of the notification channel to use
   - New `channelId` attribute. If passed in, a notification channel will be created (using volume and vibration settings to determine importance)

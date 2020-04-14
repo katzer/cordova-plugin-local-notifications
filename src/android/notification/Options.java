@@ -90,6 +90,10 @@ public final class Options {
     public final static Integer DEFAULT_RESET_DELAY = 5;
 
     public final static Integer VOLUME_NOT_SET = -1;
+
+    // Default wakelock timeout
+    public final static Integer DEFAULT_WAKE_LOCK_TIMEOUT = 15000;
+
     // Default icon type
     private static final String DEFAULT_ICON_TYPE = "square";
 
@@ -232,6 +236,13 @@ public final class Options {
      */
     public boolean shallWakeUp() {
         return options.optBoolean("wakeup", true);
+    }
+
+    /**
+     * Timeout for wakeup (only used if shallWakeUp() is true)
+     */
+    public int getWakeLockTimeout() {
+        return options.optInt("wakeLockTimeout", DEFAULT_WAKE_LOCK_TIMEOUT);
     }
 
     /**

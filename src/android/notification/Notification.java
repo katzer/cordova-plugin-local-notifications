@@ -240,7 +240,7 @@ public final class Notification {
                         if (SDK_INT >= M) {
                             mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                         } else {
-                            mgr.setExact(RTC, time, pi);
+                            mgr.setExact(RTC_WAKEUP, time, pi);
                         }
                         break;
                     default:
