@@ -37,8 +37,12 @@ import static android.os.Build.VERSION_CODES.N;
 
 public final class ActionGroup {
 
+    // Default action group id
+    private static final String GENERAL_ACTION_GROUP = "DEFAULT_GROUP";
+
     // Saves all groups for later lookup.
-    private static final Map<String, ActionGroup> groups = new HashMap<String, ActionGroup>();
+    private static final Map<String, ActionGroup> groups =
+            new HashMap<String, ActionGroup>();
 
     // The ID of the action group.
     private final String id;
@@ -63,47 +67,25 @@ public final class ActionGroup {
      * @param group The action group to register.
      */
     public static void register (ActionGroup group) {
-        groups.put(group.getId(), group);
-    }
-
-    /**
-     * Unregister the action group.
-     *
-     * @param id The id of the action group to remove.
-     */
-    public static void unregister (String id) {
-        groups.remove(id);
-    }
-
-    /**
-     * Check if a action group with that id is registered.
-     *
-     * @param id The id of the action group to check for.
-     */
-    public static boolean isRegistered (String id) {
-        return groups.containsKey(id);
+        if (!group.getId().equalsIgnoreCase(GENERAL_ACTION_GROUP)) {
+            groups.put(group.getId(), group);
+        }
     }
 
     /**
      * Creates an action group by parsing the specified action specs.
      *
-     * @param list The list of actions.
+     * @param spec The action group spec containing the id and list of actions.
      *
      * @return A new action group.
      */
-    public static ActionGroup parse (Context context, JSONArray list) {
-        return parse(context, null, list);
-    }
+    public static ActionGroup parse (Context context, JSONObject spec) {
+        String id = spec.optString("actionGroupId", GENERAL_ACTION_GROUP);
+        JSONArray list = spec.optJSONArray("actions");
 
-    /**
-     * Creates an action group by parsing the specified action specs.
-     *
-     * @param id   The id for the action group.
-     * @param list The list of actions.
-     *
-     * @return A new action group.
-     */
-    public static ActionGroup parse (Context context, String id, JSONArray list) {
+        if (list == null || list.length() == 0)
+            return null;
+
         List<Action> actions = new ArrayList<Action>(list.length());
 
         for (int i = 0; i < list.length(); i++) {
@@ -122,6 +104,9 @@ public final class ActionGroup {
 
             actions.add(new Action(context, opts));
         }
+
+        if (actions.isEmpty())
+            return null;
 
         return new ActionGroup(id, actions.toArray(new Action[actions.size()]));
     }

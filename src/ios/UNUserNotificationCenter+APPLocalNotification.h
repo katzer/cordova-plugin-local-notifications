@@ -37,24 +37,34 @@ typedef NS_ENUM(NSUInteger, APPNotificationType) {
 @property (readonly, getter=getNotifications) NSArray* localNotifications;
 @property (readonly, getter=getNotificationIds) NSArray* localNotificationIds;
 
+// Register general notification category to listen for dismiss actions
 - (void) registerGeneralNotificationCategory;
-- (void) addActionGroup:(UNNotificationCategory*)category;
-- (void) removeActionGroup:(NSString*)identifier;
-- (BOOL) hasActionGroup:(NSString*)identifier;
+// Add the specified category to the list of categories
+- (void) addNotificationCategory:(UNNotificationCategory*)category;
 
+// List of all notification IDs from given type
 - (NSArray*) getNotificationIdsByType:(APPNotificationType)type;
 
+// Find notification by ID
 - (UNNotificationRequest*) getNotificationWithId:(NSNumber*)id;
+// Find notification type by ID
 - (APPNotificationType) getTypeOfNotificationWithId:(NSNumber*)id;
 
+// Property list from all local notifications
 - (NSArray*) getNotificationOptions;
+// Property list from given local notifications
 - (NSArray*) getNotificationOptionsById:(NSArray*)ids;
+// Property list from all local notifications with type constraint
 - (NSArray*) getNotificationOptionsByType:(APPNotificationType)type;
 
+// Clear specified notfication
 - (void) clearNotification:(UNNotificationRequest*)notification;
-- (void) clearNotifications;
+// Clear all notfications
+- (void) clearAllNotifications;
 
+// Cancel specified notfication
 - (void) cancelNotification:(UNNotificationRequest*)notification;
-- (void) cancelNotifications;
+// Cancel all notfications
+- (void) cancelAllNotifications;
 
 @end

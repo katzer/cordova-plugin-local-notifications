@@ -19,8 +19,10 @@
  * limitations under the License.
  */
 
+var exec = require('cordova/exec');
+
 /**
- * Request permission to show notifications.
+ * Check permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
  * @param [ Object ]   scope    The callback function's scope.
@@ -28,7 +30,9 @@
  * @return [ Void ]
  */
 exports.hasPermission = function (callback, scope) {
-    this.core.hasPermission(callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    exec(fn, null, 'LocalNotification', 'check', []);
 };
 
 /**
@@ -40,7 +44,9 @@ exports.hasPermission = function (callback, scope) {
  * @return [ Void ]
  */
 exports.requestPermission = function (callback, scope) {
-    this.core.requestPermission(callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    exec(fn, null, 'LocalNotification', 'request', []);
 };
 
 /**
@@ -53,12 +59,33 @@ exports.requestPermission = function (callback, scope) {
  *
  * @return [ Void ]
  */
-exports.schedule = function (notifications, callback, scope, args) {
-    this.core.schedule(notifications, callback, scope, args);
+exports.schedule = function (msgs, callback, scope, args) {
+    var fn = function (granted) {
+        var toasts = this.toArray(msgs);
+
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
+
+        for (var i = 0, len = toasts.length; i < len; i++) {
+            var toast = toasts[i];
+            this.mergeWithDefaults(toast);
+            this.convertProperties(toast);
+        }
+
+        this.exec('schedule', toasts, callback, scope);
+    };
+
+    if (args && args.skipPermission) {
+        fn.call(this, true);
+    } else {
+        this.requestPermission(fn, this);
+    }
 };
 
 /**
- * Update notifications.
+ * Schedule notifications.
  *
  * @param [ Array ]    notifications The notifications to schedule.
  * @param [ Function ] callback      The function to be exec as the callback.
@@ -67,8 +94,27 @@ exports.schedule = function (notifications, callback, scope, args) {
  *
  * @return [ Void ]
  */
-exports.update = function (notifications, callback, scope, args) {
-    this.core.update(notifications, callback, scope, args);
+exports.update = function (msgs, callback, scope, args) {
+    var fn = function(granted) {
+        var toasts = this.toArray(msgs);
+
+        if (!granted && callback) {
+            callback.call(scope || this, false);
+            return;
+        }
+
+        for (var i = 0, len = toasts.length; i < len; i++) {
+            this.convertProperties(toasts[i]);
+        }
+
+        this.exec('update', toasts, callback, scope);
+    };
+
+    if (args && args.skipPermission) {
+        fn.call(this, true);
+    } else {
+        this.requestPermission(fn, this);
+    }
 };
 
 /**
@@ -81,7 +127,10 @@ exports.update = function (notifications, callback, scope, args) {
  * @return [ Void ]
  */
 exports.clear = function (ids, callback, scope) {
-    this.core.clear(ids, callback, scope);
+    ids = this.toArray(ids);
+    ids = this.convertIds(ids);
+
+    this.exec('clear', ids, callback, scope);
 };
 
 /**
@@ -93,11 +142,11 @@ exports.clear = function (ids, callback, scope) {
  * @return [ Void ]
  */
 exports.clearAll = function (callback, scope) {
-    this.core.clearAll(callback, scope);
+    this.exec('clearAll', null, callback, scope);
 };
 
 /**
- * Cancel the specified notifications by id.
+ * Clear the specified notifications by id.
  *
  * @param [ Array<Int> ] ids      The IDs of the notifications.
  * @param [ Function ]   callback The function to be exec as the callback.
@@ -106,7 +155,10 @@ exports.clearAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.cancel = function (ids, callback, scope) {
-    this.core.cancel(ids, callback, scope);
+    ids = this.toArray(ids);
+    ids = this.convertIds(ids);
+
+    this.exec('cancel', ids, callback, scope);
 };
 
 /**
@@ -118,7 +170,7 @@ exports.cancel = function (ids, callback, scope) {
  * @return [ Void ]
  */
 exports.cancelAll = function (callback, scope) {
-    this.core.cancelAll(callback, scope);
+    this.exec('cancelAll', null, callback, scope);
 };
 
 /**
@@ -131,33 +183,29 @@ exports.cancelAll = function (callback, scope) {
  * @return [ Void ]
  */
 exports.isPresent = function (id, callback, scope) {
-    this.core.isPresent(id, callback, scope);
+    var fn = this.createCallbackFn(callback, scope);
+
+    this.getType(id, function (type) {
+        fn(type != 'unknown');
+    });
 };
 
 /**
- * Check if a notification is scheduled.
+ * Check if a notification has a given type.
  *
  * @param [ Int ]      id       The ID of the notification.
+ * @param [ String ]   type     The type of the notification.
  * @param [ Function ] callback The function to be exec as the callback.
  * @param [ Object ]   scope    The callback function's scope.
  *
  * @return [ Void ]
  */
-exports.isScheduled = function (id, callback, scope) {
-    this.core.hasType(id, 'scheduled', callback, scope);
-};
+exports.hasType = function (id, type, callback, scope) {
+    var fn = this.createCallbackFn(callback, scope);
 
-/**
- * Check if a notification was triggered.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.isTriggered = function (id, callback, scope) {
-    this.core.hasType(id, 'triggered', callback, scope);
+    this.getType(id, function (type2) {
+        fn(type == type2);
+    });
 };
 
 /**
@@ -170,7 +218,7 @@ exports.isTriggered = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.getType = function (id, callback, scope) {
-    this.core.getType(id, callback, scope);
+    this.exec('type', id, callback, scope);
 };
 
 /**
@@ -182,7 +230,7 @@ exports.getType = function (id, callback, scope) {
  * @return [ Void ]
  */
 exports.getIds = function (callback, scope) {
-    this.core.getIds(callback, scope);
+    this.exec('ids', null, callback, scope);
 };
 
 /**
@@ -194,7 +242,7 @@ exports.getIds = function (callback, scope) {
  * @return [ Void ]
  */
 exports.getScheduledIds = function (callback, scope) {
-    this.core.getScheduledIds(callback, scope);
+    this.exec('scheduledIds', null, callback, scope);
 };
 
 /**
@@ -206,7 +254,7 @@ exports.getScheduledIds = function (callback, scope) {
  * @return [ Void ]
  */
 exports.getTriggeredIds = function (callback, scope) {
-    this.core.getTriggeredIds(callback, scope);
+    this.exec('triggeredIds', null, callback, scope);
 };
 
 /**
@@ -219,8 +267,25 @@ exports.getTriggeredIds = function (callback, scope) {
  *
  * @return [ Void ]
  */
-exports.get = function (ids, callback, scope) {
-    this.core.get(ids, callback, scope);
+exports.get = function () {
+    var args = Array.apply(null, arguments);
+
+    if (typeof args[0] == 'function') {
+        args.unshift([]);
+    }
+
+    var ids      = args[0],
+        callback = args[1],
+        scope    = args[2];
+
+    if (!Array.isArray(ids)) {
+        this.exec('notification', Number(ids), callback, scope);
+        return;
+    }
+
+    ids = this.convertIds(ids);
+
+    this.exec('notifications', ids, callback, scope);
 };
 
 /**
@@ -232,7 +297,7 @@ exports.get = function (ids, callback, scope) {
  * @return [ Void ]
  */
 exports.getAll = function (callback, scope) {
-    this.core.getAll(callback, scope);
+    this.exec('notifications', null, callback, scope);
 };
 
 /**
@@ -242,7 +307,7 @@ exports.getAll = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getScheduled = function (callback, scope) {
-    this.core.getScheduled(callback, scope);
+    this.exec('scheduledNotifications', null, callback, scope);
 };
 
 /**
@@ -252,7 +317,7 @@ exports.getScheduled = function (callback, scope) {
  * @param [ Object ]     scope    The callback function's scope.
  */
 exports.getTriggered = function (callback, scope) {
-    this.core.getTriggered(callback, scope);
+    this.exec('triggeredNotifications', null, callback, scope);
 };
 
 /**
@@ -266,7 +331,8 @@ exports.getTriggered = function (callback, scope) {
  * @return [ Void ]
  */
 exports.addActionGroup = function (id, actions, callback, scope) {
-    this.core.addActionGroup(id, actions, callback, scope);
+    var config = { actionGroupId: id, actions: actions };
+    this.exec('actions', config, callback, scope);
 };
 
 /**
@@ -275,7 +341,18 @@ exports.addActionGroup = function (id, actions, callback, scope) {
  * @return [ Object ]
  */
 exports.getDefaults = function () {
-    return this.core.getDefaults();
+    var map = Object.assign({}, this._defaults);
+
+    for (var key in map) {
+        if (Array.isArray(map[key])) {
+            map[key] = Array.from(map[key]);
+        } else
+        if (Object.prototype.isPrototypeOf(map[key])) {
+            map[key] = Object.assign({}, map[key]);
+        }
+    }
+
+    return map;
 };
 
 /**
@@ -285,8 +362,8 @@ exports.getDefaults = function () {
  *
  * @return [ Void ]
  */
-exports.setDefaults = function (defaults) {
-    this.core.setDefaults(defaults);
+exports.setDefaults = function (newDefaults) {
+    Object.assign(this._defaults, newDefaults);
 };
 
 /**
@@ -299,7 +376,17 @@ exports.setDefaults = function (defaults) {
  * @return [ Void ]
  */
 exports.on = function (event, callback, scope) {
-    this.core.on(event, callback, scope);
+
+    if (typeof callback !== "function")
+        return;
+
+    if (!this._listener[event]) {
+        this._listener[event] = [];
+    }
+
+    var item = [callback, scope || window];
+
+    this._listener[event].push(item);
 };
 
 /**
@@ -311,5 +398,17 @@ exports.on = function (event, callback, scope) {
  * @return [ Void ]
  */
 exports.un = function (event, callback) {
-    this.core.un(event, callback);
+    var listener = this._listener[event];
+
+    if (!listener)
+        return;
+
+    for (var i = 0; i < listener.length; i++) {
+        var fn = listener[i][0];
+
+        if (fn == callback) {
+            listener.splice(i, 1);
+            break;
+        }
+    }
 };

@@ -64,7 +64,7 @@ public final class Request {
     private Date triggerDate;
 
     /**
-     * Create a request with a base date specified through the passed options.
+     * Constructor
      *
      * @param options The options spec.
      */
@@ -74,20 +74,6 @@ public final class Request {
         this.count       = Math.max(spec.optInt("count"), 1);
         this.trigger     = buildTrigger();
         this.triggerDate = trigger.getNextTriggerDate(getBaseDate());
-    }
-
-    /**
-     * Create a request with a base date specified via base argument.
-     *
-     * @param options The options spec.
-     * @param base    The base date from where to calculate the next trigger.
-     */
-    public Request(Options options, Date base) {
-        this.options     = options;
-        this.spec        = options.getTrigger();
-        this.count       = Math.max(spec.optInt("count"), 1);
-        this.trigger     = buildTrigger();
-        this.triggerDate = trigger.getNextTriggerDate(base);
     }
 
     /**
@@ -138,7 +124,7 @@ public final class Request {
      *
      * @return null if there's no trigger date.
      */
-    public Date getTriggerDate() {
+    Date getTriggerDate() {
         Calendar now = Calendar.getInstance();
 
         if (triggerDate == null)

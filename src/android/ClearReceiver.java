@@ -26,8 +26,6 @@ import android.os.Bundle;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractClearReceiver;
 
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
 /**
@@ -53,9 +51,7 @@ public class ClearReceiver extends AbstractClearReceiver {
             notification.clear();
         }
 
-        if (isAppRunning()) {
-            fireEvent("clear", notification);
-        }
+        LocalNotification.fireEvent("clear", notification);
     }
 
 }

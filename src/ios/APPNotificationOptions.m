@@ -51,8 +51,11 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (id) initWithDict:(NSDictionary*)dictionary
 {
-    self      = [self init];
+    self = [self init];
+
     self.dict = dictionary;
+
+    [self actions];
 
     return self;
 }
@@ -67,7 +70,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSNumber*) id
 {
-    NSInteger id = [dict[@"id"] integerValue];
+    NSInteger id = [[dict objectForKey:@"id"] integerValue];
 
     return [NSNumber numberWithInteger:id];
 }
@@ -89,7 +92,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSString*) title
 {
-    return dict[@"title"];
+    return [dict objectForKey:@"title"];
 }
 
 /**
@@ -111,7 +114,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSString*) text
 {
-    return dict[@"text"];
+    return [dict objectForKey:@"text"];
 }
 
 /**
@@ -121,7 +124,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (BOOL) silent
 {
-    return [dict[@"silent"] boolValue];
+    return [[dict objectForKey:@"silent"] boolValue];
 }
 
 /**
@@ -131,7 +134,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (int) priority
 {
-    return [dict[@"priority"] intValue];
+    return [[dict objectForKey:@"priority"] intValue];
 }
 
 /**
@@ -141,7 +144,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSNumber*) badge
 {
-    id value = dict[@"badge"];
+    id value = [dict objectForKey:@"badge"];
 
     return (value == NULL) ? NULL : [NSNumber numberWithInt:[value intValue]];
 }
@@ -151,11 +154,11 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  *
  * @return [ NSString* ]
  */
-- (NSString*) actionGroupId
+- (NSString*) categoryId
 {
-    id actions = dict[@"actions"];
-    
-    return ([actions isKindOfClass:NSString.class]) ? actions : kAPPGeneralCategory;
+    NSString* value = [dict objectForKey:@"actionGroupId"];
+
+    return value.length ? value : kAPPGeneralCategory;
 }
 
 /**
@@ -165,7 +168,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNNotificationSound*) sound
 {
-    NSString* path = dict[@"sound"];
+    NSString* path = [dict objectForKey:@"sound"];
     NSString* file;
 
     if ([path isKindOfClass:NSNumber.class]) {
@@ -193,7 +196,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSArray<UNNotificationAttachment *> *) attachments
 {
-    NSArray* paths              = dict[@"attachments"];
+    NSArray* paths              = [dict objectForKey:@"attachments"];
     NSMutableArray* attachments = [[NSMutableArray alloc] init];
 
     if (!paths)
@@ -214,6 +217,69 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
     }
 
     return attachments;
+}
+
+/**
+ * Additional actions for the notification.
+ *
+ * @return [ NSArray* ]
+ */
+- (NSArray<UNNotificationAction *> *) actions
+{
+    NSArray* items          = [dict objectForKey:@"actions"];
+    NSMutableArray* actions = [[NSMutableArray alloc] init];
+
+    if (!items)
+        return actions;
+
+    for (NSDictionary* item in items) {
+        NSString* id    = [item objectForKey:@"id"];
+        NSString* title = [item objectForKey:@"title"];
+        NSString* type  = [item objectForKey:@"type"];
+
+        UNNotificationActionOptions options = UNNotificationActionOptionNone;
+        UNNotificationAction* action;
+
+        if ([[item objectForKey:@"launch"] boolValue]) {
+            options = UNNotificationActionOptionForeground;
+        }
+
+        if ([[item objectForKey:@"ui"] isEqualToString:@"decline"]) {
+            options = options | UNNotificationActionOptionDestructive;
+        }
+
+        if ([[item objectForKey:@"needsAuth"] boolValue]) {
+            options = options | UNNotificationActionOptionAuthenticationRequired;
+        }
+
+        if ([type isEqualToString:@"input"]) {
+            NSString* submitTitle = [item objectForKey:@"submitTitle"];
+            NSString* placeholder = [item objectForKey:@"emptyText"];
+
+            if (!submitTitle.length) {
+                submitTitle = @"Submit";
+            }
+
+            action = [UNTextInputNotificationAction actionWithIdentifier:id
+                                                                   title:title
+                                                                 options:options
+                                                    textInputButtonTitle:submitTitle
+                                                    textInputPlaceholder:placeholder];
+        } else
+        if (!type.length || [type isEqualToString:@"button"]) {
+            action = [UNNotificationAction actionWithIdentifier:id
+                                                          title:title
+                                                        options:options];
+        } else {
+            NSLog(@"Unknown action type: %@", type);
+        }
+
+        if (action) {
+            [actions addObject:action];
+        }
+    }
+
+    return actions;
 }
 
 #pragma mark -
@@ -247,7 +313,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSDictionary*) userInfo
 {
-    if (dict[@"updatedAt"]) {
+    if ([dict objectForKey:@"updatedAt"]) {
         NSMutableDictionary* data = [dict mutableCopy];
 
         [data removeObjectForKey:@"updatedAt"];
@@ -263,7 +329,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 - (id) valueForTriggerOption:(NSString*)key
 {
-    return dict[@"trigger"][key];
+    return [[dict objectForKey:@"trigger"] objectForKey:key];
 }
 
 /**
@@ -347,13 +413,8 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
         seconds = 60;
     }
 
-    UNTimeIntervalNotificationTrigger* trigger =
-    [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds
-                                                       repeats:YES];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNTimeIntervalNotificationTrigger
+            triggerWithTimeInterval:seconds repeats:YES];
 }
 
 /**
@@ -369,13 +430,8 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    UNCalendarNotificationTrigger* trigger =
-    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
-                                                             repeats:repeats];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNCalendarNotificationTrigger
+            triggerWithDateMatchingComponents:date repeats:repeats];
 }
 
 /**
@@ -391,13 +447,8 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
     date.calendar = cal;
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    UNCalendarNotificationTrigger* trigger =
-    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
-                                                             repeats:YES];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNCalendarNotificationTrigger
+            triggerWithDateMatchingComponents:date repeats:YES];
 }
 
 /**

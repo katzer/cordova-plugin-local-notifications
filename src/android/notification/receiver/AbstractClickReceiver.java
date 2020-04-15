@@ -21,7 +21,7 @@
 
 package de.appplant.cordova.plugin.notification.receiver;
 
-import android.app.IntentService;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,25 +38,18 @@ import static de.appplant.cordova.plugin.notification.action.Action.EXTRA_ID;
  * Abstract content receiver activity for local notifications. Creates the
  * local notification and calls the event functions for further proceeding.
  */
-abstract public class AbstractClickReceiver extends IntentService {
-
-    // Holds a reference to the intent to handle.
-    private Intent intent;
-
-    public AbstractClickReceiver() {
-        super("LocalNotificationClickReceiver");
-    }
+abstract public class AbstractClickReceiver extends Activity {
 
     /**
      * Called when local notification was clicked to launch the main intent.
+     *
+     * @param state Saved instance state
      */
     @Override
-    protected void onHandleIntent(Intent intent) {
-        this.intent        = intent;
+    public void onCreate (Bundle state) {
+        super.onCreate(state);
 
-        if (intent == null)
-            return;
-
+        Intent intent      = getIntent();
         Bundle bundle      = intent.getExtras();
         Context context    = getApplicationContext();
 
@@ -70,7 +63,16 @@ abstract public class AbstractClickReceiver extends IntentService {
             return;
 
         onClick(toast, bundle);
-        this.intent = null;
+    }
+
+    /**
+     * Fixes "Unable to resume activity" error.
+     * Theme_NoDisplay: Activities finish themselves before being resumed.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        finish();
     }
 
     /**
@@ -89,13 +91,6 @@ abstract public class AbstractClickReceiver extends IntentService {
     }
 
     /**
-     * Getter for the received intent.
-     */
-    protected Intent getIntent() {
-        return intent;
-    }
-
-    /**
      * Launch main intent from package.
      */
     protected void launchApp() {
@@ -110,8 +105,7 @@ abstract public class AbstractClickReceiver extends IntentService {
             return;
 
         intent.addFlags(
-              FLAG_ACTIVITY_REORDER_TO_FRONT
-            | FLAG_ACTIVITY_SINGLE_TOP);
+                FLAG_ACTIVITY_REORDER_TO_FRONT | FLAG_ACTIVITY_SINGLE_TOP);
 
         context.startActivity(intent);
     }

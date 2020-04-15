@@ -191,11 +191,7 @@ public class MatchTrigger extends IntervalTrigger {
                     else
                         return null;
                 case HOUR:
-                    if (cal.get(Calendar.MINUTE) < now.get(Calendar.MINUTE)) {
-                        addToDate(cal, now, Calendar.HOUR_OF_DAY, 1);
-                    } else {
-                        addToDate(cal, now, Calendar.HOUR_OF_DAY, 0);
-                    }
+                    addToDate(cal, now, Calendar.HOUR_OF_DAY, 0);
                     break;
                 case DAY:
                 case WEEK:
@@ -304,7 +300,6 @@ public class MatchTrigger extends IntervalTrigger {
                 return false;
         }
 
-        cal.set(Calendar.SECOND, 0);
         cal.set(DAY_OF_WEEK, specials.get(0));
 
         if (matchers.get(3) != null && cal.get(Calendar.MONTH) != month)

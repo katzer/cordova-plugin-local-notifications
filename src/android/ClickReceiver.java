@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractClickReceiver;
 
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
@@ -55,7 +54,7 @@ public class ClickReceiver extends AbstractClickReceiver {
         setTextInput(action, data);
         launchAppIf();
 
-        fireEvent(action, notification, data);
+        LocalNotification.fireEvent(action, notification, data);
 
         if (notification.getOptions().isSticky())
             return;
@@ -80,7 +79,7 @@ public class ClickReceiver extends AbstractClickReceiver {
             return;
 
         try {
-            data.put("text", input.getCharSequence(action));
+            data.put("text", input.getString(action));
         } catch (JSONException e) {
             e.printStackTrace();
         }

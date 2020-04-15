@@ -28,5 +28,6 @@
 - (id) initWithOptions:(NSDictionary*)dict;
 - (APPNotificationOptions*) options;
 - (UNNotificationRequest*) request;
+- (UNNotificationCategory*) category;
 
 @end
