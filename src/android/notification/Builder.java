@@ -32,6 +32,10 @@ import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
 
+import com.hitgrab.android.mousehunt.HuntReceiver;
+
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Random;
 
@@ -160,6 +164,32 @@ public final class Builder {
         } else {
             builder.setSmallIcon(options.getSmallIcon());
         }
+
+        //region HitGrab
+        // Check for extra data being passed in
+        String data = options.getDict().optString("data", "");
+        if (!data.equals("")) {
+            try {
+                JSONObject dataJSON = new JSONObject(data);
+                String category = dataJSON.optString("category", "no category");
+                String postParam = dataJSON.optString("post_param", "no post param");
+
+                // If this is a hunt notification, add a hunt action to allow the user to hunt
+                if (category.equals("HornNotification") && !postParam.equals("")) {
+                    Intent huntIntent = new Intent(context, HuntReceiver.class);
+                    huntIntent.putExtra("post_param", postParam);
+                    PendingIntent pendingHuntIntent = PendingIntent.getBroadcast(context, 0, huntIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    NotificationCompat.Action huntAction = new NotificationCompat.Action(0, "Hunt", pendingHuntIntent);
+                    builder.addAction(huntAction);
+                    // This is added to allow updates to not alert
+                    builder.setOnlyAlertOnce(true);
+                }
+            } catch (Exception e) {
+
+            }
+        }
+        //endregion
 
         applyStyle(builder);
         applyActions(builder);

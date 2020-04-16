@@ -29,6 +29,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
 
+import com.hitgrab.android.mousehunt.R;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -368,22 +370,26 @@ public final class Options {
      * Small icon resource ID for the local notification.
      */
     int getSmallIcon() {
-        String icon = options.optString("smallIcon", DEFAULT_ICON);
-        int resId   = assets.getResId(icon);
 
-        if (resId == 0) {
-            resId = assets.getResId(DEFAULT_ICON);
-        }
+        // Hardcode mousehunt small icon
+        return R.drawable.icon_white;
 
-        if (resId == 0) {
-            resId = context.getApplicationInfo().icon;
-        }
-
-        if (resId == 0) {
-            resId = android.R.drawable.ic_popup_reminder;
-        }
-
-        return resId;
+//        String icon = options.optString("smallIcon", DEFAULT_ICON);
+//        int resId   = assets.getResId(icon);
+//
+//        if (resId == 0) {
+//            resId = assets.getResId(DEFAULT_ICON);
+//        }
+//
+//        if (resId == 0) {
+//            resId = context.getApplicationInfo().icon;
+//        }
+//
+//        if (resId == 0) {
+//            resId = android.R.drawable.ic_popup_reminder;
+//        }
+//
+//        return resId;
     }
 
     /**

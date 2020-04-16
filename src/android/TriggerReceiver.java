@@ -90,7 +90,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
             return;
 
         int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
-                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP;
 
         PowerManager.WakeLock wakeLock = pm.newWakeLock(
                 level, "LocalNotification");

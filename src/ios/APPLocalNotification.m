@@ -464,9 +464,41 @@
     UNNotificationRequest* request = notification.request;
     NSString* event = [notification.request wasUpdated] ? @"update" : @"add";
 
-    [_center addNotificationCategory:notification.category];
+//    [_center addNotificationCategory:notification.category];
 
-    [_center addNotificationRequest:request withCompletionHandler:^(NSError* e) {
+    // MARK: HitGrab HACK: Below code we recreate the content for the custom notification
+    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+    content.title = [NSString localizedUserNotificationStringForKey:notification.options.title arguments:nil];
+    content.body = [NSString localizedUserNotificationStringForKey:notification.body arguments:nil];
+    content.sound = [UNNotificationSound defaultSound];
+    [content setUserInfo:notification.options.userInfo];
+    
+    NSString *identifier = @"DefaultNotificationIdentifier";
+    if(notification.userInfo!=nil && [notification.userInfo objectForKey:@"id"]!=nil) {
+        identifier = [notification.userInfo objectForKey:@"id"];
+        if ([[notification.userInfo objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+            identifier = [NSString stringWithFormat: @"%@", [notification.userInfo objectForKey:@"id"]];
+        } else {
+            identifier = [notification.userInfo objectForKey:@"id"];
+        }
+    }
+    
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    
+    // check for horn notification category
+    NSString *notificationCategory = [notification.userInfo objectForKey:@"category"];
+    if ([notificationCategory isEqual: @"HornNotification"]) {
+        content.categoryIdentifier = notificationCategory;
+        identifier = notificationCategory;
+        UNNotificationAction *huntAction = [UNNotificationAction actionWithIdentifier:@"Hunt" title:@"Hunt" options:UNNotificationActionOptionNone];
+        UNNotificationCategory *category = [UNNotificationCategory categoryWithIdentifier:notificationCategory actions:@[huntAction] intentIdentifiers:@[] options:UNNotificationCategoryOptionNone];
+        NSSet *categories = [NSSet setWithObject:category];
+        [center setNotificationCategories:categories];
+    }
+    
+    UNNotificationRequest *newRequest = [UNNotificationRequest requestWithIdentifier:notification.request.identifier content:content trigger:notification.request.trigger];
+
+    [_center addNotificationRequest:newRequest withCompletionHandler:^(NSError* e) {
         __strong APPLocalNotification* strongSelf = weakSelf;
         [strongSelf fireEvent:event notification:request];
     }];
