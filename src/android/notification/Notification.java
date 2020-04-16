@@ -238,7 +238,8 @@ public final class Notification {
                         break;
                     case PRIORITY_MAX:
                         if (SDK_INT >= M) {
-                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                            AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(time, pi);
+                            mgr.setAlarmClock(info, pi);
                         } else {
                             mgr.setExact(RTC_WAKEUP, time, pi);
                         }
