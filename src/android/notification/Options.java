@@ -34,6 +34,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.System;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -214,9 +215,8 @@ public final class Options {
     /**
      * The channel id of that notification.
      */
-    String getChannel() {
-        return options.optString("channel", Manager.CHANNEL_ID);
-    }
+    String getChannel() { return options.optString("channel", Manager.DEFAULT_CHANNEL_ID); }
+    String getChannelDescription() { return options.optString("channelDescription", Manager.DEFAULT_CHANNEL_DESCRIPTION); }
 
     /**
      * If the group shall show a summary.
@@ -404,14 +404,14 @@ public final class Options {
     /**
      * If the phone should vibrate.
      */
-    private boolean isWithVibration() {
+    public boolean isWithVibration() {
         return options.optBoolean("vibrate", true);
     }
 
     /**
      * If the phone should play no sound.
      */
-    private boolean isWithoutSound() {
+    public boolean isWithoutSound() {
         Object value = options.opt("sound");
         return value == null || value.equals(false);
     }
@@ -419,7 +419,7 @@ public final class Options {
     /**
      * If the phone should play the default sound.
      */
-    private boolean isWithDefaultSound() {
+    public boolean isWithDefaultSound() {
         Object value = options.opt("sound");
         return value != null && value.equals(true);
     }
@@ -427,7 +427,7 @@ public final class Options {
     /**
      * If the phone should show no LED light.
      */
-    private boolean isWithoutLights() {
+    public boolean isWithoutLights() {
         Object value = options.opt("led");
         return value == null || value.equals(false);
     }
@@ -435,7 +435,7 @@ public final class Options {
     /**
      * If the phone should show the default LED lights.
      */
-    private boolean isWithDefaultLights() {
+    public boolean isWithDefaultLights() {
         Object value = options.opt("led");
         return value != null && value.equals(true);
     }
@@ -488,11 +488,18 @@ public final class Options {
      * Gets the notifications priority.
      */
     int getPrio() {
-        int prio = options.optInt("priority");
-
-        return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
+        return Math.min(Math.max(options.optInt("priority"), PRIORITY_MIN), PRIORITY_MAX);
     }
 
+    /**
+     * Set the when date for the notification.
+     */
+    long getWhen() {
+        long when = options.optLong("when");
+
+        return (when != 0) ? when : System.currentTimeMillis();
+    }
+	
     /**
      * If the notification shall show the when date.
      */

@@ -28,6 +28,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -43,9 +45,18 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_MIN;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_LOW;
 import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
+import de.appplant.cordova.plugin.notification.Options;
 
 /**
  * Central way to access all or single local notifications set by specific
@@ -54,11 +65,9 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
  */
 public final class Manager {
 
-    // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
+    static final String DEFAULT_CHANNEL_ID = "default-channel-id";
 
-    // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
+    static final String DEFAULT_CHANNEL_DESCRIPTION = "Default channel";
 
     // The application context
     private Context context;
@@ -70,7 +79,7 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
+        //createDefaultChannel();
     }
 
     /**
@@ -108,19 +117,60 @@ public final class Manager {
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+    public void createChannel(Options options) {
         NotificationManager mgr = getNotMgr();
+        int importance = IMPORTANCE_DEFAULT;
 
         if (SDK_INT < O)
             return;
 
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+        NotificationChannel channel = mgr.getNotificationChannel(options.getChannel());
 
         if (channel != null)
             return;
 
+        switch (options.getPrio()) {
+            case PRIORITY_MIN:
+                importance = IMPORTANCE_MIN;
+                break;
+            case PRIORITY_LOW:
+                importance = IMPORTANCE_LOW;
+                break;
+            case PRIORITY_DEFAULT:
+                importance = IMPORTANCE_DEFAULT;
+                break;
+            case PRIORITY_HIGH:
+                importance = IMPORTANCE_HIGH;
+                break;
+            case PRIORITY_MAX:
+                importance = IMPORTANCE_HIGH;
+                break;
+        }
+
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+                options.getChannel(), options.getChannelDescription(), importance);
+		if(!options.isSilent() && importance > IMPORTANCE_DEFAULT) channel.setBypassDnd(true);
+		if(!options.isWithoutLights()) channel.enableLights(true);
+		if(options.isWithVibration()) {
+			channel.enableVibration(true);
+		} else {
+			channel.setVibrationPattern(new long[]{ 0 });
+			channel.enableVibration(true);
+		}
+		channel.setLightColor(options.getLedColor());
+        if(options.isWithoutSound()) {
+			channel.setSound(null, null);
+		} else {
+			AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
+			
+			if(options.isWithDefaultSound()) {
+				channel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
+			} else {
+				channel.setSound(options.getSound(), audioAttributes);
+			}
+		}
 
         mgr.createNotificationChannel(channel);
     }
@@ -412,10 +462,9 @@ public final class Manager {
     /**
      * Notification compat manager for the application.
      */
-    private NotificationManagerCompat getNotCompMgr() {
+    public NotificationManagerCompat getNotCompMgr() {
         return NotificationManagerCompat.from(context);
     }
-
 }
 
 // codebeat:enable[TOO_MANY_FUNCTIONS]

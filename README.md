@@ -94,13 +94,13 @@ cordova.plugins.notification.local.schedule([
 
 A notification does have a set of configurable properties. Not all of them are supported across all platforms.
 
-| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
-| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
-| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
-| iconType
+| Property | Property | Property     | Property    | Property    | Property   | Property     | Property           |
+| :------- | :------- | :----------- | :---------- | :---------- | :--------- | :----------- | :----------------- |
+| id       | data     | timeoutAfter | summary     | led         | clock      | channel      | channelDescription |
+| text     | icon     | attachments  | smallIcon   | color       | defaults   | launch       | groupSummary       |
+| title    | silent   | progressBar  | sticky      | vibrate     | priority   | mediaSession | foreground         |
+| sound    | trigger  | group        | autoClear   | lockscreen  | number     | badge        | wakeup             |
+| iconType | actions  | when         |
 
 For their default values see:
 
@@ -487,6 +487,44 @@ Once the app and Ionic is ready, you can fire the queued events manually.
 cordova.plugins.notification.local.fireQueuedEvents();
 ```
 
+## Channels
+
+Since Android 8+ push notifications require a channel to work. By passing the `channel` parameter you can specify which channel the notification should use. You can't edit the channel after creating it, so be sure to pass the correct parameters within the first notification.
+
+When there is no channel specified in the notification, it (creates and) uses a default channel.
+
+Example of a notification using a specific channel:
+
+```js
+cordova.plugins.notification.local.schedule({
+    channel: 'myFirstChannel',
+    title: 'My first channel',
+    text: 'Thats pretty easy...',
+    foreground: true
+});
+```
+
+It's also possible to give the channel a custom description which will show up in the settings of the phone. You can declare the description by passing the paramter `channelDescription` to the notification.
+
+__First notification__
+
+As mentioned before, the first notification is the most important for your custom channels. Whenever you pass a new channel to a notification, the settings from that specific notification will be used to create the channel. All other notifications inside the same channel will inherit those settings.
+
+__Priorities__
+
+The priority of the channel will be set equivalent to the priority given to the notification. Below a summary of all priorities you can use and to which they'll change inside the channel.
+
+| Priority   | Native constant  | New channel constant  | Description                       |
+| :-------  | :---------------- | :--------------       | :-----------------------------    |
+| -2        | PRIORITY_MIN      | IMPORTANCE_MIN        | No sound and does not appear in the status bar |
+| -1        | PRIORITY_LOW      | IMPORTANCE_LOW        | No sound |
+| 0         | PRIORITY_DEFAULT  | IMPORTANCE_DEFAULT    | Makes a sound |
+| 1         | PRIORITY_HIGH     | IMPORTANCE_HIGH       | Makes a sound and appears as a heads-up notification |
+| 2         | PRIORITY_MAX      | IMPORTANCE_HIGH       | Makes a sound and appears as a heads-up notification |
+
+So don't forget to use the correct priority based on your settings, you won't get the desired result if you pass the wrong priority.
+
+The plugin will override your `priority` parameter if it detects a wrong configuration. For example when `foreground` is declared `true`, priority will always be `1` or higher. If `foreground` is declared `false`, priority will always be `0` or lower.
 
 ## Methods
 
@@ -504,32 +542,9 @@ See the sample app for how to use them.
 
 ## Installation
 
-The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
+To install the latest version:
 
-Execute from the projects root folder:
-
-    $ cordova plugin add cordova-plugin-local-notification
-
-Or install a specific version:
-
-    $ cordova plugin add cordova-plugin-local-notification@VERSION
-
-Or install the latest head version:
-
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
-
-Or install from local source:
-
-    $ cordova plugin add <path> --nofetch --nosave --link
-
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+    $ cordova plugin add https://github.com/PXLWidgets/cordova-plugin-local-notifications.git
 
 
 ## License
@@ -540,8 +555,6 @@ Made with :yum: from Leipzig
 
 © 2013 [appPlant GmbH][appplant]
 
-
-[ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
 [npm]: https://www.npmjs.com/package/cordova-plugin-local-notification

@@ -3,3 +3,5 @@
 /src/windows/**/.vs
 /src/windows/**/bin
 /src/windows/**/obj
+.idea
+src/cordova-plugin-local-notifications.iml
