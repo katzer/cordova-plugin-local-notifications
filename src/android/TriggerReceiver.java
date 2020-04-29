@@ -74,7 +74,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         // If device is asleep in this moment, waking it up with our wakelock
         // is not enough to allow the app to have CPU to trigger an event
         // in Android 8+
-        boolean isInteractive = pm.isInteractive();
+        boolean isInteractive = SDK_INT < O || pm.isInteractive();
         int badge = options.getBadgeNumber();
 
         if (badge > 0) {
@@ -95,7 +95,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         //   2.  Any SDK >= Oreo is asleep (must be triggered here)
         if (!options.triggerInApp() ||
             (!autoLaunch && !isAppRunning())
-            || (SDK_INT >= O && !isInteractive)
+            || !isInteractive
         ) {
             didShowNotification = true;
             notification.show();
