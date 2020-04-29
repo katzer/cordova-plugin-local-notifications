@@ -100,7 +100,7 @@ A notification does have a set of configurable properties. Not all of them are s
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
-| iconType      | wakeLockTimeout
+| iconType      | wakeLockTimeout | triggerInApp | fullScreenIntent
 
 For their default values see:
 

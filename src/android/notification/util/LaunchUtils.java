@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public final class LaunchUtils {
 
@@ -23,9 +24,10 @@ public final class LaunchUtils {
 
         intent.addFlags(
             FLAG_ACTIVITY_REORDER_TO_FRONT
-                | FLAG_ACTIVITY_SINGLE_TOP);
+                | FLAG_ACTIVITY_SINGLE_TOP
+                | FLAG_ACTIVITY_NEW_TASK
+        );
 
         context.startActivity(intent);
     }
-
 }

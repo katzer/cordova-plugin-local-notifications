@@ -239,6 +239,16 @@ public final class Options {
     }
 
     /**
+     * Use a fullScreenIntent
+     */
+    public boolean useFullScreenIntent() { return options.optBoolean("fullScreenIntent", true); }
+
+    /**
+     * Whether or not to trigger a notification in the app.
+     */
+    public boolean triggerInApp() { return options.optBoolean("triggerInApp", false); }
+
+    /**
      * Timeout for wakeup (only used if shallWakeUp() is true)
      */
     public int getWakeLockTimeout() {

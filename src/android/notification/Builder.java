@@ -181,12 +181,31 @@ public final class Builder {
             builder.setSmallIcon(options.getSmallIcon());
         }
 
+        if (options.useFullScreenIntent()) {
+            applyFullScreenIntent(builder);
+        }
+
         applyStyle(builder);
         applyActions(builder);
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
         return new Notification(context, options, builder);
+    }
+
+    void applyFullScreenIntent(NotificationCompat.Builder builder) {
+        String pkgName  = context.getPackageName();
+
+        Intent intent = context
+            .getPackageManager()
+            .getLaunchIntentForPackage(pkgName)
+            .putExtra("launchNotificationId", options.getId());
+
+        int reqCode = random.nextInt();
+        // request code and flags not added for demo purposes
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, FLAG_UPDATE_CURRENT);
+
+        builder.setFullScreenIntent(pendingIntent, true);
     }
 
     /**

@@ -38,6 +38,7 @@ import de.appplant.cordova.plugin.notification.util.LaunchUtils;
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static android.os.Build.VERSION_CODES.O;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
 import static java.util.Calendar.MINUTE;
@@ -62,14 +63,18 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     @Override
     public void onTrigger(Notification notification, Bundle bundle) {
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        boolean didAutoLaunch = false;
+        boolean didShowNotification = false;
         Context context = notification.getContext();
         Options options = notification.getOptions();
         Manager manager = Manager.getInstance(context);
+        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
+        boolean autoLaunch = options.isAutoLaunchingApp() && SDK_INT <= P && !options.useFullScreenIntent();
 
-        // trigger will have more than 1 key if a timed trigger was defined
-        // (no trigger has "type": "calendar")
-        boolean immediateFire = options.getTrigger().length() < 2;
+        // Check device sleep status here (not after wake)
+        // If device is asleep in this moment, waking it up with our wakelock
+        // is not enough to allow the app to have CPU to trigger an event
+        // in Android 8+
+        boolean isInteractive = pm.isInteractive();
         int badge = options.getBadgeNumber();
 
         if (badge > 0) {
@@ -80,25 +85,30 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
             wakeUp(notification);
         }
 
-        if (options.isAutoLaunchingApp() && (SDK_INT <= P)) {
-            didAutoLaunch = true;
+        if (autoLaunch) {
             LaunchUtils.launchApp(context);
         }
 
-        // Show notification only if we did not autoLaunch
-        // either because autoLaunch is false, or our SDK doesn't support it
-        if (!didAutoLaunch) {
+        // Show notification if we should (triggerInApp is false)
+        // or if we can't trigger in the app due to:
+        //   1.  No autoLaunch configured/supported and app is not running.
+        //   2.  Any SDK >= Oreo is asleep (must be triggered here)
+        if (!options.triggerInApp() ||
+            (!autoLaunch && !isAppRunning())
+            || (SDK_INT >= O && !isInteractive)
+        ) {
+            didShowNotification = true;
             notification.show();
         }
 
-        // run trigger function anytime the browser is running
-        // unless run with no trigger
-        // (which means that it came from trigger function)
-        if ((isAppRunning() || didAutoLaunch) && !immediateFire) {
+        // run trigger function if triggerInApp() is true
+        // and we did not send a notification.
+        if (options.triggerInApp() && !didShowNotification) {
             // wake up even if we didn't set it to
             if (!options.shallWakeUp()) {
                 wakeUp(notification);
             }
+
             fireEvent("trigger", notification);
         }
 
