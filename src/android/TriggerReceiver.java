@@ -62,86 +62,17 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger(Notification notification, Bundle bundle) {
-        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        boolean didShowNotification = false;
-        Context context = notification.getContext();
-        Options options = notification.getOptions();
-        Manager manager = Manager.getInstance(context);
-        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
-        boolean autoLaunch = options.isAutoLaunchingApp() && SDK_INT <= P && !options.useFullScreenIntent();
-
-        // Check device sleep status here (not after wake)
-        // If device is asleep in this moment, waking it up with our wakelock
-        // is not enough to allow the app to have CPU to trigger an event
-        // in Android 8+
-        boolean isInteractive = SDK_INT < O || pm.isInteractive();
-        int badge = options.getBadgeNumber();
-
-        if (badge > 0) {
-            manager.setBadge(badge);
-        }
-
-        if (options.shallWakeUp()) {
-            wakeUp(notification);
-        }
-
-        if (autoLaunch) {
-            LaunchUtils.launchApp(context);
-        }
-
-        // Show notification if we should (triggerInApp is false)
-        // or if we can't trigger in the app due to:
-        //   1.  No autoLaunch configured/supported and app is not running.
-        //   2.  Any SDK >= Oreo is asleep (must be triggered here)
-        if (!options.triggerInApp() ||
-            (!autoLaunch && !isAppRunning())
-            || !isInteractive
-        ) {
-            didShowNotification = true;
-            notification.show();
-        }
-
-        // run trigger function if triggerInApp() is true
-        // and we did not send a notification.
-        if (options.triggerInApp() && !didShowNotification) {
-            // wake up even if we didn't set it to
-            if (!options.shallWakeUp()) {
-                wakeUp(notification);
-            }
-
-            fireEvent("trigger", notification);
-        }
-
-        if (!options.isInfiniteTrigger())
-            return;
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(MINUTE, 1);
-        Request req = new Request(options, cal.getTime());
-
-        manager.schedule(req, this.getClass());
+        performNotification(notification);
     }
 
-    /**
-     * Wakeup the device.
-     *
-     * @param context The application context.
-     */
-    private void wakeUp(Notification notification) {
-        Context context = notification.getContext();
-        Options options = notification.getOptions();
-        String wakeLockTag = context.getApplicationInfo().name + ":LocalNotification";
-        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
+    @Override
+    public void dispatchAppEvent(String key, Notification notification) {
+        fireEvent(key, notification);
+    }
 
-        if (pm == null)
-            return;
-
-        int level = PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE;
-
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(level, wakeLockTag);
-
-        wakeLock.setReferenceCounted(false);
-        wakeLock.acquire(options.getWakeLockTimeout());
+    @Override
+    public boolean checkAppRunning() {
+        return isAppRunning();
     }
 
     /**

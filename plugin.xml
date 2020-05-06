@@ -185,6 +185,10 @@
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
+            src="src/android/notification/receiver/AbstractNotificationReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
+            
+        <source-file
             src="src/android/notification/receiver/AbstractTriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 

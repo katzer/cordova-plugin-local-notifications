@@ -46,7 +46,7 @@ import static android.os.Build.VERSION.SDK_INT;
  * the alarms with the AlarmManager since these alarms are lost in case of
  * reboot.
  */
-abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
+abstract public class AbstractRestoreReceiver extends AbstractNotificationReceiver {
 
     /**
      * Called on device reboot.
