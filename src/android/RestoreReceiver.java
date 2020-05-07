@@ -57,16 +57,18 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
         if (!after && toast.isHighPrio()) {
             performNotification(toast);
         } else {
-            toast.clear();
-        }
+            // reschedule if we aren't firing here.
+            // If we do fire, performNotification takes care of
+            // next schedule.
+            
+            Context ctx = toast.getContext();
+            Manager mgr = Manager.getInstance(ctx);
 
-        Context ctx = toast.getContext();
-        Manager mgr = Manager.getInstance(ctx);
-
-        if (after || toast.isRepeating()) {
-            mgr.schedule(request, TriggerReceiver.class);
+            if (after || toast.isRepeating()) {
+                mgr.schedule(request, TriggerReceiver.class);
+            }
         }
-    }
+   }
 
     @Override
     public void dispatchAppEvent(String key, Notification notification) {
