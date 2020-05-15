@@ -33,6 +33,7 @@ import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationCompat;
 import androidx.collection.ArraySet;
 import androidx.core.util.Pair;
+import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.Operation;
@@ -50,6 +51,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import de.appplant.cordova.plugin.notification.action.Action;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 
@@ -173,6 +176,7 @@ public final class Notification {
     void schedule(Request request, Class<?> receiver) {
         List<Pair<Date, Data>> datas = new ArrayList<Pair<Date, Data>>();
         Set<String> ids                  = new ArraySet<String>();
+        List <OneTimeWorkRequest> workRequests = new ArrayList<>();
         do {
             Date date = request.getTriggerDate();
 
@@ -192,13 +196,14 @@ public final class Notification {
 
             long time     = date.getTime();
 
+
             if (!date.after(new Date()))
                 continue;
 
             try {
                 long duration = time - System.currentTimeMillis();
-                Log.i("Notification", options.getPrio()+ " date " + date + " action " + intent.getAction());
-                scheduleReminder(duration, data, intent.getAction());
+                Log.i("Notification", " date " + date + " action " + intent.getAction());
+                workRequests.add(createRequest(duration, data, intent.getAction()));
             } catch (Exception ignore) {
                 ignore.printStackTrace();
             }
@@ -214,14 +219,24 @@ public final class Notification {
             return;
         }
 
+        WorkManager instance = WorkManager.getInstance(context);
+        instance.enqueue(workRequests);
+
         persist(ids);
+    }
+
+    public OneTimeWorkRequest createRequest(long duration, Data data, String tag) {
+        return new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                .setInitialDelay(duration, TimeUnit.MILLISECONDS).addTag(tag)
+                .setInputData(data).build();
     }
 
     public void scheduleReminder(long duration, Data data, String tag) {
         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                 .setInitialDelay(duration, TimeUnit.MILLISECONDS).addTag(tag)
                 .setInputData(data).build();
-        WorkManager instance = WorkManager.getInstance(context.getApplicationContext());
+
+        WorkManager instance = WorkManager.getInstance(context);
         instance.enqueue(notificationWork);
     }
 

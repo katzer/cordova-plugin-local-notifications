@@ -20,6 +20,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 public class NotificationWorker extends Worker {
+
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -57,7 +58,7 @@ public class NotificationWorker extends Worker {
         }
 
         if (options.shallWakeUp()) {
-            wakeUp(context);
+            wakeUp(context, notification.getId());
         }
 
         notification.show();
@@ -76,17 +77,19 @@ public class NotificationWorker extends Worker {
      *
      * @param context The application context.
      */
-    private void wakeUp (Context context) {
+    private void wakeUp (Context context, int id) {
         PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
 
         if (pm == null)
             return;
 
-        int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
+        int level =   PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP;
 
+        String tagWake = "LocalNotification" + id;
+
         PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                level, "LocalNotification");
+                level, tagWake);
 
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
@@ -106,6 +109,7 @@ public class NotificationWorker extends Worker {
                 .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)
                 .setExtras(bundle)
+
                 .build();
     }
 
