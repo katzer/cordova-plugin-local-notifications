@@ -596,6 +596,10 @@ public class LocalNotification extends CordovaPlugin {
 
         CordovaWebView view = webView.get();
 
+        if (view == null) {
+            return false;
+        }
+
         KeyguardManager km = (KeyguardManager) view.getContext()
                 .getSystemService(Context.KEYGUARD_SERVICE);
 
