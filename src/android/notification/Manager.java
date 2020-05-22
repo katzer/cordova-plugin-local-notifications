@@ -56,7 +56,7 @@ public final class Manager {
     static final String CHANNEL_ID = "HuntingNotification";
 
     // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Hunting Notifications";
+    private static final CharSequence CHANNEL_NAME = "Horn Ready Notification";
 
     // The application context
     private Context context;
