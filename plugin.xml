@@ -100,7 +100,7 @@
             </feature>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <config-file target="AndroidManifest.xml" parent="application">
             <provider
                 android:name="de.appplant.cordova.plugin.notification.util.AssetProvider"
                 android:authorities="${applicationId}.localnotifications.provider"
@@ -134,7 +134,7 @@
             </receiver>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/manifest">
+        <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
