@@ -36,6 +36,7 @@ import de.appplant.cordova.plugin.notification.receiver.AbstractRestoreReceiver;
 
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isInForeground;
 
 /**
  * This class is triggered upon reboot of the device. It needs to re-register
@@ -78,6 +79,11 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
     @Override
     public boolean checkAppRunning() {
         return isAppRunning();
+    }
+
+    @Override
+    public boolean checkAppInForeground() {
+        return isInForeground();
     }
 
     /**

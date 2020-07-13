@@ -41,6 +41,7 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.O;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isInForeground;
 import static java.util.Calendar.MINUTE;
 
 import static android.os.Build.VERSION_CODES.P;
@@ -73,6 +74,11 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
     @Override
     public boolean checkAppRunning() {
         return isAppRunning();
+    }
+
+    @Override
+    public boolean checkAppInForeground() {
+        return isInForeground();
     }
 
     /**
