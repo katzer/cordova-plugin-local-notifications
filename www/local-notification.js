@@ -709,6 +709,11 @@ exports._convertTrigger = function (options) {
     var trigger  = options.trigger || {},
         date     = this._getValueFor(trigger, 'at', 'firstAt', 'date');
 
+    if(date === null){
+        date = new Date(Date.now());
+        date.setSeconds(date.getSeconds() + 5);
+    }
+
     var dateToNum = function (date) {
         var num = typeof date == 'object' ? date.getTime() : (typeof date == 'string' ? Date.parse(date) : date);
         if(num.length === 10){
