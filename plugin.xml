@@ -229,6 +229,10 @@
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
         <source-file
+            src="src/android/notification/NotificationVolumeManager.java"
+            target-dir="src/de/appplant/cordova/plugin/notification" />
+
+        <source-file
             src="src/android/notification/Options.java"
             target-dir="src/de/appplant/cordova/plugin/notification" />
 
