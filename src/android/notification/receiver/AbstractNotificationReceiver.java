@@ -3,6 +3,10 @@ package de.appplant.cordova.plugin.notification.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.os.PowerManager;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -22,6 +26,8 @@ import static java.util.Calendar.MINUTE;
  * The base class for any receiver that is trying to display a notification.
  */
 abstract public class AbstractNotificationReceiver extends BroadcastReceiver {
+    private final String TAG = "AbstractNotification";
+
     /**
      * Perform a notification.  All notification logic is here.
      * Determines whether to dispatch events, autoLaunch the app, use fullScreenIntents, etc.
@@ -76,9 +82,32 @@ abstract public class AbstractNotificationReceiver extends BroadcastReceiver {
 
         Calendar cal = Calendar.getInstance();
         cal.add(MINUTE, 1);
-        Request req = new Request(options, cal.getTime());
+
+        Request req = new Request(
+            getOptionsWithBaseDate(options, cal.getTimeInMillis()),
+            cal.getTime()
+        );
 
         manager.schedule(req, this.getClass());
+    }
+
+    /**
+     * Clone options with base date attached to trigger.
+     * Used so that persisted objects know the last execution time.
+     * @param baseDateMillis base date represented in milliseconds
+     * @return new Options object with base time set in requestBaseDate.
+     */
+    private Options getOptionsWithBaseDate(Options options, long baseDateMillis) {
+        JSONObject optionsDict = options.getDict();
+        try {
+            JSONObject triggerDict = optionsDict.getJSONObject("trigger");
+            triggerDict.put("requestBaseDate", baseDateMillis);
+            optionsDict.remove("trigger");
+            optionsDict.put("trigger", triggerDict);
+        } catch (JSONException e) {
+            Log.e(TAG, "Unexpected error adding requestBaseDate to JSON structure: " + e.toString());
+        }
+        return new Options(optionsDict);
     }
 
     /**
