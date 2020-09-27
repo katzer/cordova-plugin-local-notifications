@@ -3,7 +3,7 @@
 <!--
  * Apache 2.0 License
  *
- * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Shinjiro Itagaki 2020
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -23,20 +23,20 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-local-notification"
+        id="cordova-plugin-local-notification-androidx"
         version="0.9.0-beta.3">
 
     <name>LocalNotification</name>
 
     <description>Schedules and queries for local notifications</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
+    <repo>https://github.com/shinjiro-itagaki/cordova-plugin-local-notifications-androidx.git</repo>
 
     <keywords>appplant, notification, local notification, user notification</keywords>
 
     <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer</author>
+    <author>Shinjiro Itagaki</author>
 
     <!-- cordova -->
     <engines>
