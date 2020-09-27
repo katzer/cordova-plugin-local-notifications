@@ -19,7 +19,8 @@
 
 package de.appplant.cordova.plugin.notification.util;
 
-import android.support.v4.content.FileProvider;
+// import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 public class AssetProvider extends FileProvider {
     // Nothing to do here
