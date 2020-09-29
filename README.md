@@ -508,20 +508,11 @@ The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on 
 
 Execute from the projects root folder:
 
-    $ cordova plugin add cordova-plugin-local-notification
-
-Or install a specific version:
-
-    $ cordova plugin add cordova-plugin-local-notification@VERSION
+    $ cordova plugin add 
 
 Or install the latest head version:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
-
-Or install from local source:
-
-    $ cordova plugin add <path> --nofetch --nosave --link
-
+    $ cordova plugin add https://github.com/shinjiro-itagaki/cordova-plugin-local-notifications-androidx.git 
 
 ## Contributing
 
@@ -544,6 +535,5 @@ Made with :yum: from Leipzig
 [ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
-[npm]: https://www.npmjs.com/package/cordova-plugin-local-notification
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
 [appplant]: http://appplant.de
