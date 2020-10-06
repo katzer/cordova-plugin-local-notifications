@@ -732,7 +732,13 @@ exports._convertTrigger = function (options) {
     var isCal = trigger.type == 'calendar';
 
     if (isCal && !date) {
+        var now = new Date(Date.now());
         date = this._getValueFor(options, 'at', 'firstAt', 'date');
+        var dateObj = new Date(date);
+        if(dateObj < now){
+        date = now;
+        date.setSeconds(date.getSeconds() + 5);
+        }
     }
 
     if (isCal && !trigger.every && options.every) {
