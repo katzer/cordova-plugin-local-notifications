@@ -299,9 +299,9 @@ public class LocalNotification extends CordovaPlugin {
                         trigger.put("every", update.get("every"));
                     }
                     update.put("trigger", trigger);
-                    Log.e("JSON put Exception", "Exception thrown trying to put trigger information into the JSON object holding the update information.");
                 }catch (JSONException e) {
                     e.printStackTrace();
+                    Log.e("JSON put Exception", "Exception thrown trying to put trigger information into the JSON object holding the update information.");
                 }
             }
 
