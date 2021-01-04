@@ -290,6 +290,21 @@ public class LocalNotification extends CordovaPlugin {
 
         for (int i = 0; i < updates.length(); i++) {
             JSONObject update  = updates.optJSONObject(i);
+
+            if(!update.has("trigger")){
+                JSONObject trigger = new JSONObject();
+                try{
+                    trigger.put("type", "calendar");
+                    if(!update.get("every").equals("")){
+                        trigger.put("every", update.get("every"));
+                    }
+                    update.put("trigger", trigger);
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.e("JSON put Exception", "Exception thrown trying to put trigger information into the JSON object holding the update information.");
+                }
+            }
+
             int id             = update.optInt("id", 0);
             Notification toast = mgr.update(id, update, TriggerReceiver.class);
 
