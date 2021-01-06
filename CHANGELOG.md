@@ -39,6 +39,7 @@ ChangeLog
   - New `channelId` attribute. If passed in, a notification channel will be created (using volume and vibration settings to determine importance)
 - Android: Support for excluding an application from battery optimization settings.
 - Android: Support for allowing an application permissions to override Do Not Disturb.
+- iOS: No longer remove notification from notification bar when alarms are rescheduled.  Call cancel() explicitly to retain this behavior.
 
 ---
 

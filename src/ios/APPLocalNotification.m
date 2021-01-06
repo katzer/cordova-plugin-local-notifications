@@ -111,7 +111,9 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
             oldNotification = [_center getNotificationWithId:id];
 
             if (oldNotification) {
-                [_center cancelNotification:oldNotification];
+                // Remove future alarms but keep ones that are active in the notification tray in case they need to persist.
+                // Call cancel() explicitly to keep the old behavior.
+                [self->_center removePendingNotificationRequestsWithIdentifiers:@[[id stringValue]]];
             }
 
             // Schedule the new notification
