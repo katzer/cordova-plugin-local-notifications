@@ -81,11 +81,6 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
         return isAppRunning();
     }
 
-    @Override
-    public boolean checkAppInForeground() {
-        return isInForeground();
-    }
-
     /**
      * Build notification specified by options.
      *
