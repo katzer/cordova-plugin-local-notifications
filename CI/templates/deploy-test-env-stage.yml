@@ -1,0 +1,21 @@
+# For now just a simple squeleton needs proper setting for deployment to ui test env
+parameters:
+  shouldRunTests: false
+  release: []
+
+
+stages:
+  - stage: Deployment
+    jobs:
+      - job: deploy_test_env
+        displayName: 'Deployment Test Env'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+        - script: 'echo Mocked Response successful deployment' # Mocked response
+        - ${{ if eq(parameters.shouldRunTests, true) }}:
+          - script: 'echo WIP Mocked Response UITests all passed' # Mocked response
+        - ${{ if containsValue(parameters.release, 'github') }}:
+          - script: 'echo WIP Mocked Response successful release to github' # Mocked response
+        - ${{ if containsValue(parameters.release, 'outsystems') }}:
+          - script: 'echo WIP Mocked Response successful release to outsystems' # Mocked response

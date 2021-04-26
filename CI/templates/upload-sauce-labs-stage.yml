@@ -1,0 +1,14 @@
+# For now just a simple squeleton needs proper setting for deployment to ui test env
+parameters:
+- name: sauceLabsUser
+  type: string
+  default: ''
+- name: destinationFolder
+  type: string
+  default: ''
+
+steps:
+  - script: 'npm run deploySauceLabs --sauceUser=${{ parameters.sauceLabsUser }} --buildsPath="${{ parameters.destinationFolder }}"'
+    failOnStderr: true
+    workingDirectory: 'CI/templates'
+    name: deploySauceLabs

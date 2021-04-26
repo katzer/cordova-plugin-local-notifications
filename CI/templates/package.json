@@ -1,0 +1,19 @@
+{
+    "name": "oml_update",
+    "version": "0.1.0",
+    "dependencies": {
+        "xmlhttprequest": "1.8.0",
+        "node-fetch": "^2.6.1",
+        "btoa": "^1.2.1",
+        "cli-progress": "3.8.2",
+        "azure-devops-node-api": "10.2.1",
+        "atob": "2.1.2"
+    },
+    "scripts": {
+        "start": "node changeExtensibility.js",
+        "deploy": "node environmentDeployBuildStages.js",
+        "artifact": "node artifactStage.js",
+        "deploySauceLabs": "node uploadToSauceLabs.js",
+        "startPipeline": "node pipeline_run.js"
+    }
+}

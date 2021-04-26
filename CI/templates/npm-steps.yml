@@ -1,0 +1,13 @@
+parameters:
+- name: workingDirectory # name of the parameter; required
+  type: string # data type of the parameter; required
+  default: ''
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+- script: npm install
+  displayName: 'npm install'
+  workingDirectory:  ${{ parameters.workingDirectory }}

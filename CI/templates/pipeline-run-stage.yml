@@ -1,0 +1,21 @@
+stages:
+  - stage: UITestsPipelineRun
+    variables:
+    - group: testPipelinesAuthToken
+    - name: personalToken
+      value: $[variables.personalAuthToken]
+    - name: sauceLabsJsonString
+      value: $[ stageDependencies.EnvironmentDeploymentBuild.environment_deployment_build.outputs['deploySauceLabs.mSauceLabsAppsID'] ]
+    jobs:
+      - job: run_tests_pipeline
+        displayName: 'Start UITests Pipeline'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - template: 'npm-steps.yml'
+            parameters:
+              workingDirectory: 'CI/templates'
+          - script: 'npm run startPipeline --jsonStringBase64="$(sauceLabsJsonString)" --token="$(personalToken)" --deviceAndroid=$(deviceAndroid)  --deviceIos=$(deviceIos) --pipelineID=$(pipelineId) --azureProjectID=$(azureProjectID) --dataCenter=$(dataCenter)'
+            timeoutInMinutes: 120
+            workingDirectory: 'CI/templates'
+            failOnStderr: true

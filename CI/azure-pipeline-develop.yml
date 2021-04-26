@@ -1,0 +1,14 @@
+name: 'Develop'
+
+trigger: none
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+    - outsystems
+
+stages:
+- template: 'templates/tests-stage.yml'
+  parameters:
+    platforms: ['all']

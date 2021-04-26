@@ -1,0 +1,23 @@
+# For now just a simple squeleton needs proper setting for deployment to ui test env
+parameters:
+- name: environment
+  type: string
+  default: ''
+- name: basicAuthentication
+  type: string
+  default: null
+
+
+stages:
+  - stage: OMLUpdate
+    jobs:
+      - job: oml_update
+        displayName: 'Update OML in environment ${{ parameters.environment }}'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - template: 'npm-steps.yml'
+            parameters:
+              workingDirectory: 'CI/templates'
+          - script: 'npm start --environment=${{ parameters.environment }} --repositoryURL=$(Build.Repository.Uri) --branch=$(Build.SourceBranchName) --authentication="${{ parameters.basicAuthentication }}"'
+            workingDirectory: 'CI/templates'

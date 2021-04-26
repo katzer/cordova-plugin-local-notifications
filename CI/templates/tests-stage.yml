@@ -1,0 +1,57 @@
+parameters:
+ platforms: []
+
+stages:
+- stage: Testing
+  jobs:
+  - job: CheckPlatforms
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - bash: |
+          if [ -d src/android ]; then
+            if [ -d tests/android ]; then
+              echo "##vso[task.setVariable variable=available;isOutput=true]true"
+            else
+              echo "##vso[task.logissue type=warning]There are no tests for Android, but the platform is configured, it would be a best pratice to have them."
+            fi
+          fi
+        name: AndroidPlatform
+      - bash: |
+          if [ -d src/ios ]; then
+            if [ -d tests/ios ]; then
+              echo "##vso[task.setVariable variable=available;isOutput=true]true"
+            else
+              echo "##vso[task.logissue type=warning]There are no tests for iOS, but the platform is configured, it would be a best pratice to have them."
+            fi
+          fi
+        name: IOSPlatform
+      - bash: |
+          if [ -d src/js ]; then
+            if [ -d tests/js ]; then
+              echo "##vso[task.setVariable variable=available;isOutput=true]true"
+            else
+              echo "##vso[task.logissue type=warning]There are no tests for JS, but the platform is configured, it would be a best pratice to have them."
+            fi
+          fi
+        name: JSPlatform
+
+  - ${{ if or(containsValue(parameters.platforms, 'all'), containsValue(parameters.platforms, 'ios')) }}:
+    - template: 'ios-tests-job.yml'
+      parameters:
+        scheme: 'LocalNotificationTests'
+        workingDirectory: 'tests/ios'
+        dependsOn: CheckPlatforms
+        condition: eq(dependencies.CheckPlatforms.outputs['IOSPlatform.available'], 'true')
+  - ${{ if or(containsValue(parameters.platforms, 'all'), containsValue(parameters.platforms, 'android')) }}:
+    - template: 'android-tests-job.yml'
+      parameters:
+        workingDirectory: 'tests/android'
+        dependsOn: CheckPlatforms
+        condition: eq(dependencies.CheckPlatforms.outputs['AndroidPlatform.available'], 'true')
+  - ${{ if or(containsValue(parameters.platforms, 'all'), containsValue(parameters.platforms, 'js')) }}:
+    - template: 'js-tests-job.yml'
+      parameters:
+        workingDirectory: 'tests'
+        dependsOn: CheckPlatforms
+        condition: eq(dependencies.CheckPlatforms.outputs['JSPlatform.available'], 'true')

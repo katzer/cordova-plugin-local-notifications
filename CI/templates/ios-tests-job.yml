@@ -1,0 +1,61 @@
+parameters:
+- name: scheme
+  type: string
+  default:
+- name: configuration
+  type: string
+  default: Debug
+- name: xcodeVersion
+  type: string
+  default: default
+- name: workingDirectory
+  type: string
+  default: ''
+- name: destinationPlatform
+  type: string
+  default: iOS Simulator
+- name: destinationName
+  type: string
+  default: iPhone 8
+- name: shouldClean
+  type: boolean
+  default: true
+- name: sdk
+  type: string
+  default: 'iphonesimulator'
+- name: dependsOn
+  type: string
+  default:
+- name: condition
+  type: string
+  default:
+
+jobs:
+  - job: iOSTest
+    dependsOn: ${{ parameters.dependsOn }}
+    condition: ${{ parameters.condition }}
+    displayName: 'iOS Tests'
+    pool:
+      vmImage: 'macOS'
+    steps:
+    - template: 'npm-steps.yml'
+      parameters:
+        workingDirectory: ${{ parameters.workingDirectory }}
+    - task: Xcode@5
+      inputs:
+        ${{ if eq(parameters.shouldClean, true) }}:
+          actions: 'clean build test'
+        ${{ if not(eq(parameters.shouldClean, true)) }}:
+          actions: 'build test'
+        scheme: '${{ parameters.scheme }}'
+        sdk: '${{ parameters.sdk }}'
+        xcodeVersion: '${{ parameters.xcodeVersion }}'
+        configuration: '${{ parameters.configuration }}'
+        xcWorkspacePath: '${{ parameters.workingDirectory }}/**/*.xcodeproj/project.xcworkspace'
+        exportPath: '$(agent.buildDirectory)/output/$(sdk)/$(configuration)'
+        packageApp: false
+        destinationSimulators: '${{ parameters.destinationName }}'
+        destinationPlatform: iOS
+        args: -destination "platform=${{ parameters.destinationPlatform }},name=${{ parameters.destinationName }}"
+        useXcpretty: true
+        publishJUnitResults: true
