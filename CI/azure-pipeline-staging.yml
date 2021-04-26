@@ -1,0 +1,33 @@
+# Squeleton of a could be a staging pipeline, stages need to be checked for the needs
+variables: 
+- group: outsystemsPluginsCIAuthentication
+- group: pipelineSupportOapURL
+- name: basicAuth
+  value: $[variables.basicAuthentication]
+- name: pipelineURL
+  value: $[variables.productionEnvironmentURL]
+
+name: 'Staging'
+
+pr: none
+trigger:
+  - master
+  - outsystems
+
+stages:
+  - template: 'templates/tests-stage.yml'
+    parameters:
+      platforms: ['all']
+  - template: 'templates/oml-update-stage.yml'
+    parameters:
+      environment: 'enmobile11-dev.outsystemsenterprise.com'
+      basicAuthentication: $(basicAuth)
+  - template: 'templates/deployment-build-stage.yml'
+    parameters:
+      fromEnvironment: 'Development'
+      toEnvironment: 'Testing'
+      basicAuthentication: $(basicAuth)
+      pipelineURL: $(pipelineURL)
+  - template: 'templates/artifact-apps-stage.yml'
+    parameters:
+      runID: $(BuildID)

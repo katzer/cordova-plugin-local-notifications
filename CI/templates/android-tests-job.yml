@@ -1,0 +1,30 @@
+parameters:
+- name: workingDirectory
+  type: string
+  default: ''
+- name: dependsOn
+  type: string
+  default:
+- name: condition
+  type: string
+  default:
+
+jobs:
+  - job: AndroidTest
+    dependsOn: ${{ parameters.dependsOn }}
+    condition: ${{ parameters.condition }}
+    displayName: 'Android Tests'
+    pool:
+      vmImage: 'macOS'
+    steps:
+    - template: 'npm-steps.yml'
+      parameters:
+        workingDirectory: ${{ parameters.workingDirectory }}
+    - template: 'android-emulator-step.yml'
+    - task: Gradle@2
+      inputs:
+        cwd: '${{ parameters.workingDirectory }}/LocalNotificationTests'
+        gradleWrapperFile: '${{ parameters.workingDirectory }}/LocalNotificationTests/gradlew'
+        publishJUnitResults: true
+        testResultsFiles: '**/TEST-*.xml'
+        tasks: 'clean test cAT'

@@ -1,0 +1,45 @@
+# For now just a simple squeleton needs proper setting for deployment to ui test env
+parameters:
+- name: fromEnvironment
+  type: string
+  default: ''
+- name: toEnvironment
+  type: string
+  default: ''
+- name: basicAuthentication
+  type: string
+  default: ''
+- name: pipelineURL
+  type: string
+  default: ''
+- name: destinationFolder
+  type: string
+  default: ''
+- name: runID
+  type: string
+  default: ''
+- name: sauceLabsUser
+  type: string
+  default: ''
+
+
+stages:
+  - stage: EnvironmentDeploymentBuild
+    jobs:
+      - job: environment_deployment_build
+        displayName: 'Deploy Plugin from ${{ parameters.fromEnvironment }} environment to ${{ parameters.toEnvironment }} environment and build on ${{ parameters.toEnvironment }} environment'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - template: 'npm-steps.yml'
+            parameters:
+              workingDirectory: 'CI/templates'
+          - script: 'npm run deploy --fromEnvironment=${{ parameters.fromEnvironment }} --toEnvironment=${{ parameters.toEnvironment }} --destinationFolder="${{ parameters.destinationFolder }}" --authentication="${{ parameters.basicAuthentication }}" --pipelineSupportURL="${{ parameters.pipelineURL }}"'
+            workingDirectory: 'CI/templates'
+          - template: 'artifact-apps-step.yml'
+            parameters:
+              runID: ${{ parameters.runID }}
+          - template: 'upload-sauce-labs-stage.yml'
+            parameters:
+              sauceLabsUser: ${{ parameters.sauceLabsUser }}
+              destinationFolder: "${{ parameters.destinationFolder }}" 

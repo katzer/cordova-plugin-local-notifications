@@ -1,0 +1,17 @@
+{
+    "moduleName": "LocalNotificationPlugin",
+    "applicationNames": [
+        "LocalNotificationPlugin",
+        "LocalNotificationSampleApp"
+    ],
+    "testPipelineArgs": {
+        "plugin": "notifications",
+        "threads": "2"
+    },
+    "sauceLabsInfo": {
+        "LocalNotificationSampleApp": {
+            "androidAPIKey": "73D634DA24004272A293E275CF0D3785",
+            "iosAPIKey": "B395C4A54898404D93D89A75237DDBD5"
+        }
+    }
+}

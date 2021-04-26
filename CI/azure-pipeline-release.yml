@@ -1,0 +1,46 @@
+# Squeleton of a could be a staging pipeline, stages need to be checked for the needs
+# When a tag is set in the outsystems branch, a release pipeline will start that will:
+# - run unit tests
+# - deploy to test env and start UI Tests
+# - deploy to outsystems release env
+
+# Known problems UItests is a different pipeline.
+variables: 
+- group: outsystemsPluginsCIAuthentication
+- group: pipelineSupportOapURL
+- group: sauceLabsUserVariables
+- name: basicAuth
+  value: $[variables.basicAuthentication]
+- name: pipelineURL
+  value: $[variables.productionEnvironmentURL]
+- name: sauceLabsUser
+  value: $[variables.USER]
+- name: destinationFolder
+  value: $(System.DefaultWorkingDirectory)/builds/
+
+name: 'Release'
+
+pr: none
+trigger:
+  tags:
+    include:
+    - '*'
+
+stages:
+  - template: 'templates/tests-stage.yml'
+    parameters:
+      platforms: ['all'] # Platforms to test for, it can be 'all' to test all ('ios', 'js', 'android')
+  - template: 'templates/oml-update-stage.yml'
+    parameters:
+      environment: 'enmobile11-dev.outsystemsenterprise.com'
+      basicAuthentication: $(basicAuth)
+  - template: 'templates/deployment-build-stage.yml'
+    parameters:
+      fromEnvironment: 'Development'
+      toEnvironment: 'Testing'
+      basicAuthentication: $(basicAuth)
+      pipelineURL: $(pipelineURL)
+      destinationFolder: $(destinationFolder)
+      runID: $(Build.BuildID)
+      sauceLabsUser: $(sauceLabsUser)
+  - template: 'templates/pipeline-run-stage.yml'
