@@ -30,6 +30,8 @@ import android.net.Uri;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
+import androidx.core.app.Person;
+import androidx.core.graphics.drawable.IconCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -649,9 +651,28 @@ public final class Options {
             JSONObject msg = list.optJSONObject(i);
             String message = msg.optString("message");
             long timestamp = msg.optLong("date", now);
-            String person  = msg.optString("person", null);
+            String personName  = msg.optString("person", null);
+            String personIconString = msg.optString("personIcon", null);
 
-            messages[i] = new Message(message, timestamp, person);
+            IconCompat personIcon = null;
+
+            if (personIconString != null) {
+                try {
+                    Uri personIconUri = assets.parse(personIconString);
+                    Bitmap personIconBitmap = assets.getIconFromUri(personIconUri);
+                    personIconBitmap = AssetUtil.getCircleBitmap(personIconBitmap);
+                    personIcon = IconCompat.createWithBitmap(personIconBitmap);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            Person sender = new Person.Builder()
+                .setName(personName)
+                .setIcon(personIcon)
+                .build();
+
+            messages[i] = new Message(message, timestamp, sender);
         }
 
         return messages;
