@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugin-local-notification",
-  "version": "0.9.0-beta.3",
-  "description": "Schedules and queries for local notifications",
+  "name": "@moodlehq/cordova-plugin-local-notification",
+  "version": "0.9.0-moodle.1",
+  "description": "Moodle's fork of Cordova Local Notifications Plugin",
   "cordova": {
-    "id": "cordova-plugin-local-notification",
+    "id": "@moodlehq/cordova-plugin-local-notification",
     "platforms": [
       "android",
       "ios",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git"
+    "url": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git"
   },
   "keywords": [
     "appplant",
@@ -49,7 +49,7 @@
   "author": "Sebastián Katzer",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
+    "url": "https://github.com/moodlemobile/cordova-plugin-local-notification/issues"
   },
-  "homepage": "https://github.com/katzer/cordova-plugin-local-notifications#readme"
+  "homepage": "https://github.com/moodlemobile/cordova-plugin-local-notification#readme"
 }
