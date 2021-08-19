@@ -3,6 +3,9 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Unreleased
+- Changes required for Android 12 - Include SCHEDULE_EXACT_ALARM permission and specify mutability on PendingIntents (https://outsystemsrd.atlassian.net/browse/RMET-822)
+
 #### Version 0.8.5 (22.05.2017)
 - iOS 10
 
