@@ -41,6 +41,8 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
+import com.outsystems.rd.LocalNotificationsSampleApp.MainActivity;
+
 /**
  * Builder class for local notifications. Build fully configured local
  * notification specified by JSON object passed from JS side.
@@ -364,8 +366,9 @@ public final class Builder {
         PendingIntent contentIntent;
 
         if(SDK_INT >= 31){
-            contentIntent = PendingIntent.getService(
-                    context, reqCode, intent, FLAG_UPDATE_CURRENT | 33554432);
+            Intent resultIntent = new Intent(context, MainActivity.class);
+            contentIntent = PendingIntent.getActivity(
+                    context, reqCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | 33554432);
         }
         else{
             contentIntent = PendingIntent.getService(
