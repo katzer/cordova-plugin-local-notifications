@@ -10,6 +10,8 @@ We created this fork because we needed to include the following modifications in
 | -- | ----------- |
 | [#1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781) | Reuse existing messages when using MessagingStyle |
 | [#1853](https://github.com/katzer/cordova-plugin-local-notifications/pull/1853) | Use correct authority name |
+| - | Support Android X |
+| - | Support sender image |
 
 It also includes some commits that are in master and haven't been released.
 
