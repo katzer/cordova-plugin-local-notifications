@@ -27,17 +27,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Paint;
-import android.graphics.Canvas;
 import android.app.NotificationManager;
 import android.service.notification.StatusBarNotification;
 import android.os.Build;
@@ -46,6 +39,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
+import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
@@ -170,7 +164,7 @@ public final class Builder {
             Bitmap largeIcon = options.getLargeIcon();
 
             if (options.getLargeIconType().equals("circle")) {
-                largeIcon = getCircleBitmap(largeIcon);
+                largeIcon = AssetUtil.getCircleBitmap(largeIcon);
             }
 
             builder.setLargeIcon(largeIcon);
@@ -184,42 +178,6 @@ public final class Builder {
         applyContentReceiver(builder);
 
         return new Notification(context, options, builder);
-    }
-
-    /**
-     * Convert a bitmap to a circular bitmap.
-     * This code has been extracted from the Phonegap Plugin Push plugin:
-     * https://github.com/phonegap/phonegap-plugin-push
-     *
-     * @param bitmap Bitmap to convert.
-     * @return Circular bitmap.
-     */
-    private Bitmap getCircleBitmap(Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
-        }
-
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        float cx = bitmap.getWidth() / 2;
-        float cy = bitmap.getHeight() / 2;
-        float radius = cx < cy ? cx : cy;
-        canvas.drawCircle(cx, cy, radius, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        bitmap.recycle();
-
-        return output;
     }
 
     /**
