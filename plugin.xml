@@ -130,6 +130,11 @@
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
+            <activity
+                android:exported="false"
+                android:launchMode="singleTask"
+                android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
+                android:theme="@android:style/Theme.NoDisplay" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
@@ -155,6 +160,10 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
+            src="src/android/ClickActivity.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />    
+
+        <source-file
             src="src/android/ClearReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
@@ -176,6 +185,10 @@
 
         <source-file
             src="src/android/notification/receiver/AbstractClickReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
+
+        <source-file
+            src="src/android/notification/receiver/AbstractClickActivity.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
