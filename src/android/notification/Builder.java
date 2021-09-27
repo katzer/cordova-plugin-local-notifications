@@ -35,13 +35,12 @@ import android.support.v4.media.session.MediaSessionCompat;
 import java.util.List;
 import java.util.Random;
 
+import de.appplant.cordova.plugin.localnotification.ClickActivity;
 import de.appplant.cordova.plugin.notification.action.Action;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
-
-import com.outsystems.rd.LocalNotificationsSampleApp.MainActivity;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -351,28 +350,30 @@ public final class Builder {
         if (clickActivity == null)
             return;
 
-        Intent intent = new Intent(context, clickActivity)
-                .putExtra(Notification.EXTRA_ID, options.getId())
-                .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-        if (extras != null) {
-            intent.putExtras(extras);
-        }
-
         int reqCode = random.nextInt();
 
         PendingIntent contentIntent;
 
+        Bundle myBundle = new Bundle();
+        myBundle.putInt(Notification.EXTRA_ID, options.getId());
+        myBundle.putString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
+        myBundle.putBoolean(Options.EXTRA_LAUNCH, options.isLaunchingApp());
+
+        Intent myIntent = new Intent(context, ClickActivity.class)
+                .putExtras(myBundle)
+                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        if (extras != null) {
+            myIntent.putExtras(extras);
+        }
+
         if(SDK_INT >= 31){
-            Intent resultIntent = new Intent(context, MainActivity.class);
             contentIntent = PendingIntent.getActivity(
-                    context, reqCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | 33554432);
+                    context, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT | 33554432);
         }
         else{
-            contentIntent = PendingIntent.getService(
-                    context, reqCode, intent, FLAG_UPDATE_CURRENT);
+            contentIntent = PendingIntent.getActivity(
+                    context, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         builder.setContentIntent(contentIntent);
