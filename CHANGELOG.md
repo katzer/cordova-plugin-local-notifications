@@ -4,10 +4,10 @@ ChangeLog
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 
-#### Unreleased 0.9.7
+#### Version 0.9.7 (30.09.2021)
 - Fix required for Android 12 - Use Activity instead of Service to handle notification clicks (https://outsystemsrd.atlassian.net/browse/RMET-1007)
 
-#### Unreleased 0.9.6
+#### Version 0.9.6 (14.09.2021)
 - Changes required for Android 12 - Include SCHEDULE_EXACT_ALARM permission and specify mutability on PendingIntents (https://outsystemsrd.atlassian.net/browse/RMET-822)
 - Changes required for Andorid 12 - Change dependecy to cordova-plugin-badge so that MABS 8 build works (because of a gradle file) (https://outsystemsrd.atlassian.net/browse/RMET-822)
 - Changes required for Andorid 12 - Do not use notification trampolines for Android >= 12 (https://outsystemsrd.atlassian.net/browse/RMET-822)
