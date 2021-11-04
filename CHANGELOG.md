@@ -3,6 +3,8 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.9.8 (04.11.2021)
+- New plugin release to include metadata tag in Extensibility Configurations in the OS wrapper
 
 #### Version 0.9.7 (30.09.2021)
 - Fix required for Android 12 - Use Activity instead of Service to handle notification clicks (https://outsystemsrd.atlassian.net/browse/RMET-1007)
