@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,32 +17,45 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 package de.appplant.cordova.plugin.localnotification;
 
-import de.appplant.cordova.plugin.notification.Notification;
+import android.os.Bundle;
 
+import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.receiver.AbstractClearReceiver;
+
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
+import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
 
 /**
  * The clear intent receiver is triggered when the user clears a
  * notification manually. It un-persists the cleared notification from the
  * shared preferences.
  */
-public class ClearReceiver extends de.appplant.cordova.plugin.notification.ClearReceiver {
+public class ClearReceiver extends AbstractClearReceiver {
 
     /**
      * Called when a local notification was cleared from outside of the app.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onClear (Notification notification) {
-        super.onClear(notification);
-        LocalNotification.fireEvent("clear", notification);
+    public void onClear (Notification notification, Bundle bundle) {
+        boolean isLast = bundle.getBoolean(EXTRA_LAST, false);
+
+        if (isLast) {
+            notification.cancel();
+        } else {
+            notification.clear();
+        }
+
+        if (isAppRunning()) {
+            fireEvent("clear", notification);
+        }
     }
 
 }

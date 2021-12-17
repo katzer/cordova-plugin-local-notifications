@@ -23,9 +23,16 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
-import de.appplant.cordova.plugin.notification.AbstractRestoreReceiver;
+import android.content.Context;
+import android.util.Log;
+
+import java.util.Date;
+
 import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Request;
+import de.appplant.cordova.plugin.notification.receiver.AbstractRestoreReceiver;
 
 /**
  * This class is triggered upon reboot of the device. It needs to re-register
@@ -37,30 +44,38 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
     /**
      * Called when a local notification need to be restored.
      *
-     * @param notification
-     *      Wrapper around the local notification
+     * @param request Set of notification options.
+     * @param toast   Wrapper around the local notification.
      */
     @Override
-    public void onRestore (Notification notification) {
-        if (notification.isScheduled()) {
-            notification.schedule();
+    public void onRestore (Request request, Notification toast) {
+        Date date     = request.getTriggerDate();
+        boolean after = date != null && date.after(new Date());
+
+        if (!after && toast.isHighPrio()) {
+            toast.show();
         } else {
-            notification.cancel();
+            toast.clear();
+        }
+
+        Context ctx = toast.getContext();
+        Manager mgr = Manager.getInstance(ctx);
+
+        if (after || toast.isRepeating()) {
+            mgr.schedule(request, TriggerReceiver.class);
         }
     }
 
     /**
      * Build notification specified by options.
      *
-     * @param builder
-     *      Notification builder
+     * @param builder Notification builder.
      */
     @Override
     public Notification buildNotification (Builder builder) {
         return builder
-                .setTriggerReceiver(TriggerReceiver.class)
+                .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)
-                .setClickActivity(ClickActivity.class)
                 .build();
     }
 

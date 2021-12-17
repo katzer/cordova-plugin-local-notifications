@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,62 +17,36 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
-#import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
 
-@interface APPLocalNotification : CDVPlugin
+@import UserNotifications;
 
-// Execute all queued events
-- (void) deviceready:(CDVInvokedUrlCommand*)command;
+@interface APPLocalNotification : CDVPlugin <UNUserNotificationCenterDelegate>
 
-// Inform if the app has the permission to show notifications
-- (void) hasPermission:(CDVInvokedUrlCommand*)command;
-// Register permission to show notifications
-- (void) registerPermission:(CDVInvokedUrlCommand*)command;
+- (void) launch:(CDVInvokedUrlCommand*)command;
+- (void) ready:(CDVInvokedUrlCommand*)command;
 
-// Schedule set of notifications
+- (void) actions:(CDVInvokedUrlCommand*)command;
+
+- (void) check:(CDVInvokedUrlCommand*)command;
+- (void) request:(CDVInvokedUrlCommand*)command;
+
 - (void) schedule:(CDVInvokedUrlCommand*)command;
-// Update set of notifications
 - (void) update:(CDVInvokedUrlCommand*)command;
-// Cancel set of notifications
-- (void) cancel:(CDVInvokedUrlCommand*)command;
-// Cancel all notifications
-- (void) cancelAll:(CDVInvokedUrlCommand*)command;
-// Clear set of notifications
+
 - (void) clear:(CDVInvokedUrlCommand*)command;
-// Clear all notifications
 - (void) clearAll:(CDVInvokedUrlCommand*)command;
 
-// If a notification with an ID is present
-- (void) isPresent:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is scheduled
-- (void) isScheduled:(CDVInvokedUrlCommand*)command;
-// If a notification with an ID is triggered
-- (void) isTriggered:(CDVInvokedUrlCommand*)command;
+- (void) cancel:(CDVInvokedUrlCommand*)command;
+- (void) cancelAll:(CDVInvokedUrlCommand*)command;
 
-// List all ids from all local notifications
-- (void) getAllIds:(CDVInvokedUrlCommand*)command;
-// List all ids from all pending notifications
-- (void) getScheduledIds:(CDVInvokedUrlCommand*)command;
-// List all ids from all triggered notifications
-- (void) getTriggeredIds:(CDVInvokedUrlCommand*)command;
+- (void) type:(CDVInvokedUrlCommand*)command;
 
-// Propertys for given local notification
-- (void) getSingle:(CDVInvokedUrlCommand*)command;
-// Propertya for given scheduled notification
-- (void) getSingleScheduled:(CDVInvokedUrlCommand*)command;
-// Propertys for given triggered notification
-- (void) getSingleTriggered:(CDVInvokedUrlCommand*)command;
+- (void) ids:(CDVInvokedUrlCommand*)command;
 
-// Property list for given local notifications
-- (void) getAll:(CDVInvokedUrlCommand*)command;
-// Property list for given scheduled notifications
-- (void) getScheduled:(CDVInvokedUrlCommand*)command;
-// Property list for given triggered notifications
-- (void) getTriggered:(CDVInvokedUrlCommand*)command;
+- (void) notification:(CDVInvokedUrlCommand*)command;
+- (void) notifications:(CDVInvokedUrlCommand*)command;
 
 @end

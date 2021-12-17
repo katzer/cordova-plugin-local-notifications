@@ -3,6 +3,9 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.8.5 (22.05.2017)
+- iOS 10
+
 #### Version 0.8.4 (04.01.2016)
 - Bug fixes
  - SyntaxError: missing ) after argument list

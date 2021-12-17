@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
+ * Apache 2.0 License
  *
- * @APPPLANT_LICENSE_HEADER_START@
+ * Copyright (c) Sebastian Katzer 2017
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -17,14 +17,29 @@
  * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
  * Please see the License for the specific language governing rights and
  * limitations under the License.
- *
- * @APPPLANT_LICENSE_HEADER_END@
  */
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PowerManager;
+
+import java.util.Calendar;
+
 import de.appplant.cordova.plugin.notification.Builder;
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.notification.Options;
+import de.appplant.cordova.plugin.notification.Request;
+import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
+
+import static android.content.Context.POWER_SERVICE;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
+import static java.util.Calendar.MINUTE;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -32,38 +47,86 @@ import de.appplant.cordova.plugin.notification.Notification;
  * Android notification bar. The notification uses the default notification
  * sound and it vibrates the phone.
  */
-public class TriggerReceiver extends de.appplant.cordova.plugin.notification.TriggerReceiver {
+public class TriggerReceiver extends AbstractTriggerReceiver {
 
     /**
      * Called when a local notification was triggered. Does present the local
      * notification, re-schedule the alarm if necessary and fire trigger event.
      *
-     * @param notification
-     *      Wrapper around the local notification
-     * @param updated
-     *      If an update has triggered or the original
+     * @param notification Wrapper around the local notification.
+     * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, boolean updated) {
-        super.onTrigger(notification, updated);
+    public void onTrigger (Notification notification, Bundle bundle) {
+        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
+        Context context  = notification.getContext();
+        Options options  = notification.getOptions();
+        Manager manager  = Manager.getInstance(context);
+        int badge        = options.getBadgeNumber();
 
-        if (!updated) {
-            LocalNotification.fireEvent("trigger", notification);
+        if (badge > 0) {
+            manager.setBadge(badge);
+        }
+
+        if (options.shallWakeUp()) {
+            wakeUp(context);
+        }
+
+        notification.show();
+
+        if (!isUpdate && isAppRunning()) {
+            fireEvent("trigger", notification);
+        }
+
+        if (!options.isInfiniteTrigger())
+            return;
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(MINUTE, 1);
+        Request req  = new Request(options, cal.getTime());
+
+        manager.schedule(req, this.getClass());
+    }
+
+    /**
+     * Wakeup the device.
+     *
+     * @param context The application context.
+     */
+    private void wakeUp (Context context) {
+        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
+
+        if (pm == null)
+            return;
+
+        int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
+
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(
+                level, "LocalNotification");
+
+        wakeLock.setReferenceCounted(false);
+        wakeLock.acquire(1000);
+
+        if (SDK_INT >= LOLLIPOP) {
+            wakeLock.release(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
+        } else {
+            wakeLock.release();
         }
     }
 
     /**
      * Build notification specified by options.
      *
-     * @param builder
-     *      Notification builder
+     * @param builder Notification builder.
+     * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder) {
+    public Notification buildNotification (Builder builder, Bundle bundle) {
         return builder
-                .setTriggerReceiver(TriggerReceiver.class)
-                .setClickActivity(ClickActivity.class)
+                .setClickActivity(ClickReceiver.class)
                 .setClearReceiver(ClearReceiver.class)
+                .setExtras(bundle)
                 .build();
     }
 
