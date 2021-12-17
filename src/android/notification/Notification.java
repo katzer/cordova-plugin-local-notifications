@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationCompat;
 import androidx.collection.ArraySet;
@@ -47,7 +48,6 @@ import java.util.Set;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
@@ -217,8 +217,12 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pi;
+            if (Build.VERSION.SDK_INT >= 23) {
+                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            } else {
+                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            }
 
             try {
                 switch (options.getPrio()) {
@@ -304,8 +308,12 @@ public final class Notification {
         for (String action : actions) {
             Intent intent = new Intent(action);
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pi;
+            if (Build.VERSION.SDK_INT >= 23) {
+                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            } else {
+                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, 0);
+            }
 
             if (pi != null) {
                 getAlarmMgr().cancel(pi);
