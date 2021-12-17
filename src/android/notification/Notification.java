@@ -219,9 +219,9 @@ public final class Notification {
 
             PendingIntent pi;
             if (Build.VERSION.SDK_INT >= 23) {
-                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
             } else {
-                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             }
 
             try {
@@ -310,9 +310,9 @@ public final class Notification {
 
             PendingIntent pi;
             if (Build.VERSION.SDK_INT >= 23) {
-                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
             } else {
-                pi = PendingIntent.getActivity(cordova.getContext(), 0, intent, 0);
+                pi = PendingIntent.getActivity(context, 0, intent, 0);
             }
 
             if (pi != null) {
