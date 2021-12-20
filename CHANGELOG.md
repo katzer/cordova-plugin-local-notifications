@@ -3,6 +3,9 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 1.0.0 (20.12.2021)
+- Changed Pending Intent Flags(Android 12 Support)
+
 #### Version 0.8.5 (22.05.2017)
 - iOS 10
 
