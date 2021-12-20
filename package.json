@@ -1,6 +1,6 @@
 {
   "name": "@spoonconsulting/cordova-plugin-local-notification",
-  "version": "0.9.0-beta.3",
+  "version": "1.0.0",
   "description": "Schedules and queries for local notifications",
   "cordova": {
     "id": "@spoonconsulting/cordova-plugin-local-notification",
