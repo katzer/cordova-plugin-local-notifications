@@ -23,8 +23,8 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-local-notification"
-        version="0.9.0-beta.2">
+        id="@spoonconsulting/cordova-plugin-local-notification"
+        version="1.0.1">
 
     <name>LocalNotification</name>
 
@@ -36,7 +36,7 @@
 
     <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer</author>
+    <author>Sebastián Katzer and Spoon Consulting</author>
 
     <!-- cordova -->
     <engines>
