@@ -26,10 +26,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import java.util.List;
@@ -320,8 +321,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
+        int piFlag;
+        if (Build.VERSION.SDK_INT >= 23) {
+            piFlag = PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            piFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+        }
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
-                context, reqCode, intent, FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, piFlag);
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -346,8 +353,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
+        int piFlag;
+        if (Build.VERSION.SDK_INT >= 23) {
+            piFlag = PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            piFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+        }
         PendingIntent contentIntent = PendingIntent.getActivity(
-                context, reqCode, intent, FLAG_UPDATE_CURRENT);
+                context, reqCode, intent, piFlag);
 
         builder.setContentIntent(contentIntent);
     }
