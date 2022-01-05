@@ -38,8 +38,6 @@ import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
 
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
 /**
@@ -325,7 +323,7 @@ public final class Builder {
         if (Build.VERSION.SDK_INT >= 23) {
             piFlag = PendingIntent.FLAG_IMMUTABLE;
         } else {
-            piFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+            piFlag = PendingIntent.FLAG_UPDATE_CURRENT;
         }
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
                 context, reqCode, intent, piFlag);
@@ -357,7 +355,7 @@ public final class Builder {
         if (Build.VERSION.SDK_INT >= 23) {
             piFlag = PendingIntent.FLAG_IMMUTABLE;
         } else {
-            piFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+            piFlag = PendingIntent.FLAG_UPDATE_CURRENT;
         }
         PendingIntent contentIntent = PendingIntent.getActivity(
                 context, reqCode, intent, piFlag);
@@ -406,8 +404,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
+        int piFlag;
+        if (Build.VERSION.SDK_INT >= 23) {
+            piFlag = PendingIntent.FLAG_IMMUTABLE;
+        } else {
+            piFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+        }
         return PendingIntent.getActivity(
-                context, reqCode, intent, FLAG_CANCEL_CURRENT);
+                context, reqCode, intent, piFlag);
     }
 
     /**
