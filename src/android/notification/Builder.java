@@ -363,8 +363,15 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent deleteIntent = PendingIntent.getBroadcast(
+        PendingIntent deleteIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            deleteIntent = PendingIntent.getBroadcast(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            deleteIntent  = PendingIntent.getBroadcast(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+
+        }
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -392,9 +399,15 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent contentIntent = PendingIntent.getService(
+        PendingIntent contentIntent ;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            contentIntent = PendingIntent.getService(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            contentIntent  = PendingIntent.getService(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
+        }
         builder.setContentIntent(contentIntent);
     }
 
@@ -442,8 +455,13 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        return PendingIntent.getService(
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            return PendingIntent.getService(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            return PendingIntent.getService(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        }
     }
 
     /**
