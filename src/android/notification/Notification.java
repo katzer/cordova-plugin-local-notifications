@@ -54,7 +54,6 @@ import androidx.core.app.NotificationCompat;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
@@ -225,9 +224,9 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            int flags = FLAG_UPDATE_CURRENT;
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                flags = PendingIntent.FLAG_MUTABLE | FLAG_UPDATE_CURRENT;
+                flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
             }
             PendingIntent pi = PendingIntent.getBroadcast(
                     context, 0, intent, flags);
@@ -317,9 +316,9 @@ public final class Notification {
         for (String action : actions) {
             Intent intent = new Intent(action);
 
-            int flags = FLAG_CANCEL_CURRENT;
+            int flags = PendingIntent.FLAG_CANCEL_CURRENT;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                flags = PendingIntent.FLAG_MUTABLE | FLAG_CANCEL_CURRENT;
+                flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT;
             }
             PendingIntent pi = PendingIntent.getBroadcast(
                     context, 0, intent, flags);
