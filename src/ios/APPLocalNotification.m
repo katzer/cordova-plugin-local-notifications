@@ -490,7 +490,6 @@
     if ([notificationCategory isEqual: @"HornNotification"]) {
         content.categoryIdentifier = notificationCategory;
         identifier = notificationCategory;
-        UNNotificationAction *huntAction = [UNNotificationAction actionWithIdentifier:@"Hunt" title:@"Hunt" options:UNNotificationActionOptionNone];
         UNNotificationCategory *category = [UNNotificationCategory categoryWithIdentifier:notificationCategory actions:@[huntAction] intentIdentifiers:@[] options:UNNotificationCategoryOptionNone];
         NSSet *categories = [NSSet setWithObject:category];
         [center setNotificationCategories:categories];
