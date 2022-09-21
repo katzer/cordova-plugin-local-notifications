@@ -350,8 +350,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent deleteIntent = PendingIntent.getBroadcast(
-                context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        PendingIntent deleteIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            deleteIntent = PendingIntent.getBroadcast(
+                    context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            deleteIntent = PendingIntent.getBroadcast(
+                    context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        }
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -376,8 +382,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            contentIntent = PendingIntent.getActivity(
+                    context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            contentIntent = PendingIntent.getActivity(
+                    context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        }
 
         builder.setContentIntent(contentIntent);
     }
