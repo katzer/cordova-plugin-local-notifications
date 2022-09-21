@@ -178,7 +178,13 @@ public final class Builder {
                 if (category.equals("HornNotification") && !postParam.equals("")) {
                     Intent huntIntent = new Intent(context, HuntReceiver.class);
                     huntIntent.putExtra("post_param", postParam);
-                    PendingIntent pendingHuntIntent = PendingIntent.getBroadcast(context, 0, huntIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    
+                    PendingIntent pendingHuntIntent = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        pendingHuntIntent = PendingIntent.getBroadcast(context, 0, huntIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    } else {
+                        pendingHuntIntent = PendingIntent.getBroadcast(context, 0, huntIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    }
 
                     NotificationCompat.Action huntAction = new NotificationCompat.Action(0, "Hunt", pendingHuntIntent);
                     builder.addAction(huntAction);
@@ -435,8 +441,16 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        return PendingIntent.getActivity(
-                context, reqCode, intent, FLAG_CANCEL_CURRENT);
+        PendingIntent pi = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pi = PendingIntent.getActivity(
+                    context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
+        } else {
+            pi = PendingIntent.getActivity(
+                    context, reqCode, intent, FLAG_CANCEL_CURRENT);
+        }
+        
+        return pi;
     }
 
     /**
