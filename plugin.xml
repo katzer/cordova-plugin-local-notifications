@@ -122,6 +122,7 @@
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickHandlerActivity"
                 android:exported="false"
+                android:taskAffinity=""
                 android:excludeFromRecents="true" />
 
             <receiver
