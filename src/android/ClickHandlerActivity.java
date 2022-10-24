@@ -65,6 +65,8 @@ public class ClickHandlerActivity extends Activity {
 
         Notification notification = Manager.getInstance(getApplicationContext()).get(notId);
 
+        finish();
+
         if (notification == null)
             return;
 
