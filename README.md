@@ -14,15 +14,16 @@ We created this fork because we needed to include the following modifications in
 | - | Support sender image |
 | - | Fix crash with target SDK 31 |
 | - | Declare SCHEDULE_EXACT_ALARM permission |
+| - | Fix click notifications in Android 12 |
 
 It also includes some commits that are in master and haven't been released.
 
-You can see all the changes here: [0.9.0-beta.3...moodlemobile:v0.9.0-moodle.5](https://github.com/katzer/cordova-plugin-local-notifications/compare/0.9.0-beta.3...moodlemobile:v0.9.0-moodle.5)
+You can see all the changes here: [0.9.0-beta.3...moodlemobile:v0.9.0-moodle.6](https://github.com/katzer/cordova-plugin-local-notifications/compare/0.9.0-beta.3...moodlemobile:v0.9.0-moodle.6)
 
 ## Installation
 
 You can install this package using the [original installation instructions](https://github.com/katzer/cordova-plugin-local-notifications#installation), but installing this package instead:
 
 ```sh
-cordova plugin add @moodlehq/cordova-plugin-local-notification@0.9.0-moodle.5
+cordova plugin add @moodlehq/cordova-plugin-local-notification@0.9.0-moodle.6
 ```
