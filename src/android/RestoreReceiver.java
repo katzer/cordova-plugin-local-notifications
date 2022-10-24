@@ -74,7 +74,7 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
     @Override
     public Notification buildNotification (Builder builder) {
         return builder
-                .setClickActivity(ClickReceiver.class)
+                .setClickActivity(ClickHandlerActivity.class)
                 .setClearReceiver(ClearReceiver.class)
                 .build();
     }

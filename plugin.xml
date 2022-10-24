@@ -119,9 +119,10 @@
                 android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
                 android:exported="false" />
 
-            <service
-                android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
-                android:exported="false" />
+            <activity
+                android:name="de.appplant.cordova.plugin.localnotification.ClickHandlerActivity"
+                android:exported="false"
+                android:excludeFromRecents="true" />
 
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
@@ -153,7 +154,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/ClickReceiver.java"
+            src="src/android/ClickHandlerActivity.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
@@ -174,10 +175,6 @@
 
         <source-file
             src="src/android/notification/receiver/AbstractClearReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
-
-        <source-file
-            src="src/android/notification/receiver/AbstractClickReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
