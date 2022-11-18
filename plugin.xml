@@ -4,6 +4,8 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributors Bhumin Bhandari, fquirin, powowbox and many more:
+ * https://github.com/katzer/cordova-plugin-local-notifications/graphs/contributors
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -24,33 +26,31 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-local-notification"
-        version="0.9.0-beta.4">
+        version="0.10.0">
 
     <name>LocalNotification</name>
 
     <description>Schedules and queries for local notifications</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
+    <repo>https://github.com/fquirin/cordova-plugin-local-notifications.git</repo>
 
     <keywords>appplant, notification, local notification, user notification</keywords>
 
     <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer</author>
+    <author>Sebastián Katzer, fquirin, Bhumin Bhandari, powowbox and more</author>
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova"         version=">=7.1.0"  />
-        <engine name="cordova-plugman" version=">=4.3.0"  />
-        <engine name="cordova-android" version=">=6.3.0"  />
-        <engine name="cordova-windows" version=">=4.2.0"  />
-        <!-- <engine name="android-sdk"     version=">=26" /> -->
-        <engine name="apple-ios"       version=">=10.0.0" />
+        <engine name="cordova" version=">=9.0.0"/>
+        <engine name="cordova-android" version=">=9.0.0"/>
+        <engine name="cordova-ios" version=">=6.0.0"/>
+        <engine name="cordova-windows" version=">=4.2.0"/>
     </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-badge" version=">=0.8.5" />
+    <dependency id="cordova-plugin-badge-fix" version=">=0.8.10"/><!-- use this until org. has bin fixes -->
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
@@ -93,6 +93,11 @@
         <preference name="ANDROID_SUPPORT_V4_VERSION" default="26.+" />
         <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_V4_VERSION" />
         <framework src="src/android/build/localnotification.gradle" custom="true" type="gradleReference"/>
+         <!-- android x -->
+        <preference name="ANDROIDX_VERSION" default="1.2.0" />
+        <preference name="ANDROIDX_APPCOMPAT_VERSION" default="1.3.1" />
+
+        <framework src="androidx.appcompat:appcompat:$ANDROIDX_APPCOMPAT_VERSION" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LocalNotification">
@@ -119,9 +124,10 @@
                 android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
                 android:exported="false" />
 
-            <service
+            <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
-                android:exported="false" />
+                android:exported="false"
+                android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
@@ -138,6 +144,8 @@
             <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
         </config-file>
 
         <source-file
@@ -191,6 +199,10 @@
         <source-file
             src="src/android/notification/receiver/AbstractTriggerReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
+
+        <source-file
+          src="src/android/notification/receiver/NotificationTrampolineActivity.java"
+          target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
             src="src/android/notification/trigger/DateTrigger.java"
