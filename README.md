@@ -28,6 +28,23 @@
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
 
+### Notes about this fork
+
+- This is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12), [@powowbox](https://github.com/powowbox/cordova-plugin-local-notification-12) and my own fixes.
+- If the app's in background and the 'triggerInApp' option is set to 'true', there is no way to show to users a new notification since the notification is not displayed in the notification center and the app is not visible. 
+  - <b>Fix</b>: if the app's running in background, display the notification in the notification center.
+- If the notification is scheduled / canceled / scheduled with the same id, the notification triggers twice.
+  - <b>Fix</b>:  Due to the random reqCode. Now use the notification id for the reqCode.
+
+#### Important notice
+If the app is in background, it must not be launched but put in foreground.
+To avoid launching the app in this case, add the following in your config.xml file:
+`<preference name="AndroidLaunchMode" value="singleInstance"/>`
+
+#### To install
+Run `cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git --save --noregistery`
+
+
 ### Notification components
 
 - Header area
@@ -96,7 +113,7 @@ A notification does have a set of configurable properties. Not all of them are s
 
 | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
 | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName       | actions       | alarmVolume   |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName   | actions       | alarmVolume   |
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
@@ -451,7 +468,12 @@ cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (g
 ```
 
 The request method here will work one of two ways.
-1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml. Alternatively, you can  use the edit-config tag in the platform section of the config.xml.
+```xml
+<edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission" xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+</edit-config>
+```
 2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
 
 
@@ -536,12 +558,19 @@ See the sample app for how to use them.
 | clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
+## SetDummyNotification
+
+This method allows user to trigger runtime permission for Android 13
+
+```js
+cordova.plugins.notification.local.setDummyNotifications();
+```
 
 ## Installation
 
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
 
-Execute from the projects root folder:
+Execute from the projects root folder (**original** version):
 
     $ cordova plugin add cordova-plugin-local-notification
 
@@ -549,9 +578,9 @@ Or install a specific version:
 
     $ cordova plugin add cordova-plugin-local-notification@VERSION
 
-Or install the latest head version:
+Or install **this fork**:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
+    $ cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git
 
 Or install from local source:
 
@@ -576,7 +605,7 @@ Made with :yum: from Leipzig
 © 2013 [appPlant GmbH][appplant]
 
 
-[ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
+[ticket_template]: https://github.com/fquirin/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
 [npm]: https://www.npmjs.com/package/cordova-plugin-local-notification
