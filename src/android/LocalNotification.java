@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributor Bhumin Bhandari
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -39,6 +40,12 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Pair;
 import android.view.View;
+
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import androidx.core.app.NotificationCompat;
+import android.content.Intent;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -185,11 +192,50 @@ public class LocalNotification extends CordovaPlugin {
                     isIgnoringBatteryOptimizations(command);
                 } else if (action.equals("requestIgnoreBatteryOptimizations")) {
                     requestIgnoreBatteryOptimizations(command);
+                } else if (action.equals("dummyNotifications")) {
+                    dummyNotifications(command);
                 }
             }
         });
 
         return true;
+    }
+
+    /**
+     * Required for Android 13 to get the runtime notification permissions.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void dummyNotifications(CallbackContext command) {
+
+        fireEvent("dummyNotifications");
+        NotificationManager mNotificationManager;
+        NotificationCompat.Builder mBuilder;
+        String NOTIFICATION_CHANNEL_ID = "10004457";
+        String notificationMsg = "Test";
+        String notificationTitle = "Mdd";
+        Context context =  cordova.getActivity().getApplicationContext();
+
+        Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
+        intentToLaunch.putExtra("Callfrom", "reminders");
+
+        final PendingIntent resultPendingIntent = PendingIntent.getActivity(context,
+                0, intentToLaunch, PendingIntent.FLAG_IMMUTABLE);
+
+        mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+            assert mNotificationManager != null;
+            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        command.success();
     }
 
     /**
@@ -701,7 +747,7 @@ public class LocalNotification extends CordovaPlugin {
         sendJavascript(js);
     }
 
-    /**
+   /**
      * Use this instead of deprecated sendJavascript
      *
      * @param js JS code snippet as string.
@@ -713,12 +759,17 @@ public class LocalNotification extends CordovaPlugin {
             return;
         }
 
+        if (!deviceready || webView == null) {
+            eventQueue.add(js);
+            return;
+        }
+
         final CordovaWebView view = webView.get();
 
         ((Activity) (view.getContext())).runOnUiThread(new Runnable() {
             public void run() {
                 view.loadUrl("javascript:" + js);
-                View engineView = view.getEngine().getView();
+                View engineView = view.getEngine() != null ? view.getEngine().getView() : view.getView();
 
                 if (!isInForeground()) {
                     engineView.dispatchWindowVisibilityChanged(View.VISIBLE);

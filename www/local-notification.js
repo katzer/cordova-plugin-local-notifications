@@ -2,6 +2,8 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributors Bhumin Bhandari, fquirin, powowbox and many more:
+ * https://github.com/katzer/cordova-plugin-local-notifications/graphs/contributors
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -215,6 +217,24 @@ exports.update = function (msgs, callback, scope, args) {
         this.requestPermission(fn, this);
     }
 };
+
+/**
+ * To set dummyNotifications to get notification for Android 13.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+ exports.setDummyNotifications = function (callback, scope) {
+	if (device.platform !== 'Android') {
+        console.warn('[Notifications] setDummyNotifications only supported on Android');
+        callback(true);
+    }else{
+		this._exec('dummyNotifications', null, callback, scope);
+	}
+};
+
 
 /**
  * Clear the specified notifications by id.
@@ -638,7 +658,7 @@ exports._mergeWithDefaults = function (options) {
 
     options.meta = {
         plugin:  'cordova-plugin-local-notification',
-        version: '0.9-beta.4'
+        version: '0.10.0'
     };
 
     return options;
