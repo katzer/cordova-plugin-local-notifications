@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributor Bhumin Bhandari
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -26,6 +27,7 @@
 @property (readonly, getter=id)            NSNumber*            id;
 @property (readonly, getter=identifier)    NSString*            identifier;
 @property (readonly, getter=actionGroupId) NSString*            actionGroupId;
+@property (readonly, getter=group)         NSString*            group;
 @property (readonly, getter=title)         NSString*            title;
 @property (readonly, getter=subtitle)      NSString*            subtitle;
 @property (readonly, getter=badge)         NSNumber*            badge;
