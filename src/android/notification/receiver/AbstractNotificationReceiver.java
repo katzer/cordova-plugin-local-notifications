@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 
+import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
@@ -59,8 +60,9 @@ abstract public class AbstractNotificationReceiver extends BroadcastReceiver {
         //   1.  No autoLaunch configured/supported and app is not running.
         //   2.  Any SDK >= Oreo is asleep (must be triggered here)
         boolean didShowNotification = false;
-        if (!options.triggerInApp() ||
-            (!autoLaunch && !checkAppRunning())            
+        if      (!options.triggerInApp()
+            || (checkAppRunning() &&  !LocalNotification.isInForeground() )
+            || (!checkAppRunning() && !autoLaunch )
         ) {
             didShowNotification = true;
             notification.show();
@@ -146,4 +148,5 @@ abstract public class AbstractNotificationReceiver extends BroadcastReceiver {
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(options.getWakeLockTimeout());
     }
+
 }
