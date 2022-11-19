@@ -1,33 +1,3 @@
-
-<p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
-
-<br>
-
-<p align="center">
-    <img src="images/logo.png">
-</p>
-
-<p align="center">
-    <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
-        <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
-    </a>
-    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
-        <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
-    </a>
-    <a href="https://opensource.org/licenses/Apache-2.0">
-        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
-    </a>
-</p>
-
-<br>
-
-> A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
-
-<br>
-
-<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
-<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
-
 ### Notes about this fork
 
 - This is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12), [@powowbox](https://github.com/powowbox/cordova-plugin-local-notification-12) and my own fixes.
@@ -43,6 +13,32 @@ To avoid launching the app in this case, add the following in your config.xml fi
 
 #### To install
 Run `cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git --save --noregistery`
+
+***
+
+<p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
+<br>
+<p align="center">
+    <img src="images/logo.png">
+</p>
+<p align="center">
+    <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
+        <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
+    </a>
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
+        <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
+    </a>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
+    </a>
+</p>
+<br>
+
+> A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
+<br>
+<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
+<img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
+<br>
 
 
 ### Notification components
