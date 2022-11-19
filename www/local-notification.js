@@ -231,7 +231,7 @@ exports.update = function (msgs, callback, scope, args) {
         console.warn('[Notifications] setDummyNotifications only supported on Android');
         callback(true);
     }else{
-		this._exec('dummyNotifications', null, callback, scope);
+        this._exec('dummyNotifications', null, callback, scope);
 	}
 };
 
