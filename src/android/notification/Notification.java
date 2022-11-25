@@ -223,7 +223,7 @@ public final class Notification {
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                 pi = PendingIntent.getBroadcast(
-                        context, 0, intent, FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
+                        context, 0, intent, FLAG_IMMUTABLE);
             } else {
                 pi = PendingIntent.getBroadcast(
                         context, 0, intent, FLAG_CANCEL_CURRENT);
