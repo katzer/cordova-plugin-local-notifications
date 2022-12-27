@@ -1,20 +1,3 @@
-### Notes about this fork
-
-- This is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12), [@powowbox](https://github.com/powowbox/cordova-plugin-local-notification-12) and my own fixes.
-- If the app's in background and the 'triggerInApp' option is set to 'true', there is no way to show to users a new notification since the notification is not displayed in the notification center and the app is not visible. 
-  - <b>Fix</b>: if the app's running in background, display the notification in the notification center.
-- If the notification is scheduled / canceled / scheduled with the same id, the notification triggers twice.
-  - <b>Fix</b>:  Due to the random reqCode. Now use the notification id for the reqCode.
-
-#### Important notice
-If the app is in background, it must not be launched but put in foreground.
-To avoid launching the app in this case, add the following in your config.xml file:
-`<preference name="AndroidLaunchMode" value="singleInstance"/>`
-
-#### To install
-Run `cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git --save --noregistery`
-
-***
 
 <p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
 <br>
@@ -35,11 +18,9 @@ Run `cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifica
 <br>
 
 > A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
-<br>
+
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
-<br>
-
 
 ### Notification components
 
@@ -66,17 +47,27 @@ Run `cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifica
 
 ## Important Notice
 
-Please make sure that you always read the tagged README for the version you're using.
+Please make sure that you always read the tagged README for the version you're using.  
+  
+Latest v0.10.0 is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12) (with changes by @powowbox) and [@fquirin](https://github.com/fquirin/cordova-plugin-local-notifications).
+You can check out these repositories or the [PR section](https://github.com/katzer/cordova-plugin-local-notifications/pulls) for most recent fixes.  
+  
+See the _0.8_ branch if you cannot upgrade. The `0.9-dev` and `ios10` branches are obsolete and will be removed soon.
 
-See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
+### Known issues and notes
 
-__Known issues__
+#### Android
 
-- Support for Android Oreo is limited yet.
+- If the app is in background, it **must not** be launched but put in foreground.
+  - **Manual fix:** To avoid launching the app in this case, add the following in your config.xml file for Android `<preference name="AndroidLaunchMode" value="singleInstance"/>`
+- If the app's in background and the 'triggerInApp' option is set to 'true', there is no way to show to users a new notification since the notification is not displayed in the notification center and the app is not visible. 
+  - Implemented fix: If the app's running in background, display the notification in the notification center.
+- If the notification is scheduled / canceled / scheduled with the same id, the notification triggers twice due to the random 'reqCode'.
+  - Implemented fix: Use the notification id for the 'reqCode'.
+
+#### Other
+
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
-
-Please report bugs or missing features!
-
 
 ## Basics
 
@@ -566,7 +557,7 @@ cordova.plugins.notification.local.setDummyNotifications();
 
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
 
-Execute from the projects root folder (**original** version):
+Execute from the projects root folder:
 
     $ cordova plugin add cordova-plugin-local-notification
 
@@ -574,7 +565,7 @@ Or install a specific version:
 
     $ cordova plugin add cordova-plugin-local-notification@VERSION
 
-Or install **this fork**:
+Or install **a fork**:
 
     $ cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git
 
@@ -601,7 +592,7 @@ Made with :yum: from Leipzig
 © 2013 [appPlant GmbH][appplant]
 
 
-[ticket_template]: https://github.com/fquirin/cordova-plugin-local-notifications/issues/1188
+[ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
 [npm]: https://www.npmjs.com/package/cordova-plugin-local-notification

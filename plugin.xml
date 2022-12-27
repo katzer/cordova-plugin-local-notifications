@@ -32,7 +32,7 @@
 
     <description>Schedules and queries for local notifications</description>
 
-    <repo>https://github.com/fquirin/cordova-plugin-local-notifications.git</repo>
+    <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
 
     <keywords>appplant, notification, local notification, user notification</keywords>
 
@@ -50,7 +50,7 @@
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-badge-fix" version=">=0.8.10"/><!-- use this until org. has bin fixes -->
+    <dependency id="cordova-plugin-badge-fix" version=">=0.8.10"/><!-- TODO: return to 'cordova-plugin-badge' when fixed -->
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">

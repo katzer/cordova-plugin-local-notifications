@@ -7,10 +7,6 @@ ChangeLog
 - Android code clean-up and refactoring (@powobox, @fquirin)
 - Removed 'beta' from version name ... everything about Android/Cordova is 'beta' anyway ;-)
 
-#### Important notice
-If the app is in background, it must not be launched but put in foreground. To avoid launching the app in this case, add the following in your config.xml file:
-`<preference name="AndroidLaunchMode" value="singleInstance"/>`
-
 #### Version 0.9.0-beta.5 (from cordova-plugin-local-notification-12 by @bhandaribhumin)
 - Fixed bugs 🐛
   - Added missing 'PendingIntent.FLAG_MUTABLE' and fixed gradle
@@ -19,7 +15,6 @@ If the app is in background, it must not be launched but put in foreground. To a
   - Delete Alarms when intent is deleted
   - Not calling delegate events if nil or if we're consuming the notification
   - Android 13 `POST_NOTIFICATIONS ` permission and runtime popup added
-- Enhancements (Android)
 - New interfaces to ask for / register permissions required to schedule local notifications
  - New method addded for android `setDummyNotification()`
 
@@ -65,7 +60,7 @@ If the app is in background, it must not be launched but put in foreground. To a
 
 ---
 
-Please also read the [Upgrade Guide](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12/wiki/Upgrade-Guide) for more information.
+Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 #### Version 0.8.5 (22.05.2017)
 - iOS 10
@@ -163,10 +158,10 @@ Please also read the [Upgrade Guide](https://github.com/bhandaribhumin/cordova-p
 - Renamed some local notification properties
  - `date`, `json`, `message` and `repeat`
  - Scheduling local notifications with the deprecated properties is still possible
-- [Kitchen Sink sample app](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12/tree/example)
-- [Wiki](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12/wiki)
+- [Kitchen Sink sample app](https://github.com/katzer/cordova-plugin-local-notifications/tree/example)
+- [Wiki](https://github.com/katzer/cordova-plugin-local-notifications/wiki)
 
 
 ### Version 0.8.0 (05.03.2015)
 
-Added condition to get view from view or engine [PR](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12/pull/1)
+Added condition to get view from view or engine [PR](https://github.com/katzer/cordova-plugin-local-notifications/pull/1)
