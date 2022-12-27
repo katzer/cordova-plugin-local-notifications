@@ -49,7 +49,7 @@
 
 Please make sure that you always read the tagged README for the version you're using.  
   
-Latest v0.10.0 is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12) (with changes by @powowbox) and [@fquirin](https://github.com/fquirin/cordova-plugin-local-notifications).
+Latest v0.10.0 is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12) (with changes by @powobox) and [@fquirin](https://github.com/fquirin/cordova-plugin-local-notifications).
 You can check out these repositories or the [PR section](https://github.com/katzer/cordova-plugin-local-notifications/pulls) for most recent fixes.  
   
 See the _0.8_ branch if you cannot upgrade. The `0.9-dev` and `ios10` branches are obsolete and will be removed soon.
