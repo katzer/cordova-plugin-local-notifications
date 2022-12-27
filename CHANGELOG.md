@@ -2,9 +2,9 @@ ChangeLog
 ---------
 
 #### Version 0.10.0
-- Fixed Android 12 bug to make notifications clickable (@powobox) by replacing the action handler services with activities (avoid notification trampoline restrictions)
+- Fixed Android 12 bug to make notifications clickable (@powowbox) by replacing the action handler services with activities (avoid notification trampoline restrictions)
 - Merged forks of @timkellypa and @bhandaribhumin (cordova-plugin-local-notification-12) back into original fork
-- Android code clean-up and refactoring (@powobox, @fquirin)
+- Android code clean-up and refactoring (@powowbox, @fquirin)
 - Removed 'beta' from version name ... everything about Android/Cordova is 'beta' anyway ;-)
 
 #### Version 0.9.0-beta.5 (from cordova-plugin-local-notification-12 by @bhandaribhumin)
