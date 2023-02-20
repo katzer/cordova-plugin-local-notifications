@@ -50,7 +50,7 @@
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
-    <dependency id="cordova-plugin-badge" version=">=0.8.5" />
+    <dependency id="@moodlehq/cordova-plugin-badge" version=">=0.8.8-moodle.1" />
 
     <!-- js -->
     <js-module src="www/local-notification.js" name="LocalNotification">
