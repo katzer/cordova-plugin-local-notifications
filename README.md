@@ -1,8 +1,6 @@
 
 <p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
 
-<b>This Plugin will be updated soon and it would be nice, if you would appreciate it.<br>See the fundraising campaign: https://www.paypal.com/pools/c/8S03txETkX</b>
-
 <p align="center">
     <img src="images/logo.png">
 </p>
