@@ -27,10 +27,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.UserManager;
+import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
 
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Manager;
@@ -38,7 +41,6 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 
-import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.os.Build.VERSION.SDK_INT;
 
 /**
@@ -56,7 +58,6 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive (Context context, Intent intent) {
-        String action = intent.getAction();
 
         if (SDK_INT >= 24) {
           UserManager um = (UserManager) context.getSystemService(UserManager.class);
@@ -70,7 +71,13 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
             Options options    = new Options(context, data);
             Request request    = new Request(options);
             Builder builder    = new Builder(options);
-            Notification toast = buildNotification(builder);
+            int id = 0;
+            try {
+                id = data.getInt("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Notification toast = buildNotification(builder, id);
 
             onRestore(request, toast);
         }
@@ -89,6 +96,6 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      *
      * @param builder Notification builder.
      */
-    abstract public Notification buildNotification (Builder builder);
+    abstract public Notification buildNotification (Builder builder, int id);
 
 }

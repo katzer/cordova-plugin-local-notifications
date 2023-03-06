@@ -523,7 +523,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param event        The event name.
      * @param notification Optional notification to pass with.
      */
-    static void fireEvent (String event, Notification notification) {
+    public static void fireEvent(String event, Notification notification) {
         fireEvent(event, notification, new JSONObject());
     }
 
@@ -595,6 +595,10 @@ public class LocalNotification extends CordovaPlugin {
             return false;
 
         CordovaWebView view = webView.get();
+
+        if (view == null) {
+            return false;
+        }
 
         KeyguardManager km = (KeyguardManager) view.getContext()
                 .getSystemService(Context.KEYGUARD_SERVICE);

@@ -27,9 +27,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+
 import android.support.v4.media.session.MediaSessionCompat;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -38,6 +36,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Paint;
 import android.graphics.Canvas;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 import java.util.List;
 import java.util.Random;
