@@ -215,7 +215,11 @@ public final class Options {
      * The channel id of that notification.
      */
     String getChannel() {
-        return options.optString("channel", Manager.CHANNEL_ID);
+        if (isImmediate()) {
+            return options.optString("channel", Manager.CHANNEL_ID_IMMEDIATE);
+        } else {
+            return options.optString("channel", Manager.CHANNEL_ID);
+        }
     }
 
     /**
@@ -384,6 +388,20 @@ public final class Options {
     }
 
     /**
+     * Category name.
+     */
+    String getCategory() {
+        return options.optString("category", null);
+    }
+
+    /**
+     * Requires immediate attention.
+     */
+    boolean isImmediate() {
+        return options.optBoolean("immediate", false);
+    }
+
+    /**
      * Small icon resource ID for the local notification.
      */
     int getSmallIcon() {
@@ -488,9 +506,13 @@ public final class Options {
      * Gets the notifications priority.
      */
     int getPrio() {
-        int prio = options.optInt("priority");
+        if (isImmediate()) {
+            return PRIORITY_MAX;
+        } else {
+            int prio = options.optInt("priority");
 
-        return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
+            return Math.min(Math.max(prio, PRIORITY_MIN), PRIORITY_MAX);
+        }
     }
 
     /**
