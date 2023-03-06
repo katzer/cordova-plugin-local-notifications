@@ -25,8 +25,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.PowerManager;
 
-import java.util.Calendar;
-
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
@@ -37,9 +35,6 @@ import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
-import static java.util.Calendar.MINUTE;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -71,21 +66,16 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         if (options.shallWakeUp()) {
             wakeUp(context);
         }
-
+        manager.createDefaultChannel(options.getDict().optBoolean("led", true), options.getDict().optBoolean("vibrate", true));
         notification.show();
 
-        if (!isUpdate && isAppRunning()) {
-            fireEvent("trigger", notification);
+        if (options.isInfiniteTrigger()) {
+            manager.schedule(new Request(options), this.getClass());
         }
 
-        if (!options.isInfiniteTrigger())
-            return;
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(MINUTE, 1);
-        Request req  = new Request(options, cal.getTime());
-
-        manager.schedule(req, this.getClass());
+        if (!isUpdate) {
+            LocalNotification.fireEvent("trigger", notification);
+        }
     }
 
     /**

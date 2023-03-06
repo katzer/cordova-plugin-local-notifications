@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-// codebeat:disable[TOO_MANY_FUNCTIONS]
+ // codebeat:disable[TOO_MANY_FUNCTIONS] 
 
 package de.appplant.cordova.plugin.notification;
 
@@ -70,7 +70,7 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
+        createDefaultChannel(true,true);
     }
 
     /**
@@ -108,7 +108,7 @@ public final class Manager {
      * TODO: temporary
      */
     @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+ public void createDefaultChannel(Boolean enablelights, Boolean enablevibration) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
@@ -121,7 +121,8 @@ public final class Manager {
 
         channel = new NotificationChannel(
                 CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
-
+        channel.enableLights(enablelights);
+        channel.enableVibration(enablevibration);
         mgr.createNotificationChannel(channel);
     }
 
@@ -418,4 +419,4 @@ public final class Manager {
 
 }
 
-// codebeat:enable[TOO_MANY_FUNCTIONS]
+ // codebeat:enable[TOO_MANY_FUNCTIONS] 
