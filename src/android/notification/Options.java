@@ -658,6 +658,14 @@ public final class Options {
     }
 
     /**
+     * The message to add to the title to display the number of messages if there is more than one.
+     * Only if using MessagingStytle.
+     */
+    String getTitleCount() {
+        return options.optString("titleCount", null);
+    }
+
+    /**
      * Gets the token for the specified media session.
      *
      * @return null if there no session.

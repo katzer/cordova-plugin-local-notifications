@@ -324,7 +324,18 @@ public final class Notification {
         }
 
         grantPermissionToPlaySoundFromExternal();
-        getNotMgr().notify(getId(), builder.build());
+        getNotMgr().notify(getAppName(), getId(), builder.build());
+    }
+
+    /**
+     * Get the app name.
+     *
+     * @return String App name.
+     */
+    private String getAppName() {
+        CharSequence appName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo());
+
+        return (String) appName;
     }
 
     /**
