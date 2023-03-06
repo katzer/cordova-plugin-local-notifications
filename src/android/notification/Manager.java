@@ -43,7 +43,7 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_HIGH;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
@@ -55,10 +55,10 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
 public final class Manager {
 
     // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
+    static final String CHANNEL_ID = "102";
 
     // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
+    private static final CharSequence CHANNEL_NAME = "VirGo";
 
     // The application context
     private Context context;
@@ -120,7 +120,7 @@ public final class Manager {
             return;
 
         channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_HIGH);
 
         mgr.createNotificationChannel(channel);
     }
