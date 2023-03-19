@@ -33,13 +33,18 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
+import de.appplant.cordova.plugin.notification.util.LaunchUtils;
 
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static android.os.Build.VERSION_CODES.O;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.isAppRunning;
+import static de.appplant.cordova.plugin.localnotification.LocalNotification.isInForeground;
 import static java.util.Calendar.MINUTE;
+
+import static android.os.Build.VERSION_CODES.P;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -57,62 +62,18 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, Bundle bundle) {
-        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        Context context  = notification.getContext();
-        Options options  = notification.getOptions();
-        Manager manager  = Manager.getInstance(context);
-        int badge        = options.getBadgeNumber();
-
-        if (badge > 0) {
-            manager.setBadge(badge);
-        }
-
-        if (options.shallWakeUp()) {
-            wakeUp(context);
-        }
-
-        notification.show();
-
-        if (!isUpdate && isAppRunning()) {
-            fireEvent("trigger", notification);
-        }
-
-        if (!options.isInfiniteTrigger())
-            return;
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(MINUTE, 1);
-        Request req  = new Request(options, cal.getTime());
-
-        manager.schedule(req, this.getClass());
+    public void onTrigger(Notification notification, Bundle bundle) {
+        performNotification(notification);
     }
 
-    /**
-     * Wakeup the device.
-     *
-     * @param context The application context.
-     */
-    private void wakeUp (Context context) {
-        PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
+    @Override
+    public void dispatchAppEvent(String key, Notification notification) {
+        fireEvent(key, notification);
+    }
 
-        if (pm == null)
-            return;
-
-        int level =   PowerManager.SCREEN_DIM_WAKE_LOCK
-                    | PowerManager.ACQUIRE_CAUSES_WAKEUP;
-
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                level, "LocalNotification");
-
-        wakeLock.setReferenceCounted(false);
-        wakeLock.acquire(1000);
-
-        if (SDK_INT >= LOLLIPOP) {
-            wakeLock.release(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
-        } else {
-            wakeLock.release();
-        }
+    @Override
+    public boolean checkAppRunning() {
+        return isAppRunning();
     }
 
     /**
@@ -122,11 +83,8 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder, Bundle bundle) {
-        return builder
-                .setClickActivity(ClickReceiver.class)
-                .setClearReceiver(ClearReceiver.class)
-                .setExtras(bundle)
+    public Notification buildNotification(Builder builder, Bundle bundle) {
+        return builder.setClickActivity(ClickReceiver.class).setClearReceiver(ClearReceiver.class).setExtras(bundle)
                 .build();
     }
 

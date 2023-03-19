@@ -84,6 +84,60 @@ exports.request = function (success, error) {
 };
 
 /**
+ * Check to see if the user has allowed "Do Not Disturb" permissions for this app.
+ * This is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback contains true or false for whether or not we have this permission.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.hasDoNotDisturbPermission = function (success, error) {
+    impl.hasDoNotDisturbPermission(success, error);
+}
+
+/**
+ * Request "Do Not Disturb" permissions for this app.
+ * The only way to do this is to launch the global do not distrub settings for all apps.
+ * This permission is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback is deferred until 
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.requestDoNotDisturbPermissions = function (success, error) {
+    impl.requestDoNotDisturbPermissions(success, error);
+}
+
+/**
+ * Check to see if the app is ignoring battery optimizations.  This needs
+ * to be whitelisted by the user.
+ * 
+ * Callback contains true or false for whether or not we have this permission.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.isIgnoringBatteryOptimizations = function (success, error) {
+    impl.isIgnoringBatteryOptimizations(success, error);
+}
+
+/**
+ * Request permission to ignore battery optimizations.
+ * The only way to do this is to launch the global battery optimization settings for all apps.
+ * This permission is required to allow alarm to trigger logic within the app while the app is dead.
+ * 
+ * Callback is deferred until user returns.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.requestIgnoreBatteryOptimizations = function (success, error) {
+    impl.requestIgnoreBatteryOptimizations(success, error);
+}
+
+/**
  * Schedule notifications.
  *
  * @param [ Function ] success Success callback

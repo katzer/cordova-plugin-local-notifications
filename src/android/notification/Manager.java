@@ -23,13 +23,14 @@
 
 package de.appplant.cordova.plugin.notification;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,23 +44,18 @@ import de.appplant.cordova.plugin.badge.BadgeImpl;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
-import static android.support.v4.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
 /**
- * Central way to access all or single local notifications set by specific
- * state like triggered or scheduled. Offers shortcut ways to schedule,
- * cancel or clear local notifications.
+ * Central way to access all or single local notifications set by specific state
+ * like triggered or scheduled. Offers shortcut ways to schedule, cancel or
+ * clear local notifications.
  */
 public final class Manager {
-
-    // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
-
-    // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
-
     // The application context
     private Context context;
 
@@ -70,7 +66,6 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
     }
 
     /**
@@ -85,18 +80,18 @@ public final class Manager {
     /**
      * Check if app has local notification permission.
      */
-    public boolean hasPermission () {
+    public boolean hasPermission() {
         return getNotCompMgr().areNotificationsEnabled();
     }
 
     /**
      * Schedule local notification specified by request.
      *
-     * @param request Set of notification options.
+     * @param request  Set of notification options.
      * @param receiver Receiver to handle the trigger event.
      */
-    public Notification schedule (Request request, Class<?> receiver) {
-        Options options    = request.getOptions();
+    public Notification schedule(Request request, Class<?> receiver) {
+        Options options = request.getOptions();
         Notification toast = new Notification(context, options);
 
         toast.schedule(request, receiver);
@@ -105,22 +100,76 @@ public final class Manager {
     }
 
     /**
-     * TODO: temporary
+     * Build channel with options
+     *
+     * @param soundUri      Uri for custom sound (empty to use default)
+     * @param shouldVibrate whether not vibration should occur during the
+     *                      notification
+     * @param hasSound      whether or not sound should play during the notification
+     * @param channelName   the name of the channel (null will pick an appropriate
+     *                      default name for the options provided).
+     * @return channel ID of newly created (or reused) channel
      */
-    @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
+    public String buildChannelWithOptions(Uri soundUri, boolean shouldVibrate, boolean hasSound,
+            CharSequence channelName, String channelId) {
+        String defaultChannelId, newChannelId;
+        CharSequence defaultChannelName;
+        int importance;
+
+        if (hasSound && shouldVibrate) {
+            defaultChannelId = Options.SOUND_VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_VIBRATE_CHANNEL_NAME;
+            importance = IMPORTANCE_HIGH;
+            shouldVibrate = true;
+        } else if (hasSound) {
+            defaultChannelId = Options.SOUND_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_CHANNEL_NAME;
+            importance = IMPORTANCE_DEFAULT;
+            shouldVibrate = false;
+        } else if (shouldVibrate) {
+            defaultChannelId = Options.VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.VIBRATE_CHANNEL_NAME;
+            importance = IMPORTANCE_LOW;
+            shouldVibrate = true;
+        } else {
+            defaultChannelId = Options.SILENT_CHANNEL_ID;
+            defaultChannelName = Options.SILENT_CHANNEL_NAME;
+            importance = IMPORTANCE_LOW;
+            shouldVibrate = false;
+        }
+
+        newChannelId = channelId != null ? channelId : defaultChannelId;
+
+        createChannel(newChannelId, channelName != null ? channelName : defaultChannelName, importance, shouldVibrate,
+                soundUri);
+
+        return newChannelId;
+    }
+
+    /**
+     * Create a channel
+     */
+    public void createChannel(String channelId, CharSequence channelName, int importance, Boolean shouldVibrate,
+            Uri soundUri) {
         NotificationManager mgr = getNotMgr();
 
         if (SDK_INT < O)
             return;
 
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
+        NotificationChannel channel = mgr.getNotificationChannel(channelId);
 
         if (channel != null)
             return;
 
-        channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+        channel = new NotificationChannel(channelId, channelName, importance);
+
+        channel.enableVibration(shouldVibrate);
+
+        if (!soundUri.equals(Uri.EMPTY)) {
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(soundUri, attributes);
+        }
 
         mgr.createNotificationChannel(channel);
     }
@@ -132,7 +181,7 @@ public final class Manager {
      * @param updates  JSON object with notification options.
      * @param receiver Receiver to handle the trigger event.
      */
-    public Notification update (int id, JSONObject updates, Class<?> receiver) {
+    public Notification update(int id, JSONObject updates, Class<?> receiver) {
         Notification notification = get(id);
 
         if (notification == null)
@@ -148,7 +197,7 @@ public final class Manager {
      *
      * @param id The notification ID.
      */
-    public Notification clear (int id) {
+    public Notification clear(int id) {
         Notification toast = get(id);
 
         if (toast != null) {
@@ -161,7 +210,7 @@ public final class Manager {
     /**
      * Clear all local notifications.
      */
-    public void clearAll () {
+    public void clearAll() {
         List<Notification> toasts = getByType(TRIGGERED);
 
         for (Notification toast : toasts) {
@@ -177,7 +226,7 @@ public final class Manager {
      *
      * @param id The notification ID
      */
-    public Notification cancel (int id) {
+    public Notification cancel(int id) {
         Notification toast = get(id);
 
         if (toast != null) {
@@ -190,7 +239,7 @@ public final class Manager {
     /**
      * Cancel all local notifications.
      */
-    public void cancelAll () {
+    public void cancelAll() {
         List<Notification> notifications = getAll();
 
         for (Notification notification : notifications) {
@@ -230,7 +279,7 @@ public final class Manager {
             return getIds();
 
         StatusBarNotification[] activeToasts = getActiveNotifications();
-        List<Integer> activeIds              = new ArrayList<Integer>();
+        List<Integer> activeIds = new ArrayList<Integer>();
 
         for (StatusBarNotification toast : activeToasts) {
             activeIds.add(toast.getId());
@@ -315,8 +364,7 @@ public final class Manager {
     /**
      * List of properties from all local notifications from given type.
      *
-     * @param type
-     *      The notification life cycle type
+     * @param type The notification life cycle type
      */
     public List<JSONObject> getOptionsByType(Notification.Type type) {
         ArrayList<JSONObject> options = new ArrayList<JSONObject>();
@@ -338,13 +386,13 @@ public final class Manager {
      */
     public Options getOptions(int id) {
         SharedPreferences prefs = getPrefs();
-        String toastId          = Integer.toString(id);
+        String toastId = Integer.toString(id);
 
         if (!prefs.contains(toastId))
             return null;
 
         try {
-            String json     = prefs.getString(toastId, null);
+            String json = prefs.getString(toastId, null);
             JSONObject dict = new JSONObject(json);
 
             return new Options(context, dict);
@@ -375,7 +423,7 @@ public final class Manager {
      *
      * @param badge The badge number.
      */
-    public void setBadge (int badge) {
+    public void setBadge(int badge) {
         if (badge == 0) {
             new BadgeImpl(context).clearBadge();
         } else {
@@ -397,7 +445,7 @@ public final class Manager {
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getPrefs () {
+    private SharedPreferences getPrefs() {
         return context.getSharedPreferences(PREF_KEY_ID, Context.MODE_PRIVATE);
     }
 
@@ -405,8 +453,7 @@ public final class Manager {
      * Notification manager for the application.
      */
     private NotificationManager getNotMgr() {
-        return (NotificationManager) context.getSystemService(
-                Context.NOTIFICATION_SERVICE);
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     /**

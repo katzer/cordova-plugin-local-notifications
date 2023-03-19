@@ -92,13 +92,13 @@ cordova.plugins.notification.local.schedule([
 
 A notification does have a set of configurable properties. Not all of them are supported across all platforms.
 
-| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
-| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
-| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
-| iconType
+| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName       | actions       | alarmVolume   |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
+| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
+| iconType      | wakeLockTimeout | triggerInApp | fullScreenIntent
 
 For their default values see:
 
@@ -418,6 +418,41 @@ cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermis
 ```
 
 
+On Android 8, special permissions are required to exit "do not disturb mode" (in case alarmVolume is defined).
+You can check these by using:
+
+```js
+cordova.plugins.notification.local.hasDoNotDisturbPermissions(function (granted) { ... })
+```
+
+... and you can request them by using:
+
+```js
+cordova.plugins.notification.local.requestDoNotDisturbPermissions(function (granted) { ... })
+```
+
+The only downside to not having these permissions granted is that alarmVolume and vibrate may not be
+honored on Android 8+ devices if the device is currently on silent when the notification fires (silent, not vibrate).
+In this situation, the notification will fire silently but still appear in the notification bar.
+
+Also on Android 8, it is helpful for alarms that autolaunch the app with an event, if the app can
+ignore battery saving mode (otherwise alarms won't trigger reliably).  You can check to see if the app is whitelisted for this with the following method.
+
+```js
+cordova.plugins.notification.local.isIgnoringBatteryOptimizations(function (granted) { ... })
+```
+
+... and you can request to be whitelisted by using:
+
+```js
+cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (granted) { ... })
+```
+
+The request method here will work one of two ways.
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
+
+
 ## Events
 
 The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
@@ -493,10 +528,10 @@ See the sample app for how to use them.
 
 | Method   | Method            | Method          | Method         | Method        | Method           |
 | :------- | :---------------- | :-------------- | :------------- | :------------ | :--------------- |
-| schedule | cancelAll         | isTriggered     | get            | removeActions | un               |
-| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents |
-| clear    | requestPermission | getIds          | getScheduled   | getDefaults   |
-| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   |
+| schedule | cancelAll         | isTriggered     | get            | removeActions | un                              |
+| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents                |
+| clear    | requestPermission | getIds          | getScheduled   | getDefaults   | requestDoNotDisturbPermissions  |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
 
