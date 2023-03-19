@@ -1,10 +1,9 @@
 
 <p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
-
+<br>
 <p align="center">
     <img src="images/logo.png">
 </p>
-
 <p align="center">
     <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
         <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
@@ -16,12 +15,9 @@
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
     </a>
 </p>
-
 <br>
 
 > A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
-
-<br>
 
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BwJzNNZmsTcKZy1YYTV3VWQzVUE/notifications-behavior-03-drawer.png"></img>
 <img width="60%" align="right" hspace="19" vspace="12" src="https://storage.googleapis.com/material-design/publish/material_v_12/assets/0Bzhp5Z4wHba3S1JWc3NkTVpjVk0/notifications-guidelines-03-optin.png"></img>
@@ -51,17 +47,27 @@
 
 ## Important Notice
 
-Please make sure that you always read the tagged README for the version you're using.
+Please make sure that you always read the tagged README for the version you're using.  
+  
+Latest v0.10.0 is a merge of [@timkellypa](https://github.com/timkellypa/cordova-plugin-local-notifications), [@bhandaribhumin](https://github.com/bhandaribhumin/cordova-plugin-local-notification-12) (with changes by [@powowbox](https://github.com/powowbox)) and [@fquirin](https://github.com/fquirin/cordova-plugin-local-notifications).
+You can check out these repositories or the [PR section](https://github.com/katzer/cordova-plugin-local-notifications/pulls) for most recent fixes.  
+  
+See the _0.8_ branch if you cannot upgrade. The `0.9-dev` and `ios10` branches are obsolete and will be removed soon.
 
-See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
+### Known issues and notes
 
-__Known issues__
+#### Android
 
-- Support for Android Oreo is limited yet.
+- If the app is in background, it **must not** be launched but put in foreground.
+  - **Manual fix:** To avoid launching the app in this case, add the following in your config.xml file for Android `<preference name="AndroidLaunchMode" value="singleInstance"/>`
+- If the app's in background and the 'triggerInApp' option is set to 'true', there is no way to show to users a new notification since the notification is not displayed in the notification center and the app is not visible. 
+  - Implemented fix: If the app's running in background, display the notification in the notification center.
+- If the notification is scheduled / canceled / scheduled with the same id, the notification triggers twice due to the random 'reqCode'.
+  - Implemented fix: Use the notification id for the 'reqCode'.
+
+#### Other
+
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
-
-Please report bugs or missing features!
-
 
 ## Basics
 
@@ -94,7 +100,7 @@ A notification does have a set of configurable properties. Not all of them are s
 
 | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
 | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName       | actions       | alarmVolume   |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName   | actions       | alarmVolume   |
 | text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
 | title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
 | sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
@@ -449,7 +455,12 @@ cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (g
 ```
 
 The request method here will work one of two ways.
-1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml. Alternatively, you can  use the edit-config tag in the platform section of the config.xml.
+```xml
+<edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission" xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+</edit-config>
+```
 2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
 
 
@@ -534,6 +545,13 @@ See the sample app for how to use them.
 | clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
+## SetDummyNotification
+
+This method allows user to trigger runtime permission for Android 13
+
+```js
+cordova.plugins.notification.local.setDummyNotifications();
+```
 
 ## Installation
 
@@ -547,9 +565,9 @@ Or install a specific version:
 
     $ cordova plugin add cordova-plugin-local-notification@VERSION
 
-Or install the latest head version:
+Or install **a fork**:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
+    $ cordova plugin add https://github.com/fquirin/cordova-plugin-local-notifications.git
 
 Or install from local source:
 

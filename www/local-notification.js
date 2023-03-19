@@ -2,6 +2,8 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributors Bhumin Bhandari, fquirin, powowbox and many more:
+ * https://github.com/katzer/cordova-plugin-local-notifications/graphs/contributors
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -184,12 +186,12 @@ exports.schedule = function (msgs, callback, scope, args) {
 };
 
 /**
- * Schedule notifications.
+ * Update notifications.
  *
- * @param [ Array ]    notifications The notifications to schedule.
+ * @param [ Array ]    notifications The notifications to update.
  * @param [ Function ] callback      The function to be exec as the callback.
  * @param [ Object ]   scope         The callback function's scope.
- * @param [ Object ]   args          Optional flags how to schedule.
+ * @param [ Object ]   args          Optional flags how to update.
  *
  * @return [ Void ]
  */
@@ -215,6 +217,29 @@ exports.update = function (msgs, callback, scope, args) {
         this.requestPermission(fn, this);
     }
 };
+
+/**
+ * To set dummyNotifications to get notification for Android 13.
+ *
+ * @param [ Object ]   options.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.setDummyNotifications = function (opt, callback, scope) {
+	if (!opt) opt = {};
+    this._mergeWithDefaults(opt);
+    this._convertProperties(opt);
+			
+	if (device.platform !== 'Android') {
+        console.warn('[Notifications] setDummyNotifications only supported on Android');
+        callback(true);
+    }else{
+        this._exec('dummyNotifications', opt, callback, scope);
+	}
+};
+
 
 /**
  * Clear the specified notifications by id.
@@ -638,7 +663,7 @@ exports._mergeWithDefaults = function (options) {
 
     options.meta = {
         plugin:  'cordova-plugin-local-notification',
-        version: '0.9-beta.4'
+        version: '0.10.1'
     };
 
     return options;

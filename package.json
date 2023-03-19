@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-local-notification",
-  "version": "0.9.0-beta.4",
+  "version": "0.10.1",
   "description": "Schedules and queries for local notifications",
   "cordova": {
     "id": "cordova-plugin-local-notification",
@@ -46,7 +46,7 @@
       "version": ">=10.0.0"
     }
   ],
-  "author": "Sebastián Katzer",
+  "author": "Sebastián Katzer, fquirin, Bhumin Bhandari, powowbox and more",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"

@@ -1,6 +1,27 @@
 ChangeLog
 ---------
 
+#### Version 0.10.1
+- Added default (and custom) `options` to `setDummyNotification(options)` for `channelId` and `channelName`
+- More Android code clean-ups
+
+#### Version 0.10.0
+- Fixed Android 12 bug to make notifications clickable (@powowbox) by replacing the action handler services with activities (avoid notification trampoline restrictions)
+- Merged forks of @timkellypa and @bhandaribhumin (cordova-plugin-local-notification-12) back into original fork
+- Android code clean-up and refactoring (@powowbox, @fquirin)
+- Removed 'beta' from version name ... everything about Android/Cordova is 'beta' anyway ;-)
+
+#### Version 0.9.0-beta.5 (from cordova-plugin-local-notification-12 by @bhandaribhumin)
+- Fixed bugs 🐛
+  - Added missing 'PendingIntent.FLAG_MUTABLE' and fixed gradle ("compile" is replaced by "implementation")
+  - Guard against webview crash
+  - Add thread identifier property
+  - Delete Alarms when intent is deleted
+  - Not calling delegate events if nil or if we're consuming the notification
+  - Android 13 `POST_NOTIFICATIONS ` permission and runtime popup added
+- New interfaces to ask for / register permissions required to schedule local notifications
+ - New method addded for android `setDummyNotification()`
+
 #### Version 0.9.0-beta.4
 - Platform enhancements
   - Android 8-10 device support
@@ -39,6 +60,7 @@ ChangeLog
   - New `channelId` attribute. If passed in, a notification channel will be created (using volume and vibration settings to determine importance)
 - Android: Support for excluding an application from battery optimization settings.
 - Android: Support for allowing an application permissions to override Do Not Disturb.
+- iOS: No longer remove notification from notification bar when alarms are rescheduled.  Call cancel() explicitly to retain this behavior.
 
 ---
 
@@ -142,3 +164,8 @@ Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-lo
  - Scheduling local notifications with the deprecated properties is still possible
 - [Kitchen Sink sample app](https://github.com/katzer/cordova-plugin-local-notifications/tree/example)
 - [Wiki](https://github.com/katzer/cordova-plugin-local-notifications/wiki)
+
+
+### Version 0.8.0 (05.03.2015)
+
+Added condition to get view from view or engine [PR](https://github.com/katzer/cordova-plugin-local-notifications/pull/1)

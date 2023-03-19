@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Contributor Bhumin Bhandari
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -157,6 +158,19 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
     
     return ([actions isKindOfClass:NSString.class]) ? actions : kAPPGeneralCategory;
 }
+
+/**
+ * The thread group of the notification.
+ *
+ * @return [ NSString* ]
+ */
+- (NSString*) group
+{
+    id group = dict[@"group"];
+
+    return ([group isKindOfClass:NSString.class]) ? group : kAPPGeneralCategory;
+}
+
 
 /**
  * The sound file for the notification.
