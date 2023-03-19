@@ -2,7 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
- * Contributor Bhumin Bhandari
+ * Contributors Bhumin Bhandari, fquirin, powowbox, timkellypa and many more
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -193,7 +193,7 @@ public class LocalNotification extends CordovaPlugin {
                 } else if (action.equals("requestIgnoreBatteryOptimizations")) {
                     requestIgnoreBatteryOptimizations(command);
                 } else if (action.equals("dummyNotifications")) {
-                    dummyNotifications(command);
+                    dummyNotifications(args, command);
                 }
             }
         });
@@ -206,14 +206,14 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param command The callback context used when calling back into JavaScript.
      */
-    private void dummyNotifications(CallbackContext command) {
+    private void dummyNotifications(JSONArray args, CallbackContext command) {
+		
+		JSONObject options = args.optJSONObject(0);
+        String channelId = options.optString("channelId", "10004457");
+        CharSequence channelName = options.optString("channelName", "TEST_CHANNEL");
 
         fireEvent("dummyNotifications");
-        NotificationManager mNotificationManager;
         NotificationCompat.Builder mBuilder;
-        String NOTIFICATION_CHANNEL_ID = "10004457";
-        String notificationMsg = "Test";
-        String notificationTitle = "Mdd";
         Context context =  cordova.getActivity().getApplicationContext();
 
         Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
@@ -222,16 +222,17 @@ public class LocalNotification extends CordovaPlugin {
         final PendingIntent resultPendingIntent = PendingIntent.getActivity(context,
                 0, intentToLaunch, PendingIntent.FLAG_IMMUTABLE);
 
-        mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
+        mBuilder = new NotificationCompat.Builder(context, channelId);
         mBuilder.setContentIntent(resultPendingIntent);
 
-        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+            NotificationManager mNotificationManager = (NotificationManager)
+                    context.getSystemService(Context.NOTIFICATION_SERVICE);
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+            NotificationChannel notificationChannel = new NotificationChannel(channelId,
+                    channelName, importance);
             assert mNotificationManager != null;
-            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mBuilder.setChannelId(channelId);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
 
@@ -753,11 +754,6 @@ public class LocalNotification extends CordovaPlugin {
      * @param js JS code snippet as string.
      */
     private static synchronized void sendJavascript(final String js) {
-
-        if (!deviceready || webView == null) {
-            eventQueue.add(js);
-            return;
-        }
 
         if (!deviceready || webView == null) {
             eventQueue.add(js);
