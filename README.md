@@ -534,6 +534,10 @@ See the sample app for how to use them.
 | clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
+```js
+cordova.plugins.notification.local.clearAll();
+```
+
 
 ## Installation
 
