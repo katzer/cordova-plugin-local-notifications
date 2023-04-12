@@ -83,9 +83,9 @@ public final class Manager {
     }
 
     /**
-     * Check if app has local notification permission.
+     * Ask if user has enabled permission for local notifications.
      */
-    public boolean hasPermission () {
+    private boolean areNotificationsEnabled () {
         return getNotCompMgr().areNotificationsEnabled();
     }
 

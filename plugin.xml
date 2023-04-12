@@ -139,7 +139,8 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
-            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:required="false" />
+            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+            <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
         </config-file>
 
         <source-file
@@ -204,6 +205,10 @@
 
         <source-file
             src="src/android/notification/util/AssetUtil.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/util" />
+
+        <source-file
+            src="src/android/notification/util/CallbackContextUtil.java"
             target-dir="src/de/appplant/cordova/plugin/notification/util" />
 
         <source-file
