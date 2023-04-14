@@ -187,81 +187,83 @@ public final class Notification {
      * @param receiver Receiver to handle the trigger event.
      */
     void schedule(Request request, Class<?> receiver) {
-        if (checkAlarmPermission()) {
-            List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
-            Set<String> ids = new ArraySet<String>();
-            AlarmManager mgr = getAlarmMgr();
+        List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
+        Set<String> ids = new ArraySet<String>();
+        AlarmManager mgr = getAlarmMgr();
 
-            cancelScheduledAlarms();
+        cancelScheduledAlarms();
 
-            do {
-                Date date = request.getTriggerDate();
+        do {
+            Date date = request.getTriggerDate();
 
-                Log.d("local-notification", "Next trigger at: " + date);
+            Log.d("local-notification", "Next trigger at: " + date);
 
-                if (date == null)
-                    continue;
+            if (date == null)
+                continue;
 
-                Intent intent = new Intent(context, receiver)
-                        .setAction(PREF_KEY_ID + request.getIdentifier())
-                        .putExtra(Notification.EXTRA_ID, options.getId())
-                        .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
+            Intent intent = new Intent(context, receiver)
+                    .setAction(PREF_KEY_ID + request.getIdentifier())
+                    .putExtra(Notification.EXTRA_ID, options.getId())
+                    .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
 
-                ids.add(intent.getAction());
-                intents.add(new Pair<Date, Intent>(date, intent));
+            ids.add(intent.getAction());
+            intents.add(new Pair<Date, Intent>(date, intent));
+        }
+        while (request.moveNext());
+
+        if (intents.isEmpty()) {
+            unpersist();
+            return;
+        }
+
+        boolean hasAlarmPermission = checkAlarmPermission();
+        persist(ids);
+
+        if (!options.isInfiniteTrigger()) {
+            Intent last = intents.get(intents.size() - 1).second;
+            last.putExtra(Request.EXTRA_LAST, true);
+        }
+
+        for (Pair<Date, Intent> pair : intents) {
+            Date date     = pair.first;
+            long time     = date.getTime();
+            Intent intent = pair.second;
+
+            if (!date.after(new Date()) && trigger(intent, receiver))
+                continue;
+
+            if (!hasAlarmPermission)
+                continue; // Cannot schedule the alarm.
+
+            PendingIntent pi = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    pi = PendingIntent.getBroadcast(
+                        context, 0, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
+            } else {
+                    pi = PendingIntent.getBroadcast(
+                        context, 0, intent, FLAG_CANCEL_CURRENT);
             }
-            while (request.moveNext());
 
-            if (intents.isEmpty()) {
-                unpersist();
-                return;
-            }
-
-            persist(ids);
-
-            if (!options.isInfiniteTrigger()) {
-                Intent last = intents.get(intents.size() - 1).second;
-                last.putExtra(Request.EXTRA_LAST, true);
-            }
-
-            for (Pair<Date, Intent> pair : intents) {
-                Date date     = pair.first;
-                long time     = date.getTime();
-                Intent intent = pair.second;
-
-                if (!date.after(new Date()) && trigger(intent, receiver))
-                    continue;
-
-                PendingIntent pi = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                        pi = PendingIntent.getBroadcast(
-                            context, 0, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
-                } else {
-                        pi = PendingIntent.getBroadcast(
-                            context, 0, intent, FLAG_CANCEL_CURRENT);
-                }
-
-                try {
-                    switch (options.getPrio()) {
-                        case PRIORITY_MIN:
+            try {
+                switch (options.getPrio()) {
+                    case PRIORITY_MIN:
+                        mgr.setExact(RTC, time, pi);
+                        break;
+                    case PRIORITY_MAX:
+                        if (SDK_INT >= M) {
+                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                        } else {
                             mgr.setExact(RTC, time, pi);
-                            break;
-                        case PRIORITY_MAX:
-                            if (SDK_INT >= M) {
-                                mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
-                            } else {
-                                mgr.setExact(RTC, time, pi);
-                            }
-                            break;
-                        default:
-                            mgr.setExact(RTC_WAKEUP, time, pi);
-                            break;
                         }
-                    } catch (Exception ignore) {
-                        // Samsung devices have a known bug where a 500 alarms limit
-                        // can crash the app
+                        break;
+                    default:
+                        mgr.setExact(RTC_WAKEUP, time, pi);
+                        break;
                     }
-            }
+                } catch (Exception ignore) {
+                    // Samsung devices have a known bug where a 500 alarms limit
+                    // can crash the app
+                }
         }
     }
 
