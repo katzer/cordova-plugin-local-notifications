@@ -85,7 +85,7 @@ public final class Manager {
     /**
      * Ask if user has enabled permission for local notifications.
      */
-    private boolean areNotificationsEnabled () {
+    public boolean areNotificationsEnabled () {
         return getNotCompMgr().areNotificationsEnabled();
     }
 
