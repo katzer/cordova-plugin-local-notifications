@@ -18,12 +18,12 @@ We created this fork because we needed to include the following modifications in
 
 It also includes some commits that are in master and haven't been released.
 
-You can see all the changes here: [0.9.0-beta.3...moodlemobile:v0.9.0-moodle.10](https://github.com/katzer/cordova-plugin-local-notifications/compare/0.9.0-beta.3...moodlemobile:v0.9.0-moodle.10)
+You can see all the changes here: [0.9.0-beta.3...moodlemobile:v0.9.0-moodle.11](https://github.com/katzer/cordova-plugin-local-notifications/compare/0.9.0-beta.3...moodlemobile:v0.9.0-moodle.11)
 
 ## Installation
 
 You can install this package using the [original installation instructions](https://github.com/katzer/cordova-plugin-local-notifications#installation), but installing this package instead:
 
 ```sh
-cordova plugin add @moodlehq/cordova-plugin-local-notification@0.9.0-moodle.10
+cordova plugin add @moodlehq/cordova-plugin-local-notification@0.9.0-moodle.11
 ```
