@@ -35,7 +35,7 @@ import de.appplant.cordova.plugin.notification.Options;
  * Abstract broadcast receiver for local notifications. Creates the
  * notification options and calls the event functions for further proceeding.
  */
-abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
+abstract public class AbstractTriggerReceiver extends AbstractNotificationReceiver {
 
     /**
      * Called when an alarm was triggered.

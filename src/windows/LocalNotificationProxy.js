@@ -68,7 +68,6 @@ exports.ready = function () {
  */
 exports.check = function (success, error) {
     var granted = impl.hasPermission();
-
     success(granted);
 };
 
@@ -83,6 +82,60 @@ exports.check = function (success, error) {
 exports.request = function (success, error) {
     exports.check(success, error);
 };
+
+/**
+ * Check to see if the user has allowed "Do Not Disturb" permissions for this app.
+ * This is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback contains true or false for whether or not we have this permission.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.hasDoNotDisturbPermission = function (success, error) {
+    impl.hasDoNotDisturbPermission(success, error);
+}
+
+/**
+ * Request "Do Not Disturb" permissions for this app.
+ * The only way to do this is to launch the global do not distrub settings for all apps.
+ * This permission is required to use alarmVolume to take a user out of silent mode.
+ * 
+ * Callback is deferred until 
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.requestDoNotDisturbPermissions = function (success, error) {
+    impl.requestDoNotDisturbPermissions(success, error);
+}
+
+/**
+ * Check to see if the app is ignoring battery optimizations.  This needs
+ * to be whitelisted by the user.
+ * 
+ * Callback contains true or false for whether or not we have this permission.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.isIgnoringBatteryOptimizations = function (success, error) {
+    impl.isIgnoringBatteryOptimizations(success, error);
+}
+
+/**
+ * Request permission to ignore battery optimizations.
+ * The only way to do this is to launch the global battery optimization settings for all apps.
+ * This permission is required to allow alarm to trigger logic within the app while the app is dead.
+ * 
+ * Callback is deferred until user returns.
+ * 
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope callback function's scope 
+ */
+exports.requestIgnoreBatteryOptimizations = function (success, error) {
+    impl.requestIgnoreBatteryOptimizations(success, error);
+}
 
 /**
  * Schedule notifications.
@@ -213,7 +266,6 @@ exports.cancelAll = function (success, error) {
  */
 exports.type = function (success, error, args) {
     var type = impl.type(args[0]);
-
     success(type);
 };
 
@@ -222,40 +274,12 @@ exports.type = function (success, error, args) {
  *
  * @param [ Function ] success Success callback
  * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
  *
  * @return [ Void ]
  */
-exports.ids = function (success, error) {
-    var ids = impl.ids() || [];
-
-    success(Array.from(ids));
-};
-
-/**
- * List of all scheduled notification ids.
- *
- * @param [ Function ] success Success callback
- * @param [ Function ] error   Error callback
- *
- * @return [ Void ]
- */
-exports.scheduledIds = function (success, error) {
-    var ids = impl.scheduledIds() || [];
-
-    success(Array.from(ids));
-};
-
-/**
- * List of all triggered notification ids.
- *
- * @param [ Function ] success Success callback
- * @param [ Function ] error   Error callback
- *
- * @return [ Void ]
- */
-exports.triggeredIds = function (success, error) {
-    var ids = impl.triggeredIds() || [];
-
+exports.ids = function (success, error, args) {
+    var ids = impl.ids(args[0]) || [];
     success(Array.from(ids));
 };
 
@@ -270,7 +294,6 @@ exports.triggeredIds = function (success, error) {
  */
 exports.notification = function (success, error, args) {
     var obj = impl.notification(args[0]);
-
     success(exports.clone(obj));
 };
 
@@ -284,37 +307,42 @@ exports.notification = function (success, error, args) {
  * @return [ Void ]
  */
 exports.notifications = function (success, error, args) {
-    var objs = impl.notifications(args) || [];
-
+    var objs = impl.notifications(args[0], args[1]) || [];
     success(exports.cloneAll(objs));
 };
 
 /**
- * List of all scheduled notifications.
+ * Manage action groups.
  *
  * @param [ Function ] success Success callback
  * @param [ Function ] error   Error callback
+ * @param [ Array ]    args    Interface arguments
  *
  * @return [ Void ]
  */
-exports.scheduledNotifications = function (success, error) {
-    var objs = impl.scheduledNotifications() || [];
+exports.actions = function (success, error, args) {
+    var ActionGroup = LocalNotification.ActionGroup,
+        code        = args[0],
+        id          = args[1],
+        res         = [],
+        list, group;
 
-    success(exports.cloneAll(objs));
-};
+    switch (code) {
+        case 0:
+            list  = exports.parseActions({ actions:args[2] });
+            group = new ActionGroup(id, list);
 
-/**
- * List of all triggered notifications.
- *
- * @param [ Function ] success Success callback
- * @param [ Function ] error   Error callback
- *
- * @return [ Void ]
- */
-exports.triggeredNotifications = function (success, error) {
-    var objs = impl.triggeredNotifications() || [];
+            ActionGroup.register(group);
+            break;
+        case 1:
+            ActionGroup.unregister(id);
+            break;
+        case 2:
+            res.push(ActionGroup.isRegistered(id));
+            break;
+    }
 
-    success(exports.cloneAll(objs));
+    success.apply(this, res);
 };
 
 /**
@@ -351,7 +379,7 @@ exports.clicked = function (xml, input) {
  */
 exports.fireEvent = function (event, toast, data) {
     var meta   = Object.assign({ event: event }, data),
-        plugin = cordova.plugins.notification.local.core;
+        plugin = cordova.plugins.notification.local;
 
     if (!ready) {
         queue.push(arguments);
@@ -374,6 +402,10 @@ exports.fireEvent = function (event, toast, data) {
  */
 exports.cloneAll = function (objs) {
     var clones = [];
+
+    if (!Array.isArray(objs)) {
+        objs = Array.from(objs);
+    }
 
     for (var obj of objs) {
         clones.push(exports.clone(obj));
@@ -488,11 +520,17 @@ exports.parseEvery = function (spec) {
  * @return [ Array<LocalNotification.Action> ]
  */
 exports.parseActions = function (obj) {
-    var actions = [], btn;
+    var spec    = obj.actions,
+        actions = [], btn;
 
-    if (!obj.actions) return actions;
+    if (!spec) return actions;
 
-    for (var action of obj.actions) {
+    if (typeof spec === 'string') {
+        var group = LocalNotification.ActionGroup.lookup(spec);
+        return group ? group.actions : actions;
+    }
+
+    for (var action of spec) {
         if (!action.type || action.type == 'button') {
             btn = new LocalNotification.Toast.Button();
         } else

@@ -1,6 +1,47 @@
 ChangeLog
 ---------
 
+#### Version 0.9.0-beta.4
+- Platform enhancements
+  - Android 8-10 device support
+  - Android 10 SDK support (using androidx libraries rather than support libraries)
+    - Note: If you are not building with API 29 on Android, you can use https://www.npmjs.com/package/cordova-plugin-androidx for backwards compatibility.
+- Enhancements (Android)
+  - Adjusted high priority notifications to fire at more exact time.
+    - use setAlarmClock() rather than setExactAndAllowWhileIdle().
+  - New `autoLaunch` attribute.
+    - Notification launches application if closed (Android <= 9).
+    - App has the option to run some logic and schedule (or not schedule) an immediate alarm.
+    - Note, this will be overridden if fullScreenIntent is true. Doing that will use the fullScreenIntent behavior and not always autoLaunch.
+    - Also note, this feature can cause alarms to not always fire on time.
+  - New `alarmVolume` attribute. Can force application to increase device notification volume prior to playing sound.
+  - New `resetDelay` attribute. Delay to reset alarmVolume on the device back to its original settings
+  - New `wakeLockTimeout` attribute. Can be used to extend the wakelock to keep the device awake longer (in case an autoLaunch application trigger takes a while).
+  - New `triggerInApp` attribute.
+    - If set to true, notification will not fire.  Instead it will fire a trigger event that can be listened to in the app.
+    - This allows you to evaluate the notification in the application, and if you decide to fire it, you can remove the trigger, remove triggerInApp, and schedule it. (It should fire immediately).
+    - This was previously coupled with autoLaunch, but I split it out for more flexibility.
+    - Listening to the event can be done as follows:
+
+      `window.cordova.plugins.notification.local.on('trigger', (notification) => {
+        // do something with notification
+      });`
+    
+    - Note: this functionality will be skipped (alarms will fire immediately with no trigger method) if any of the following are true:
+      - Android 8+ is asleep and the app is not running (even if autoLaunch is true). As a timely execution of the app code can't be guaranteed in this state, the notification will fire immediately.
+      - The app is not running and autoLaunch is false (any Android version).  If the app is not running, we can't execute its code, so fire immediately.
+  - New `fullScreenIntent` attribute.
+    - If set to true, will use fullScreenIntent in AlarmManager to launch application.
+    - Setting this to true will negate autoLaunch, and is the only way to automatically launch the app on Android 10+.
+    - Note: OS/manufacturer has some options for how to deal with this configuration.  It will not always launch the activity, but typically will launch it if the device is asleep and show a heads-up notification if it is not.
+ - **Android Channel Support**
+  - New `channelName` attribute for the name of the notification channel to use
+  - New `channelId` attribute. If passed in, a notification channel will be created (using volume and vibration settings to determine importance)
+- Android: Support for excluding an application from battery optimization settings.
+- Android: Support for allowing an application permissions to override Do Not Disturb.
+
+---
+
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
 #### Version 0.8.5 (22.05.2017)

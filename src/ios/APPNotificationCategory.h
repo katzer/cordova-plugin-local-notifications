@@ -19,34 +19,10 @@
  * limitations under the License.
  */
 
-#import <Cordova/CDVPlugin.h>
-
 @import UserNotifications;
 
-@interface APPLocalNotification : CDVPlugin <UNUserNotificationCenterDelegate>
+@interface APPNotificationCategory : NSObject
 
-- (void) launch:(CDVInvokedUrlCommand*)command;
-- (void) ready:(CDVInvokedUrlCommand*)command;
-
-- (void) actions:(CDVInvokedUrlCommand*)command;
-
-- (void) check:(CDVInvokedUrlCommand*)command;
-- (void) request:(CDVInvokedUrlCommand*)command;
-
-- (void) schedule:(CDVInvokedUrlCommand*)command;
-- (void) update:(CDVInvokedUrlCommand*)command;
-
-- (void) clear:(CDVInvokedUrlCommand*)command;
-- (void) clearAll:(CDVInvokedUrlCommand*)command;
-
-- (void) cancel:(CDVInvokedUrlCommand*)command;
-- (void) cancelAll:(CDVInvokedUrlCommand*)command;
-
-- (void) type:(CDVInvokedUrlCommand*)command;
-
-- (void) ids:(CDVInvokedUrlCommand*)command;
-
-- (void) notification:(CDVInvokedUrlCommand*)command;
-- (void) notifications:(CDVInvokedUrlCommand*)command;
++ (UNNotificationCategory*) parse:(NSArray*)list withId:(NSString*)groupId;
 
 @end

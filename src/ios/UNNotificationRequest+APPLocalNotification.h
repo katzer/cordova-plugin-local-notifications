@@ -25,11 +25,8 @@
 
 @interface UNNotificationRequest (APPLocalNotification)
 
-// The options provided by the plug-in
 - (APPNotificationOptions*) options;
-// If the notification was updated
 - (BOOL) wasUpdated;
-// Encode the user info dict to JSON
 - (NSString*) encodeToJSON;
 
 @end

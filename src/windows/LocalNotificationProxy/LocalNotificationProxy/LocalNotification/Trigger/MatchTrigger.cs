@@ -207,7 +207,15 @@ namespace LocalNotificationProxy.LocalNotification.Trigger
 
                         break;
                     case Unit.HOUR:
-                        date = date.AddHours(now.Hour - date.Hour);
+                        if (date.Minute < now.Minute)
+                        {
+                            date = date.AddHours(now.Hour - date.Hour + 1);
+                        }
+                        else
+                        {
+                            date = date.AddHours(now.Hour - date.Hour);
+                        }
+
                         break;
                     case Unit.DAY:
                     case Unit.WEEK:

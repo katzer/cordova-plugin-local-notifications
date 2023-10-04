@@ -27,17 +27,23 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Paint;
+import android.graphics.Canvas;
 
 import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
 
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
@@ -136,15 +142,22 @@ public final class Builder {
                 .setOngoing(options.isSticky())
                 .setColor(options.getColor())
                 .setVisibility(options.getVisibility())
-                .setPriority(options.getPriority())
-                .setShowWhen(options.getShowWhen())
-                .setUsesChronometer(options.isWithProgressBar())
+                .setPriority(options.getPrio())
+                .setShowWhen(options.showClock())
+                .setUsesChronometer(options.showChronometer())
                 .setGroup(options.getGroup())
                 .setGroupSummary(options.getGroupSummary())
+                .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (sound != Uri.EMPTY && !isUpdate()) {
+        if (!sound.equals(Uri.EMPTY) && !isUpdate()) {
             builder.setSound(sound);
+        }
+
+        // API < 26.  Setting sound to null will prevent playing if we have no sound for any reason,
+        // including a 0 volume.
+        if (options.isWithoutSound()) {
+            builder.setSound(null);
         }
 
         if (options.isWithProgressBar()) {
@@ -156,9 +169,20 @@ public final class Builder {
 
         if (options.hasLargeIcon()) {
             builder.setSmallIcon(options.getSmallIcon());
-            builder.setLargeIcon(options.getLargeIcon());
+
+            Bitmap largeIcon = options.getLargeIcon();
+
+            if (options.getLargeIconType().equals("circle")) {
+                largeIcon = getCircleBitmap(largeIcon);
+            }
+
+            builder.setLargeIcon(largeIcon);
         } else {
             builder.setSmallIcon(options.getSmallIcon());
+        }
+
+        if (options.useFullScreenIntent()) {
+            applyFullScreenIntent(builder);
         }
 
         applyStyle(builder);
@@ -167,6 +191,57 @@ public final class Builder {
         applyContentReceiver(builder);
 
         return new Notification(context, options, builder);
+    }
+
+    void applyFullScreenIntent(NotificationCompat.Builder builder) {
+        String pkgName  = context.getPackageName();
+
+        Intent intent = context
+            .getPackageManager()
+            .getLaunchIntentForPackage(pkgName)
+            .putExtra("launchNotificationId", options.getId());
+
+        int reqCode = random.nextInt();
+        // request code and flags not added for demo purposes
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, FLAG_UPDATE_CURRENT);
+
+        builder.setFullScreenIntent(pendingIntent, true);
+    }
+
+    /**
+     * Convert a bitmap to a circular bitmap.
+     * This code has been extracted from the Phonegap Plugin Push plugin:
+     * https://github.com/phonegap/phonegap-plugin-push
+     *
+     * @param bitmap Bitmap to convert.
+     * @return Circular bitmap.
+     */
+    private Bitmap getCircleBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        float cx = bitmap.getWidth() / 2;
+        float cy = bitmap.getHeight() / 2;
+        float radius = cx < cy ? cx : cy;
+        canvas.drawCircle(cx, cy, radius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 
     /**
@@ -314,9 +389,12 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
-                .putExtras(extras)
                 .setAction(options.getIdentifier())
                 .putExtra(Notification.EXTRA_ID, options.getId());
+
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
 
         int reqCode = random.nextInt();
 
@@ -338,15 +416,18 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clickActivity)
-                .putExtras(extras)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
                 .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
+
         int reqCode = random.nextInt();
 
-        PendingIntent contentIntent = PendingIntent.getActivity(
+        PendingIntent contentIntent = PendingIntent.getService(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         builder.setContentIntent(contentIntent);
@@ -385,16 +466,19 @@ public final class Builder {
      */
     private PendingIntent getPendingIntentForAction (Action action) {
         Intent intent = new Intent(context, clickActivity)
-                .putExtras(extras)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
+
         int reqCode = random.nextInt();
 
-        return PendingIntent.getActivity(
-                context, reqCode, intent, FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+        return PendingIntent.getService(
+                context, reqCode, intent, FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
     }
 
     /**

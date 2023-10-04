@@ -111,6 +111,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="LocalNotificationProxy.cs" />
+    <Compile Include="LocalNotification\ActionGroup.cs" />
     <Compile Include="LocalNotification\Builder.cs" />
     <Compile Include="LocalNotification\Request.cs" />
     <Compile Include="LocalNotification\Toast\Button.cs" />
