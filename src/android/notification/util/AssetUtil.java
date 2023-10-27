@@ -36,7 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -106,8 +105,9 @@ public final class AssetUtil {
      * @return URI pointing to the given path.
      */
     private Uri getUriFromPath(String path) {
-        String absPath = path.replaceFirst("file://", "");
-        File file = new File(absPath);
+        String absPath = path.replaceFirst("file://", "")
+                .replaceFirst("\\?.*$", "");
+        File file      = new File(absPath);
 
         if (!file.exists()) {
             Log.e("Asset", "File not found: " + file.getAbsolutePath());
@@ -125,7 +125,8 @@ public final class AssetUtil {
      * @return URI pointing to the given path.
      */
     private Uri getUriFromAsset(String path) {
-        String resPath  = path.replaceFirst("file:/", "www");
+        String resPath  = path.replaceFirst("file:/", "www")
+                .replaceFirst("\\?.*$", "");
         String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
         File file       = getTmpFile(fileName);
 
@@ -133,23 +134,17 @@ public final class AssetUtil {
             return Uri.EMPTY;
 
         try {
-            AssetManager assets = context.getAssets();
-            FileOutputStream outStream = new FileOutputStream(file);
-            InputStream inputStream = assets.open(resPath);
-
-            copyFile(inputStream, outStream);
-
-            outStream.flush();
-            outStream.close();
-
-            return getUriFromFile(file);
-
+            AssetManager assets  = context.getAssets();
+            InputStream in       = assets.open(resPath);
+            FileOutputStream out = new FileOutputStream(file);
+            copyFile(in, out);
         } catch (Exception e) {
             Log.e("Asset", "File not found: assets/" + resPath);
             e.printStackTrace();
+            return Uri.EMPTY;
         }
 
-        return Uri.EMPTY;
+        return getUriFromFile(file);
     }
 
     /**
@@ -203,16 +198,11 @@ public final class AssetUtil {
             connection.setConnectTimeout(5000);
             connection.connect();
 
-            InputStream input = connection.getInputStream();
-            FileOutputStream outStream = new FileOutputStream(file);
+            InputStream in       = connection.getInputStream();
+            FileOutputStream out = new FileOutputStream(file);
 
-            copyFile(input, outStream);
-
-            outStream.flush();
-            outStream.close();
-
+            copyFile(in, out);
             return getUriFromFile(file);
-
         } catch (MalformedURLException e) {
             Log.e("Asset", "Incorrect URL");
             e.printStackTrace();
@@ -233,12 +223,18 @@ public final class AssetUtil {
      * @param in  The input stream.
      * @param out The output stream.
      */
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
+    private void copyFile(InputStream in, FileOutputStream out) {
         byte[] buffer = new byte[1024];
         int read;
 
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
+        try {
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -251,10 +247,6 @@ public final class AssetUtil {
      */
     public int getResId(String resPath) {
         int resId = getResId(context.getResources(), resPath);
-
-        if (resId == 0) {
-            resId = getResId(Resources.getSystem(), resPath);
-        }
 
         return resId;
     }
@@ -361,7 +353,7 @@ public final class AssetUtil {
      */
     private Uri getUriFromFile(File file) {
         try {
-            String authority = context.getPackageName() + ".provider";
+            String authority = context.getPackageName() + ".localnotifications.provider";
             return AssetProvider.getUriForFile(context, authority, file);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

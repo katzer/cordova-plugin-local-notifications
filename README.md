@@ -1,8 +1,6 @@
 
 <p align="left"><b><a href="https://github.com/katzer/cordova-plugin-local-notifications/tree/example-x">SAMPLE APP</a> :point_right:</b></p>
 
-<br>
-
 <p align="center">
     <img src="images/logo.png">
 </p>
@@ -53,15 +51,14 @@
 
 ## Important Notice
 
-Please make sure that you always read the tagged README for the version you're using. 
+Please make sure that you always read the tagged README for the version you're using.
 
 See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
 
 __Known issues__
 
-- Support for Android Orio is limited yet.
+- Support for Android Oreo is limited yet.
 - v0.9 and v0.8 aren't compatible with each other (Wont fix)
-- __Not compatible yet with Ionic__. Their wrapper is not part of this plugin. In future I will contribute to them to fix such issues in time. But for the moment I am busy enough with the plugin itself.
 
 Please report bugs or missing features!
 
@@ -95,12 +92,13 @@ cordova.plugins.notification.local.schedule([
 
 A notification does have a set of configurable properties. Not all of them are supported across all platforms.
 
-| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
-| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | actionGroupId | summary       | led           | showWhen      | channel       | actions       |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
-| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
+| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
+| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
+| id            | data          | timeoutAfter  | summary       | led           | clock         | channelName       | actions       | alarmVolume   |
+| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  | resetDelay    |
+| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    | autoLaunch    |
+| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        | channelId     |
+| iconType      | wakeLockTimeout | triggerInApp | fullScreenIntent
 
 For their default values see:
 
@@ -164,19 +162,19 @@ It is recommended to pre-define action groups rather then specifying them with e
 
 
 ```js
-cordova.plugins.notification.local.addActionGroup('yes-no', [
+cordova.plugins.notification.local.addActions('yes-no', [
     { id: 'yes', title: 'Yes' },
     { id: 'no',  title: 'No'  }
 ]);
 ```
 
-Once you have defined an action group, you can reference it when scheduling notifications: 
+Once you have defined an action group, you can reference it when scheduling notifications:
 
 ```js
 cordova.plugins.notification.local.schedule({
     title: 'Justin Rhyss',
     text: 'Do you want to go see a movie tonight?',
-    actionGroupId: 'yes-no'
+    actions: 'yes-no'
 });
 ```
 
@@ -264,7 +262,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 
 | Type         | Property      | Type    | Value            | Android | iOS | Windows |
 | :----------- | :------------ | :------ | :--------------- | :------ | :-- | :------ |
-| Fix          | 
+| Fix          |
 |              | at            | Date    |                  | x       | x   | x       |
 | Timespan     |
 |              | in            | Int     |                  | x       | x   | x       |
@@ -286,7 +284,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | String  | `quarter`        | x       |     | x       |
 |              | every         | String  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  | x       |     | x       |
-|              | firstAt       | Date    |                  | x       | x   | x       |
+|              | firstAt       | Date    |                  | x       |     | x       |
 | Match        |
 |              | count         | Int     |                  | x       |     | x       |
 |              | every         | Object  | `minute`         | x       | x   | x       |
@@ -300,7 +298,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | every         | Object  | `quarter`        |         | x   |
 |              | every         | Object  | `year`           | x       | x   | x       |
 |              | before        | Date    |                  | x       |     | x       |
-|              | after         | Date    |                  | x       | x   | x       |
+|              | after         | Date    |                  | x       |     | x       |
 | Location     |
 |              | center        | Array   | `[lat, long]`    |         | x   |
 |              | radius        | Int     |                  |         | x   |
@@ -420,6 +418,41 @@ cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermis
 ```
 
 
+On Android 8, special permissions are required to exit "do not disturb mode" (in case alarmVolume is defined).
+You can check these by using:
+
+```js
+cordova.plugins.notification.local.hasDoNotDisturbPermissions(function (granted) { ... })
+```
+
+... and you can request them by using:
+
+```js
+cordova.plugins.notification.local.requestDoNotDisturbPermissions(function (granted) { ... })
+```
+
+The only downside to not having these permissions granted is that alarmVolume and vibrate may not be
+honored on Android 8+ devices if the device is currently on silent when the notification fires (silent, not vibrate).
+In this situation, the notification will fire silently but still appear in the notification bar.
+
+Also on Android 8, it is helpful for alarms that autolaunch the app with an event, if the app can
+ignore battery saving mode (otherwise alarms won't trigger reliably).  You can check to see if the app is whitelisted for this with the following method.
+
+```js
+cordova.plugins.notification.local.isIgnoringBatteryOptimizations(function (granted) { ... })
+```
+
+... and you can request to be whitelisted by using:
+
+```js
+cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (granted) { ... })
+```
+
+The request method here will work one of two ways.
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
+
+
 ## Events
 
 The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
@@ -434,7 +467,7 @@ To unsubscribe from events:
 cordova.plugins.notification.local.un(event, callback, scope);
 ```
 
-__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.  
+__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.
 Hence you should define your callback as a separate function, not inline. If you want to use `this` inside of your callback, you also have to provide `this` as `scope` to `cordova.plugins.notification.local.on`.
 
 ### Custom
@@ -473,19 +506,33 @@ document.addEventListener('deviceready', function () {
 }, false);
 ```
 
+It might be possible that the underlying framework like __Ionic__ is not compatible with the launch process defined by cordova. With the result that the plugin fires the click event on app start before the app is able to listen for the events.
+
+Therefore its possible to fire the queued events manually by defining a global variable.
+
+```js
+window.skipLocalNotificationReady = true
+```
+
+Once the app and Ionic is ready, you can fire the queued events manually.
+
+```js
+cordova.plugins.notification.local.fireQueuedEvents();
+```
+
 
 ## Methods
 
-All methods work asynchron and accept callback methods.
+All methods work asynchronous and accept callback methods.
 See the sample app for how to use them.
 
-| Method   | Method            | Method          | Method         | Method      |
-| :------- | :---------------- | :-------------- | :------------- | :---------- |
-| schedule | cancelAll         | isTriggered     | get            | getDefaults |
-| update   | hasPermission     | getType         | getAll         | setDefaults |
-| clear    | requestPermission | getIds          | getScheduled   | on          |
-| clearAll | isPresent         | getScheduledIds | getTriggered   | un          |
-| cancel   | isScheduled       | getTriggeredIds | addActionGroup |
+| Method   | Method            | Method          | Method         | Method        | Method           |
+| :------- | :---------------- | :-------------- | :------------- | :------------ | :--------------- |
+| schedule | cancelAll         | isTriggered     | get            | removeActions | un                              |
+| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents                |
+| clear    | requestPermission | getIds          | getScheduled   | getDefaults   | requestDoNotDisturbPermissions  |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | hasDoNotDisturbPermissions      |
+| cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
 
 
 ## Installation

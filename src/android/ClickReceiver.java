@@ -22,13 +22,14 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import android.os.Bundle;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.RemoteInput;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.receiver.AbstractClickReceiver;
+import de.appplant.cordova.plugin.notification.util.LaunchUtils;
 
 import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
@@ -94,7 +95,7 @@ public class ClickReceiver extends AbstractClickReceiver {
         if (!doLaunch)
             return;
 
-        launchApp();
+        LaunchUtils.launchApp(getApplicationContext());
     }
 
     /**
