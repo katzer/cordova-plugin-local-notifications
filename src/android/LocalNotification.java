@@ -714,17 +714,19 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         final CordovaWebView view = webView.get();
+        
+        if (view != null) {
+            ((Activity) (view.getContext())).runOnUiThread(new Runnable() {
+                public void run() {
+                    view.loadUrl("javascript:" + js);
+                    View engineView = view.getEngine().getView();
 
-        ((Activity) (view.getContext())).runOnUiThread(new Runnable() {
-            public void run() {
-                view.loadUrl("javascript:" + js);
-                View engineView = view.getEngine().getView();
-
-                if (!isInForeground()) {
-                    engineView.dispatchWindowVisibilityChanged(View.VISIBLE);
+                    if (!isInForeground()) {
+                        engineView.dispatchWindowVisibilityChanged(View.VISIBLE);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -737,6 +739,10 @@ public class LocalNotification extends CordovaPlugin {
 
         CordovaWebView view = webView.get();
 
+        if (view == null) {
+            return false;
+        }
+        
         KeyguardManager km = (KeyguardManager) view.getContext().getSystemService(Context.KEYGUARD_SERVICE);
 
         // noinspection SimplifiableIfStatement
