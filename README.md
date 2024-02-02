@@ -15,6 +15,7 @@ We created this fork because we needed to include the following modifications in
 | - | Fix crash with target SDK 31 |
 | - | Declare SCHEDULE_EXACT_ALARM permission |
 | - | Fix click notifications in Android 12 |
+| - | Inexact alarms will be scheduled in Android if 'Alarms & reminders' setting is disabled |
 
 It also includes some commits that are in master and haven't been released.
 
