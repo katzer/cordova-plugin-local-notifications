@@ -32,6 +32,10 @@ import android.view.View;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.content.Intent;
+import android.provider.Settings;
+import android.net.Uri;
+import android.os.Build;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -177,6 +181,15 @@ public class LocalNotification extends CordovaPlugin {
                 } else
                 if (action.equals("notifications")) {
                     notifications(args, command);
+                } else
+                if (action.equals("canScheduleExactAlarms")) {
+                    canScheduleExactAlarms(command);
+                } else
+                if (action.equals("openNotificationSettings")) {
+                    openNotificationSettings(command);
+                } else
+                if (action.equals("openAlarmSettings")) {
+                    openAlarmSettings(command);
                 }
             }
         });
@@ -221,6 +234,15 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Ask if if the setting to schedule exact alarms is enabled.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void canScheduleExactAlarms (CallbackContext command) {
+        success(command, getNotMgr().canScheduleExactAlarms());
+    }
+
+    /**
      * Request permission for local notifications.
      *
      * @param command The callback context used when calling back into
@@ -233,7 +255,7 @@ public class LocalNotification extends CordovaPlugin {
             return;
         }
 
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             // Notifications are disabled and POST_NOTIFICATIONS runtime permission is not supported.
             success(command, false);
 
@@ -503,6 +525,42 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         command.success(new JSONArray(options));
+    }
+    /**
+     * Open the Android Notification settings for current app.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void openNotificationSettings (CallbackContext command) {
+        String packageName = cordova.getActivity().getPackageName();
+        Intent intent = new Intent();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
+        } else {
+            // In old Android versions it's not possible to view notification settings, open app settings.
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + packageName));
+        }
+
+        cordova.getActivity().startActivity(intent);
+
+        command.success();
+    }
+
+    /**
+     * Open the Alarms & Reminders setting for current app.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void openAlarmSettings (CallbackContext command) {
+        String packageName = cordova.getActivity().getPackageName();
+        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + packageName));
+
+        cordova.getActivity().startActivity(intent);
+
+        command.success();
     }
 
     /**
