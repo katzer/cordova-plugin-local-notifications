@@ -49,4 +49,6 @@
 - (void) notification:(CDVInvokedUrlCommand*)command;
 - (void) notifications:(CDVInvokedUrlCommand*)command;
 
+- (void) openNotificationSettings:(CDVInvokedUrlCommand*)command;
+
 @end
