@@ -291,7 +291,7 @@ public final class Manager {
      *
      * @param type The notification life cycle type
      */
-    private List<Notification> getByType(Notification.Type type) {
+    public List<Notification> getByType(Notification.Type type) {
 
         if (type == Notification.Type.ALL)
             return getAll();

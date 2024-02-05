@@ -173,7 +173,7 @@ public final class Notification {
      * @param request Set of notification options.
      * @param receiver Receiver to handle the trigger event.
      */
-    void schedule(Request request, Class<?> receiver) {
+    public void schedule(Request request, Class<?> receiver) {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
         Set<String> ids = new ArraySet<String>();
         AlarmManager mgr = getAlarmMgr();

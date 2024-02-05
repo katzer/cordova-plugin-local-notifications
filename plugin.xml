@@ -160,6 +160,10 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
+            src="src/android/AlarmPermissionReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
+
+        <source-file
             src="src/android/ClearReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
