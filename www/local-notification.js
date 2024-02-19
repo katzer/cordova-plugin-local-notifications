@@ -75,6 +75,18 @@ exports.hasPermission = function (callback, scope) {
 };
 
 /**
+ * Check permission to schedule exact alarms. Android only.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.canScheduleExactAlarms = function (callback, scope) {
+    this._exec('canScheduleExactAlarms', null, callback, scope);
+};
+
+/**
  * Request permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
@@ -540,6 +552,30 @@ exports.fireEvent = function (event) {
  */
 exports.fireQueuedEvents = function() {
     exports._exec('ready');
+};
+
+/**
+ * Open native settings to enable notifications.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.openNotificationSettings = function (callback, scope) {
+    this._exec('openNotificationSettings', null, callback, scope);
+};
+
+/**
+ * Open native settings to enable alarms & reminders. Android only.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.openAlarmSettings = function (callback, scope) {
+    this._exec('openAlarmSettings', null, callback, scope);
 };
 
 /**

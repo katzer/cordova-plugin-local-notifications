@@ -168,25 +168,12 @@ public final class Notification {
     }
 
     /**
-     * For the app with target is android 12, we need to check if the app has “Alarm and Reminders” permission before using them else app throws SecurityException
-     */
-    public boolean checkAlarmPermission() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S){
-            return true;
-        } else {
-            AlarmManager alarmManager = getAlarmMgr();
-            boolean hasPermission = (alarmManager.canScheduleExactAlarms() == true);
-            return hasPermission;
-        }
-    }
-
-    /**
      * Schedule the local notification.
      *
      * @param request Set of notification options.
      * @param receiver Receiver to handle the trigger event.
      */
-    void schedule(Request request, Class<?> receiver) {
+    public void schedule(Request request, Class<?> receiver) {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
         Set<String> ids = new ArraySet<String>();
         AlarmManager mgr = getAlarmMgr();
@@ -216,7 +203,7 @@ public final class Notification {
             return;
         }
 
-        boolean hasAlarmPermission = checkAlarmPermission();
+        boolean hasAlarmPermission = Manager.getInstance(context).canScheduleExactAlarms();
         persist(ids);
 
         if (!options.isInfiniteTrigger()) {
@@ -232,9 +219,6 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            if (!hasAlarmPermission)
-                continue; // Cannot schedule the alarm.
-
             PendingIntent pi = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     pi = PendingIntent.getBroadcast(
@@ -247,17 +231,33 @@ public final class Notification {
             try {
                 switch (options.getPrio()) {
                     case PRIORITY_MIN:
-                        mgr.setExact(RTC, time, pi);
+                        if (hasAlarmPermission) {
+                            mgr.setExact(RTC, time, pi);
+                        } else {
+                            mgr.set(RTC, time, pi);
+                        }
                         break;
                     case PRIORITY_MAX:
                         if (SDK_INT >= M) {
-                            mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                            if (hasAlarmPermission) {
+                                mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                            } else {
+                                mgr.setAndAllowWhileIdle(RTC_WAKEUP, time, pi);
+                            }
                         } else {
-                            mgr.setExact(RTC, time, pi);
+                            if (hasAlarmPermission) {
+                                mgr.setExact(RTC, time, pi);
+                            } else {
+                                mgr.set(RTC, time, pi);
+                            }
                         }
                         break;
                     default:
-                        mgr.setExact(RTC_WAKEUP, time, pi);
+                        if (hasAlarmPermission) {
+                            mgr.setExact(RTC_WAKEUP, time, pi);
+                        } else {
+                            mgr.set(RTC_WAKEUP, time, pi);
+                        }
                         break;
                     }
                 } catch (Exception ignore) {
