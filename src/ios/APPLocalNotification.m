@@ -551,7 +551,96 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
     if (![event isEqualToString:@"clear"]) {
         [self fireEvent:@"clear" notification:toast];
     }
+    
+    if ([event rangeOfString:@"SNOOZE_ACTION"].location != NSNotFound) {
+        UNNotificationRequest* oldNotification = response.notification.request;
 
+        NSDate *currentDate = [NSDate date];
+        NSMutableDictionary *notificationDict = [NSMutableDictionary dictionaryWithDictionary: @{
+            @"actions": @[],
+            @"alarmVolume": oldNotification.content.userInfo[@"alarmVolume"],
+            @"attachments": oldNotification.content.userInfo[@"attachments"],
+            @"autoClear": oldNotification.content.userInfo[@"autoClear"],
+            @"autoLaunch": oldNotification.content.userInfo[@"autoLaunch"],
+            @"badge": oldNotification.content.userInfo[@"badge"],
+            @"clock": oldNotification.content.userInfo[@"clock"],
+            @"data": oldNotification.content.userInfo[@"data"],
+            @"defaults": oldNotification.content.userInfo[@"defaults"],
+            @"foreground": oldNotification.content.userInfo[@"foreground"],
+            @"fullScreenIntent": oldNotification.content.userInfo[@"fullScreenIntent"],
+            @"groupSummary": oldNotification.content.userInfo[@"groupSummary"],
+            @"id": @111111,
+            @"launch": oldNotification.content.userInfo[@"launch"],
+            @"led": oldNotification.content.userInfo[@"led"],
+            @"lockscreen": oldNotification.content.userInfo[@"lockscreen"],
+            @"meta": @{
+                @"plugin": @"cordova-plugin-local-notification",
+                @"version": @"0.9-beta.4"
+            },
+            @"number": oldNotification.content.userInfo[@"number"],
+            @"priority": oldNotification.content.userInfo[@"priority"],
+            @"progressBar": @{
+                @"enabled": @0,
+                @"value": @0
+            },
+            @"resetDelay": oldNotification.content.userInfo[@"resetDelay"],
+            @"silent": oldNotification.content.userInfo[@"silent"],
+            @"smallIcon": oldNotification.content.userInfo[@"smallIcon"],
+            @"sound": @1,
+            @"text": oldNotification.options.text,
+            @"timeoutAfter": [NSNull null],
+            @"title": @"",
+            @"trigger": @{
+                @"at": @1,
+                @"type": @"calendar"
+            },
+            @"triggerInApp": oldNotification.content.userInfo[@"triggerInApp"],
+            @"vibrate": oldNotification.content.userInfo[@"vibrate"],
+            @"wakeup": oldNotification.content.userInfo[@"wakeup"],
+        }];
+        if ([event isEqualToString:@"SNOOZE_ACTION_10"]) {
+            NSDate *newDate = [currentDate dateByAddingTimeInterval:(60 * 10)]; // 600 seconds in 10 minute
+            NSTimeInterval timestampInSeconds = [newDate timeIntervalSince1970];
+            NSNumber *timestampInMilliseconds = @((long long)(timestampInSeconds * 1000));
+            NSMutableDictionary *mutableTriggerDict = [notificationDict[@"trigger"] mutableCopy];
+            mutableTriggerDict[@"at"] = timestampInMilliseconds;
+            notificationDict[@"trigger"] = mutableTriggerDict;
+            // Schedule the new notification
+            APPNotificationContent* notification = [[APPNotificationContent alloc]
+                            initWithOptions:notificationDict];
+
+            [self scheduleNotification:notification];
+        }
+        
+        if ([event isEqualToString:@"SNOOZE_ACTION_1h"]) {
+            NSDate *newDate = [currentDate dateByAddingTimeInterval:(60 * 60)]; // 3600 seconds in 1 hour
+            NSTimeInterval timestampInSeconds = [newDate timeIntervalSince1970];
+            NSNumber *timestampInMilliseconds = @((long long)(timestampInSeconds * 1000));
+            NSMutableDictionary *mutableTriggerDict = [notificationDict[@"trigger"] mutableCopy];
+            mutableTriggerDict[@"at"] = timestampInMilliseconds;
+            notificationDict[@"trigger"] = mutableTriggerDict;
+            // Schedule the new notification
+            APPNotificationContent* notification = [[APPNotificationContent alloc]
+                            initWithOptions:notificationDict];
+
+            [self scheduleNotification:notification];
+        }
+        
+        if ([event isEqualToString:@"SNOOZE_ACTION_1d"]) {
+            NSDate *newDate = [currentDate dateByAddingTimeInterval:(60 * 60 * 24)]; // 86400 seconds in 1 day
+            NSTimeInterval timestampInSeconds = [newDate timeIntervalSince1970];
+            NSNumber *timestampInMilliseconds = @((long long)(timestampInSeconds * 1000));
+            NSMutableDictionary *mutableTriggerDict = [notificationDict[@"trigger"] mutableCopy];
+            mutableTriggerDict[@"at"] = timestampInMilliseconds;
+            notificationDict[@"trigger"] = mutableTriggerDict;
+            // Schedule the new notification
+            APPNotificationContent* notification = [[APPNotificationContent alloc]
+                            initWithOptions:notificationDict];
+
+            [self scheduleNotification:notification];
+        }
+    }
+    
     if ([response isKindOfClass:UNTextInputNotificationResponse.class]) {
         [data setObject:((UNTextInputNotificationResponse*) response).userText
                  forKey:@"text"];
