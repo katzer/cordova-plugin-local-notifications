@@ -22,7 +22,7 @@
 package de.appplant.cordova.plugin.notification.action;
 
 import android.content.Context;
-import androidx.core.app.RemoteInput;
+import android.support.v4.app.RemoteInput;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
