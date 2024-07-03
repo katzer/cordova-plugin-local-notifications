@@ -27,9 +27,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.MessagingStyle.Message;
-import androidx.media.app.NotificationCompat.MediaStyle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -150,14 +150,8 @@ public final class Builder {
                 .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (!sound.equals(Uri.EMPTY) && !isUpdate()) {
+        if (sound != Uri.EMPTY && !isUpdate()) {
             builder.setSound(sound);
-        }
-
-        // API < 26.  Setting sound to null will prevent playing if we have no sound for any reason,
-        // including a 0 volume.
-        if (options.isWithoutSound()) {
-            builder.setSound(null);
         }
 
         if (options.isWithProgressBar()) {
@@ -181,31 +175,12 @@ public final class Builder {
             builder.setSmallIcon(options.getSmallIcon());
         }
 
-        if (options.useFullScreenIntent()) {
-            applyFullScreenIntent(builder);
-        }
-
         applyStyle(builder);
         applyActions(builder);
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
         return new Notification(context, options, builder);
-    }
-
-    void applyFullScreenIntent(NotificationCompat.Builder builder) {
-        String pkgName  = context.getPackageName();
-
-        Intent intent = context
-            .getPackageManager()
-            .getLaunchIntentForPackage(pkgName)
-            .putExtra("launchNotificationId", options.getId());
-
-        int reqCode = random.nextInt();
-        // request code and flags not added for demo purposes
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, FLAG_UPDATE_CURRENT);
-
-        builder.setFullScreenIntent(pendingIntent, true);
     }
 
     /**
