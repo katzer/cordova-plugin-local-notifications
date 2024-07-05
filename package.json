@@ -24,6 +24,7 @@
     "cordova-android",
     "cordova-windows"
   ],
+  "types": "types/index.d.ts",
   "engines": [
     {
       "name": "cordova",
