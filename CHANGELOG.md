@@ -3,6 +3,14 @@ ChangeLog
 
 Please also read the [Upgrade Guide](https://github.com/katzer/cordova-plugin-local-notifications/wiki/Upgrade-Guide) for more information.
 
+#### Version 0.9.0-beta.3 (13.02.2018)
+
+#### Version 0.9.0-beta.2 (11.01.2018)
+
+#### Version 0.9.0-beta.1 (11.11.2017)
+
+#### Version 0.9.0-beta.0 (31.10.2017)
+
 #### Version 0.8.5 (22.05.2017)
 - iOS 10
 
