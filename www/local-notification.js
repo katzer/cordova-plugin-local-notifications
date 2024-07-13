@@ -786,10 +786,6 @@ exports._convertTrigger = function (options) {
         trigger.after = dateToNum(trigger.after);
     }
 
-    if (!trigger.count && device.platform == 'windows') {
-        trigger.count = trigger.every ? 5 : 1;
-    }
-
     if (trigger.count && device.platform == 'iOS') {
         console.warn('trigger: { count: } is not supported on iOS.');
     }

@@ -6,8 +6,7 @@
     "id": "cordova-plugin-local-notification",
     "platforms": [
       "android",
-      "ios",
-      "windows"
+      "ios"
     ]
   },
   "repository": {
@@ -21,8 +20,7 @@
     "user notification",
     "ecosystem:cordova",
     "cordova-ios",
-    "cordova-android",
-    "cordova-windows"
+    "cordova-android"
   ],
   "engines": [
     {
@@ -32,10 +30,6 @@
     {
       "name": "cordova-android",
       "version": ">=6.0.0"
-    },
-    {
-      "name": "cordova-windows",
-      "version": ">=4.2.0"
     },
     {
       "name": "android-sdk",
