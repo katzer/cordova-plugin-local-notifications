@@ -119,9 +119,11 @@
                 android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
                 android:exported="false" />
 
-            <service
-                android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
-                android:exported="false" />
+            <activity
+                android:name="de.appplant.cordova.plugin.localnotification.ClickHandlerActivity"
+                android:exported="false"
+                android:taskAffinity=""
+                android:excludeFromRecents="true" />
 
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
@@ -137,6 +139,8 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
             <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+            <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
         </config-file>
 
         <source-file
@@ -152,7 +156,11 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/ClickReceiver.java"
+            src="src/android/ClickHandlerActivity.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
+
+        <source-file
+            src="src/android/AlarmPermissionReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
@@ -173,10 +181,6 @@
 
         <source-file
             src="src/android/notification/receiver/AbstractClearReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
-
-        <source-file
-            src="src/android/notification/receiver/AbstractClickReceiver.java"
             target-dir="src/de/appplant/cordova/plugin/notification/receiver" />
 
         <source-file
@@ -205,6 +209,10 @@
 
         <source-file
             src="src/android/notification/util/AssetUtil.java"
+            target-dir="src/de/appplant/cordova/plugin/notification/util" />
+
+        <source-file
+            src="src/android/notification/util/CallbackContextUtil.java"
             target-dir="src/de/appplant/cordova/plugin/notification/util" />
 
         <source-file

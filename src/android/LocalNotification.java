@@ -29,6 +29,15 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.util.Pair;
 import android.view.View;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.util.Log;
+import android.content.Intent;
+import android.provider.Settings;
+import android.net.Uri;
+import android.os.Build;
+import android.app.AlarmManager;
+import android.content.IntentFilter;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -48,6 +57,8 @@ import de.appplant.cordova.plugin.notification.Notification;
 import de.appplant.cordova.plugin.notification.Options;
 import de.appplant.cordova.plugin.notification.Request;
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
+import de.appplant.cordova.plugin.notification.util.CallbackContextUtil;
+import de.appplant.cordova.plugin.localnotification.AlarmPermissionReceiver;
 
 import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
@@ -61,6 +72,8 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERE
 @SuppressWarnings({"Convert2Diamond", "Convert2Lambda"})
 public class LocalNotification extends CordovaPlugin {
 
+    public static final String TAG = "LocalNotification";
+
     // Reference to the web view for static access
     private static WeakReference<CordovaWebView> webView = null;
 
@@ -73,6 +86,8 @@ public class LocalNotification extends CordovaPlugin {
     // Launch details
     private static Pair<Integer, String> launchDetails;
 
+    private AlarmPermissionReceiver alarmPermissionReceiver = new AlarmPermissionReceiver();
+
     /**
      * Called after plugin construction and fields have been initialized.
      * Prefer to use pluginInitialize instead since there is no value in
@@ -81,6 +96,11 @@ public class LocalNotification extends CordovaPlugin {
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
         LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
+
+        this.cordova.getActivity().getApplicationContext().registerReceiver(
+            alarmPermissionReceiver,
+            new IntentFilter(AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED)
+        );
     }
 
     /**
@@ -100,6 +120,7 @@ public class LocalNotification extends CordovaPlugin {
     @Override
     public void onDestroy() {
         deviceready = false;
+        this.cordova.getActivity().getApplicationContext().unregisterReceiver(alarmPermissionReceiver);
     }
 
     /**
@@ -171,6 +192,15 @@ public class LocalNotification extends CordovaPlugin {
                 } else
                 if (action.equals("notifications")) {
                     notifications(args, command);
+                } else
+                if (action.equals("canScheduleExactAlarms")) {
+                    canScheduleExactAlarms(command);
+                } else
+                if (action.equals("openNotificationSettings")) {
+                    openNotificationSettings(command);
+                } else
+                if (action.equals("openAlarmSettings")) {
+                    openAlarmSettings(command);
                 }
             }
         });
@@ -210,8 +240,17 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void check (CallbackContext command) {
-        boolean allowed = getNotMgr().hasPermission();
+        boolean allowed = getNotMgr().areNotificationsEnabled();
         success(command, allowed);
+    }
+
+    /**
+     * Ask if if the setting to schedule exact alarms is enabled.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void canScheduleExactAlarms (CallbackContext command) {
+        success(command, getNotMgr().canScheduleExactAlarms());
     }
 
     /**
@@ -221,7 +260,23 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void request (CallbackContext command) {
-        check(command);
+        if (getNotMgr().areNotificationsEnabled()) {
+            success(command, true);
+
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            // Notifications are disabled and POST_NOTIFICATIONS runtime permission is not supported.
+            success(command, false);
+
+            return;
+        }
+
+        // Request the runtime permission.
+        int requestId = CallbackContextUtil.storeContext(command);
+
+        cordova.requestPermissions(this, requestId, new String[]{Manifest.permission.POST_NOTIFICATIONS});
     }
 
     /**
@@ -482,6 +537,42 @@ public class LocalNotification extends CordovaPlugin {
 
         command.success(new JSONArray(options));
     }
+    /**
+     * Open the Android Notification settings for current app.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void openNotificationSettings (CallbackContext command) {
+        String packageName = cordova.getActivity().getPackageName();
+        Intent intent = new Intent();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
+        } else {
+            // In old Android versions it's not possible to view notification settings, open app settings.
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + packageName));
+        }
+
+        cordova.getActivity().startActivity(intent);
+
+        command.success();
+    }
+
+    /**
+     * Open the Alarms & Reminders setting for current app.
+     *
+     * @param command The callback context used when calling back into JavaScript.
+     */
+    private void openAlarmSettings (CallbackContext command) {
+        String packageName = cordova.getActivity().getPackageName();
+        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + packageName));
+
+        cordova.getActivity().startActivity(intent);
+
+        command.success();
+    }
 
     /**
      * Call all pending callbacks after the deviceready event has been fired.
@@ -633,6 +724,18 @@ public class LocalNotification extends CordovaPlugin {
      */
     private Manager getNotMgr() {
         return Manager.getInstance(cordova.getActivity());
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+        try {
+            CallbackContext context = CallbackContextUtil.getContext(requestCode);
+            CallbackContextUtil.clearContext(requestCode);
+
+            success(context, grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        } catch (Exception e) {
+            String error = "Exception occurred onRequestPermissionsResult: ".concat(e.getMessage());
+            Log.e(TAG, error);
+        }
     }
 
 }

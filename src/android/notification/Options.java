@@ -27,9 +27,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.MessagingStyle.Message;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
+import androidx.core.app.Person;
+import androidx.core.graphics.drawable.IconCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,13 +45,13 @@ import de.appplant.cordova.plugin.notification.action.Action;
 import de.appplant.cordova.plugin.notification.action.ActionGroup;
 import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
-import static android.support.v4.app.NotificationCompat.DEFAULT_LIGHTS;
-import static android.support.v4.app.NotificationCompat.DEFAULT_SOUND;
-import static android.support.v4.app.NotificationCompat.DEFAULT_VIBRATE;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
-import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static android.support.v4.app.NotificationCompat.VISIBILITY_SECRET;
+import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
+import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;
+import static androidx.core.app.NotificationCompat.DEFAULT_VIBRATE;
+import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
+import static androidx.core.app.NotificationCompat.VISIBILITY_SECRET;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all
@@ -649,12 +651,39 @@ public final class Options {
             JSONObject msg = list.optJSONObject(i);
             String message = msg.optString("message");
             long timestamp = msg.optLong("date", now);
-            String person  = msg.optString("person", null);
+            String personName  = msg.optString("person", null);
+            String personIconString = msg.optString("personIcon", null);
 
-            messages[i] = new Message(message, timestamp, person);
+            IconCompat personIcon = null;
+
+            if (personIconString != null) {
+                try {
+                    Uri personIconUri = assets.parse(personIconString);
+                    Bitmap personIconBitmap = assets.getIconFromUri(personIconUri);
+                    personIconBitmap = AssetUtil.getCircleBitmap(personIconBitmap);
+                    personIcon = IconCompat.createWithBitmap(personIconBitmap);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            Person sender = new Person.Builder()
+                .setName(personName)
+                .setIcon(personIcon)
+                .build();
+
+            messages[i] = new Message(message, timestamp, sender);
         }
 
         return messages;
+    }
+
+    /**
+     * The message to add to the title to display the number of messages if there is more than one.
+     * Only if using MessagingStytle.
+     */
+    String getTitleCount() {
+        return options.optString("titleCount", null);
     }
 
     /**

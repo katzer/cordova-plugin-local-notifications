@@ -21,36 +21,54 @@
 
 package de.appplant.cordova.plugin.localnotification;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.RemoteInput;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.receiver.AbstractClickReceiver;
 
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
 import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
 import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
+import static de.appplant.cordova.plugin.notification.action.Action.CLICK_ACTION_ID;
+import static de.appplant.cordova.plugin.notification.action.Action.EXTRA_ID;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.
  * The activity calls the background callback and brings the launch intent
  * up to foreground.
  */
-public class ClickReceiver extends AbstractClickReceiver {
+public class ClickHandlerActivity extends Activity {
 
     /**
-     * Called when local notification was clicked by the user.
+     * Activity started when local notification was clicked by the user.
      *
      * @param notification Wrapper around the local notification.
      * @param bundle       The bundled extras.
      */
     @Override
-    public void onClick(Notification notification, Bundle bundle) {
-        String action   = getAction();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        int notId = intent.getExtras().getInt(Notification.EXTRA_ID);
+        String action = intent.getExtras().getString(EXTRA_ID, CLICK_ACTION_ID);
         JSONObject data = new JSONObject();
+
+        Notification notification = Manager.getInstance(getApplicationContext()).get(notId);
+
+        finish();
+
+        if (notification == null)
+            return;
 
         setTextInput(action, data);
         launchAppIf();
@@ -96,6 +114,27 @@ public class ClickReceiver extends AbstractClickReceiver {
             return;
 
         launchApp();
+    }
+
+    /**
+     * Launch main intent from package.
+     */
+    private void launchApp() {
+        Context context = getApplicationContext();
+        String pkgName  = context.getPackageName();
+
+        Intent intent = context
+                .getPackageManager()
+                .getLaunchIntentForPackage(pkgName);
+
+        if (intent == null)
+            return;
+
+        intent.addFlags(
+              FLAG_ACTIVITY_REORDER_TO_FRONT
+            | FLAG_ACTIVITY_SINGLE_TOP);
+
+        context.startActivity(intent);
     }
 
     /**
