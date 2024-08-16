@@ -119,6 +119,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void onDestroy() {
+        super.onDestroy();
         deviceready = false;
         this.cordova.getActivity().getApplicationContext().unregisterReceiver(alarmPermissionReceiver);
     }
