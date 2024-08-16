@@ -561,15 +561,19 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Open the Alarms & Reminders setting for current app.
+     * Open the Alarms & Reminders setting for the current app.
+     * This setting is available since Android 12 (SDK 31). If this method is called on
+     * Android 11 (SDK 30) or older, the method will just call command.success().
      *
      * @param command The callback context used when calling back into JavaScript.
      */
     private void openAlarmSettings (CallbackContext command) {
+        // Setting available since Android 12 (SDK 31)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         String packageName = cordova.getActivity().getPackageName();
         Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + packageName));
-
         cordova.getActivity().startActivity(intent);
+        }
 
         command.success();
     }
