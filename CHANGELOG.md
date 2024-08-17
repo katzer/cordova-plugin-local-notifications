@@ -2,6 +2,8 @@ ChangeLog
 ---------
 
 #### Version 1.0.0 (17.08.2024)
+This Release contains mainly changes and fixes for the Android platform.
+
 - Make Plugin compatible with Android 12-14
 - Support Android X
 - Minimum supported Android version is 7.0 (SDK 24). The target SDK is increased to 34 (Android 14).
