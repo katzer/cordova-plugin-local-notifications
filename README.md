@@ -84,13 +84,41 @@ cordova.plugins.notification.local.schedule([
 
 A notification does have a set of configurable properties. Not all of them are supported across all platforms.
 
-| Property      | Property      | Property      | Property      | Property      | Property      | Property      | Property      |
-| :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ | :------------ |
-| id            | data          | timeoutAfter  | summary       | led           | clock         | channel       | actions       |
-| text          | icon          | attachments   | smallIcon     | color         | defaults      | launch        | groupSummary  |
-| title         | silent        | progressBar   | sticky        | vibrate       | priority      | mediaSession  | foreground    |
-| sound         | trigger       | group         | autoClear     | lockscreen    | number        | badge         | wakeup        |
-| iconType
+| Property      |
+| :------------ |
+| actions       |
+| attachments   |
+| autoClear     |
+| badge         |
+| channel       |
+| clock         |
+| color         |
+| data          |
+| defaults      |
+| foreground    |
+| group         |
+| groupSummary  |
+| icon          |
+| iconType      |
+| id            |
+| launch        |
+| led           |
+| lockscreen    |
+| mediaSession  |
+| number        |
+| priority      |
+| progressBar   |
+| silent        |
+| smallIcon     |
+| sound         |
+| sticky        |
+| summary       |
+| text          |
+| timeoutAfter  |
+| title         |
+| trigger       |
+| vibrate       |
+| wakeup        |
 
 For their default values see:
 
