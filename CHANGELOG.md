@@ -4,6 +4,7 @@ ChangeLog
 #### Version 1.0.0 (17.08.2024)
 - Make Plugin compatible with Android 12-14
 - Support Android X
+- Minimum supported Android version is 7.0 (SDK 24). The target SDK is increased to 34 (Android 14).
 - Remove obsolete Windows platform
 - Fix crash with target Android 12 (SDK 31) which occured because of a pendingIntent change and not using `PendingIntent.FLAG_IMMUTABLE`
 - Fix click notifications in Android 12
