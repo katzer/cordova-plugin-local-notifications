@@ -24,7 +24,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-local-notification"
-        version="0.9.0-beta.3">
+        version="1.0.0">
 
     <name>LocalNotification</name>
 
@@ -37,15 +37,6 @@
     <license>Apache 2.0</license>
 
     <author>Sebastián Katzer</author>
-
-    <!-- cordova -->
-    <engines>
-        <engine name="cordova"         version=">=7.1.0"  />
-        <engine name="cordova-plugman" version=">=4.3.0"  />
-        <engine name="cordova-android" version=">=6.3.0"  />
-        <!-- <engine name="android-sdk"     version=">=26" /> -->
-        <engine name="apple-ios"       version=">=10.0.0" />
-    </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
