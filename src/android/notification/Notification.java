@@ -203,7 +203,7 @@ public final class Notification {
             return;
         }
 
-        boolean hasAlarmPermission = Manager.getInstance(context).canScheduleExactAlarms();
+        boolean canScheduleExactAlarms = Manager.getInstance(context).canScheduleExactAlarms();
         persist(ids);
 
         if (!options.isInfiniteTrigger()) {
@@ -231,7 +231,7 @@ public final class Notification {
             try {
                 switch (options.getPrio()) {
                     case PRIORITY_MIN:
-                        if (hasAlarmPermission) {
+                        if (canScheduleExactAlarms) {
                             mgr.setExact(RTC, time, pi);
                         } else {
                             mgr.set(RTC, time, pi);
@@ -239,13 +239,13 @@ public final class Notification {
                         break;
                     case PRIORITY_MAX:
                         if (SDK_INT >= M) {
-                            if (hasAlarmPermission) {
+                            if (canScheduleExactAlarms) {
                                 mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                             } else {
                                 mgr.setAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                             }
                         } else {
-                            if (hasAlarmPermission) {
+                            if (canScheduleExactAlarms) {
                                 mgr.setExact(RTC, time, pi);
                             } else {
                                 mgr.set(RTC, time, pi);
@@ -253,7 +253,7 @@ public final class Notification {
                         }
                         break;
                     default:
-                        if (hasAlarmPermission) {
+                        if (canScheduleExactAlarms) {
                             mgr.setExact(RTC_WAKEUP, time, pi);
                         } else {
                             mgr.set(RTC_WAKEUP, time, pi);
