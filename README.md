@@ -42,7 +42,7 @@
 
 ### Supported platforms
 
-- Android 4.4+
+- Android 7.0+
 - iOS 10+
 
 <br>
@@ -52,14 +52,7 @@
 
 Please make sure that you always read the tagged README for the version you're using.
 
-See the _0.8_ branch if you cannot upgrade. Further development for `v0.9-beta` will happen here. The `0.9-dev` and `ios10` branches are obsolate and will be removed soon.
-
-__Known issues__
-
-- Support for Android Oreo is limited yet.
-- v0.9 and v0.8 aren't compatible with each other (Wont fix)
-
-Please report bugs or missing features!
+Please report bugs or missing features.
 
 
 ## Basics
