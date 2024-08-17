@@ -139,12 +139,10 @@ public final class Request {
      * @return null if there's no trigger date.
      */
     public Date getTriggerDate() {
-        Calendar now = Calendar.getInstance();
-
-        if (triggerDate == null)
-            return null;
+        if (triggerDate == null) return null;
 
         long time = triggerDate.getTime();
+        Calendar now = Calendar.getInstance();
 
         // trigger date lays more then 60 seconds in the past, return null
         if ((now.getTimeInMillis() - time) > 60000)
