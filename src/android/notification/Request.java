@@ -146,6 +146,7 @@ public final class Request {
 
         long time = triggerDate.getTime();
 
+        // trigger date lays more then 60 seconds in the past, return null
         if ((now.getTimeInMillis() - time) > 60000)
             return null;
 

@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import java.util.List;
 import android.app.AlarmManager;
+import android.util.Log;
 
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
@@ -38,6 +39,8 @@ import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULE
  */
 public class AlarmPermissionReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "AlarmPermissionReceiver";
+
     /**
      * Called when the alarms and reminder permission changes.
      *
@@ -47,8 +50,12 @@ public class AlarmPermissionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+
+        // User granted exact alarms
         if (action.equalsIgnoreCase(AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED)) {
-            // Permission has been granted, reschedule all notifications to use exact time.
+            Log.d(TAG, "SCHEDULE_EXACT_ALARMS permission was granted, rescheduling notifications");
+
+            // Reschedule all notifications as exact notifications
             List<Notification> notifications = Manager.getInstance(context).getByType(SCHEDULED);
 
             for (Notification notification : notifications) {

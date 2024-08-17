@@ -186,9 +186,11 @@ public final class Builder {
      * @param builder Local notification builder instance.
      */
     private void applyStyle(NotificationCompat.Builder builder) {
+        // Build messages, if option text is filled by a JSONArray
         Message[] messages = options.getMessages();
         String summary     = options.getSummary();
 
+        // When option text contains a String, messages will be null
         if (messages != null) {
             applyMessagingStyle(builder, messages);
             return;

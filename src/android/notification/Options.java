@@ -629,9 +629,10 @@ public final class Options {
     }
 
     /**
-     * Gets the list of messages to display.
+     * Gets the list of messages to display. Only returns something, if option text is filled
+     * with a JSONArray. If it is filled with a String, the method will return null.
      *
-     * @return null if there are no messages.
+     * @return null if there are no messages, or option text contains a String.
      */
     Message[] getMessages() {
         Object text = options.opt("text");

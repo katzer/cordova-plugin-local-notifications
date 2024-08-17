@@ -61,6 +61,8 @@ import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
  */
 public final class Notification {
 
+    private static final String TAG = "Notification";
+
     // Used to differ notifications by their life cycle state
     public enum Type {
         ALL, SCHEDULED, TRIGGERED
@@ -183,8 +185,6 @@ public final class Notification {
         do {
             Date date = request.getTriggerDate();
 
-            Log.d("local-notification", "Next trigger at: " + date);
-
             if (date == null)
                 continue;
 
@@ -202,7 +202,7 @@ public final class Notification {
             unpersist();
             return;
         }
-
+        
         boolean canScheduleExactAlarms = Manager.getInstance(context).canScheduleExactAlarms();
         persist(ids);
 
@@ -228,6 +228,8 @@ public final class Notification {
                         context, 0, intent, FLAG_CANCEL_CURRENT);
             }
 
+            Log.d(TAG, "Schedule notification, trigger-date: " + date + ", canScheduleExactAlarms: " + canScheduleExactAlarms + ", prio: " + options.getPrio());
+
             try {
                 switch (options.getPrio()) {
                     case PRIORITY_MIN:
@@ -238,7 +240,20 @@ public final class Notification {
                         }
                         break;
                     case PRIORITY_MAX:
+                        // Since Android 6 (SDK Level 23)
                         if (SDK_INT >= M) {
+                            // Allow alarm to be executed even when the system is in low-power idle (a.k.a. doze) modes.
+                            //
+                            // A reasonable example would be for a calendar notification that should make a sound so the user is aware of it.
+                            // When the alarm is dispatched, the app will also be added to the system's temporary power exemption list for
+                            // approximately 10 seconds to allow that application to acquire further wake locks in which to complete its work.
+                            //
+                            // To reduce abuse, there are restrictions on how frequently these alarms will go off for a particular application.
+                            // Under normal system operation, it will not dispatch these alarms more than about every minute
+                            // (at which point every such pending alarm is dispatched);
+                            // when in low-power idle modes this duration may be significantly longer, such as 15 minutes.
+                            //
+                            // See for informations the Android Developer documentation.
                             if (canScheduleExactAlarms) {
                                 mgr.setExactAndAllowWhileIdle(RTC_WAKEUP, time, pi);
                             } else {
@@ -252,6 +267,7 @@ public final class Notification {
                             }
                         }
                         break;
+                    // Default priority
                     default:
                         if (canScheduleExactAlarms) {
                             mgr.setExact(RTC_WAKEUP, time, pi);
@@ -260,9 +276,11 @@ public final class Notification {
                         }
                         break;
                     }
-                } catch (Exception ignore) {
+
                     // Samsung devices have a known bug where a 500 alarms limit
                     // can crash the app
+                } catch (Exception exception) {
+                    Log.d(TAG, "Exception occurred during scheduling notification", exception);
                 }
         }
     }
