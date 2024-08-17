@@ -1,6 +1,40 @@
 ChangeLog
 ---------
 
+#### Version 1.0.0 (17.08.2024)
+- Make Plugin compatible with Android 12-14
+- Support Android X
+- Remove obsolete Windows platform
+- Fix crash with target Android 12 (SDK 31) which occured because of a pendingIntent change and not using `PendingIntent.FLAG_IMMUTABLE`
+- Fix click notifications in Android 12
+- Declare `SCHEDULE_EXACT_ALARM` permission, which is necessary for scheduling exact alarms since Android 12 (API 31). It is only pre-granted on Android 12. On Android 13 and newer, the user must grant the permission in the "Alarms & Reminders"-setting, if you still want exact alarms. If the permission is not granted, notifications will be scheduled inexact, which is still ok for the normal case.
+- Request `POST_NOTIFICATIONS` permission in Android 13 (API 33)
+- New methods for exact alarms:
+    - `canScheduleExactAlarms(successCallback, scope)` - Android only. Checks if the user has enabled the "Alarms & Reminders"-setting.  If not, the notificiatons will be scheduled inexact, which is still ok and will only be delayed by some minutes.
+        - On Android 12 the permission is granted by default
+        - On Android 13 and newer, the permission is not granted by default and have to be explicitly enabled by the user.
+        - On Android 11 and older, this method will always return `true` in the `successCallback`.
+    - `openAlarmSettings(successCallback, scope)` - Android only. Opens the "Alarms & Reminders"-settings as an Activity when running on Android 12 (SDK 31) or later, where the user can enable exact alarms. On Android older then 12, it will just call the `successCallback`, without doing anything. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
+        - If the user grants permission, already inexact scheduled notifications will automatically be rescheduled as exact alarms, but only if the app is still available in background.
+        - If exact alarms were alreay granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
+    - `openNotificationSettings(successCallback, scope)` - Opens the notifications settings of the app on Android 8 and newer. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used.
+        - On Android, the callback will just return "OK", after starting the activity.
+        - On Android older then 8, it opens the app details.
+        - On iOS it's not possible to open the notification settings, it will open the app settings.
+- Support sender image by new option `personIcon`
+- Initialize the sender as empty String instead of "Me" ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
+- Reuse existing messages when using MessagingStyle ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)). With this fix, users won't have to cache the messages in their Javascript code, the plugin will automatically check if there is an active notification with that ID and append the new messages to the existing ones. This will only be done when using MessagingStyle, which will be used, if the option `text` is filled with an `Array` instead of a `String`.
+- Added count of messages in a notification, wenn using Array for `text`. ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
+    - Added option `titleCount` to modify the count text of messages in a notification. The placeholder `%n%` can be used for inserting the messages count. If nothing is set, the text `(%n%)` will be used.
+- Use app name as a tag for the notify call ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
+- Use correct authority name ([PR #1853](https://github.com/katzer/cordova-plugin-local-notifications/pull/1853))
+- Replace `compile()` with `implementation()` in `localnotification.gradle`, because starting on Gradle 7.0 the compile-method is removed and will produce errors, like `Could not find method compile() for arguments...`
+- Raise minimum Version for Cordova dependencies
+    - Cordova to 12
+    - cordova-android to 13
+
+A lot of changes were adopted from [moodlemobile](https://github.com/moodlemobile/cordova-plugin-local-notification). Thanks for the work!
+
 #### Version 0.9.0-beta.3 (13.02.2018)
 
 #### Version 0.9.0-beta.2 (11.01.2018)
