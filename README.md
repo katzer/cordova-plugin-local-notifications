@@ -82,43 +82,48 @@ cordova.plugins.notification.local.schedule([
 
 ## Properties
 
-A notification does have a set of configurable properties. Not all of them are supported across all platforms.
+A notification does have a set of configurable properties.
 
-| Property      |
-| :------------ |
-| actions       |
-| attachments   |
-| autoClear     |
-| badge         |
-| channel       |
-| clock         |
-| color         |
-| data          |
-| defaults      |
-| foreground    |
-| group         |
-| groupSummary  |
-| icon          |
-| iconType      |
-| id            |
-| launch        |
-| led           |
-| lockscreen    |
-| mediaSession  |
-| number        |
-| priority      |
-| progressBar   |
-| silent        |
-| smallIcon     |
-| sound         |
-| sticky        |
-| summary       |
-| text          |
-| timeoutAfter  |
-| title         |
-| trigger       |
-| vibrate       |
-| wakeup        |
+<b>Not all of them are supported across all platforms.</b>
+
+<i>The table is not complete regarding the support.</i>
+
+
+| Property      | Android | iOS | Comment                   |
+| :------------ | :-------| :-- | :------------------------ |
+| actions       |         |     |                           |
+| attachments   |         |     |                           |
+| autoClear     |         |     |                           |
+| badge         |         |     |                           |
+| channel       |         |     |                           |
+| clock         |         |     |                           |
+| color         |         |     |                           |
+| data          |         |     |                           |
+| defaults      |         |     |                           |
+| foreground    |         |     |                           |
+| group         |         |     |                           |
+| groupSummary  |         |     |                           |
+| icon          |         |     |                           |
+| iconType      |         |     |                           |
+| id            |         |     |                           |
+| launch        |         |     |                           |
+| led           |         |     |                           |
+| lockscreen    |         |     |                           |
+| mediaSession  |         |     |                           |
+| number        |         |     |                           |
+| priority      |         |     |                           |
+| progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
+| silent        |         |     |                           |
+| smallIcon     |         |     |                           |
+| sound         |         |     |                           |
+| sticky        |         |     |                           |
+| summary       |         |     |                           |
+| text          |         |     |                           |
+| timeoutAfter  |         |     |                           |
+| title         |         |     |                           |
+| trigger       |         |     |                           |
+| vibrate       |         |     |                           |
+| wakeup        |         |     |                           |
 
 For their default values see:
 
@@ -327,7 +332,7 @@ The properties depend on the trigger type. Not all of them are supported across 
 
 ## Progress
 
-Notifications can include an animated progress indicator that shows users the status of an ongoing operation.
+Notifications can include an animated progress indicator that shows users the status of an ongoing operation. Android only.
 
 ```js
 cordova.plugins.notification.local.schedule({
