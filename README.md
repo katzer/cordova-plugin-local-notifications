@@ -120,7 +120,7 @@ A notification does have a set of configurable properties.
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
 | smallIcon     |         |     |                           |
-| sound         |         |     |                           |
+| sound         | (x)     | (x) | Property available but not useable. Cannot used to play a sound file. In Android it's only possible up to Android 7.1. Since Android 8, the channels take precedence and a channel would have to be created with a sound file, but this is not implemented yet. In iOS it would be possible, but must be implemented too. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
 | text          |         |     |                           |
