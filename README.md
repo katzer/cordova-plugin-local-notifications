@@ -121,7 +121,7 @@ A notification does have a set of configurable properties.
 | sound         | (x)     | (x) | Property available but not useable. Cannot used to play a sound file. In Android it's only possible up to Android 7.1. Since Android 8, the channels take precedence and a channel would have to be created with a sound file, but this is not implemented yet. In iOS it would be possible, but must be implemented too. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
-| text          |         |     |                           |
+| text          | x       | x   | Text of the notification. For Android exists some special features: 1. It can be a JSONArray to [summarize](#summarizing) notifications. [NotificationCompat.MessagingStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.MessagingStyle) will then be used. Using an JSONArray for iOS would result in a crash. 2. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) would be used. 3. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
 | timeoutAfter  |         |     |                           |
 | title         |         |     |                           |
 | trigger       |         |     |                           |
@@ -367,7 +367,7 @@ cordova.plugins.notification.local.schedule({
     <img src="images/android-inbox.png">
 </p>
 
-### Summarizing
+### Summarizing {#summarizing}
 
 Instead of displaying multiple notifications, you can create one notification that summarizes them all.
 
