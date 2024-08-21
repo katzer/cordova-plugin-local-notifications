@@ -367,7 +367,7 @@ cordova.plugins.notification.local.schedule({
     <img src="images/android-inbox.png">
 </p>
 
-### Summarizing {#summarizing}
+### Summarizing
 
 Instead of displaying multiple notifications, you can create one notification that summarizes them all.
 
