@@ -44,6 +44,7 @@ exports._defaults = {
     lockscreen    : true,
     mediaSession  : null,
     number        : 0,
+    onlyAlertOnce : false,
     priority      : 0,
     progressBar   : false,
     silent        : false,

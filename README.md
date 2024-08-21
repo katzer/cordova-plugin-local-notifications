@@ -116,6 +116,7 @@ A notification does have a set of configurable properties.
 | lockscreen    |         |     |                           |
 | mediaSession  |         |     |                           |
 | number        |         |     |                           |
+| onlyAlertOnce | x       | -   | Android only. Set this flag if you would only like the sound, vibrate and ticker to be played if the notification is not already showing (see [documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean))). |
 | priority      |         |     |                           |
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
