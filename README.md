@@ -563,9 +563,10 @@ Or install from local source:
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-Made with :yum: from Leipzig
+Made with :yum: from Leipzig and since 2024 from Cuxhaven
 
-© 2013 [appPlant GmbH][appplant]
+© 2013-2023 [appPlant GmbH][appplant]
+<br>© 2024 [Manuel Beck](https://manuelbeck.software)
 
 
 [ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
