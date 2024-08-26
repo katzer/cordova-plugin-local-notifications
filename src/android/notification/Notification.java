@@ -336,12 +336,8 @@ public final class Notification {
      * method and cancel it.
      */
     private void cancelScheduledAlarms() {
-        SharedPreferences prefs = getPrefs(PREF_KEY_PID);
-        String id               = options.getIdentifier();
-        Set<String> actions     = prefs.getStringSet(id, null);
-
-        if (actions == null)
-            return;
+        Set<String> actions = getPrefs(PREF_KEY_PID).getStringSet(options.getIdentifier(), null);
+        if (actions == null) return;
 
         for (String action : actions) {
             Intent intent = new Intent(action);
