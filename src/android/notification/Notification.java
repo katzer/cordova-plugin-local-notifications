@@ -312,7 +312,7 @@ public final class Notification {
      * Clear the local notification without canceling repeating alarms.
      */
     public void clear() {
-        getNotMgr().cancel(getId());
+        getNotMgr().cancel(getAppName(), getId());
         if (isRepeating()) return;
         unpersist();
     }
@@ -323,7 +323,7 @@ public final class Notification {
     public void cancel() {
         cancelScheduledAlarms();
         unpersist();
-        getNotMgr().cancel(getId());
+        getNotMgr().cancel(getAppName(), getId());
         clearCache();
     }
 
