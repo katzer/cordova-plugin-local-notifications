@@ -165,6 +165,8 @@ cordova.plugins.notification.local.schedule({
     <img width="31%" src="images/ios-actions.png">
 </p>
 
+Icons on action buttons are not displayed anymore since Android 7, [see documentation](https://developer.android.com/reference/android/app/Notification.Action.Builder#Builder(int,%20java.lang.CharSequence,%20android.app.PendingIntent))
+
 ### Input
 
 ```js
