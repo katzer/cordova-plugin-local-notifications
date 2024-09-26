@@ -125,7 +125,7 @@ A notification does have a set of configurable properties.
 | timeoutAfter  |         |     |                           |
 | title         |         |     |                           |
 | trigger       |         |     |                           |
-| vibrate       |         |     |                           |
+| vibrate       | (x)     | -   | <img src="images/android-icon.svg" width="16"> Android only. Currently not supported. Notification channels have to be integrated first. |
 | wakeup        |         |     |                           |
 
 For their default values see:
