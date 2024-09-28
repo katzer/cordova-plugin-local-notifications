@@ -52,11 +52,11 @@ interface LocalNotification {
     text?: string;
     title?: string;
     trigger?: {
-        at: Date;
+        at?: Date;
         before?: Date;
         center: [number, number];
         count?: number;
-        every: 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year' | {
+        every?: 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year' | {
             second?: number;
             minute?: number;
             hour?: number;
@@ -86,7 +86,7 @@ interface CordovaPlugins {
         local: {
             hasPermission(callback?:  Function, scope?: Object): void;
             requestPermission(callback?: Function, scope?: Object): void;
-            schedule(notifications: LocalNotification[], callback?: Function, scope?: Object): void;
+            schedule(notifications: LocalNotification | LocalNotification[] , callback?: Function, scope?: Object): void;
             update(notifications: LocalNotification[], callback?: Function, scope?: Object): void;
             clear(ids: number[], callback?: Function, scope?: Object): void;
             clearAll(callback?: Function, scope?: Object): void;
