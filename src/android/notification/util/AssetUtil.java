@@ -41,6 +41,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Paint;
+import android.graphics.Canvas;
+
 /**
  * Util class to map unified asset URIs to native URIs. URIs like file:///
  * map to absolute paths while file:// point relatively to the www folder
@@ -285,6 +293,42 @@ public final class AssetUtil {
     public Bitmap getIconFromUri(Uri uri) throws IOException {
         InputStream input = context.getContentResolver().openInputStream(uri);
         return BitmapFactory.decodeStream(input);
+    }
+
+    /**
+     * Convert a bitmap to a circular bitmap.
+     * This code has been extracted from the Phonegap Plugin Push plugin:
+     * https://github.com/phonegap/phonegap-plugin-push
+     *
+     * @param bitmap Bitmap to convert.
+     * @return Circular bitmap.
+     */
+    public static Bitmap getCircleBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        float cx = bitmap.getWidth() / 2;
+        float cy = bitmap.getHeight() / 2;
+        float radius = cx < cy ? cx : cy;
+        canvas.drawCircle(cx, cy, radius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 
     /**

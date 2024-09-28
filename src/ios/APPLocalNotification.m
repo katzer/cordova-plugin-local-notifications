@@ -104,17 +104,6 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
         for (NSDictionary* options in notifications) {
             APPNotificationContent* notification;
 
-            // Delete an existing alarm with this ID first
-            NSNumber* id = [options objectForKey:@"id"];
-            UNNotificationRequest* oldNotification;
-
-            oldNotification = [_center getNotificationWithId:id];
-
-            if (oldNotification) {
-                [_center cancelNotification:oldNotification];
-            }
-
-            // Schedule the new notification
             notification = [[APPNotificationContent alloc]
                             initWithOptions:options];
 
@@ -434,6 +423,34 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
                 break;
         }
     }];
+}
+
+/**
+ * Open native settings to enable notifications.
+ * In iOS it's not possible to open the notification settings, only the app settings.
+ *
+ * @return [ Void ]
+ */
+- (void) openNotificationSettings:(CDVInvokedUrlCommand*)command
+{
+    @try {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString: UIApplicationOpenSettingsURLString] options:@{} completionHandler:^(BOOL success) {
+            if (success) {
+                [self.commandDelegate
+                    sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
+                    callbackId:command.callbackId];
+            } else {
+                [self.commandDelegate
+                    sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR]
+                    callbackId:command.callbackId];
+            }
+        }];
+    }
+    @catch (NSException *exception) {
+        [self.commandDelegate
+            sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:exception.reason]
+            callbackId:command.callbackId];
+    }
 }
 
 #pragma mark -

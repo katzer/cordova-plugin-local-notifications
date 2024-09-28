@@ -139,13 +139,12 @@ public final class Request {
      * @return null if there's no trigger date.
      */
     public Date getTriggerDate() {
-        Calendar now = Calendar.getInstance();
-
-        if (triggerDate == null)
-            return null;
+        if (triggerDate == null) return null;
 
         long time = triggerDate.getTime();
+        Calendar now = Calendar.getInstance();
 
+        // trigger date lays more then 60 seconds in the past, return null
         if ((now.getTimeInMillis() - time) > 60000)
             return null;
 
@@ -258,9 +257,6 @@ public final class Request {
      * Gets the base date from where to calculate the next trigger date.
      */
     private Date getBaseDate() {
-        if (spec.has("requestBaseDate")) {
-            return new Date(spec.optLong("requestBaseDate"));
-        } else
         if (spec.has("at")) {
             return new Date(spec.optLong("at", 0));
         } else

@@ -25,12 +25,10 @@ var exec    = require('cordova/exec'),
 // Defaults
 exports._defaults = {
     actions       : [],
-    alarmVolume   : -1,
     attachments   : [],
-    autoLaunch    : false,
     autoClear     : true,
     badge         : null,
-    channelName   : null,
+    channel       : null,
     clock         : true,
     color         : null,
     data          : null,
@@ -46,9 +44,9 @@ exports._defaults = {
     lockscreen    : true,
     mediaSession  : null,
     number        : 0,
+    onlyAlertOnce : false,
     priority      : 0,
     progressBar   : false,
-    resetDelay   : 5,
     silent        : false,
     smallIcon     : 'res://icon',
     sound         : true,
@@ -59,11 +57,7 @@ exports._defaults = {
     title         : '',
     trigger       : { type : 'calendar' },
     vibrate       : false,
-    wakeup        : true,
-    channelId     : null,
-    wakeLockTimeout: null,
-    fullScreenIntent: false,
-    triggerInApp: false
+    wakeup        : true
 };
 
 // Event listener
@@ -82,6 +76,18 @@ exports.hasPermission = function (callback, scope) {
 };
 
 /**
+ * Check permission to schedule exact alarms. Android only.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.canScheduleExactAlarms = function (callback, scope) {
+    this._exec('canScheduleExactAlarms', null, callback, scope);
+};
+
+/**
  * Request permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
@@ -92,61 +98,6 @@ exports.hasPermission = function (callback, scope) {
 exports.requestPermission = function (callback, scope) {
     this._exec('request', null, callback, scope);
 };
-
-/**
- * Check to see if the user has allowed "Do Not Disturb" permissions for this app.
- * This is required to use alarmVolume to take a user out of silent mode.
- *
- * @param {Function} callback The function to be exec as the callback.
- * @param {Object} scope callback function's scope
- */
-exports.hasDoNotDisturbPermissions = function (callback, scope) {
-    this._exec('hasDoNotDisturbPermissions', null, callback, scope);
-}
-
-/**
- * Request "Do Not Disturb" permissions for this app.
- * The only way to do this is to launch the global do not distrub settings for all apps.
- * This permission is required to use alarmVolume to take a user out of silent mode.
- *
- * @param {Function} callback The function to be exec as the callback.
- * @param {Object} scope callback function's scope.
- */
-exports.requestDoNotDisturbPermissions = function (callback, scope) {
-    this._exec('requestDoNotDisturbPermissions', null, callback, scope);
-}
-
-/**
- * Check to see if the app is ignoring battery optimizations.  This needs
- * to be whitelisted by the user.
- *
- * Callback contains true or false for whether or not we have this permission.
- *
- * @param {Function} callback The function to be exec as the callback.
- * @param {Object} scope callback function's scope
- */
-exports.isIgnoringBatteryOptimizations = function (callback, scope) {
-    this._exec('isIgnoringBatteryOptimizations', null, callback, scope);
-}
-
-/**
- * Request permission to ignore battery optimizations.
- * The only way to do this is to launch the global battery optimization settings for all apps.
- * This permission is required to allow alarm to trigger logic within the app while the app is dead.
- *
- * Callback is deferred until user returns.
- *
- * @param {Function} callback The function to be exec as the callback.
- * @param {Object} scope callback function's scope
- */
-exports.requestIgnoreBatteryOptimizations = function (callback, scope) {
-    if (device.platform === 'iOS') {
-        console.warn('[Notifications] requestIgnoreBatteryOptimizations not supported on iOS');
-        callback(true);
-    }
-
-    this._exec('requestIgnoreBatteryOptimizations', null, callback, scope);
-}
 
 /**
  * Schedule notifications.
@@ -605,6 +556,30 @@ exports.fireQueuedEvents = function() {
 };
 
 /**
+ * Open native settings to enable notifications.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.openNotificationSettings = function (callback, scope) {
+    this._exec('openNotificationSettings', null, callback, scope);
+};
+
+/**
+ * Open native settings to enable alarms & reminders. Android only.
+ *
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.openAlarmSettings = function (callback, scope) {
+    this._exec('openAlarmSettings', null, callback, scope);
+};
+
+/**
  * Merge custom properties with the default values.
  *
  * @param [ Object ] options Set of custom values.
@@ -638,7 +613,7 @@ exports._mergeWithDefaults = function (options) {
 
     options.meta = {
         plugin:  'cordova-plugin-local-notification',
-        version: '0.9-beta.4'
+        version: '1.0.1-dev'
     };
 
     return options;
@@ -810,10 +785,6 @@ exports._convertTrigger = function (options) {
 
     if (isCal && trigger.after) {
         trigger.after = dateToNum(trigger.after);
-    }
-
-    if (!trigger.count && device.platform == 'windows') {
-        trigger.count = trigger.every ? 5 : 1;
     }
 
     if (trigger.count && device.platform == 'iOS') {

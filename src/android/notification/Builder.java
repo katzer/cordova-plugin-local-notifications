@@ -31,18 +31,15 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Paint;
-import android.graphics.Canvas;
+import android.app.NotificationManager;
+import android.service.notification.StatusBarNotification;
+import android.os.Build;
 
 import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
+import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
@@ -132,7 +129,7 @@ public final class Builder {
         builder = findOrCreateBuilder()
                 .setDefaults(options.getDefaults())
                 .setExtras(extras)
-                .setOnlyAlertOnce(false)
+                .setOnlyAlertOnce(options.isOnlyAlertOnce())
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
@@ -150,14 +147,8 @@ public final class Builder {
                 .setTimeoutAfter(options.getTimeout())
                 .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
 
-        if (!sound.equals(Uri.EMPTY) && !isUpdate()) {
+        if (sound != Uri.EMPTY && !isUpdate()) {
             builder.setSound(sound);
-        }
-
-        // API < 26.  Setting sound to null will prevent playing if we have no sound for any reason,
-        // including a 0 volume.
-        if (options.isWithoutSound()) {
-            builder.setSound(null);
         }
 
         if (options.isWithProgressBar()) {
@@ -173,16 +164,12 @@ public final class Builder {
             Bitmap largeIcon = options.getLargeIcon();
 
             if (options.getLargeIconType().equals("circle")) {
-                largeIcon = getCircleBitmap(largeIcon);
+                largeIcon = AssetUtil.getCircleBitmap(largeIcon);
             }
 
             builder.setLargeIcon(largeIcon);
         } else {
             builder.setSmallIcon(options.getSmallIcon());
-        }
-
-        if (options.useFullScreenIntent()) {
-            applyFullScreenIntent(builder);
         }
 
         applyStyle(builder);
@@ -193,66 +180,16 @@ public final class Builder {
         return new Notification(context, options, builder);
     }
 
-    void applyFullScreenIntent(NotificationCompat.Builder builder) {
-        String pkgName  = context.getPackageName();
-
-        Intent intent = context
-            .getPackageManager()
-            .getLaunchIntentForPackage(pkgName)
-            .putExtra("launchNotificationId", options.getId());
-
-        int reqCode = random.nextInt();
-        // request code and flags not added for demo purposes
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, FLAG_UPDATE_CURRENT);
-
-        builder.setFullScreenIntent(pendingIntent, true);
-    }
-
-    /**
-     * Convert a bitmap to a circular bitmap.
-     * This code has been extracted from the Phonegap Plugin Push plugin:
-     * https://github.com/phonegap/phonegap-plugin-push
-     *
-     * @param bitmap Bitmap to convert.
-     * @return Circular bitmap.
-     */
-    private Bitmap getCircleBitmap(Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
-        }
-
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        float cx = bitmap.getWidth() / 2;
-        float cy = bitmap.getHeight() / 2;
-        float radius = cx < cy ? cx : cy;
-        canvas.drawCircle(cx, cy, radius, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        bitmap.recycle();
-
-        return output;
-    }
-
     /**
      * Find out and set the notification style.
      *
      * @param builder Local notification builder instance.
      */
     private void applyStyle(NotificationCompat.Builder builder) {
+        // Check if option text is a JSONArray, will be null if it is a String
         Message[] messages = options.getMessages();
-        String summary     = options.getSummary();
 
+        // text is a JSONArray
         if (messages != null) {
             applyMessagingStyle(builder, messages);
             return;
@@ -279,14 +216,14 @@ public final class Builder {
             return;
         }
 
-        if (text == null || summary == null && text.length() < 45)
+        if (text == null || options.getSummary() == null && text.length() < 45)
             return;
 
         applyBigTextStyle(builder);
     }
 
     /**
-     * Apply inbox style.
+     * Apply messaging style.
      *
      * @param builder  Local notification builder instance.
      * @param messages The messages to add to the conversation.
@@ -295,14 +232,43 @@ public final class Builder {
                                      Message[] messages) {
 
         NotificationCompat.MessagingStyle style;
+        String title = options.getTitle();
 
-        style = new NotificationCompat.MessagingStyle("Me")
-                .setConversationTitle(options.getTitle());
+        // Find if there is a notification already displayed with this ID.
+        android.app.Notification notification = findActiveNotification(options.getId());
 
+        if (notification != null) {
+            // Notification already displayed. Extract the MessagingStyle to add the message.
+            style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(notification);
+        } else {
+            // There is no notification, create a new style.
+            style = new NotificationCompat.MessagingStyle("");
+        }
+
+        // Add the new messages to the style.
         for (Message msg : messages) {
             style.addMessage(msg);
         }
 
+        // Add the count of messages to the title if there is more than 1.
+        Integer sizeList = style.getMessages().size();
+
+        if (sizeList > 1) {
+            String count = "(" + sizeList + ")"; // Default value.
+
+            if (options.getTitleCount() != null) {
+                count = options.getTitleCount();
+                count = count.replace("%n%", "" + sizeList);
+            }
+
+            if (!count.trim().equals("")) {
+                title += " " + count;
+            }
+        }
+
+        style.setConversationTitle(title);
+
+        // Use the style.
         builder.setStyle(style);
     }
 
@@ -398,8 +364,15 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent deleteIntent = PendingIntent.getBroadcast(
+        PendingIntent deleteIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            deleteIntent = PendingIntent.getBroadcast(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            deleteIntent  = PendingIntent.getBroadcast(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+
+        }
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -419,7 +392,7 @@ public final class Builder {
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
                 .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         if (extras != null) {
             intent.putExtras(extras);
@@ -427,9 +400,15 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent contentIntent = PendingIntent.getService(
+        PendingIntent contentIntent ;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            contentIntent = PendingIntent.getActivity(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            contentIntent  = PendingIntent.getActivity(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
+        }
         builder.setContentIntent(contentIntent);
     }
 
@@ -469,7 +448,7 @@ public final class Builder {
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
-                .setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         if (extras != null) {
             intent.putExtras(extras);
@@ -477,8 +456,13 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        return PendingIntent.getService(
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            return PendingIntent.getActivity(
+                context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        } else {
+            return PendingIntent.getActivity(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        }
     }
 
     /**
@@ -502,6 +486,29 @@ public final class Builder {
         }
 
         return builder;
+    }
+
+    /**
+     * Find an active notification with a certain ID.
+     *
+     * @param  notId   Notification ID to find.
+     * @return Notification The active notification, null if not found.
+     */
+    private android.app.Notification findActiveNotification(Integer notId) {
+        // The getActiveNotifications method is only available from Android M.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
+
+            // Find the notification.
+            for (int i = 0; i < notifications.length; i++) {
+                if (notifications[i].getId() == notId) {
+                    return notifications[i].getNotification();
+                }
+            }
+        }
+
+        return null;
     }
 
 }
