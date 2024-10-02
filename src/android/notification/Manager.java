@@ -31,6 +31,9 @@ import android.content.SharedPreferences;
 import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationManagerCompat;
 import android.app.AlarmManager;
+import android.media.AudioAttributes;
+import android.net.Uri;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +51,7 @@ import static android.os.Build.VERSION_CODES.S;
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
+import de.appplant.cordova.plugin.notification.util.AssetUtil;
 
 /**
  * Central way to access all or single local notifications set by specific
@@ -139,6 +143,85 @@ public final class Manager {
 
         mgr.createNotificationChannel(channel);
     }
+
+    /**
+     * Create Notification channel with options
+     */
+
+
+    public void createChannel(JSONObject options) {
+        NotificationManager mgr = getNotMgr();
+
+        if (SDK_INT < O)
+            return;
+
+        String channelId = options.optString("channelId", "");
+        CharSequence channelName = options.optString("channelName", "");
+
+        int importance = options.optInt("importance",IMPORTANCE_DEFAULT);
+
+        
+        NotificationChannel channel = mgr.getNotificationChannel(channelId);
+        
+        if (channel != null)
+        // Channel already exists 
+        // potentially add an option to delete the existing channel in this case?
+        return;
+        
+        channel = new NotificationChannel(channelId, channelName, importance);
+
+        if(options.has("vibrate")){
+            Boolean shouldVibrate  = options.optBoolean("vibrate", false);
+            channel.enableVibration(shouldVibrate);
+        }
+
+        if(options.has("sound")){
+
+            AssetUtil assets = AssetUtil.getInstance(this.context);
+            Uri soundUri = assets.parse(options.optString("sound", null));
+    
+            if (!soundUri.equals(Uri.EMPTY)) {
+    
+               
+                if(options.has("soundUsage") ){
+                    /*USAGE_UNKNOWN = 0
+                    USAGE_MEDIA = 1
+                    USAGE_VOICE_COMMUNICATION = 2
+                    USAGE_VOICE_COMMUNICATION_SIGNALLING = 3
+                    USAGE_ALARM = 4
+                    USAGE_NOTIFICATION = 5
+                    USAGE_NOTIFICATION_RINGTONE = 6
+                    USAGE_NOTIFICATION_COMMUNICATION_REQUEST = 7
+                    USAGE_NOTIFICATION_COMMUNICATION_INSTANT = 8
+                    USAGE_NOTIFICATION_COMMUNICATION_DELAYED = 9
+                    USAGE_NOTIFICATION_EVENT = 10
+                    USAGE_ASSISTANCE_ACCESSIBILITY = 11
+                    USAGE_ASSISTANCE_NAVIGATION_GUIDANCE = 12
+                    USAGE_ASSISTANCE_SONIFICATION = 13
+                    USAGE_GAME = 14
+                    USAGE_ASSISTANT = 16 */
+
+                    Integer usage = options.optInt("soundUsage",AudioAttributes.USAGE_NOTIFICATION);
+
+                }else{
+                    Integer usage = AudioAttributes.USAGE_NOTIFICATION;
+                }
+    
+                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
+                        .build();
+                channel.setSound(soundUri, attributes);
+            }else{
+                channel.setSound(null, null);
+            }
+        }
+
+        if(options.has("description")){
+            channel.setDescription(options.optString("description", " "));
+        }
+
+        mgr.createNotificationChannel(channel);
+    }
+
 
     /**
      * Update local notification specified by ID.

@@ -156,6 +156,9 @@ public class LocalNotification extends CordovaPlugin {
             public void run() {
                 if (action.equals("ready")) {
                     deviceready();
+                } else                
+                if (action.equals("createChannel")) {
+                    createChannel(args, command);
                 } else
                 if (action.equals("check")) {
                     check(command);
@@ -334,6 +337,24 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         check(command);
+    }    
+    
+    
+    
+    /**
+     * Create Notification channel with options.
+     *
+     * @param args  The channel options.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void createChannel (JSONArray args, CallbackContext command) {
+        Manager mgr = getNotMgr();
+        JSONObject options = args.optJSONObject(0);
+        
+        mgr.createChannel(options);
+
+        command.success();
     }
 
     /**
