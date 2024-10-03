@@ -54,29 +54,6 @@ Please make sure that you always read the tagged README for the version you're u
 
 Please report bugs or missing features.
 
-## Lacking features
-
-### Android
-
-- Channels are not configurable. A default channel will be created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. The name ist not translatable.
-
-With this fork, it is possible to create configurable Android notification channels as follows: 
-
-```js
-cordova.plugins.notification.local.createChannel({
-    channelId:'my_ch_id', // string
-    channelName:'My Channel Name', // string 
-    description:"Description of channel", // string (optional)
-    sound: 'file://audio/ring.mp3', // string (optional) 
-    vibrate: true, // bool (optional)
-    importance: 3, // int (optional) 0 to 4 
-    soundUsage: 5, // int  (optional) see https://developer.android.com/reference/android/media/AudioAttributes.Builder#setUsage(int)
-  },success_callback)
-```
-
-Then use the `channelId` value as the `channel` when scheduling a notification. It is not possible to update a channel once it is created.
-
-
 ## Basics
 
 The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.
@@ -117,7 +94,7 @@ A notification does have a set of configurable properties.
 | attachments   |         |     |                           |
 | autoClear     |         |     |                           |
 | badge         |         |     |                           |
-| channel       | x       | -   | Don't use it, it is not functional. Since Android 8: Channel-ID of the chanel. In the future it will be renamed to channelId |
+| channel       | x       | -   | Channel-ID of the channel (see: ). In the future it will be renamed to channelId |
 | clock         |         |     |                           |
 | color         |         |     |                           |
 | data          |         |     |                           |
@@ -137,14 +114,14 @@ A notification does have a set of configurable properties.
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
 | smallIcon     |         |     |                           |
-| sound         | (x)     | (x) | Property available but not useable. Cannot used to play a sound file. In Android it's only possible up to Android 7.1. Since Android 8, the channels take precedence and a channel would have to be created with a sound file, but this is not implemented yet. In iOS it would be possible, but must be implemented too. |
+| sound         | (x)     | (x) | Property available but not useable. In Android it may work up to Android 7.1. Since Android 8 it must be set with createChannel. In iOS it would be possible, but must be implemented too. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
 | text          |         |     |                           |
 | timeoutAfter  |         |     |                           |
 | title         |         |     |                           |
 | trigger       |         |     |                           |
-| vibrate       |         |     |                           |
+| vibrate       | (x)     |     | Since Android 8 it must be set with channel. |
 | wakeup        |         |     |                           |
 
 For their default values see:
@@ -540,9 +517,58 @@ See the sample app for how to use them.
 | :------- | :---------------- | :-------------- | :------------- | :------------ | :--------------- |
 | schedule | cancelAll         | isTriggered     | get            | removeActions | un               |
 | update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents |
-| clear    | requestPermission | getIds          | getScheduled   | getDefaults   |
-| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   |
+| clear    | requestPermission | getIds          | getScheduled   | getDefaults   | createChannel    |
+| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | canScheduleExactAlarms|
 | cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
+
+
+
+## Android Notification Channels
+
+On Android 8 and above a Notification Channel is required and is the only way to set a non-default sound, vibration or importance. 
+
+A default channel is automatically created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. (The name is not translatable.) Any notification that doesn't specify a `channel` will use this default channel with default sound and vibration settings.
+
+To customize vibration, sound, or importance, create a channel as follows: 
+
+```js
+cordova.plugins.notification.local.createChannel({
+    channelId:'my_ch_id', // string
+    channelName:'My Channel Name', // string 
+    description:"Description of channel", // string (optional)
+    sound: 'file://audio/ring.mp3', // string (optional) 
+    vibrate: true, // bool (optional)
+    importance: 3, // int (optional) 0 to 4 
+    soundUsage: 5, // int (optional) 
+  }, success_callback)
+```
+
+**Options for `importance`** [Documentation](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT)  
+0 IMPORTANCE_NONE  
+1 IMPORTANCE_MIN  
+2 IMPORTANCE_LOW  
+3 IMPORTANCE_DEFAULT  
+4 IMPORTANCE_HIGH  
+
+**Options for `soundUsage`** [Documentation](https://developer.android.com/reference/android/media/AudioAttributes.Builder#setUsage(int))  
+0: USAGE_UNKNOWN  
+1: USAGE_MEDIA  
+2: USAGE_VOICE_COMMUNICATION  
+3: USAGE_VOICE_COMMUNICATION_SIGNALLING  
+4: USAGE_ALARM  
+5: USAGE_NOTIFICATION  
+6: USAGE_NOTIFICATION_RINGTONE  
+7: USAGE_NOTIFICATION_COMMUNICATION_REQUEST  
+8: USAGE_NOTIFICATION_COMMUNICATION_INSTANT  
+9: USAGE_NOTIFICATION_COMMUNICATION_DELAYED  
+10: USAGE_NOTIFICATION_EVENT  
+11: USAGE_ASSISTANCE_ACCESSIBILITY  
+12: USAGE_ASSISTANCE_NAVIGATION_GUIDANCE  
+13: USAGE_ASSISTANCE_SONIFICATION  
+14: USAGE_GAME  
+16: USAGE_ASSISTANT  
+
+Then use the `channelId` value as the `channel` when scheduling a notification. It is not possible to programmatically update a channel once it has been created. 
 
 
 ## Installation

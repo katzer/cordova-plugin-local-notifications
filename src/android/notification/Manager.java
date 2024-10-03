@@ -146,9 +146,9 @@ public final class Manager {
 
     /**
      * Create Notification channel with options
+     * @param options Set of channel options.
+     * 
      */
-
-
     public void createChannel(JSONObject options) {
         NotificationManager mgr = getNotMgr();
 
@@ -157,16 +157,11 @@ public final class Manager {
 
         String channelId = options.optString("channelId", "");
         CharSequence channelName = options.optString("channelName", "");
-
         int importance = options.optInt("importance",IMPORTANCE_DEFAULT);
-
-        
         NotificationChannel channel = mgr.getNotificationChannel(channelId);
         
         if (channel != null)
-        // Channel already exists 
-        // potentially add an option to delete the existing channel in this case?
-        return;
+            return;
         
         channel = new NotificationChannel(channelId, channelName, importance);
 
@@ -176,31 +171,10 @@ public final class Manager {
         }
 
         if(options.has("sound")){
-
             AssetUtil assets = AssetUtil.getInstance(this.context);
             Uri soundUri = assets.parse(options.optString("sound", null));
     
             if (!soundUri.equals(Uri.EMPTY)) {
-               
-                /*
-                soundUsage options
-                USAGE_UNKNOWN = 0
-                USAGE_MEDIA = 1
-                USAGE_VOICE_COMMUNICATION = 2
-                USAGE_VOICE_COMMUNICATION_SIGNALLING = 3
-                USAGE_ALARM = 4
-                USAGE_NOTIFICATION = 5
-                USAGE_NOTIFICATION_RINGTONE = 6
-                USAGE_NOTIFICATION_COMMUNICATION_REQUEST = 7
-                USAGE_NOTIFICATION_COMMUNICATION_INSTANT = 8
-                USAGE_NOTIFICATION_COMMUNICATION_DELAYED = 9
-                USAGE_NOTIFICATION_EVENT = 10
-                USAGE_ASSISTANCE_ACCESSIBILITY = 11
-                USAGE_ASSISTANCE_NAVIGATION_GUIDANCE = 12
-                USAGE_ASSISTANCE_SONIFICATION = 13
-                USAGE_GAME = 14
-                USAGE_ASSISTANT = 16 */
-
                 AudioAttributes attributes = new AudioAttributes.Builder().setUsage(options.optInt("soundUsage",AudioAttributes.USAGE_NOTIFICATION)).build();
                 channel.setSound(soundUri, attributes);
             }else{
