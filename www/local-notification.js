@@ -63,9 +63,9 @@ exports._defaults = {
 exports._listener = {};
 
 /**
- * Create Channel
+ * Create Notification Channel. Android only.
  *
- * @param [ Function ] options object .
+ * @param [ Object ]   options  channel config options.
  * @param [ Function ] callback The function to be exec as the callback.
  * @param [ Object ]   scope    The callback function's scope.
  *
@@ -83,12 +83,8 @@ exports.createChannel = function (options, callback, scope) {
         return false;
     }
 
-
-
     var toasts = this._toArray(options);
 
-
-    console.log('createChannel Called', options, callback)
     this._exec('createChannel', toasts, callback, scope);
 };
 

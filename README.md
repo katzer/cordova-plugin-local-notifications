@@ -60,6 +60,23 @@ Please report bugs or missing features.
 
 - Channels are not configurable. A default channel will be created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. The name ist not translatable.
 
+With this fork, it is possible to create configurable Android notification channels as follows: 
+
+```js
+cordova.plugins.notification.local.createChannel({
+    channelId:'my_ch_id', // string
+    channelName:'My Channel Name', // string 
+    description:"Description of channel", // string (optional)
+    sound: 'file://audio/ring.mp3', // string (optional) 
+    vibrate: true, // bool (optional)
+    importance: 3, // int (optional) 0 to 4 
+    soundUsage: 5, // int  (optional) see https://developer.android.com/reference/android/media/AudioAttributes.Builder#setUsage(int)
+  },success_callback)
+```
+
+Then use the `channelId` value as the `channel` when scheduling a notification. It is not possible to update a channel once it is created.
+
+
 ## Basics
 
 The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.

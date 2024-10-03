@@ -181,34 +181,27 @@ public final class Manager {
             Uri soundUri = assets.parse(options.optString("sound", null));
     
             if (!soundUri.equals(Uri.EMPTY)) {
-    
                
-                if(options.has("soundUsage") ){
-                    /*USAGE_UNKNOWN = 0
-                    USAGE_MEDIA = 1
-                    USAGE_VOICE_COMMUNICATION = 2
-                    USAGE_VOICE_COMMUNICATION_SIGNALLING = 3
-                    USAGE_ALARM = 4
-                    USAGE_NOTIFICATION = 5
-                    USAGE_NOTIFICATION_RINGTONE = 6
-                    USAGE_NOTIFICATION_COMMUNICATION_REQUEST = 7
-                    USAGE_NOTIFICATION_COMMUNICATION_INSTANT = 8
-                    USAGE_NOTIFICATION_COMMUNICATION_DELAYED = 9
-                    USAGE_NOTIFICATION_EVENT = 10
-                    USAGE_ASSISTANCE_ACCESSIBILITY = 11
-                    USAGE_ASSISTANCE_NAVIGATION_GUIDANCE = 12
-                    USAGE_ASSISTANCE_SONIFICATION = 13
-                    USAGE_GAME = 14
-                    USAGE_ASSISTANT = 16 */
+                /*
+                soundUsage options
+                USAGE_UNKNOWN = 0
+                USAGE_MEDIA = 1
+                USAGE_VOICE_COMMUNICATION = 2
+                USAGE_VOICE_COMMUNICATION_SIGNALLING = 3
+                USAGE_ALARM = 4
+                USAGE_NOTIFICATION = 5
+                USAGE_NOTIFICATION_RINGTONE = 6
+                USAGE_NOTIFICATION_COMMUNICATION_REQUEST = 7
+                USAGE_NOTIFICATION_COMMUNICATION_INSTANT = 8
+                USAGE_NOTIFICATION_COMMUNICATION_DELAYED = 9
+                USAGE_NOTIFICATION_EVENT = 10
+                USAGE_ASSISTANCE_ACCESSIBILITY = 11
+                USAGE_ASSISTANCE_NAVIGATION_GUIDANCE = 12
+                USAGE_ASSISTANCE_SONIFICATION = 13
+                USAGE_GAME = 14
+                USAGE_ASSISTANT = 16 */
 
-                    Integer usage = options.optInt("soundUsage",AudioAttributes.USAGE_NOTIFICATION);
-
-                }else{
-                    Integer usage = AudioAttributes.USAGE_NOTIFICATION;
-                }
-    
-                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
-                        .build();
+                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(options.optInt("soundUsage",AudioAttributes.USAGE_NOTIFICATION)).build();
                 channel.setSound(soundUri, attributes);
             }else{
                 channel.setSound(null, null);
