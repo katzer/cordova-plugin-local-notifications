@@ -63,6 +63,32 @@ exports._defaults = {
 exports._listener = {};
 
 /**
+ * Create Notification Channel. Android only.
+ *
+ * @param [ Object ]   options  channel config options.
+ * @param [ Function ] callback The function to be exec as the callback.
+ * @param [ Object ]   scope    The callback function's scope.
+ *
+ * @return [ Void ]
+ */
+exports.createChannel = function (options, callback, scope) {
+
+    if(typeof(options.channelId) != "string"){
+        console.error('createChannel error: channelId must be a string.');
+        return false;
+    }
+    
+    if(typeof(options.channelName) != "string"){
+        console.error('createChannel error: channelName must be a string.');
+        return false;
+    }
+
+    var toasts = this._toArray(options);
+
+    this._exec('createChannel', toasts, callback, scope);
+};
+
+/**
  * Check permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.
