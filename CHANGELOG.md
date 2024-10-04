@@ -3,8 +3,9 @@ ChangeLog
 #### Version 1.0.1-dev
 
 ##### Changes for Android
-- Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
 - Bugfix: Use app name as tag when calling NotificationManager.cancel
+- Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
+- Added [channel creation](README.md#android-notification-channels)
 
 #### Version 1.0.0 (17.08.2024)
 This Release contains mainly changes and fixes for the Android platform.
