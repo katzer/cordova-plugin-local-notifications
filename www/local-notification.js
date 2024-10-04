@@ -44,6 +44,7 @@ exports._defaults = {
     lockscreen    : true,
     mediaSession  : null,
     number        : 0,
+    onlyAlertOnce : false,
     priority      : 0,
     progressBar   : false,
     silent        : false,
@@ -638,7 +639,7 @@ exports._mergeWithDefaults = function (options) {
 
     options.meta = {
         plugin:  'cordova-plugin-local-notification',
-        version: '1.0.0'
+        version: '1.0.1-dev'
     };
 
     return options;

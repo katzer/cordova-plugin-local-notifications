@@ -312,7 +312,7 @@ public final class Notification {
      * Clear the local notification without canceling repeating alarms.
      */
     public void clear() {
-        getNotMgr().cancel(getId());
+        getNotMgr().cancel(getAppName(), getId());
         if (isRepeating()) return;
         unpersist();
     }
@@ -323,7 +323,7 @@ public final class Notification {
     public void cancel() {
         cancelScheduledAlarms();
         unpersist();
-        getNotMgr().cancel(getId());
+        getNotMgr().cancel(getAppName(), getId());
         clearCache();
     }
 
@@ -336,12 +336,8 @@ public final class Notification {
      * method and cancel it.
      */
     private void cancelScheduledAlarms() {
-        SharedPreferences prefs = getPrefs(PREF_KEY_PID);
-        String id               = options.getIdentifier();
-        Set<String> actions     = prefs.getStringSet(id, null);
-
-        if (actions == null)
-            return;
+        Set<String> actions = getPrefs(PREF_KEY_PID).getStringSet(options.getIdentifier(), null);
+        if (actions == null) return;
 
         for (String action : actions) {
             Intent intent = new Intent(action);

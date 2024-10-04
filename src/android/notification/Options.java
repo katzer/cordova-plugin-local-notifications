@@ -704,6 +704,15 @@ public final class Options {
     }
 
     /**
+     * Gets if the notification shall only alert once.
+     *
+     * @return true if the notification shall only alert once.
+     */
+    public boolean isOnlyAlertOnce(){
+        return options.optBoolean("onlyAlertOnce", false);
+    }
+
+    /**
      * Strips the hex code #FF00FF => FF00FF
      *
      * @param hex The hex code to strip.

@@ -129,7 +129,7 @@ public final class Builder {
         builder = findOrCreateBuilder()
                 .setDefaults(options.getDefaults())
                 .setExtras(extras)
-                .setOnlyAlertOnce(false)
+                .setOnlyAlertOnce(options.isOnlyAlertOnce())
                 .setChannelId(options.getChannel())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
@@ -186,11 +186,10 @@ public final class Builder {
      * @param builder Local notification builder instance.
      */
     private void applyStyle(NotificationCompat.Builder builder) {
-        // Build messages, if option text is filled by a JSONArray
+        // Check if option text is a JSONArray, will be null if it is a String
         Message[] messages = options.getMessages();
-        String summary     = options.getSummary();
 
-        // When option text contains a String, messages will be null
+        // text is a JSONArray
         if (messages != null) {
             applyMessagingStyle(builder, messages);
             return;
@@ -217,7 +216,7 @@ public final class Builder {
             return;
         }
 
-        if (text == null || summary == null && text.length() < 45)
+        if (text == null || options.getSummary() == null && text.length() < 45)
             return;
 
         applyBigTextStyle(builder);

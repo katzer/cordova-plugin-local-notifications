@@ -9,9 +9,6 @@
     <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
         <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
     </a>
-    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L3HKQCD9UA35A "Donate once-off to this project using Paypal"">
-        <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPayl donate button" />
-    </a>
     <a href="https://opensource.org/licenses/Apache-2.0">
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
     </a>
@@ -110,6 +107,7 @@ A notification does have a set of configurable properties.
 | lockscreen    |         |     |                           |
 | mediaSession  |         |     |                           |
 | number        |         |     |                           |
+| onlyAlertOnce | x       | -   | Android only. Set this flag if you would only like the sound, vibrate and ticker to be played if the notification is not already showing (see [documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean))). |
 | priority      |         |     |                           |
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
@@ -117,11 +115,11 @@ A notification does have a set of configurable properties.
 | sound         | (x)     | (x) | Property available but not useable. In Android it may work up to Android 7.1. Since Android 8 it must be set with createChannel. In iOS it would be possible, but must be implemented too. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
-| text          |         |     |                           |
+| text          | x       | x   | Text of the notification. For Android exists some special features: 1. It can be a JSONArray to [summarize](#summarizing) notifications. [NotificationCompat.MessagingStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.MessagingStyle) will then be used. Using an JSONArray for iOS would result in a crash. 2. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) would be used. 3. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
 | timeoutAfter  |         |     |                           |
 | title         |         |     |                           |
 | trigger       |         |     |                           |
-| vibrate       | (x)     |     | Since Android 8 it must be set with channel. |
+| vibrate       | (x)     |     | <img src="images/android-icon.svg" width="16"> Android only. Since Android 8 it must be set with channel. |
 | wakeup        |         |     |                           |
 
 For their default values see:
@@ -160,6 +158,8 @@ cordova.plugins.notification.local.schedule({
     &nbsp;&nbsp;&nbsp;&nbsp;
     <img width="31%" src="images/ios-actions.png">
 </p>
+
+Icons on action buttons are not displayed anymore since Android 7, [see documentation](https://developer.android.com/reference/android/app/Notification.Action.Builder#Builder(int,%20java.lang.CharSequence,%20android.app.PendingIntent))
 
 ### Input
 
@@ -605,9 +605,10 @@ Or install from local source:
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-Made with :yum: from Leipzig
+Made with :yum: from Leipzig and since 2024 from Cuxhaven
 
-© 2013 [appPlant GmbH][appplant]
+© 2013-2023 [appPlant GmbH][appplant]
+<br>© 2024 [Manuel Beck](https://manuelbeck.software)
 
 
 [ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
