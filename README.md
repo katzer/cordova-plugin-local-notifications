@@ -91,7 +91,7 @@ A notification does have a set of configurable properties.
 | attachments   |         |     |                           |
 | autoClear     |         |     |                           |
 | badge         |         |     |                           |
-| channel       |         | -   | Channel-ID of the channel (see: createChannel). In the future it will be renamed to channelId |
+| channel       |       x | -   | <img src="images/android-icon.svg" width="16"> Android only. Set the `channelId` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for the documentation. This property will be replaced by `channelId` in the future. |
 | clock         |         |     |                           |
 | color         |         |     |                           |
 | data          |         |     |                           |
@@ -107,19 +107,19 @@ A notification does have a set of configurable properties.
 | lockscreen    |         |     |                           |
 | mediaSession  |         |     |                           |
 | number        |         |     |                           |
-| onlyAlertOnce | x       | -   | Android only. Set this flag if you would only like the sound, vibrate and ticker to be played if the notification is not already showing (see [documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean))). |
+| onlyAlertOnce | x       | -   | <img src="images/android-icon.svg" width="16"> Android only. Set this flag if you would only like the sound, vibrate and ticker to be played if the notification is not already showing (see [documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean))). |
 | priority      |         |     |                           |
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
 | smallIcon     |         |     |                           |
-| sound         | (x)     | (x) | Property available but not useable. In Android it may work up to Android 7.1. Since Android 8 it must be set with createChannel. In iOS it would be possible, but must be implemented too. |
+| sound         | (x)     | (x) | On Android, it sets the sound file until Android 7.1. Since Android 8 it must be set with createChannel. In iOS it would be possible, but it is not implemented. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
 | text          | x       | x   | Text of the notification. For Android exists some special features: 1. It can be a JSONArray to [summarize](#summarizing) notifications. [NotificationCompat.MessagingStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.MessagingStyle) will then be used. Using an JSONArray for iOS would result in a crash. 2. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) would be used. 3. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
 | timeoutAfter  |         |     |                           |
 | title         |         |     |                           |
 | trigger       |         |     |                           |
-| vibrate       | (x)     |     | <img src="images/android-icon.svg" width="16"> Android only. Since Android 8 it must be set with channel. |
+| vibrate       | (x)     |    -| <img src="images/android-icon.svg" width="16"> Android only. Since Android 8 it must be set with a channel. |
 | wakeup        |         |     |                           |
 
 For their default values see:
@@ -524,26 +524,33 @@ See the sample app for how to use them.
 
 
 ## Android Notification Channels
+Since Android 8 notification channels must be created to post noitifications. The settings for the vibration, sound and importance is set by a channel and not by a notification. A channel is not changeable, after it is created. This is a restriction by Android.
 
-On Android 8 and above a Notification Channel is required and is the only way to set a non-default sound, vibration or importance. 
+### Default Channel
+A default channel will always be created by this plugin and has the following settings:
+- ID: `default-channel-id`
+- Name: `Default channel`
+- [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT)
 
-A default channel is automatically created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. (The name is not translatable.) Any notification that doesn't specify a `channel` will use this default channel with default sound and vibration settings.
+The values of the default channel are not configurable at this point. Any notification that doesn't specify the `channel` property will use this default channel with default sound and vibration settings.
 
-To customize vibration, sound, or importance, create a channel as follows: 
+The creation of a channel is done as follows: 
 
 ```js
 cordova.plugins.notification.local.createChannel({
-    channelId:'my_ch_id', // string
+    channelId:'my_ch_id', // string - To separate something in the id, use "_" instead of "-"
     channelName:'My Channel Name', // string 
     description:"Description of channel", // string (optional)
     sound: 'file://audio/ring.mp3', // string (optional) 
-    vibrate: true, // bool (optional)
-    importance: 3, // int (optional) 0 to 4 
-    soundUsage: 5, // int (optional) 
-  }, success_callback)
+    vibrate: true, // bool (optional), default is false
+    importance: 3, // int (optional) 0 to 4, default is IMPORTANCE_DEFAULT (3)
+    soundUsage: 5, // int (optional), default is USAGE_NOTIFICATION
+  }, success_callback, this)
 ```
 
-**Options for `importance`** [Documentation](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT)  
+For the setting the channel, use `channelId` as the `channel` value when scheduling a notification.
+
+**Options for `importance`** [Documentation](https://developer.android.com/reference/android/app/NotificationChannel#NotificationChannel(java.lang.String,%20java.lang.CharSequence,%20int))  
 0 IMPORTANCE_NONE  
 1 IMPORTANCE_MIN  
 2 IMPORTANCE_LOW  
@@ -566,10 +573,7 @@ cordova.plugins.notification.local.createChannel({
 12: USAGE_ASSISTANCE_NAVIGATION_GUIDANCE  
 13: USAGE_ASSISTANCE_SONIFICATION  
 14: USAGE_GAME  
-16: USAGE_ASSISTANT  
-
-Then use the `channelId` value as the `channel` when scheduling a notification. It is not possible to programmatically update a channel once it has been created. 
-
+16: USAGE_ASSISTANT
 
 ## Installation
 
