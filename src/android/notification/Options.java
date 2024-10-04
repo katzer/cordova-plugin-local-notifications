@@ -24,6 +24,7 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -366,6 +367,7 @@ public final class Options {
      */
     boolean hasLargeIcon() {
         String icon = options.optString("icon", null);
+        icon = applyDayNightToIconFilename(icon);
         return icon != null;
     }
 
@@ -374,6 +376,7 @@ public final class Options {
      */
     Bitmap getLargeIcon() {
         String icon = options.optString("icon", null);
+        icon = applyDayNightToIconFilename(icon);
         int resId = assets.getResId(icon);
         Bitmap bmp = null;
 
@@ -384,6 +387,22 @@ public final class Options {
         }
 
         return bmp;
+    }
+
+    String applyDayNightToIconFilename(String icon) {
+        if(icon == null) return icon;
+        String iconTheme;
+        if (isNightMode(context)){
+            iconTheme = "dark";
+        }else{
+            iconTheme = "light";
+        }
+        return icon.replace(".xml", "_"+iconTheme+".xml");
+    }
+
+    public boolean isNightMode(Context context) {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public static Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) {
@@ -415,6 +434,7 @@ public final class Options {
      */
     int getSmallIcon() {
         String icon = options.optString("smallIcon", DEFAULT_ICON);
+        icon = applyDayNightToIconFilename(icon);
         int resId   = assets.getResId(icon);
 
         if (resId == 0) {
