@@ -687,7 +687,7 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * If the app is running in foreground.
      */
-    private static boolean isInForeground() {
+    public static boolean isInForeground() {
 
         if (!deviceready || webView == null)
             return false;

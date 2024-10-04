@@ -102,7 +102,7 @@ A notification does have a set of configurable properties.
 | color         |         |     |                           |
 | data          |         |     |                           |
 | defaults      |         |     |                           |
-| foreground    |         |     |                           |
+| foreground    | x       |     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | group         |         |     |                           |
 | groupSummary  |         |     |                           |
 | icon          |         |     |                           |

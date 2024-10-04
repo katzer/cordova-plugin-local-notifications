@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Manager;
 import de.appplant.cordova.plugin.notification.Notification;
@@ -54,6 +55,9 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
         Options options = Manager.getInstance(context).getOptions(toastId);
 
         if (options == null)
+            return;
+
+        if(LocalNotification.isInForeground() && !options.triggerInForeground())
             return;
 
         Builder builder    = new Builder(options);
