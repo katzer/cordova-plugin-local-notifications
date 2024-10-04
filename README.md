@@ -513,15 +513,59 @@ cordova.plugins.notification.local.fireQueuedEvents();
 All methods work asynchronous and accept callback methods.
 See the sample app for how to use them.
 
-| Method   | Method            | Method          | Method         | Method        | Method           |
-| :------- | :---------------- | :-------------- | :------------- | :------------ | :--------------- |
-| schedule | cancelAll         | isTriggered     | get            | removeActions | un               |
-| update   | hasPermission     | getType         | getAll         | hasActions    | fireQueuedEvents |
-| clear    | requestPermission | getIds          | getScheduled   | getDefaults   | createChannel    |
-| clearAll | isPresent         | getScheduledIds | getTriggered   | setDefaults   | canScheduleExactAlarms|
-| cancel   | isScheduled       | getTriggeredIds | addActions     | on            |
+| Method                         | Android | iOS | Comment                   |
+| :------------------------------| :-------| :-- | :------------------------ |
+| addActions                     |         |     |                           |
+| cancel                         |         |     |                           |
+| cancelAll                      |         |     |                           |
+| canScheduleExactAlarms         | x       | -   | Android only. Checks if exact alarms are permitted. Since Android 13 inexact alarms are permitted by default. |
+| clear                          |         |     |                           |
+| clearAll                       |         |     |                           |
+| createChannel                  |         |     |                           |
+| fireQueuedEvents               |         |     |                           |
+| get                            |         |     |                           |
+| getAll                         |         |     |                           |
+| getDefaults                    |         |     |                           |
+| getIds                         |         |     |                           |
+| getScheduled                   |         |     |                           |
+| getScheduledIds                |         |     |                           |
+| getTriggered                   |         |     |                           |
+| getTriggeredIds                |         |     |                           |
+| getType                        |         |     |                           |
+| hasActions                     |         |     |                           |
+| hasPermission                  |         |     |                           |
+| isPresent                      |         |     |                           |
+| isScheduled                    |         |     |                           |
+| isTriggered                    |         |     |                           |
+| on                             |         |     |                           |
+| openAlarmSettings              | x       | -   | Android only. Supported since Android 12. Opens the "Alarms & Reminders"-settings, where the user can manually enable exact alarms. |
+| openNotificationSettings       | x       | (x) | Opens the notifications settings since Android 8. On iOS it opens the app settings. |
+| removeActions                  |         |     |                           |
+| requestPermission              |         |     |                           |
+| schedule                       |         |     |                           |
+| setDefaults                    |         |     |                           |
+| un                             |         |     |                           |
+| update                         |         |     |                           |
 
+### Android exact/inexact Alarms
+Since Android 13 notifications will be scheduled inexact by default. The user must grant exact alarm permissions manually in the "Alarms & Reminders"-setting by [openAlarmSettings](#openalarmsettings), if exact alarms are required.
 
+#### openAlarmSettings
+Opens the "Alarms & Reminders"-settings as an Activity when running on Android 12 (SDK 31) or later, where the user can enable exact alarms. On Android older then 12, it will just call the `successCallback`, without doing anything. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
+- If the user grants permission, already inexact scheduled notifications will automatically be rescheduled as exact alarms, but only if the app is still available in background.
+- If exact alarms were already granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
+
+#### canScheduleExactAlarms
+Checks if the user has enabled the "Alarms & Reminders"-setting. If not, the notificiatons will be scheduled inexact, which is still ok and will only be delayed by some minutes.
+- On Android 12 the permission is granted by default
+- On Android 13 and newer, the permission is not granted by default and have to be explicitly enabled by the user.
+- On Android 11 and older, this method will always return `true` in the `successCallback`.
+
+#### openNotificationSettings
+Opens the notifications settings of the app on Android 8 and newer. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used.
+- On Android, the callback will just return "OK", after starting the activity.
+- On Android older then 8, it opens the app details.
+- On iOS it's not possible to open the notification settings, it will open the app settings.
 
 ## Android Notification Channels
 Since Android 8 notification channels must be created to post noitifications. The settings for the vibration, sound and importance is set by a channel and not by a notification. A channel is not changeable, after it is created. This is a restriction by Android.
