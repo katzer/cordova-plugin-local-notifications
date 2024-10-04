@@ -28,6 +28,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationManagerCompat;
 import android.app.AlarmManager;
@@ -136,6 +138,76 @@ public final class Manager {
 
         channel = new NotificationChannel(
                 CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+
+        mgr.createNotificationChannel(channel);
+    }
+
+    /**
+     * Build channel with options
+     *
+     * @param soundUri      Uri for custom sound (empty to use default)
+     * @param shouldVibrate whether not vibration should occur during the
+     *                      notification
+     * @param hasSound      whether or not sound should play during the notification
+     * @param channelName   the name of the channel (null will pick an appropriate
+     *                      default name for the options provided).
+     * @return channel ID of newly created (or reused) channel
+     */
+    public String buildChannelWithOptions(Uri soundUri, boolean shouldVibrate, boolean hasSound,
+                                          CharSequence channelName, String channelId, int importance) {
+        String defaultChannelId, newChannelId;
+        CharSequence defaultChannelName;
+
+        if (hasSound && shouldVibrate) {
+            defaultChannelId = Options.SOUND_VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_VIBRATE_CHANNEL_NAME;
+            shouldVibrate = true;
+        } else if (hasSound) {
+            defaultChannelId = Options.SOUND_CHANNEL_ID;
+            defaultChannelName = Options.SOUND_CHANNEL_NAME;
+            shouldVibrate = false;
+        } else if (shouldVibrate) {
+            defaultChannelId = Options.VIBRATE_CHANNEL_ID;
+            defaultChannelName = Options.VIBRATE_CHANNEL_NAME;
+            shouldVibrate = true;
+        } else {
+            defaultChannelId = Options.SILENT_CHANNEL_ID;
+            defaultChannelName = Options.SILENT_CHANNEL_NAME;
+            shouldVibrate = false;
+        }
+
+        newChannelId = channelId != null ? channelId : defaultChannelId;
+
+        createChannel(newChannelId, channelName != null ? channelName : defaultChannelName, importance, shouldVibrate,
+                soundUri);
+
+        return newChannelId;
+    }
+
+    /**
+     * Create a channel
+     */
+    public void createChannel(String channelId, CharSequence channelName, int importance, Boolean shouldVibrate,
+                              Uri soundUri) {
+        NotificationManager mgr = getNotMgr();
+
+        if (SDK_INT < O)
+            return;
+
+        NotificationChannel channel = mgr.getNotificationChannel(channelId);
+
+        if (channel != null)
+            return;
+
+        channel = new NotificationChannel(channelId, channelName, importance);
+
+        channel.enableVibration(shouldVibrate);
+
+        if (!soundUri.equals(Uri.EMPTY)) {
+            AudioAttributes attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(soundUri, attributes);
+        }
 
         mgr.createNotificationChannel(channel);
     }

@@ -23,6 +23,11 @@
 
 package de.appplant.cordova.plugin.notification;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.O;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -48,10 +53,18 @@ import de.appplant.cordova.plugin.notification.util.AssetUtil;
 import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
 import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;
 import static androidx.core.app.NotificationCompat.DEFAULT_VIBRATE;
+import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
+import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
+import static androidx.core.app.NotificationCompat.PRIORITY_LOW;
 import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static androidx.core.app.NotificationCompat.VISIBILITY_SECRET;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX;
+import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_MIN;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all
@@ -59,6 +72,25 @@ import static androidx.core.app.NotificationCompat.VISIBILITY_SECRET;
  * methods to convert independent values into platform specific values.
  */
 public final class Options {
+
+    // Default Channel ID for SDK < 26
+    static final String DEFAULT_CHANNEL_ID = "default-channel-id";
+
+    // Silent channel
+    static final String SILENT_CHANNEL_ID = "silent-channel-id";
+    static final CharSequence SILENT_CHANNEL_NAME = "Silent Notifications";
+
+    // Vibrate only channel
+    static final String VIBRATE_CHANNEL_ID = "vibrate-channel-id";
+    static final CharSequence VIBRATE_CHANNEL_NAME = "Low Priority Notifications";
+
+    // Sound only channel
+    static final String SOUND_CHANNEL_ID = "sound-channel-id";
+    static final CharSequence SOUND_CHANNEL_NAME = "Medium Priority Notifications";
+
+    // Sound and vibrate channel
+    static final String SOUND_VIBRATE_CHANNEL_ID = "sound-vibrate-channel-id";
+    static final CharSequence SOUND_VIBRATE_CHANNEL_NAME = "High Priority Notifications";
 
     // Key name for bundled sound extra
     static final String EXTRA_SOUND = "NOTIFICATION_SOUND";
@@ -213,11 +245,59 @@ public final class Options {
         return options.optLong("timeoutAfter");
     }
 
+
     /**
      * The channel id of that notification.
      */
     String getChannel() {
-        return options.optString("channel", Manager.CHANNEL_ID);
+        // If we have a low enough SDK for it not to matter,
+        // short-circuit.
+        if (SDK_INT < O) {
+            return Manager.CHANNEL_ID;
+        }
+
+        String channelId = options.optString("channelId", null);
+        // if the channel id is not set, we use the default channel
+        if (channelId == null) {
+           return Manager.CHANNEL_ID;
+        }
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
+
+        if (channel != null)
+            return channelId;
+
+        // Create a new channel with the options provided if it does not exist
+        Uri soundUri = getSound();
+        boolean hasSound = !isWithoutSound();
+        boolean shouldVibrate = isWithVibration();
+        CharSequence channelName = options.optString("channelName", null);
+        int priority = options.optInt("priority", 0);
+        int importance = IMPORTANCE_DEFAULT;
+        switch (priority){
+            case PRIORITY_MIN:
+                importance = IMPORTANCE_MIN;
+                break;
+            case PRIORITY_LOW:
+                importance = IMPORTANCE_LOW;
+                break;
+            case PRIORITY_DEFAULT:
+                importance = IMPORTANCE_DEFAULT;
+                break;
+            case PRIORITY_HIGH:
+                importance = IMPORTANCE_HIGH;
+                break;
+            case PRIORITY_MAX:
+                importance = IMPORTANCE_MAX;
+                break;
+
+        }
+
+        channelId = Manager.getInstance(context).buildChannelWithOptions(soundUri, shouldVibrate, hasSound, channelName,
+                channelId, importance);
+
+        return channelId;
     }
 
     /**

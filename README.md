@@ -55,7 +55,7 @@ Please report bugs or missing features.
 
 ### Android
 
-- Channels are not configurable. A default channel will be created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. The name ist not translatable.
+- A default channel will be created with [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT), the id `default-channel-id` and the name `Default channel`. The name ist not translatable.
 
 ## Basics
 
@@ -92,12 +92,13 @@ A notification does have a set of configurable properties.
 
 
 | Property      | Android | iOS | Comment                   |
-| :------------ | :-------| :-- | :------------------------ |
+|:--------------| :-------| :-- | :------------------------ |
 | actions       |         |     |                           |
 | attachments   |         |     |                           |
 | autoClear     |         |     |                           |
 | badge         |         |     |                           |
-| channel       | x       | -   | Don't use it, it is not functional. Since Android 8: Channel-ID of the chanel. In the future it will be renamed to channelId |
+| channelId     | x       | -   |                           |
+| channelName   | x       | -   |                           |
 | clock         |         |     |                           |
 | color         |         |     |                           |
 | data          |         |     |                           |
