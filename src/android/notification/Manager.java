@@ -150,39 +150,41 @@ public final class Manager {
      * 
      */
     public void createChannel(JSONObject options) {
-        NotificationManager mgr = getNotMgr();
+        // Channels are supported since Android 8
+        if (SDK_INT < O) return;
 
-        if (SDK_INT < O)
-            return;
+        NotificationManager mgr = getNotMgr();
 
         String channelId = options.optString("channelId", "");
         CharSequence channelName = options.optString("channelName", "");
-        int importance = options.optInt("importance",IMPORTANCE_DEFAULT);
+        int importance = options.optInt("importance", IMPORTANCE_DEFAULT);
+
         NotificationChannel channel = mgr.getNotificationChannel(channelId);
         
-        if (channel != null)
-            return;
+        // Channel already created
+        if (channel != null) return;
         
         channel = new NotificationChannel(channelId, channelName, importance);
 
-        if(options.has("vibrate")){
-            Boolean shouldVibrate  = options.optBoolean("vibrate", false);
+        if (options.has("vibrate")) {
+            Boolean shouldVibrate = options.optBoolean("vibrate", false);
             channel.enableVibration(shouldVibrate);
         }
 
-        if(options.has("sound")){
+        if (options.has("sound")) {
             AssetUtil assets = AssetUtil.getInstance(this.context);
             Uri soundUri = assets.parse(options.optString("sound", null));
     
             if (!soundUri.equals(Uri.EMPTY)) {
-                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(options.optInt("soundUsage",AudioAttributes.USAGE_NOTIFICATION)).build();
+                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(
+                    options.optInt("soundUsage", AudioAttributes.USAGE_NOTIFICATION)).build();
                 channel.setSound(soundUri, attributes);
-            }else{
+            } else {
                 channel.setSound(null, null);
             }
         }
 
-        if(options.has("description")){
+        if (options.has("description")) {
             channel.setDescription(options.optString("description", " "));
         }
 
