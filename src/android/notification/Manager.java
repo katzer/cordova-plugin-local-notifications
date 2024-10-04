@@ -404,18 +404,19 @@ public final class Manager {
      * @return null if could not found.
      */
     public Options getOptions(int id) {
-        SharedPreferences prefs = getPrefs();
-        String toastId          = Integer.toString(id);
-
-        if (!prefs.contains(toastId))
-            return null;
 
         try {
+            SharedPreferences prefs = getPrefs();
+            String toastId          = Integer.toString(id);
+
+            if (!prefs.contains(toastId))
+                return null;
+
             String json     = prefs.getString(toastId, null);
             JSONObject dict = new JSONObject(json);
 
             return new Options(context, dict);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
