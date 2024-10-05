@@ -112,7 +112,7 @@ A notification does have a set of configurable properties.
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
 | smallIcon     |         |     |                           |
-| sound         | (x)     | (x) | On Android, it sets the sound file until Android 7.1. Since Android 8 it must be set with createChannel. In iOS it would be possible, but it is not implemented. |
+| sound         | (x)     | (x) | On Android, it sets the sound file until Android 7.1. Since Android 8 it must be set by a channel. In iOS it would be possible, but it is not implemented. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
 | text          | x       | x   | Text of the notification. For Android exists some special features: 1. It can be a JSONArray to [summarize](#summarizing) notifications. [NotificationCompat.MessagingStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.MessagingStyle) will then be used. Using an JSONArray for iOS would result in a crash. 2. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) would be used. 3. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
@@ -521,7 +521,7 @@ See the sample app for how to use them.
 | canScheduleExactAlarms         | x       | -   | Android only. Checks if exact alarms are permitted. Since Android 13 inexact alarms are permitted by default. |
 | clear                          |         |     |                           |
 | clearAll                       |         |     |                           |
-| createChannel                  |         |     |                           |
+| createChannel                  | x       | -   | Android only. Creates a channel for Android to post notifications on. |
 | fireQueuedEvents               |         |     |                           |
 | get                            |         |     |                           |
 | getAll                         |         |     |                           |
