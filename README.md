@@ -516,11 +516,11 @@ See the sample app for how to use them.
 | Method                         | Android | iOS | Comment                   |
 | :------------------------------| :-------| :-- | :------------------------ |
 | addActions                     |         |     |                           |
-| cancel                         |         |     |                           |
-| cancelAll                      |         |     |                           |
+| cancel                         | x       | x   |                           |
+| cancelAll                      | x       | x   |                           |
 | canScheduleExactAlarms         | x       | -   | Android only. Checks if exact alarms are permitted. Since Android 13 inexact alarms are permitted by default. |
-| clear                          |         |     |                           |
-| clearAll                       |         |     |                           |
+| clear                          | x       | x   | On Android, it clears a already posted notification from the statusbar. |
+| clearAll                       | x       | x   |                           |
 | createChannel                  | x       | -   | Android only. Creates a channel for Android to post notifications on. |
 | fireQueuedEvents               |         |     |                           |
 | get                            |         |     |                           |
