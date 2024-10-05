@@ -28,7 +28,7 @@ exports._defaults = {
     attachments   : [],
     autoClear     : true,
     badge         : null,
-    channel       : null,
+    channelId     : null,
     clock         : true,
     color         : null,
     data          : null,

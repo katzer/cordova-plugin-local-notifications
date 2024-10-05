@@ -130,7 +130,7 @@ public final class Builder {
                 .setDefaults(options.getDefaults())
                 .setExtras(extras)
                 .setOnlyAlertOnce(options.isOnlyAlertOnce())
-                .setChannelId(options.getChannel())
+                .setChannelId(options.getChannelId())
                 .setContentTitle(options.getTitle())
                 .setContentText(options.getText())
                 .setTicker(options.getText())
@@ -482,7 +482,7 @@ public final class Builder {
         NotificationCompat.Builder builder = Notification.getCachedBuilder(key);
 
         if (builder == null) {
-            builder = new NotificationCompat.Builder(context, options.getChannel());
+            builder = new NotificationCompat.Builder(context, options.getChannelId());
         }
 
         return builder;

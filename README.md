@@ -91,7 +91,7 @@ A notification does have a set of configurable properties.
 | attachments   |         |     |                           |
 | autoClear     |         |     |                           |
 | badge         |         |     |                           |
-| channel       |       x | -   | <img src="images/android-icon.svg" width="16"> Android only. Set the `channelId` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for the documentation. This property will be replaced by `channelId` in the future. |
+| channelId       |       x | -   | <img src="images/android-icon.svg" width="16"> Android only. Set the `channelId` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
 | clock         |         |     |                           |
 | color         |         |     |                           |
 | data          |         |     |                           |
@@ -576,7 +576,7 @@ A default channel will always be created by this plugin and has the following se
 - Name: `Default channel`
 - [IMPORTANCE_DEFAULT](https://developer.android.com/reference/android/app/NotificationManager#IMPORTANCE_DEFAULT)
 
-The values of the default channel are not configurable at this point. Any notification that doesn't specify the `channel` property will use this default channel with default sound and vibration settings.
+The values of the default channel are not configurable at this point. Any notification that doesn't specify a `channelId` property will use this default channel with default sound and vibration settings.
 
 The creation of a channel is done as follows: 
 
@@ -592,7 +592,7 @@ cordova.plugins.notification.local.createChannel({
   }, success_callback, this)
 ```
 
-For the setting the channel, use `channelId` as the `channel` value when scheduling a notification.
+For setting the channel, use the `channelId` property when scheduling a notification.
 
 **Options for `importance`** [Documentation](https://developer.android.com/reference/android/app/NotificationChannel#NotificationChannel(java.lang.String,%20java.lang.CharSequence,%20int))  
 0 IMPORTANCE_NONE  
