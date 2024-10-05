@@ -6,6 +6,7 @@ ChangeLog
 - Bugfix: Use app name as tag when calling NotificationManager.cancel
 - Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
 - Added [channel creation](README.md#android-notification-channels)
+- Important: Renamed "channel" proprety to "channelId"
 - Update dependency ShortcutBadger from version 1.1.19 to 1.1.22 to fix native crashes
 - Bugfix: Catch any exceptions when attempting to get option for a notification
 
