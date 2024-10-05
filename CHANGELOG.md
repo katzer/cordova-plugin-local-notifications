@@ -6,7 +6,7 @@ ChangeLog
 - Bugfix: Make cancel/cancelAll/clear/clearAll work again. This was broken since Version 1.0.0 because of the change "Use app name as a tag for the notify call [PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)". For e.g. notifications were still in the statusbar, when clearing a notification.
 - Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
 - Added [channel creation](README.md#android-notification-channels)
-- Important: Renamed "channel" proprety to "channelId"
+  - Important: Renamed "channel" proprety to "channelId"
 - Update dependency ShortcutBadger from version 1.1.19 to 1.1.22 to fix native crashes
 - Bugfix: Catch any exceptions when attempting to get option for a notification
 
