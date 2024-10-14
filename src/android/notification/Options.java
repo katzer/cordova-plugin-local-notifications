@@ -367,7 +367,7 @@ public final class Options {
      */
     boolean hasLargeIcon() {
         String icon = options.optString("icon", null);
-        icon = applyDayNightToIconFilename(icon);
+        icon = getIconFilename(icon);
         return icon != null;
     }
 
@@ -376,7 +376,7 @@ public final class Options {
      */
     Bitmap getLargeIcon() {
         String icon = options.optString("icon", null);
-        icon = applyDayNightToIconFilename(icon);
+        icon = getIconFilename(icon);
         int resId = assets.getResId(icon);
         Bitmap bmp = null;
 
@@ -389,7 +389,31 @@ public final class Options {
         return bmp;
     }
 
-    String applyDayNightToIconFilename(String icon) {
+    String getIconFilename(String icon){
+        // Remove file extension from icon if it has one
+        String iconName = icon.replaceAll("\\.[^.]+$", "");
+
+        // Check for a vector drawable version
+        String vectorIcon = iconName + ".xml";
+        String themedVectorIcon = getDarkLightIconFilenameForCurrentUIMode(vectorIcon);
+        int resId = assets.getResId(themedVectorIcon);
+        if (resId != 0) {
+            return themedVectorIcon;
+        }
+
+        // Check for a PNG version
+        String pngIcon = iconName + ".png";
+        String themedPngIcon = getDarkLightIconFilenameForCurrentUIMode(pngIcon);
+        resId = assets.getResId(themedPngIcon);
+        if (resId != 0) {
+            return themedPngIcon;
+        }
+
+        // Return the original icon if none of the above are found
+        return icon;
+    }
+
+    String getDarkLightIconFilenameForCurrentUIMode(String icon) {
         if(icon == null) return icon;
         String iconTheme;
         if (isNightMode(context)){
@@ -397,7 +421,13 @@ public final class Options {
         }else{
             iconTheme = "light";
         }
-        return icon.replace(".xml", "_"+iconTheme+".xml");
+        String themedIcon = icon.replaceAll("\\.[^.]+$", "_" + iconTheme + "$0");
+        int resId  = assets.getResId(themedIcon);
+
+        if (resId == 0) {
+            return icon;
+        }
+        return themedIcon;
     }
 
     public boolean isNightMode(Context context) {
@@ -434,7 +464,7 @@ public final class Options {
      */
     int getSmallIcon() {
         String icon = options.optString("smallIcon", DEFAULT_ICON);
-        icon = applyDayNightToIconFilename(icon);
+        icon = getIconFilename(icon);
         int resId   = assets.getResId(icon);
 
         if (resId == 0) {
