@@ -96,7 +96,7 @@ A notification does have a set of configurable properties.
 | color         |         |     |                           |
 | data          |         |     |                           |
 | defaults      |         |     |                           |
-| foreground    |         |     |                           |
+| foreground    | x       | -   | Android only. Defaults to false. If true and the app is in the foreground, the notification will be shown. If false and the app is in foreground, the notification will NOT be shown. If the app is in the background, the notfication will always be shown.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | group         |         |     |                           |
 | groupSummary  |         |     |                           |
 | icon          |         |     |                           |

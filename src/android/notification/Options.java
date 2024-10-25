@@ -179,6 +179,11 @@ public final class Options {
     }
 
     /**
+     * Whether or not to trigger a notification when the app is in the foreground.
+     */
+    public boolean triggerInForeground() { return options.optBoolean("foreground", false); }
+
+    /**
      * Gets the value of the silent flag.
      */
     boolean isSilent() {
