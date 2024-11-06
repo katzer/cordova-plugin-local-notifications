@@ -24,14 +24,23 @@
 package de.appplant.cordova.plugin.notification;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
+
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
 import android.support.v4.media.session.MediaSessionCompat;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -358,6 +367,7 @@ public final class Options {
      */
     boolean hasLargeIcon() {
         String icon = options.optString("icon", null);
+        icon = getIconFilename(icon);
         return icon != null;
     }
 
@@ -366,16 +376,80 @@ public final class Options {
      */
     Bitmap getLargeIcon() {
         String icon = options.optString("icon", null);
-        Uri uri     = assets.parse(icon);
-        Bitmap bmp  = null;
+        icon = getIconFilename(icon);
+        int resId = assets.getResId(icon);
+        Bitmap bmp = null;
 
         try {
-            bmp = assets.getIconFromUri(uri);
-        } catch (Exception e){
+            bmp = getBitmapFromDrawable(context, resId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return bmp;
+    }
+
+    String getIconFilename(String icon){
+        // Remove file extension from icon if it has one
+        String iconName = icon.replaceAll("\\.[^.]+$", "");
+
+        // Check for a vector drawable version
+        String vectorIcon = iconName + ".xml";
+        String themedVectorIcon = getDarkLightIconFilenameForCurrentUIMode(vectorIcon);
+        int resId = assets.getResId(themedVectorIcon);
+        if (resId != 0) {
+            return themedVectorIcon;
+        }
+
+        // Check for a PNG version
+        String pngIcon = iconName + ".png";
+        String themedPngIcon = getDarkLightIconFilenameForCurrentUIMode(pngIcon);
+        resId = assets.getResId(themedPngIcon);
+        if (resId != 0) {
+            return themedPngIcon;
+        }
+
+        // Return the original icon if none of the above are found
+        return icon;
+    }
+
+    String getDarkLightIconFilenameForCurrentUIMode(String icon) {
+        if(icon == null) return icon;
+        String iconTheme;
+        if (isNightMode(context)){
+            iconTheme = "dark";
+        }else{
+            iconTheme = "light";
+        }
+        String themedIcon = icon.replaceAll("\\.[^.]+$", "_" + iconTheme + "$0");
+        int resId  = assets.getResId(themedIcon);
+
+        if (resId == 0) {
+            return icon;
+        }
+        return themedIcon;
+    }
+
+    public boolean isNightMode(Context context) {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    public static Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) {
+        Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        } else if (drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable) {
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+
+            return bitmap;
+        } else {
+            throw new IllegalArgumentException("unsupported drawable type");
+        }
     }
 
     /**
@@ -390,6 +464,7 @@ public final class Options {
      */
     int getSmallIcon() {
         String icon = options.optString("smallIcon", DEFAULT_ICON);
+        icon = getIconFilename(icon);
         int resId   = assets.getResId(icon);
 
         if (resId == 0) {
