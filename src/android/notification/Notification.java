@@ -219,14 +219,8 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            PendingIntent pi = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                    pi = PendingIntent.getBroadcast(
-                        context, 0, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
-            } else {
-                    pi = PendingIntent.getBroadcast(
-                        context, 0, intent, FLAG_CANCEL_CURRENT);
-            }
+            PendingIntent pi = PendingIntent.getBroadcast(
+                context, 0, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
 
             Log.d(TAG, "Schedule notification, trigger-date: " + date + ", canScheduleExactAlarms: " + canScheduleExactAlarms + ", prio: " + options.getPrio());
 
@@ -340,20 +334,8 @@ public final class Notification {
         if (actions == null) return;
 
         for (String action : actions) {
-            Intent intent = new Intent(action);
-
-            PendingIntent pi = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                pi = PendingIntent.getBroadcast(
-                    context, 0, intent, PendingIntent.FLAG_IMMUTABLE  );
-            } else {
-                pi = PendingIntent.getBroadcast(
-                    context, 0, intent, 0);
-            }
-
-            if (pi != null) {
-                getAlarmMgr().cancel(pi);
-            }
+            getAlarmMgr().cancel(PendingIntent.getBroadcast(
+                context, 0, new Intent(action), PendingIntent.FLAG_IMMUTABLE));
         }
     }
 

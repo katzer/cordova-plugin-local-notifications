@@ -10,6 +10,7 @@ ChangeLog
 - Update dependency ShortcutBadger from version 1.1.19 to 1.1.22 to fix native crashes
 - Bugfix: Catch any exceptions when attempting to get option for a notification
 - Gradle: Remove deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
+- Use `FLAG_IMMUTABLE` on every Android version. `FLAG_IMMUTABLE` was set for Android 12 and newer, but the flag is supported since Android 6. The code should be consistent between all Android versions.
 
 #### Version 1.0.0 (17.08.2024)
 This Release contains mainly changes and fixes for the Android platform.
