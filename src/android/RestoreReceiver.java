@@ -28,11 +28,11 @@ import android.util.Log;
 
 import java.util.Date;
 
-import de.appplant.cordova.plugin.notification.Builder;
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Request;
-import de.appplant.cordova.plugin.notification.receiver.AbstractRestoreReceiver;
+import de.appplant.cordova.plugin.localnotification.notification.Builder;
+import de.appplant.cordova.plugin.localnotification.notification.Manager;
+import de.appplant.cordova.plugin.localnotification.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.notification.receiver.AbstractRestoreReceiver;
 
 /**
  * This class is triggered upon reboot of the device. It needs to re-register

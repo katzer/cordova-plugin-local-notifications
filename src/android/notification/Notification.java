@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.localnotification.notification;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;

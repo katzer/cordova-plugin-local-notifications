@@ -19,15 +19,15 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification.receiver;
+package de.appplant.cordova.plugin.localnotification.notification.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Manager;
+import de.appplant.cordova.plugin.localnotification.notification.Notification;
 
 /**
  * Abstract delete receiver for local notifications. Creates the local

@@ -30,16 +30,16 @@ import androidx.core.app.RemoteInput;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Manager;
+import de.appplant.cordova.plugin.localnotification.notification.Notification;
 
 import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
-import static de.appplant.cordova.plugin.notification.Options.EXTRA_LAUNCH;
-import static de.appplant.cordova.plugin.notification.Request.EXTRA_LAST;
-import static de.appplant.cordova.plugin.notification.action.Action.CLICK_ACTION_ID;
-import static de.appplant.cordova.plugin.notification.action.Action.EXTRA_ID;
+import static de.appplant.cordova.plugin.localnotification.notification.Options.EXTRA_LAUNCH;
+import static de.appplant.cordova.plugin.localnotification.notification.Request.EXTRA_LAST;
+import static de.appplant.cordova.plugin.localnotification.notification.action.Action.CLICK_ACTION_ID;
+import static de.appplant.cordova.plugin.localnotification.notification.action.Action.EXTRA_ID;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.

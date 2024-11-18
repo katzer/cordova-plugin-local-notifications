@@ -27,12 +27,12 @@ import android.os.PowerManager;
 
 import java.util.Calendar;
 
-import de.appplant.cordova.plugin.notification.Builder;
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Options;
-import de.appplant.cordova.plugin.notification.Request;
-import de.appplant.cordova.plugin.notification.receiver.AbstractTriggerReceiver;
+import de.appplant.cordova.plugin.localnotification.notification.Builder;
+import de.appplant.cordova.plugin.localnotification.notification.Manager;
+import de.appplant.cordova.plugin.localnotification.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Options;
+import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.notification.receiver.AbstractTriggerReceiver;
 
 import static android.content.Context.POWER_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;

@@ -21,7 +21,7 @@
 
 // codebeat:disable[TOO_MANY_FUNCTIONS]
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.localnotification.notification;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -49,9 +49,9 @@ import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
 import static android.os.Build.VERSION_CODES.S;
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
-import static de.appplant.cordova.plugin.notification.Notification.PREF_KEY_ID;
-import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
-import de.appplant.cordova.plugin.notification.util.AssetUtil;
+import static de.appplant.cordova.plugin.localnotification.notification.Notification.PREF_KEY_ID;
+import static de.appplant.cordova.plugin.localnotification.notification.Notification.Type.TRIGGERED;
+import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
 
 /**
  * Central way to access all or single local notifications set by specific

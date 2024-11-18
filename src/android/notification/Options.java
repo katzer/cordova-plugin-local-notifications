@@ -21,7 +21,7 @@
 
 // codebeat:disable[TOO_MANY_FUNCTIONS]
 
-package de.appplant.cordova.plugin.notification;
+package de.appplant.cordova.plugin.localnotification.notification;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -41,9 +41,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.appplant.cordova.plugin.notification.action.Action;
-import de.appplant.cordova.plugin.notification.action.ActionGroup;
-import de.appplant.cordova.plugin.notification.util.AssetUtil;
+import de.appplant.cordova.plugin.localnotification.notification.action.Action;
+import de.appplant.cordova.plugin.localnotification.notification.action.ActionGroup;
+import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
 
 import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
 import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;

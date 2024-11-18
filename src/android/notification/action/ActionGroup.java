@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.notification.action;
+package de.appplant.cordova.plugin.localnotification.notification.action;
 
 import android.content.Context;
 import android.util.Log;

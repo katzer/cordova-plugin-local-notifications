@@ -17,7 +17,7 @@
  under the License.
  */
 
-package de.appplant.cordova.plugin.notification.util;
+package de.appplant.cordova.plugin.localnotification.notification.util;
 
 import androidx.core.content.FileProvider;
 

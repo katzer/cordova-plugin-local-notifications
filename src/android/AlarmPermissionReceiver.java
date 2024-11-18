@@ -28,11 +28,11 @@ import java.util.List;
 import android.app.AlarmManager;
 import android.util.Log;
 
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Request;
+import de.appplant.cordova.plugin.localnotification.notification.Manager;
+import de.appplant.cordova.plugin.localnotification.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Request;
 
-import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
+import static de.appplant.cordova.plugin.localnotification.notification.Notification.Type.SCHEDULED;
 
 /**
  * Receiver to detect changes in the Alarms and reminders permission.
