@@ -62,7 +62,7 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
         Manager mgr = Manager.getInstance(ctx);
 
         if (after || toast.isRepeating()) {
-            mgr.schedule(request, TriggerReceiver.class);
+            mgr.schedule(request);
         }
     }
 

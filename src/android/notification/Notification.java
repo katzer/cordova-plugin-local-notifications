@@ -55,6 +55,8 @@ import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
+import de.appplant.cordova.plugin.localnotification.TriggerReceiver;
+
 /**
  * Wrapper class around OS notification class. Handles basic operations
  * like show, delete, cancel for a single local notification instance.
@@ -171,40 +173,42 @@ public final class Notification {
 
     /**
      * Schedule the local notification.
-     *
      * @param request Set of notification options.
-     * @param receiver Receiver to handle the trigger event.
      */
-    public void schedule(Request request, Class<?> receiver) {
+    public void schedule(Request request) {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
-        Set<String> ids = new ArraySet<String>();
+        Set<String> intentActionIds = new ArraySet<String>();
         AlarmManager mgr = getAlarmMgr();
 
         cancelScheduledAlarms();
 
+        // Loop all occurrences specified by the trigger option
         do {
             Date date = request.getTriggerDate();
+            if (date == null) continue;
 
-            if (date == null)
-                continue;
-
-            Intent intent = new Intent(context, receiver)
+            Intent intent = new Intent(context, TriggerReceiver.class)
+                    // action identifier like "NOTIFICATION_ID1173-2"
                     .setAction(PREF_KEY_ID + request.getIdentifier())
                     .putExtra(Notification.EXTRA_ID, options.getId())
                     .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
-
-            ids.add(intent.getAction());
+            
             intents.add(new Pair<Date, Intent>(date, intent));
-        }
-        while (request.moveNext());
 
+            // Save action identifier for occurrence
+            intentActionIds.add(intent.getAction());
+
+        // Move to next occurrence
+        } while (request.moveNext());
+
+        // Nothing to schedule, return
         if (intents.isEmpty()) {
             unpersist();
             return;
         }
         
         boolean canScheduleExactAlarms = Manager.getInstance(context).canScheduleExactAlarms();
-        persist(ids);
+        persist(intentActionIds);
 
         if (!options.isInfiniteTrigger()) {
             Intent last = intents.get(intents.size() - 1).second;
@@ -216,13 +220,21 @@ public final class Notification {
             long time     = date.getTime();
             Intent intent = pair.second;
 
-            if (!date.after(new Date()) && trigger(intent, receiver))
+            // Date is in the past and must not be scheduled, trigger directly
+            if (!date.after(new Date())) {
+                trigger(intent);
                 continue;
+            }
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
+            // AlarmManager#set: If there is already an alarm scheduled for the same IntentSender,
+            // that previous alarm will first be canceled.
+            PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-            Log.d(TAG, "Schedule notification, trigger-date: " + date + ", canScheduleExactAlarms: " + canScheduleExactAlarms + ", prio: " + options.getPrio());
+            Log.d(TAG, "Schedule notification" +
+                ", trigger-date: " + date + 
+                ", prio: " + options.getPrio() +
+                ", canScheduleExactAlarms: " + canScheduleExactAlarms +
+                ", intentAction=" + intent.getAction());
 
             try {
                 switch (options.getPrio()) {
@@ -280,62 +292,73 @@ public final class Notification {
     }
 
     /**
-     * Trigger local notification specified by options.
-     *
+     * Trigger local notification specified by intent.
      * @param intent The intent to broadcast.
-     * @param cls    The broadcast class.
-     *
-     * @return false if the receiver could not be invoked.
      */
-    private boolean trigger (Intent intent, Class<?> cls) {
-        BroadcastReceiver receiver;
-
-        try {
-            receiver = (BroadcastReceiver) cls.newInstance();
-        } catch (InstantiationException e) {
-            return false;
-        } catch (IllegalAccessException e) {
-            return false;
-        }
-
-        receiver.onReceive(context, intent);
-        return true;
+    private void trigger (Intent intent) {
+        new TriggerReceiver().onReceive(context, intent);
     }
 
     /**
      * Clear the local notification without canceling repeating alarms.
      */
     public void clear() {
+        // Clear the notification from the statusbar if posted
         getNotMgr().cancel(getAppName(), getId());
-        if (isRepeating()) return;
-        unpersist();
+
+        // If the notification is not repeating, remove notification data from the app
+        if (!isRepeating()) {
+          unpersist();
+        }
     }
 
     /**
      * Cancel the local notification.
      */
     public void cancel() {
+        // Cancel all alarms for this notification. If the notification is repeating, it can
+        // have multiple alarms
         cancelScheduledAlarms();
+
+        // Remove saved notification data from the app
         unpersist();
+
+        // Clear the notification from the status bar if posted
         getNotMgr().cancel(getAppName(), getId());
         clearCache();
     }
 
     /**
-     * Cancel the scheduled future local notification.
-     *
-     * Create an intent that looks similar, to the one that was registered
-     * using schedule. Making sure the notification id in the action is the
-     * same. Now we can search for such an intent using the 'getService'
-     * method and cancel it.
+     * Cancel all alarms for this notification. If the notification is repeating, it can
+     * have multiple alarms.
      */
     private void cancelScheduledAlarms() {
-        Set<String> actions = getPrefs(PREF_KEY_PID).getStringSet(options.getIdentifier(), null);
-        if (actions == null) return;
+        Set<String> intentActionIds = getPrefs(PREF_KEY_PID).getStringSet(options.getIdentifier(), null);
 
-        for (String action : actions) {
-            getAlarmMgr().cancel(PendingIntent.getBroadcast(
-                context, 0, new Intent(action), PendingIntent.FLAG_IMMUTABLE));
+        if (intentActionIds == null) return;
+
+        for (String intentActionId : intentActionIds) {
+            Log.d(TAG, "Cancel PendingIntent, intentActionId=" + intentActionId);
+
+            // Create similar PendingIntent to cancel the alarm
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, 0,
+                // The intent have to be build with the same context, class and action
+                new Intent(context, TriggerReceiver.class).setAction(intentActionId),
+                // If the PendingIntent could not be found, null will be returned (configured by FLAG_NO_CREATE)
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
+
+            // PendingIntent could not be found
+            if (pendingIntent == null) {
+                Log.d(TAG, "Could not cancel PendingIntent, intentActionId=" + intentActionId + ", PendingIntent not found");
+                continue;
+            }
+
+            // Remove any alarms with a matching Intent. Any alarm, of any type, whose Intent matches this one
+            // (as defined by Intent#filterEquals), will be canceled.
+            // Intent#filterEquals: That is, if their action, data, type, identity, class, and categories are the same.
+            // This does not compare any extra data included in the intents.
+            getAlarmMgr().cancel(pendingIntent);
         }
     }
 
@@ -366,23 +389,23 @@ public final class Notification {
 
     /**
      * Update the notification properties.
-     *
-     * @param updates  The properties to update.
-     * @param receiver Receiver to handle the trigger event.
+     * @param updates The properties to update.
      */
-    void update (JSONObject updates, Class<?> receiver) {
+    void update (JSONObject updates) {
+        // Update options of notification
         mergeJSONObjects(updates);
+        // Store the options
         persist(null);
 
-        if (getType() != Type.TRIGGERED)
-            return;
+        // Update already triggered notification in status bar
+        if (getType() == Type.TRIGGERED) {
+            Intent intent = new Intent(context, TriggerReceiver.class)
+                    .setAction(PREF_KEY_ID + options.getId())
+                    .putExtra(Notification.EXTRA_ID, options.getId())
+                    .putExtra(Notification.EXTRA_UPDATE, true);
 
-        Intent intent = new Intent(context, receiver)
-                .setAction(PREF_KEY_ID + options.getId())
-                .putExtra(Notification.EXTRA_ID, options.getId())
-                .putExtra(Notification.EXTRA_UPDATE, true);
-
-        trigger(intent, receiver);
+            trigger(intent);
+        }
     }
 
     /**
@@ -406,22 +429,20 @@ public final class Notification {
      * Preferences. This will allow the application to restore the notification
      * upon device reboot, app restart, retrieve notifications, aso.
      *
-     * @param ids List of intent actions to persist.
+     * @param intentActionIds List of intent actions to persist.
      */
-    private void persist (Set<String> ids) {
-        String id = options.getIdentifier();
-        SharedPreferences.Editor editor;
+    private void persist (Set<String> intentActionIds) {
+        // Save options for this notification
+        getPrefs(PREF_KEY_ID).edit()
+        .putString(options.getIdentifier(), options.toString())
+        .apply();
 
-        editor = getPrefs(PREF_KEY_ID).edit();
-        editor.putString(id, options.toString());
-        editor.apply();
-
-        if (ids == null)
-            return;
-
-        editor = getPrefs(PREF_KEY_PID).edit();
-        editor.putStringSet(id, ids);
-        editor.apply();
+        // Save intent action identifiers for this notification
+        if (intentActionIds != null) {
+            getPrefs(PREF_KEY_PID).edit()
+            .putStringSet(options.getIdentifier(), intentActionIds)
+            .apply();
+        }
     }
 
     /**
@@ -456,7 +477,7 @@ public final class Notification {
     }
 
     /**
-     * Merge two JSON objects.
+     * Update options
      */
     private void mergeJSONObjects (JSONObject updates) {
         JSONObject dict = options.getDict();

@@ -84,8 +84,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
         Calendar cal = Calendar.getInstance();
         cal.add(MINUTE, 1);
         Request req  = new Request(options, cal.getTime());
-
-        manager.schedule(req, this.getClass());
+        manager.schedule(req);
     }
 
     /**

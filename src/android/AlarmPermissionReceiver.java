@@ -59,7 +59,7 @@ public class AlarmPermissionReceiver extends BroadcastReceiver {
             List<Notification> notifications = Manager.getInstance(context).getByType(SCHEDULED);
 
             for (Notification notification : notifications) {
-                notification.schedule(new Request(notification.getOptions()), TriggerReceiver.class);
+                notification.schedule(new Request(notification.getOptions()));
             }
         }
     }

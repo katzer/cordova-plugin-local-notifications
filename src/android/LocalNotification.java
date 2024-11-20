@@ -329,7 +329,7 @@ public class LocalNotification extends CordovaPlugin {
             JSONObject dict    = toasts.optJSONObject(i);
             Options options    = new Options(dict);
             Request request    = new Request(options);
-            Notification toast = mgr.schedule(request, TriggerReceiver.class);
+            Notification toast = mgr.schedule(request);
 
             if (toast != null) {
                 fireEvent("add", toast);
@@ -367,7 +367,7 @@ public class LocalNotification extends CordovaPlugin {
         for (int i = 0; i < updates.length(); i++) {
             JSONObject update  = updates.optJSONObject(i);
             int id             = update.optInt("id", 0);
-            Notification toast = mgr.update(id, update, TriggerReceiver.class);
+            Notification toast = mgr.update(id, update);
 
             if (toast == null)
                 continue;

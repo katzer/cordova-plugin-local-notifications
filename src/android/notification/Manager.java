@@ -112,13 +112,12 @@ public final class Manager {
      * Schedule local notification specified by request.
      *
      * @param request Set of notification options.
-     * @param receiver Receiver to handle the trigger event.
      */
-    public Notification schedule (Request request, Class<?> receiver) {
+    public Notification schedule (Request request) {
         Options options    = request.getOptions();
         Notification toast = new Notification(context, options);
 
-        toast.schedule(request, receiver);
+        toast.schedule(request);
 
         return toast;
     }
@@ -197,15 +196,13 @@ public final class Manager {
      *
      * @param id       The notification ID.
      * @param updates  JSON object with notification options.
-     * @param receiver Receiver to handle the trigger event.
      */
-    public Notification update (int id, JSONObject updates, Class<?> receiver) {
+    public Notification update (int id, JSONObject updates) {
         Notification notification = get(id);
 
-        if (notification == null)
-            return null;
+        if (notification == null) return null;
 
-        notification.update(updates, receiver);
+        notification.update(updates);
 
         return notification;
     }
