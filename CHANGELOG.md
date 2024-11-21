@@ -14,6 +14,13 @@ ChangeLog
 - Correct wrong package for classes in notification directory:
   - The classes in the notification directory must be in the package "de.appplant.cordova.plugin.localnotification.notification" and not "de.appplant.cordova.plugin.notification", because "de.appplant.cordova.plugin.localnotification" is the package name of the plugin.
   - Copy the classes in the right directory, when building an app
+- Bugfix: Correct canceling alarms of notifications
+    - When canceling a notification, the saved data for the notification was removed from the app and also a posted notification from the statusbar, but the alarm itself not, which would create the notification. This was due to a wrongly created intent for clearing the scheduled alarms in Notification.cancelScheduledAlarms. The Intent must be initialized with a context and a class along with the action.
+    Before it was only initialized with an action and without a context and class.
+    - Always set the receiver class for alarms to TriggerReceiver.class, so it's easier to cancel alarms.
+    - Will fix "java.lang.IllegalStateException: Maximum limit of concurrent alarms 500 reached", when canceling notifications and schedule new notifications.
+- Remove Android Support Library from plugin.xml
+    - This was overlooked, when switched to Android X.
 
 #### Version 1.0.0 (17.08.2024)
 This Release contains mainly changes and fixes for the Android platform.
