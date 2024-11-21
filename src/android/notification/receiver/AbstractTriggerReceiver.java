@@ -68,7 +68,7 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
      * @param notification Wrapper around the local notification.
      * @param bundle       The bundled extras.
      */
-    abstract public void onTrigger (Notification notification, Bundle bundle);
+    abstract public void onTrigger(Notification notification, Bundle bundle);
 
     /**
      * Build notification specified by options.
@@ -76,7 +76,7 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
      * @param builder Notification builder.
      * @param bundle  The bundled extras.
      */
-    abstract public Notification buildNotification (Builder builder,
+    abstract public Notification buildNotification(Builder builder,
                                                     Bundle bundle);
 
 }

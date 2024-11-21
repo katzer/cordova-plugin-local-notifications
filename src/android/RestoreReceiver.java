@@ -48,7 +48,7 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      * @param toast   Wrapper around the local notification.
      */
     @Override
-    public void onRestore (Request request, Notification toast) {
+    public void onRestore(Request request, Notification toast) {
         Date date     = request.getTriggerDate();
         boolean after = date != null && date.after(new Date());
 
@@ -72,7 +72,7 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      * @param builder Notification builder.
      */
     @Override
-    public Notification buildNotification (Builder builder) {
+    public Notification buildNotification(Builder builder) {
         return builder
                 .setClickActivity(ClickHandlerActivity.class)
                 .setClearReceiver(ClearReceiver.class)

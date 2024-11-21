@@ -63,6 +63,6 @@ abstract public class AbstractClearReceiver extends BroadcastReceiver {
      * @param notification Wrapper around the local notification.
      * @param bundle The bundled extras.
      */
-    abstract public void onClear (Notification notification, Bundle bundle);
+    abstract public void onClear(Notification notification, Bundle bundle);
 
 }

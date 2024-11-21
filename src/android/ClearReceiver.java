@@ -44,7 +44,7 @@ public class ClearReceiver extends AbstractClearReceiver {
      * @param bundle       The bundled extras.
      */
     @Override
-    public void onClear (Notification notification, Bundle bundle) {
+    public void onClear(Notification notification, Bundle bundle) {
         boolean isLast = bundle.getBoolean(EXTRA_LAST, false);
 
         if (isLast) {

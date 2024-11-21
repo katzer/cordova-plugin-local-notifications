@@ -129,7 +129,7 @@ public class MatchTrigger extends IntervalTrigger {
      *
      * @return null if there's none trigger date.
      */
-    private Date getTriggerDate (Date base) {
+    private Date getTriggerDate(Date base) {
         Calendar cal = getBaseTriggerDate(base);
         Calendar now = getCal(base);
 
@@ -233,7 +233,7 @@ public class MatchTrigger extends IntervalTrigger {
         return applySpecials(cal);
     }
 
-    private Date applySpecials (Calendar cal) {
+    private Date applySpecials(Calendar cal) {
         if (specials.get(2) != null && !setWeekOfMonth(cal))
             return null;
 
@@ -251,7 +251,7 @@ public class MatchTrigger extends IntervalTrigger {
      * @return null if there's none next trigger date.
      */
     @Override
-    public Date getNextTriggerDate (Date base) {
+    public Date getNextTriggerDate(Date base) {
         Date date = base;
 
         if (getOccurrence() > 1) {
@@ -268,7 +268,7 @@ public class MatchTrigger extends IntervalTrigger {
     /**
      * Sets the field value of now to date and adds by count.
      */
-    private void addToDate (Calendar cal, Calendar now, int field, int count) {
+    private void addToDate(Calendar cal, Calendar now, int field, int count) {
         cal.set(field, now.get(field));
         cal.add(field, count);
     }
@@ -281,7 +281,7 @@ public class MatchTrigger extends IntervalTrigger {
      *
      * @return true if the operation could be made.
      */
-    private boolean setDayOfWeek (Calendar cal) {
+    private boolean setDayOfWeek(Calendar cal) {
         cal.setFirstDayOfWeek(Calendar.MONDAY);
         int day      = WEEKDAYS_REV[cal.get(DAY_OF_WEEK)];
         int month    = cal.get(Calendar.MONTH);
@@ -325,7 +325,7 @@ public class MatchTrigger extends IntervalTrigger {
      *
      * @return true if the operation could be made.
      */
-    private boolean setWeekOfMonth (Calendar cal) {
+    private boolean setWeekOfMonth(Calendar cal) {
         int week      = cal.get(WEEK_OF_MONTH);
         int year      = cal.get(Calendar.YEAR);
         int weekToSet = specials.get(2);

@@ -57,7 +57,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle       The bundled extras.
      */
     @Override
-    public void onTrigger (Notification notification, Bundle bundle) {
+    public void onTrigger(Notification notification, Bundle bundle) {
         Context context  = notification.getContext();
         Options options  = notification.getOptions();
         Manager manager  = Manager.getInstance(context);
@@ -90,7 +90,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      *
      * @param context The application context.
      */
-    private void wakeUp (Context context) {
+    private void wakeUp(Context context) {
         PowerManager pm = (PowerManager) context.getSystemService(POWER_SERVICE);
 
         if (pm == null)
@@ -119,7 +119,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      * @param bundle  The bundled extras.
      */
     @Override
-    public Notification buildNotification (Builder builder, Bundle bundle) {
+    public Notification buildNotification(Builder builder, Bundle bundle) {
         return builder
                 .setClickActivity(ClickHandlerActivity.class)
                 .setClearReceiver(ClearReceiver.class)

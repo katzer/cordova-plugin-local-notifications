@@ -101,7 +101,7 @@ public final class Notification {
      * @param options Parsed notification options.
      * @param builder Pre-configured notification builder.
      */
-    Notification (Context context, Options options, NotificationCompat.Builder builder) {
+    Notification(Context context, Options options, NotificationCompat.Builder builder) {
         this.context  = context;
         this.options  = options;
         this.builder  = builder;
@@ -295,7 +295,7 @@ public final class Notification {
      * Trigger local notification specified by intent.
      * @param intent The intent to broadcast.
      */
-    private void trigger (Intent intent) {
+    private void trigger(Intent intent) {
         new TriggerReceiver().onReceive(context, intent);
     }
 
@@ -391,7 +391,7 @@ public final class Notification {
      * Update the notification properties.
      * @param updates The properties to update.
      */
-    void update (JSONObject updates) {
+    void update(JSONObject updates) {
         // Update options of notification
         mergeJSONObjects(updates);
         // Store the options
@@ -431,7 +431,7 @@ public final class Notification {
      *
      * @param intentActionIds List of intent actions to persist.
      */
-    private void persist (Set<String> intentActionIds) {
+    private void persist(Set<String> intentActionIds) {
         // Save options for this notification
         getPrefs(PREF_KEY_ID).edit()
         .putString(options.getIdentifier(), options.toString())
@@ -448,7 +448,7 @@ public final class Notification {
     /**
      * Remove the notification from the Android shared Preferences.
      */
-    private void unpersist () {
+    private void unpersist() {
         String[] keys = { PREF_KEY_ID, PREF_KEY_PID };
         String id     = options.getIdentifier();
         SharedPreferences.Editor editor;
@@ -479,7 +479,7 @@ public final class Notification {
     /**
      * Update options
      */
-    private void mergeJSONObjects (JSONObject updates) {
+    private void mergeJSONObjects(JSONObject updates) {
         JSONObject dict = options.getDict();
         Iterator it     = updates.keys();
 
@@ -512,14 +512,14 @@ public final class Notification {
      *
      * @return null if no builder instance could be found.
      */
-    static NotificationCompat.Builder getCachedBuilder (int key) {
+    static NotificationCompat.Builder getCachedBuilder(int key) {
         return (cache != null) ? cache.get(key) : null;
     }
 
     /**
      * Caches the builder instance so it can be used later.
      */
-    private void clearCache () {
+    private void clearCache() {
         if (cache != null) {
             cache.delete(getId());
         }
@@ -528,14 +528,14 @@ public final class Notification {
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getPrefs (String key) {
+    private SharedPreferences getPrefs(String key) {
         return context.getSharedPreferences(key, Context.MODE_PRIVATE);
     }
 
     /**
      * Notification manager for the application.
      */
-    private NotificationManager getNotMgr () {
+    private NotificationManager getNotMgr() {
         return (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }
@@ -543,7 +543,7 @@ public final class Notification {
     /**
      * Alarm manager for the application.
      */
-    private AlarmManager getAlarmMgr () {
+    private AlarmManager getAlarmMgr() {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 

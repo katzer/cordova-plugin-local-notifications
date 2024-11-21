@@ -62,7 +62,7 @@ public final class ActionGroup {
      *
      * @param group The action group to register.
      */
-    public static void register (ActionGroup group) {
+    public static void register(ActionGroup group) {
         groups.put(group.getId(), group);
     }
 
@@ -71,7 +71,7 @@ public final class ActionGroup {
      *
      * @param id The id of the action group to remove.
      */
-    public static void unregister (String id) {
+    public static void unregister(String id) {
         groups.remove(id);
     }
 
@@ -80,7 +80,7 @@ public final class ActionGroup {
      *
      * @param id The id of the action group to check for.
      */
-    public static boolean isRegistered (String id) {
+    public static boolean isRegistered(String id) {
         return groups.containsKey(id);
     }
 
@@ -91,7 +91,7 @@ public final class ActionGroup {
      *
      * @return A new action group.
      */
-    public static ActionGroup parse (Context context, JSONArray list) {
+    public static ActionGroup parse(Context context, JSONArray list) {
         return parse(context, null, list);
     }
 
@@ -103,7 +103,7 @@ public final class ActionGroup {
      *
      * @return A new action group.
      */
-    public static ActionGroup parse (Context context, String id, JSONArray list) {
+    public static ActionGroup parse(Context context, String id, JSONArray list) {
         List<Action> actions = new ArrayList<Action>(list.length());
 
         for (int i = 0; i < list.length(); i++) {

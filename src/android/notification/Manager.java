@@ -91,14 +91,14 @@ public final class Manager {
     /**
      * Ask if user has enabled permission for local notifications.
      */
-    public boolean areNotificationsEnabled () {
+    public boolean areNotificationsEnabled() {
         return getNotCompMgr().areNotificationsEnabled();
     }
 
     /**
      * Check if the setting to schedule exact alarms is enabled.
      */
-    public boolean canScheduleExactAlarms () {
+    public boolean canScheduleExactAlarms() {
         if (SDK_INT < S){
             return true;
         }
@@ -113,7 +113,7 @@ public final class Manager {
      *
      * @param request Set of notification options.
      */
-    public Notification schedule (Request request) {
+    public Notification schedule(Request request) {
         Options options    = request.getOptions();
         Notification toast = new Notification(context, options);
 
@@ -197,7 +197,7 @@ public final class Manager {
      * @param id       The notification ID.
      * @param updates  JSON object with notification options.
      */
-    public Notification update (int id, JSONObject updates) {
+    public Notification update(int id, JSONObject updates) {
         Notification notification = get(id);
 
         if (notification == null) return null;
@@ -212,7 +212,7 @@ public final class Manager {
      *
      * @param id The notification ID.
      */
-    public Notification clear (int id) {
+    public Notification clear(int id) {
         Notification toast = get(id);
 
         if (toast != null) {
@@ -225,7 +225,7 @@ public final class Manager {
     /**
      * Clear all local notifications.
      */
-    public void clearAll () {
+    public void clearAll() {
         List<Notification> toasts = getByType(TRIGGERED);
 
         for (Notification toast : toasts) {
@@ -241,7 +241,7 @@ public final class Manager {
      *
      * @param id The notification ID
      */
-    public Notification cancel (int id) {
+    public Notification cancel(int id) {
         Notification toast = get(id);
 
         if (toast != null) {
@@ -254,7 +254,7 @@ public final class Manager {
     /**
      * Cancel all local notifications.
      */
-    public void cancelAll () {
+    public void cancelAll() {
         List<Notification> notifications = getAll();
 
         for (Notification notification : notifications) {
@@ -440,7 +440,7 @@ public final class Manager {
      *
      * @param badge The badge number.
      */
-    public void setBadge (int badge) {
+    public void setBadge(int badge) {
         if (badge == 0) {
             new BadgeImpl(context).clearBadge();
         } else {
@@ -462,7 +462,7 @@ public final class Manager {
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getPrefs () {
+    private SharedPreferences getPrefs() {
         return context.getSharedPreferences(PREF_KEY_ID, Context.MODE_PRIVATE);
     }
 

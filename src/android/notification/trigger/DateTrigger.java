@@ -60,7 +60,7 @@ abstract public class DateTrigger {
      *
      * @param date The date to point.
      */
-    Calendar getCal (Date date) {
+    Calendar getCal(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
 

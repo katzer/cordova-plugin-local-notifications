@@ -94,7 +94,7 @@ public class LocalNotification extends CordovaPlugin {
      * having parameters on the initialize() function.
      */
     @Override
-    public void initialize (CordovaInterface cordova, CordovaWebView webView) {
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
 
@@ -110,7 +110,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param multitasking Flag indicating if multitasking is turned on for app.
      */
     @Override
-    public void onResume (boolean multitasking) {
+    public void onResume(boolean multitasking) {
         super.onResume(multitasking);
         Log.d(TAG, "onResume");
         deviceready();
@@ -145,7 +145,7 @@ public class LocalNotification extends CordovaPlugin {
      * @return Whether the action was valid.
      */
     @Override
-    public boolean execute (final String action, final JSONArray args,
+    public boolean execute(final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
 
         if (action.equals("launch")) {
@@ -246,7 +246,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void check (CallbackContext command) {
+    private void check(CallbackContext command) {
         boolean allowed = getNotMgr().areNotificationsEnabled();
         success(command, allowed);
     }
@@ -256,7 +256,7 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param command The callback context used when calling back into JavaScript.
      */
-    private void canScheduleExactAlarms (CallbackContext command) {
+    private void canScheduleExactAlarms(CallbackContext command) {
         success(command, getNotMgr().canScheduleExactAlarms());
     }
 
@@ -266,7 +266,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void request (CallbackContext command) {
+    private void request(CallbackContext command) {
         if (getNotMgr().areNotificationsEnabled()) {
             success(command, true);
 
@@ -293,7 +293,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void actions (JSONArray args, CallbackContext command) {
+    private void actions(JSONArray args, CallbackContext command) {
         int task        = args.optInt(0);
         String id       = args.optString(1);
         JSONArray list  = args.optJSONArray(2);
@@ -323,7 +323,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void schedule (JSONArray toasts, CallbackContext command) {
+    private void schedule(JSONArray toasts, CallbackContext command) {
         Manager mgr = getNotMgr();
 
         for (int i = 0; i < toasts.length(); i++) {
@@ -347,7 +347,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void createChannel (JSONArray args, CallbackContext command) {
+    private void createChannel(JSONArray args, CallbackContext command) {
         Manager mgr = getNotMgr();
         JSONObject options = args.optJSONObject(0);
         mgr.createChannel(options);
@@ -362,7 +362,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void update (JSONArray updates, CallbackContext command) {
+    private void update(JSONArray updates, CallbackContext command) {
         Manager mgr = getNotMgr();
 
         for (int i = 0; i < updates.length(); i++) {
@@ -386,7 +386,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void cancel (JSONArray ids, CallbackContext command) {
+    private void cancel(JSONArray ids, CallbackContext command) {
         Manager mgr = getNotMgr();
 
         for (int i = 0; i < ids.length(); i++) {
@@ -456,7 +456,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void type (JSONArray args, CallbackContext command) {
+    private void type(JSONArray args, CallbackContext command) {
         int id             = args.optInt(0);
         Notification toast = getNotMgr().get(id);
 
@@ -485,7 +485,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void ids (JSONArray args, CallbackContext command) {
+    private void ids(JSONArray args, CallbackContext command) {
         int type    = args.optInt(0);
         Manager mgr = getNotMgr();
         List<Integer> ids;
@@ -515,7 +515,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void notification (JSONArray args, CallbackContext command) {
+    private void notification(JSONArray args, CallbackContext command) {
         int id       = args.optInt(0);
         Options opts = getNotMgr().getOptions(id);
 
@@ -533,7 +533,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into
      *                JavaScript.
      */
-    private void notifications (JSONArray args, CallbackContext command) {
+    private void notifications(JSONArray args, CallbackContext command) {
         int type      = args.optInt(0);
         JSONArray ids = args.optJSONArray(1);
         Manager mgr   = getNotMgr();
@@ -564,7 +564,7 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param command The callback context used when calling back into JavaScript.
      */
-    private void openNotificationSettings (CallbackContext command) {
+    private void openNotificationSettings(CallbackContext command) {
         String packageName = cordova.getActivity().getPackageName();
         Intent intent = new Intent();
 
@@ -589,7 +589,7 @@ public class LocalNotification extends CordovaPlugin {
      * 
      * @param command The callback context used when calling back into JavaScript.
      */
-    private void openAlarmSettings (CallbackContext command) {
+    private void openAlarmSettings(CallbackContext command) {
         // Setting available since Android 12 (SDK 31)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             String packageName = cordova.getActivity().getPackageName();
@@ -630,7 +630,7 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param event The event name.
      */
-    private void fireEvent (String event) {
+    private void fireEvent(String event) {
         fireEvent(event, null, new JSONObject());
     }
 
@@ -640,7 +640,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param event        The event name.
      * @param notification Optional notification to pass with.
      */
-    static void fireEvent (String event, Notification notification) {
+    static void fireEvent(String event, Notification notification) {
         fireEvent(event, notification, new JSONObject());
     }
 
@@ -651,7 +651,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param toast Optional notification to pass with.
      * @param data  Event object with additional data.
      */
-    static void fireEvent (String event, Notification toast, JSONObject data) {
+    static void fireEvent(String event, Notification toast, JSONObject data) {
         String params, js;
 
         try {
@@ -735,7 +735,7 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param ary Array of integers.
      */
-    private List<Integer> toList (JSONArray ary) {
+    private List<Integer> toList(JSONArray ary) {
         List<Integer> list = new ArrayList<Integer>();
 
         for (int i = 0; i < ary.length(); i++) {

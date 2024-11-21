@@ -87,7 +87,7 @@ public final class AssetUtil {
      *
      * @param path The given path.
      */
-    public Uri parse (String path) {
+    public Uri parse(String path) {
         if (path == null || path.isEmpty()) {
             return Uri.EMPTY;
         } else if (path.startsWith("res:")) {
@@ -336,7 +336,7 @@ public final class AssetUtil {
      *
      * @param resPath Resource path as string.
      */
-    private String getBaseName (String resPath) {
+    private String getBaseName(String resPath) {
         String drawable = resPath;
 
         if (drawable.contains("/")) {
@@ -355,7 +355,7 @@ public final class AssetUtil {
      *
      * @return File with a random UUID name.
      */
-    private File getTmpFile () {
+    private File getTmpFile() {
         // If random UUID is not be enough see
         // https://github.com/LukePulverenti/cordova-plugin-local-notifications/blob/267170db14044cbeff6f4c3c62d9b766b7a1dd62/src/android/notification/AssetUtil.java#L255
         return getTmpFile(UUID.randomUUID().toString());
@@ -368,7 +368,7 @@ public final class AssetUtil {
      *
      * @return File with the provided name.
      */
-    private File getTmpFile (String name) {
+    private File getTmpFile(String name) {
         File dir = context.getExternalCacheDir();
 
         if (dir == null) {
@@ -408,7 +408,7 @@ public final class AssetUtil {
     /**
      * Package name specified by the resource bundle.
      */
-    private String getPkgName (Resources res) {
+    private String getPkgName(Resources res) {
         return res == Resources.getSystem() ? "android" : context.getPackageName();
     }
 

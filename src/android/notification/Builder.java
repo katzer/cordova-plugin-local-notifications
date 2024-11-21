@@ -400,7 +400,7 @@ public final class Builder {
      *
      * @param builder Local notification builder instance.
      */
-    private void applyActions (NotificationCompat.Builder builder) {
+    private void applyActions(NotificationCompat.Builder builder) {
         Action[] actions = options.getActions();
         NotificationCompat.Action.Builder btn;
 
@@ -426,7 +426,7 @@ public final class Builder {
      *
      * @param action Notification action needing the PendingIntent
      */
-    private PendingIntent getPendingIntentForAction (Action action) {
+    private PendingIntent getPendingIntentForAction(Action action) {
         Intent intent = new Intent(context, clickActivity)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())

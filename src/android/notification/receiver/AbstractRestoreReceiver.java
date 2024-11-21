@@ -55,7 +55,7 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      * @param intent  Received intent with content data
      */
     @Override
-    public void onReceive (Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
         if (SDK_INT >= 24) {
@@ -82,13 +82,13 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      * @param request Set of notification options.
      * @param toast   Wrapper around the local notification.
      */
-    abstract public void onRestore (Request request, Notification toast);
+    abstract public void onRestore(Request request, Notification toast);
 
     /**
      * Build notification specified by options.
      *
      * @param builder Notification builder.
      */
-    abstract public Notification buildNotification (Builder builder);
+    abstract public Notification buildNotification(Builder builder);
 
 }

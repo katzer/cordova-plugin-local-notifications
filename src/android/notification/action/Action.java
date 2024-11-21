@@ -56,7 +56,7 @@ public final class Action {
      * @param context The application context.
      * @param options The action options.
      */
-    Action (Context context, JSONObject options) {
+    Action(Context context, JSONObject options) {
         this.context = context;
         this.options = options;
     }
