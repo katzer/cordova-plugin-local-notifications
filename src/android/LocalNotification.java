@@ -95,6 +95,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
         LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
 
         this.cordova.getActivity().getApplicationContext().registerReceiver(
@@ -211,7 +212,7 @@ public class LocalNotification extends CordovaPlugin {
             }
         });
 
-        return true;
+        return true; // Action was found
     }
 
     /**

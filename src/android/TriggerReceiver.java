@@ -58,29 +58,27 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger (Notification notification, Bundle bundle) {
-        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
         Context context  = notification.getContext();
         Options options  = notification.getOptions();
         Manager manager  = Manager.getInstance(context);
-        int badge        = options.getBadgeNumber();
+        int badge = options.getBadgeNumber();
 
-        if (badge > 0) {
-            manager.setBadge(badge);
-        }
+        // Set badge count
+        if (badge > 0) manager.setBadge(badge);
 
-        if (options.shallWakeUp()) {
-            wakeUp(context);
-        }
+        // Wakeup the device
+        if (options.shallWakeUp()) wakeUp(context);
 
+        // Show the notification
         notification.show();
 
-        if (!isUpdate && isAppRunning()) {
-            fireEvent("trigger", notification);
-        }
+        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
+        if (!isUpdate && isAppRunning()) fireEvent("trigger", notification);
 
-        if (!options.isInfiniteTrigger())
-            return;
+        // Check if notification repeats endless
+        if (!options.isInfiniteTrigger()) return;
 
+        // Schedule next notification
         Calendar cal = Calendar.getInstance();
         cal.add(MINUTE, 1);
         Request req  = new Request(options, cal.getTime());

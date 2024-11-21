@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger;
+import de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit;
 import de.appplant.cordova.plugin.localnotification.notification.trigger.IntervalTrigger;
 import de.appplant.cordova.plugin.localnotification.notification.trigger.MatchTrigger;
 
@@ -98,8 +99,8 @@ public final class Request {
     }
 
     /**
-     * The identifier for the request.
-     *
+     * The identifier for the request in the form
+     * {notification-id}-{occurrence} e.g. "1173-2"
      * @return The notification ID as the string
      */
     String getIdentifier() {

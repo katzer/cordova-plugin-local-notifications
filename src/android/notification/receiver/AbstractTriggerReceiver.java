@@ -45,22 +45,19 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle   = intent.getExtras();
+        Bundle bundle = intent.getExtras();
 
-        if (bundle == null)
-            return;
+        if (bundle == null) return;
 
-        int toastId     = bundle.getInt(Notification.EXTRA_ID, 0);
+        int toastId = bundle.getInt(Notification.EXTRA_ID, 0);
         Options options = Manager.getInstance(context).getOptions(toastId);
 
-        if (options == null)
-            return;
+        if (options == null) return;
 
-        Builder builder    = new Builder(options);
+        Builder builder = new Builder(options);
         Notification toast = buildNotification(builder, bundle);
 
-        if (toast == null)
-            return;
+        if (toast == null) return;
 
         onTrigger(toast, bundle);
     }
