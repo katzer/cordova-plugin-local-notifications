@@ -6,14 +6,14 @@ ChangeLog
 - Bugfix: Make cancel/cancelAll/clear/clearAll work again. This was broken since Version 1.0.0 because of the change "Use app name as a tag for the notify call [PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)". For e.g. notifications were still in the statusbar, when clearing a notification.
 - Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
 - Added [channel creation](README.md#android-notification-channels)
-  - Important: Renamed "channel" proprety to "channelId"
+    - Important: Renamed "channel" proprety to "channelId"
 - Update dependency ShortcutBadger from version 1.1.19 to 1.1.22 to fix native crashes
 - Bugfix: Catch any exceptions when attempting to get option for a notification
 - Gradle: Remove deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
 - Use `FLAG_IMMUTABLE` on every Android version. `FLAG_IMMUTABLE` was set for Android 12 and newer, but the flag is supported since Android 6. The code should be consistent between all Android versions.
 - Correct wrong package for classes in notification directory:
-  - The classes in the notification directory must be in the package "de.appplant.cordova.plugin.localnotification.notification" and not "de.appplant.cordova.plugin.notification", because "de.appplant.cordova.plugin.localnotification" is the package name of the plugin.
-  - Copy the classes in the right directory, when building an app
+    - The classes in the notification directory must be in the package "de.appplant.cordova.plugin.localnotification.notification" and not "de.appplant.cordova.plugin.notification", because "de.appplant.cordova.plugin.localnotification" is the package name of the plugin.
+    - Copy the classes in the right directory, when building an app
 - Bugfix: Correct canceling alarms of notifications
     - When canceling a notification, the saved data for the notification was removed from the app and also a posted notification from the statusbar, but the alarm itself not, which would create the notification. This was due to a wrongly created intent for clearing the scheduled alarms in Notification.cancelScheduledAlarms. The Intent must be initialized with a context and a class along with the action.
     Before it was only initialized with an action and without a context and class.
