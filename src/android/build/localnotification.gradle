@@ -28,4 +28,5 @@ if (!project.ext.has('appShortcutBadgerVersion')) {
 
 dependencies {
     implementation "me.leolin:ShortcutBadger:${appShortcutBadgerVersion}@aar"
+    implementation "androidx.media:media:1.7.0"
 }
