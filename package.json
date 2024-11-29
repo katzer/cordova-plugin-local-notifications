@@ -37,6 +37,12 @@
     }
   },
   "author": "Sebastián Katzer",
+  "contributors": [{
+    "name": "Manuel Beck",
+    "email": "email@manuelbeck.software",
+    "url": "https://manuelbeck.software"
+  }],
+  "funding": "https://github.com/sponsors/GitToTheHub",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
