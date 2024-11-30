@@ -26,7 +26,7 @@ package de.appplant.cordova.plugin.localnotification.notification.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.UserManager;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -48,6 +48,8 @@ import static android.os.Build.VERSION.SDK_INT;
  */
 abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "AbstractRestoreReceiver";
+
     /**
      * Called on device reboot.
      *
@@ -56,23 +58,17 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
+        Log.d(TAG, "Received action: " + intent.getAction());
 
-        if (SDK_INT >= 24) {
-          UserManager um = (UserManager) context.getSystemService(UserManager.class);
-          if (um == null || um.isUserUnlocked() == false) return;
-        }
+        // The device was booted and is unlocked
+        if (intent.getAction().equals(ACTION_BOOT_COMPLETED)) {
+            List<JSONObject> notificationsOptionsJSON = Manager.getInstance(context).getOptions();
 
-        Manager mgr               = Manager.getInstance(context);
-        List<JSONObject> toasts = mgr.getOptions();
-
-        for (JSONObject data : toasts) {
-            Options options    = new Options(context, data);
-            Request request    = new Request(options);
-            Builder builder    = new Builder(options);
-            Notification toast = buildNotification(builder);
-
-            onRestore(request, toast);
+            Log.d(TAG, "Restoring notifications, count: " + notificationsOptionsJSON.size());
+            for (JSONObject notificationOptionsJSON : notificationsOptionsJSON) {
+                Options notificationOptions = new Options(context, notificationOptionsJSON);
+                onRestore(new Request(notificationOptions), buildNotification(new Builder(notificationOptions)));
+            }
         }
     }
 

@@ -115,10 +115,15 @@
 
             <receiver
                 android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
-                android:directBootAware="true"
                 android:exported="false" >
                 <intent-filter>
-                    <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                    <!--
+                      BOOT_COMPLETED: Upon receipt of this broadcast, the user is unlocked
+                      and both device-protected and credential-protected storage can accessed safely.
+                      If we would need to run while the user is still locked (before they've entered their
+                      lock pattern or PIN for the first time), we could use LOCKED_BOOT_COMPLETED,
+                      but this have to be implemented. BOOT_COMPLETED should be enough.
+                    -->
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
                 </intent-filter>
             </receiver>
