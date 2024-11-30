@@ -38,9 +38,6 @@ import de.appplant.cordova.plugin.localnotification.notification.Notification;
 import de.appplant.cordova.plugin.localnotification.notification.Options;
 import de.appplant.cordova.plugin.localnotification.notification.Request;
 
-import static android.content.Intent.ACTION_BOOT_COMPLETED;
-import static android.os.Build.VERSION.SDK_INT;
-
 /**
  * This class is triggered upon reboot of the device. It needs to re-register
  * the alarms with the AlarmManager since these alarms are lost in case of
@@ -61,7 +58,9 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
         Log.d(TAG, "Received action: " + intent.getAction());
 
         // The device was booted and is unlocked
-        if (intent.getAction().equals(ACTION_BOOT_COMPLETED)) {
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
+            // The app was updated
+            intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             List<JSONObject> notificationsOptionsJSON = Manager.getInstance(context).getOptions();
 
             Log.d(TAG, "Restoring notifications, count: " + notificationsOptionsJSON.size());

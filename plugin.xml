@@ -118,13 +118,13 @@
                 android:exported="false" >
                 <intent-filter>
                     <!--
-                      BOOT_COMPLETED: Upon receipt of this broadcast, the user is unlocked
-                      and both device-protected and credential-protected storage can accessed safely.
-                      If we would need to run while the user is still locked (before they've entered their
-                      lock pattern or PIN for the first time), we could use LOCKED_BOOT_COMPLETED,
-                      but this have to be implemented. BOOT_COMPLETED should be enough.
+                      Reschedule all alarms, when the device is booted and unlocked by the user
                     -->
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
+                    <!--
+                      Reschedule all alarms, when the app is updated
+                    -->
+                    <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 </intent-filter>
             </receiver>
         </config-file>
