@@ -190,6 +190,26 @@ public final class Manager {
         mgr.createNotificationChannel(channel);
     }
 
+    /**
+     * Deletes a notification channel by an id. If you create a new channel with this same id,
+     * the deleted channel will be un-deleted with all of the same settings it had before it was deleted.
+     * @param channelId Like "my_channel_id"
+     */
+    public void deleteChannel(String channelId) {
+        // Channels are supported since Android 8
+        if (SDK_INT < O) return;
+
+        Log.d(TAG, "Delete channel, id=" + channelId);
+
+        // Cancel all notifications regarding this channel
+        for (Notification notification : Manager.getInstance(context).getNotifications()) {
+            if (notification.getOptions().getChannelId().equals(channelId)) {
+                notification.cancel();
+            }
+        }
+
+        getNotMgr().deleteNotificationChannel(channelId);
+    }
 
     /**
      * Update local notification specified by ID.
@@ -255,7 +275,7 @@ public final class Manager {
      * Cancel all local notifications.
      */
     public void cancelAll() {
-        List<Notification> notifications = getAll();
+        List<Notification> notifications = getNotifications();
 
         for (Notification notification : notifications) {
             notification.cancel();
@@ -310,11 +330,18 @@ public final class Manager {
     }
 
     /**
+     * List of all local notification.
+     */
+    public List<Notification> getNotifications() {
+        return getNotifications(getIds());
+    }
+
+    /**
      * List of local notifications with matching ID.
      *
      * @param ids Set of notification IDs.
      */
-    private List<Notification> getByIds(List<Integer> ids) {
+    private List<Notification> getNotifications(List<Integer> ids) {
         List<Notification> toasts = new ArrayList<Notification>();
 
         for (int id : ids) {
@@ -329,25 +356,12 @@ public final class Manager {
     }
 
     /**
-     * List of all local notification.
-     */
-    public List<Notification> getAll() {
-        return getByIds(getIds());
-    }
-
-    /**
      * List of local notifications from given type.
      *
      * @param type The notification life cycle type
      */
     public List<Notification> getByType(Notification.Type type) {
-
-        if (type == Notification.Type.ALL)
-            return getAll();
-
-        List<Integer> ids = getIdsByType(type);
-
-        return getByIds(ids);
+        return type == Notification.Type.ALL ? getNotifications() : getNotifications(getIdsByType(type));
     }
 
     /**

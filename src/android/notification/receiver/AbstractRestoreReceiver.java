@@ -61,12 +61,13 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
             // The app was updated
             intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            List<JSONObject> notificationsOptionsJSON = Manager.getInstance(context).getOptions();
 
-            Log.d(TAG, "Restoring notifications, count: " + notificationsOptionsJSON.size());
-            for (JSONObject notificationOptionsJSON : notificationsOptionsJSON) {
-                Options notificationOptions = new Options(context, notificationOptionsJSON);
-                onRestore(new Request(notificationOptions), buildNotification(new Builder(notificationOptions)));
+            List<Notification> notifications = Manager.getInstance(context).getNotifications();
+            Log.d(TAG, "Restoring notifications, count: " + notifications.size());
+
+            for (Notification notification : notifications) {
+                onRestore(new Request(notification.getOptions()),
+                    buildNotification(new Builder(notification.getOptions())));
             }
         }
     }

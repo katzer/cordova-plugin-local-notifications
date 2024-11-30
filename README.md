@@ -522,6 +522,7 @@ See the sample app for how to use them.
 | clear                          | x       | x   | On Android, it clears a already posted notification from the statusbar. |
 | clearAll                       | x       | x   |                           |
 | createChannel                  | x       | -   | Android only. Creates a channel for Android to post notifications on. |
+| deleteChannel                  | x       | -   | Android only. Delete a channel by an id. See [Documentation](#delete-a-channel)|
 | fireQueuedEvents               |         |     |                           |
 | get                            |         |     |                           |
 | getAll                         |         |     |                           |
@@ -582,7 +583,7 @@ The creation of a channel is done as follows:
 
 ```js
 cordova.plugins.notification.local.createChannel({
-    channelId:'my_ch_id', // string - To separate something in the id, use "_" instead of "-"
+    channelId:'my_channel_id', // string, to separate something in the id, use "_" instead of "-"
     channelName:'My Channel Name', // string 
     description:"Description of channel", // string (optional)
     sound: 'file://audio/ring.mp3', // string (optional) 
@@ -618,6 +619,15 @@ For setting the channel, use the `channelId` property when scheduling a notifica
 13: USAGE_ASSISTANCE_SONIFICATION  
 14: USAGE_GAME  
 16: USAGE_ASSISTANT
+
+### Delete a channel ###
+You can delete a channel as follows:
+
+```javascript
+cordova.plugins.notification.local.deleteChannel("my_channel_id", successCallback, this)
+```
+
+These will delete all associated notificiations for this channel. If you create a new channel with the same id, the deleted channel will be un-deleted with all of the same settings it had before it was deleted, see [NotificationManager.deleteNotificationChannel](https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String))
 
 ## Notes ##
 

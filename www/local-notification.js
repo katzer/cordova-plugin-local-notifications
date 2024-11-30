@@ -90,6 +90,21 @@ exports.createChannel = function (options, callback, scope) {
 };
 
 /**
+ * Android only: Deletes a notification channel.
+ * If you create a new channel with this same id, the deleted channel will be un-deleted
+ * with all of the same settings it had before it was deleted
+ * See: https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String)
+ *
+ * @param {string} channelId Channel ID to delete. Has to be a string like "my_channel_id"
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope  The callback function's scope.
+ * @return {undefined}
+ */
+exports.deleteChannel = function (channelId, callback, scope) {
+    this._exec('deleteChannel', channelId, callback, scope);
+};
+
+/**
  * Check permission to show notifications.
  *
  * @param [ Function ] callback The function to be exec as the callback.

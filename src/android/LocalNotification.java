@@ -161,6 +161,9 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equals("createChannel")) {
                     createChannel(args, command);
                 } else
+                if (action.equals("deleteChannel")) {
+                    deleteChannel(args, command);
+                } else
                 if (action.equals("check")) {
                     check(command);
                 } else
@@ -352,6 +355,18 @@ public class LocalNotification extends CordovaPlugin {
         JSONObject options = args.optJSONObject(0);
         mgr.createChannel(options);
 
+        command.success();
+    }
+
+    /**
+     * Deletes a notification channel by an id.
+     *
+     * @param args Contains the channel id as a @String.
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void deleteChannel(JSONArray args, CallbackContext command) {
+        getNotMgr().deleteChannel(args.optString(0));
         command.success();
     }
 
