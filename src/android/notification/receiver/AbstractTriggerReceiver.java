@@ -25,6 +25,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import de.appplant.cordova.plugin.localnotification.notification.Builder;
 import de.appplant.cordova.plugin.localnotification.notification.Manager;
@@ -37,6 +38,8 @@ import de.appplant.cordova.plugin.localnotification.notification.Options;
  */
 abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "AbstractTriggerReceiver";
+
     /**
      * Called when an alarm was triggered.
      *
@@ -45,6 +48,7 @@ abstract public class AbstractTriggerReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "Received action: " + intent.getAction());
         Bundle bundle = intent.getExtras();
 
         if (bundle == null) return;

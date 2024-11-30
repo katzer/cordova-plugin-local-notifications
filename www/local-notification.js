@@ -968,16 +968,15 @@ exports._toArray = function (obj) {
  * @return [ Void ]
  */
 exports._exec = function (action, args, callback, scope) {
-    var fn     = this._createCallbackFn(callback, scope),
-        params = [];
-
-    if (Array.isArray(args)) {
-        params = args;
-    } else if (args !== null) {
-        params.push(args);
-    }
-
-    exec(fn, null, 'LocalNotification', action, params);
+    exec(
+        this._createCallbackFn(callback, scope),
+        null,
+        'LocalNotification',
+        action,
+        // Convert args to array, if not already
+        // or if args is not an array and not null, add it to an array
+        Array.isArray(args) ? args : args !== null ? [args] : []
+    );
 };
 
 /**

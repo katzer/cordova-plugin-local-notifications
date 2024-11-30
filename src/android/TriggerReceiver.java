@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.localnotification;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -49,6 +50,8 @@ import static java.util.Calendar.MINUTE;
  */
 public class TriggerReceiver extends AbstractTriggerReceiver {
 
+    public static final String TAG = "TriggerReceiver";
+
     /**
      * Called when a local notification was triggered. Does present the local
      * notification, re-schedule the alarm if necessary and fire trigger event.
@@ -58,6 +61,7 @@ public class TriggerReceiver extends AbstractTriggerReceiver {
      */
     @Override
     public void onTrigger(Notification notification, Bundle bundle) {
+        Log.d(TAG, "trigger, notificationId=" + notification.getId());
         Context context  = notification.getContext();
         Options options  = notification.getOptions();
         Manager manager  = Manager.getInstance(context);

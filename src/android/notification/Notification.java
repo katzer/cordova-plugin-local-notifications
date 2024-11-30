@@ -201,19 +201,20 @@ public final class Notification {
         // Move to next occurrence
         } while (request.moveNext());
 
-        // Nothing to schedule, return
+        // Nothing to schedule
         if (intents.isEmpty()) {
             unpersist();
             return;
         }
         
-        boolean canScheduleExactAlarms = Manager.getInstance(context).canScheduleExactAlarms();
-        persist(intentActionIds);
-
         if (!options.isInfiniteTrigger()) {
             Intent last = intents.get(intents.size() - 1).second;
             last.putExtra(Request.EXTRA_LAST, true);
         }
+
+        persist(intentActionIds);
+
+        boolean canScheduleExactAlarms = Manager.getInstance(context).canScheduleExactAlarms();
 
         for (Pair<Date, Intent> pair : intents) {
             Date date     = pair.first;
@@ -226,16 +227,16 @@ public final class Notification {
                 continue;
             }
 
-            // AlarmManager#set: If there is already an alarm scheduled for the same IntentSender,
-            // that previous alarm will first be canceled.
-            PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
             Log.d(TAG, "Schedule notification" +
                 ", trigger-date: " + date + 
                 ", prio: " + options.getPrio() +
                 ", canScheduleExactAlarms: " + canScheduleExactAlarms +
                 ", intentAction=" + intent.getAction());
-
+            
+            // AlarmManager.set: If there is already an alarm scheduled for the same IntentSender,
+            // that previous alarm will first be canceled.
+            PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            
             try {
                 switch (options.getPrio()) {
                     case PRIORITY_MIN:
@@ -412,16 +413,7 @@ public final class Notification {
      * Encode options to JSON.
      */
     public String toString() {
-        JSONObject dict = options.getDict();
-        JSONObject json = new JSONObject();
-
-        try {
-            json = new JSONObject(dict.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return json.toString();
+        return options.getDict().toString();
     }
 
     /**
@@ -449,15 +441,8 @@ public final class Notification {
      * Remove the notification from the Android shared Preferences.
      */
     private void unpersist() {
-        String[] keys = { PREF_KEY_ID, PREF_KEY_PID };
-        String id     = options.getIdentifier();
-        SharedPreferences.Editor editor;
-
-        for (String key : keys) {
-            editor = getPrefs(key).edit();
-            editor.remove(id);
-            editor.apply();
-        }
+        getPrefs(PREF_KEY_ID).edit().remove(options.getIdentifier()).apply();
+        getPrefs(PREF_KEY_PID).edit().remove(options.getIdentifier()).apply();
     }
 
     /**

@@ -33,7 +33,7 @@ import androidx.core.app.NotificationManagerCompat;
 import android.app.AlarmManager;
 import android.media.AudioAttributes;
 import android.net.Uri;
-
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +59,8 @@ import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
  * cancel or clear local notifications.
  */
 public final class Manager {
+
+    public static final String TAG = "Manager";
 
     // TODO: temporary
     static final String CHANNEL_ID = "default-channel-id";
@@ -99,13 +101,10 @@ public final class Manager {
      * Check if the setting to schedule exact alarms is enabled.
      */
     public boolean canScheduleExactAlarms() {
-        if (SDK_INT < S){
-            return true;
-        }
-
+        // Supported since Android 12
+        if (SDK_INT < S) return true;
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        return alarmManager.canScheduleExactAlarms() == true;
+        return alarmManager.canScheduleExactAlarms();
     }
 
     /**
@@ -285,6 +284,10 @@ public final class Manager {
         setBadge(0);
     }
 
+    public boolean idExists(int id) {
+        return getPrefs().contains(Integer.toString(id));
+    }
+
     /**
      * All local notifications IDs.
      */
@@ -345,11 +348,7 @@ public final class Manager {
         List<Notification> toasts = new ArrayList<Notification>();
 
         for (int id : ids) {
-            Notification toast = get(id);
-
-            if (toast != null) {
-                toasts.add(toast);
-            }
+            if (idExists(id)) toasts.add(get(id));
         }
 
         return toasts;
@@ -415,18 +414,10 @@ public final class Manager {
      * @return null if could not found.
      */
     public Options getOptions(int id) {
+        if (!idExists(id)) return null;
 
         try {
-            SharedPreferences prefs = getPrefs();
-            String toastId          = Integer.toString(id);
-
-            if (!prefs.contains(toastId))
-                return null;
-
-            String json     = prefs.getString(toastId, null);
-            JSONObject dict = new JSONObject(json);
-
-            return new Options(context, dict);
+            return new Options(context, new JSONObject(getPrefs().getString(Integer.toString(id), null)));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -441,12 +432,7 @@ public final class Manager {
      * @return null if could not found.
      */
     public Notification get(int id) {
-        Options options = getOptions(id);
-
-        if (options == null)
-            return null;
-
-        return new Notification(context, options);
+        return idExists(id) ? new Notification(context, getOptions(id)) : null;
     }
 
     /**
