@@ -619,6 +619,13 @@ For setting the channel, use the `channelId` property when scheduling a notifica
 14: USAGE_GAME  
 16: USAGE_ASSISTANT
 
+## Notes ##
+
+### Android ###
+
+#### Device reboot ####
+When the device reboots, all notifications will be rescheduled by the plugin, because Android cancels all alarams after a device reboot. If the user has set up a device lock, this must first be unlocked for the notifications to be rescheduled.
+
 ## Installation
 
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
