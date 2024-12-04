@@ -99,7 +99,7 @@ A notification does have a set of configurable properties.
 | foreground    |         |     |                           |
 | group         |         |     |                           |
 | groupSummary  |         |     |                           |
-| icon          |         |     |                           |
+| icon          |         |     | Android only. Defines the large icon that appears to the right of the notification text when the notification is expanded. Not shown if not specified. See [Notification icons](#notification_icons).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | iconType      |         |     |                           |
 | id            |         |     |                           |
 | launch        |         |     |                           |
@@ -111,7 +111,7 @@ A notification does have a set of configurable properties.
 | priority      |         |     |                           |
 | progressBar   | x       | -   | Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734) |
 | silent        |         |     |                           |
-| smallIcon     |         |     |                           |
+| smallIcon     |         |     | Android only. Defines the small icon that appears to the left of the notification title. Defaults to the app icon if not specified.  See [Notification icons](#notification_icons).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | sound         | (x)     | (x) | On Android, it sets the sound file until Android 7.1. Since Android 8 it must be set by a channel. In iOS it would be possible, but it is not implemented. |
 | sticky        |         |     |                           |
 | summary       |         |     |                           |
@@ -482,6 +482,57 @@ Not an official interface, however its possible to manually fire events.
 cordova.plugins.notification.local.core.fireEvent(event, args);
 ```
 
+## Notification icons
+- Currently only supported by Android. 
+- You can define a custom `smallIcon` which will be displayed in the status bar and `icon` which will be displayed in the notification body itself.
+  - If you don't define a `smallIcon` the default app icon will be used. 
+  - If you don't define an `icon` the notification will not display an icon in the body.
+- The icons can either be specified as PNG images or [vector drawables](https://developer.android.com/develop/ui/views/graphics/vector-drawable-resources).
+  - The plugin will automatically detect if the icon is a PNG image or a vector drawable by checking the file extension.
+- You can optionally specify dark mode and light mode variants of the icon which will be shown depending on the system theme (dark/light mode).
+  - The plugin will automatically detect if the icon has dark mode and light mode variants by checking if the file name contains `_dark` or `_light` suffixes respectively.
+  - If you don't specify dark mode and light mode variants, the same icon will be used for both themes.
+
+The steps to add custom icons are as follows:
+
+1. Add the icon files to a folder in the root of your project, for example:
+    ```
+    config.xml
+    plugins/
+    platforms/
+    res/
+    ├── notification_icons/
+    │   ├── a.png
+    │   ├── b_dark.png
+    │   ├── b_light.png
+    │   ├── c.xml
+    │   ├── d_dark.xml
+    │   └── d_light.xml 
+    ```
+
+2. List the file paths in `config.xml` under the `platform` tag for Android so that they are copied to the correct location when the app is built:
+    ```xml
+    <platform name="android">
+        <resource-file src="res/notification_icons/a.png" target="app/src/main/res/drawable/a.png" />
+        <resource-file src="res/notification_icons/b_dark.png" target="app/src/main/res/drawable/b_dark.png" />
+        <resource-file src="res/notification_icons/b_light.png" target="app/src/main/res/drawable/b_light.png" />
+        <resource-file src="res/notification_icons/c.xml" target="app/src/main/res/drawable/c.xml" />
+        <resource-file src="res/notification_icons/d_dark.xml" target="app/src/main/res/drawable/d_dark.xml" />
+        <resource-file src="res/notification_icons/d_light.xml" target="app/src/main/res/drawable/d_light.xml" />
+    </platform>
+    ```
+
+3. Use the icon files in your notification configuration:
+    ```js
+    cordova.plugins.notification.local.schedule({
+        title: 'My first notification',
+        text: 'Thats pretty easy...',
+        smallIcon: 'res://a', // or 'res://b' or 'res://c' or 'res://d' 
+        icon: 'res://a',
+    });
+    ```
+
+```js
 
 ## Launch Details
 
