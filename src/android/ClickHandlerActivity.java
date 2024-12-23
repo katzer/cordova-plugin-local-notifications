@@ -32,11 +32,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.notification.Manager;
-import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Options;
-import de.appplant.cordova.plugin.localnotification.notification.Request;
-import de.appplant.cordova.plugin.localnotification.notification.action.Action;
+import de.appplant.cordova.plugin.localnotification.Manager;
+import de.appplant.cordova.plugin.localnotification.Notification;
+import de.appplant.cordova.plugin.localnotification.Options;
+import de.appplant.cordova.plugin.localnotification.Request;
+import de.appplant.cordova.plugin.localnotification.action.Action;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.

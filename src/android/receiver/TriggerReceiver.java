@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.receiver;
+package de.appplant.cordova.plugin.localnotification.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -33,11 +33,11 @@ import java.util.Calendar;
 
 import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.notification.Builder;
-import de.appplant.cordova.plugin.localnotification.notification.Manager;
-import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Options;
-import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.Builder;
+import de.appplant.cordova.plugin.localnotification.Manager;
+import de.appplant.cordova.plugin.localnotification.Notification;
+import de.appplant.cordova.plugin.localnotification.Options;
+import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class

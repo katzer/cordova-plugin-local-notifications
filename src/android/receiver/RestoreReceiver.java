@@ -21,7 +21,7 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.receiver;
+package de.appplant.cordova.plugin.localnotification.receiver;
 
 import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
@@ -33,10 +33,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
-import de.appplant.cordova.plugin.localnotification.notification.Builder;
-import de.appplant.cordova.plugin.localnotification.notification.Manager;
-import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.Builder;
+import de.appplant.cordova.plugin.localnotification.Manager;
+import de.appplant.cordova.plugin.localnotification.Notification;
+import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * This class is triggered, when the system has cleared the alarms and notifications,

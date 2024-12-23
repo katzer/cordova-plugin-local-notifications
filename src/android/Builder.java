@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification;
+package de.appplant.cordova.plugin.localnotification;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -39,12 +39,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import de.appplant.cordova.plugin.localnotification.notification.action.Action;
-import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
+import de.appplant.cordova.plugin.localnotification.action.Action;
+import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
-import static de.appplant.cordova.plugin.localnotification.notification.Notification.EXTRA_UPDATE;
-import static de.appplant.cordova.plugin.localnotification.notification.Options.LARGE_ICON_TYPE_CIRCLE;
+import static de.appplant.cordova.plugin.localnotification.Notification.EXTRA_UPDATE;
+import static de.appplant.cordova.plugin.localnotification.Options.LARGE_ICON_TYPE_CIRCLE;
 
 /**
  * Builder class for local notifications. Build fully configured local

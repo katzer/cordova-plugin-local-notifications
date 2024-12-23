@@ -105,7 +105,7 @@
               android:grantUriPermissions="true": Grant temporary access to files
             -->
             <provider
-                android:name="de.appplant.cordova.plugin.localnotification.notification.util.PluginFileProvider"
+                android:name="de.appplant.cordova.plugin.localnotification.util.PluginFileProvider"
                 android:authorities="${applicationId}.localnotifications.provider"
                 android:exported="false"
                 android:grantUriPermissions="true">
@@ -123,16 +123,16 @@
             
             <!-- A notification will be triggered/shown -->
             <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.notification.receiver.TriggerReceiver"
+                android:name="de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver"
                 android:exported="false" />
 
             <!-- Notification cleared by the user -->
             <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.notification.receiver.ClearReceiver"
+                android:name="de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver"
                 android:exported="false" />
 
             <receiver
-                android:name="de.appplant.cordova.plugin.localnotification.notification.receiver.RestoreReceiver"
+                android:name="de.appplant.cordova.plugin.localnotification.receiver.RestoreReceiver"
                 android:exported="false" >
                 <intent-filter>
                     <!--
@@ -187,68 +187,68 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/notification/receiver/ClearReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/receiver" />
+            src="src/android/receiver/ClearReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/receiver" />
 
         <source-file
-            src="src/android/notification/receiver/RestoreReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/receiver" />
+            src="src/android/receiver/RestoreReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/receiver" />
 
         <source-file
-            src="src/android/notification/receiver/TriggerReceiver.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/receiver" />
+            src="src/android/receiver/TriggerReceiver.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/receiver" />
 
         <source-file
-            src="src/android/notification/action/Action.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/action" />
+            src="src/android/action/Action.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/action" />
 
         <source-file
-            src="src/android/notification/action/ActionGroup.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/action" />
+            src="src/android/action/ActionGroup.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/action" />
 
         <source-file
-            src="src/android/notification/trigger/DateTrigger.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/trigger" />
+            src="src/android/trigger/DateTrigger.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
-            src="src/android/notification/trigger/IntervalTrigger.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/trigger" />
+            src="src/android/trigger/IntervalTrigger.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
-            src="src/android/notification/trigger/MatchTrigger.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/trigger" />
+            src="src/android/trigger/MatchTrigger.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
-            src="src/android/notification/util/PluginFileProvider.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/util" />
+            src="src/android/util/PluginFileProvider.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/util" />
 
         <source-file
-            src="src/android/notification/util/AssetUtil.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/util" />
+            src="src/android/util/AssetUtil.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/util" />
 
         <source-file
-            src="src/android/notification/util/CallbackContextUtil.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification/util" />
+            src="src/android/util/CallbackContextUtil.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/util" />
 
         <source-file
-            src="src/android/notification/Builder.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification" />
+            src="src/android/Builder.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/notification/Manager.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification" />
+            src="src/android/Manager.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/notification/Notification.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification" />
+            src="src/android/Notification.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/notification/Options.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification" />
+            src="src/android/Options.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/notification/Request.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification/notification" />
+            src="src/android/Request.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 
 </plugin>

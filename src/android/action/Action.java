@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.action;
+package de.appplant.cordova.plugin.localnotification.action;
 
 import android.content.Context;
 import androidx.core.app.RemoteInput;
@@ -27,7 +27,7 @@ import androidx.core.app.RemoteInput;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
+import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 /**
  * Holds the icon and title components that would be used in a

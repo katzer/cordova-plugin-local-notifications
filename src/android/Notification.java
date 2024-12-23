@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification;
+package de.appplant.cordova.plugin.localnotification;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -50,7 +50,7 @@ import java.util.Set;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
-import de.appplant.cordova.plugin.localnotification.notification.receiver.TriggerReceiver;
+import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations

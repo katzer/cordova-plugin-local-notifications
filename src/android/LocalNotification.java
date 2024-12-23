@@ -54,16 +54,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.appplant.cordova.plugin.localnotification.notification.Manager;
-import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Options;
-import de.appplant.cordova.plugin.localnotification.notification.Request;
-import de.appplant.cordova.plugin.localnotification.notification.action.ActionGroup;
-import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
-import de.appplant.cordova.plugin.localnotification.notification.util.CallbackContextUtil;
+import de.appplant.cordova.plugin.localnotification.Manager;
+import de.appplant.cordova.plugin.localnotification.Notification;
+import de.appplant.cordova.plugin.localnotification.Options;
+import de.appplant.cordova.plugin.localnotification.Request;
+import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
+import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
+import de.appplant.cordova.plugin.localnotification.util.CallbackContextUtil;
 
-import static de.appplant.cordova.plugin.localnotification.notification.Notification.Type.SCHEDULED;
-import static de.appplant.cordova.plugin.localnotification.notification.Notification.Type.TRIGGERED;
+import static de.appplant.cordova.plugin.localnotification.Notification.Type.SCHEDULED;
+import static de.appplant.cordova.plugin.localnotification.Notification.Type.TRIGGERED;
 
 /**
  * This plugin utilizes the Android AlarmManager in combination with local

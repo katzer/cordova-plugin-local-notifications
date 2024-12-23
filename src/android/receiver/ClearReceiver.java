@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.receiver;
+package de.appplant.cordova.plugin.localnotification.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,9 +28,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.notification.Manager;
-import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.Manager;
+import de.appplant.cordova.plugin.localnotification.Notification;
+import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * The clear intent receiver is triggered when the user clears a

@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.util;
+package de.appplant.cordova.plugin.localnotification.util;
 
 import java.util.HashMap;
 import java.util.Random;

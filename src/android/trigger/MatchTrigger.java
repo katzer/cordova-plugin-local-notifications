@@ -19,18 +19,18 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.trigger;
+package de.appplant.cordova.plugin.localnotification.trigger;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.DAY;
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.HOUR;
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.MINUTE;
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.MONTH;
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.WEEK;
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit.YEAR;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.DAY;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.HOUR;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.MINUTE;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.MONTH;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.WEEK;
+import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.YEAR;
 import static java.util.Calendar.DAY_OF_WEEK;
 import static java.util.Calendar.WEEK_OF_MONTH;
 import static java.util.Calendar.WEEK_OF_YEAR;

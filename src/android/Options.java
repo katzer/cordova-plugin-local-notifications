@@ -22,7 +22,7 @@
 
 // codebeat:disable[TOO_MANY_FUNCTIONS]
 
-package de.appplant.cordova.plugin.localnotification.notification;
+package de.appplant.cordova.plugin.localnotification;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -44,9 +44,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.appplant.cordova.plugin.localnotification.notification.action.Action;
-import de.appplant.cordova.plugin.localnotification.notification.action.ActionGroup;
-import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
+import de.appplant.cordova.plugin.localnotification.action.Action;
+import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
+import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;

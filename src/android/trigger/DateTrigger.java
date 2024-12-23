@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package de.appplant.cordova.plugin.localnotification.notification.trigger;
+package de.appplant.cordova.plugin.localnotification.trigger;
 
 import java.util.Calendar;
 import java.util.Date;

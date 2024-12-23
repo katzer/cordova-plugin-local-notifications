@@ -21,7 +21,7 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-package de.appplant.cordova.plugin.localnotification.notification;
+package de.appplant.cordova.plugin.localnotification;
 
 import org.json.JSONObject;
 
@@ -30,12 +30,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger;
-import de.appplant.cordova.plugin.localnotification.notification.trigger.DateTrigger.Unit;
-import de.appplant.cordova.plugin.localnotification.notification.trigger.IntervalTrigger;
-import de.appplant.cordova.plugin.localnotification.notification.trigger.MatchTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.DateTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit;
+import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
 
-import static de.appplant.cordova.plugin.localnotification.notification.trigger.IntervalTrigger.Unit;
+import static de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger.Unit;
 
 /**
  * An object you use to specify a notification’s content and the condition
