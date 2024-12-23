@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.0.1-dev
+## Version 1.1.0 (23.12.2024)
 
 - Improve documentation
 - Documentation of properties
