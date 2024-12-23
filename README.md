@@ -17,7 +17,7 @@
 
 <br>
 
-<img align="right" style="max-width: 350px" alt="asdsad" src="https://developer.android.com/static/images/ui/notifications/notification-drawer_2x.png">
+<img align="right" width="40%" src="https://developer.android.com/static/images/ui/notifications/notification-drawer_2x.png">
 
 
 ### Notification components
