@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2024
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -30,16 +31,12 @@ import androidx.core.app.RemoteInput;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.localnotification.notification.Manager;
 import de.appplant.cordova.plugin.localnotification.notification.Notification;
-
-import static de.appplant.cordova.plugin.localnotification.LocalNotification.fireEvent;
-import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
-import static de.appplant.cordova.plugin.localnotification.notification.Options.EXTRA_LAUNCH;
-import static de.appplant.cordova.plugin.localnotification.notification.Request.EXTRA_LAST;
-import static de.appplant.cordova.plugin.localnotification.notification.action.Action.CLICK_ACTION_ID;
-import static de.appplant.cordova.plugin.localnotification.notification.action.Action.EXTRA_ID;
+import de.appplant.cordova.plugin.localnotification.notification.Options;
+import de.appplant.cordova.plugin.localnotification.notification.Request;
+import de.appplant.cordova.plugin.localnotification.notification.action.Action;
 
 /**
  * The receiver activity is triggered when a notification is clicked by a user.
@@ -50,33 +47,27 @@ public class ClickHandlerActivity extends Activity {
 
     /**
      * Activity started when local notification was clicked by the user.
-     *
      * @param notification Wrapper around the local notification.
-     * @param bundle       The bundled extras.
+     * @param bundle The bundled extras.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        int notId = intent.getExtras().getInt(Notification.EXTRA_ID);
-        String action = intent.getExtras().getString(EXTRA_ID, CLICK_ACTION_ID);
-        JSONObject data = new JSONObject();
-
-        Notification notification = Manager.getInstance(getApplicationContext()).get(notId);
-
+        int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);
+        Notification notification = new Manager(getApplicationContext()).getNotification(notificationId);
         finish();
 
-        if (notification == null)
-            return;
+        if (notification == null) return;
 
+        String action = getIntent().getExtras().getString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
+        JSONObject data = new JSONObject();
         setTextInput(action, data);
         launchAppIf();
 
-        fireEvent(action, notification, data);
+        LocalNotification.fireEvent(action, notification, data);
 
-        if (notification.getOptions().isSticky())
-            return;
+        if (notification.getOptions().isAndroidOngoing()) return;
 
         if (isLast()) {
             notification.cancel();
@@ -87,20 +78,17 @@ public class ClickHandlerActivity extends Activity {
 
     /**
      * Set the text if any remote input is given.
-     *
      * @param action The action where to look for.
-     * @param data   The object to extend.
+     * @param data The object to extend.
      */
     private void setTextInput(String action, JSONObject data) {
         Bundle input = RemoteInput.getResultsFromIntent(getIntent());
-
-        if (input == null)
-            return;
+        if (input == null) return;
 
         try {
             data.put("text", input.getCharSequence(action));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
         }
     }
 
@@ -108,11 +96,8 @@ public class ClickHandlerActivity extends Activity {
      * Launch app if requested by user.
      */
     private void launchAppIf() {
-        boolean doLaunch = getIntent().getBooleanExtra(EXTRA_LAUNCH, true);
-
-        if (!doLaunch)
-            return;
-
+        boolean doLaunch = getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true);
+        if (!doLaunch) return;
         launchApp();
     }
 
@@ -121,18 +106,16 @@ public class ClickHandlerActivity extends Activity {
      */
     private void launchApp() {
         Context context = getApplicationContext();
-        String pkgName  = context.getPackageName();
 
         Intent intent = context
-                .getPackageManager()
-                .getLaunchIntentForPackage(pkgName);
+            .getPackageManager()
+            .getLaunchIntentForPackage(context.getPackageName());
 
-        if (intent == null)
-            return;
+        if (intent == null) return;
 
         intent.addFlags(
-              FLAG_ACTIVITY_REORDER_TO_FRONT
-            | FLAG_ACTIVITY_SINGLE_TOP);
+              Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         context.startActivity(intent);
     }
@@ -141,7 +124,6 @@ public class ClickHandlerActivity extends Activity {
      * If the notification was the last scheduled one by request.
      */
     private boolean isLast() {
-        return getIntent().getBooleanExtra(EXTRA_LAST, false);
+        return getIntent().getBooleanExtra(Request.EXTRA_LAST, false);
     }
-
 }

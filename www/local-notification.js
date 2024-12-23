@@ -22,356 +22,457 @@
 var exec    = require('cordova/exec'),
     channel = require('cordova/channel');
 
+// Options for every platform
+exports._commonOptions = {
+    actions: [],
+    attachments: [],
+    // Custom data for the notification. Can be used, when the notification
+    // is send back to the app, e.g. by clicking on it.
+    data: null,
+    id: 0,
+    launch: true,
+    silent: false,
+    text: "",
+    // In Android 7, this sets the sound uri of a notification.
+    // Since Android 8, it sets the sound uri of a notification channel.
+    // The string 'default' represents the default notification sound and is not a path.
+    sound: 'default',
+    // If empty, the app name will be used
+    title: "",
+    trigger: {type : "calendar"}
+}
+
+exports._androidAlarmTypes = {
+    'RTC_WAKEUP': 0,
+    'RTC': 1,
+    'ELAPSED_REALTIME_WAKEUP': 2, // Not supported
+    'ELAPSED_REALTIME': 3, // Not supported
+}
+
+exports._androidChannelImportanceTypes = {
+    'IMPORTANCE_NONE': 0,
+    'IMPORTANCE_MIN': 1,
+    'IMPORTANCE_LOW': 2,
+    'IMPORTANCE_DEFAULT': 3,
+    'IMPORTANCE_HIGH': 4,
+    'IMPORTANCE_MAX': 5
+}
+
+// Options only available on Android
+exports._androidSpecificOptions = {
+    androidAlarmType: "RTC_WAKEUP",
+    // Alarm will be allowed to execute even when the system is in low-power idle (a.k.a. doze) modes.
+    androidAllowWhileIdle: false,
+    // Make this notification automatically dismissed when the user touches it
+    androidAutoCancel : true,
+    androidChannelEnableLights: false,
+    androidChannelDescription: null,
+    androidChannelId: "default_channel",
+    androidChannelImportance: "IMPORTANCE_DEFAULT",
+    androidChannelName: "Default channel",
+    // soundUsage of a channel. Default is USAGE_NOTIFICATION
+    androidChannelSoundUsage: 5,
+    // The notification background color for the small icon
+    androidColor: null,
+    // Android 7 only: Sets the default notification options
+    androidDefaults: 0,
+    androidGroup: null,
+    androidGroupSummary: false,
+    androidMessages: null,
+    androidLargeIcon : null,
+    // Can be square or circle
+    androidLargeIconType: "square",
+    androidLockscreen: true,
+    androidOngoing: false,
+    androidOnlyAlertOnce: false,
+    androidProgressBar: null,
+    // If the Notification should show the when date
+    androidShowWhen: true,
+    androidSmallIcon: 'res://ic_popup_reminder',
+    androidSummary: null,
+    // Specifies a duration in milliseconds after which this notification should be canceled,
+    // if it is not already canceled.
+    androidTimeoutAfter: 0,
+    androidTitleCount: "%n%",
+    // Show the Notification#when field as a stopwatch. Instead of presenting when as a timestamp,
+    // the notification will show an automatically updating display of the minutes and seconds since when
+    androidUsesChronometer: false,
+    androidWakeUpScreen: true,
+    // Overwrites default
+    // Increments the badge by the specified number for that notification
+    badgeNumber: 1,
+    // Only for Android 7
+    led: false,
+    // Since Android 8, this sets the vibration of a notification channel.
+    vibrate: false
+}
+
+// Options only available on iOS
+exports._iOSSpecificOptions = {
+    // Overwrites default
+    // Set the badge directly.
+    // -1: The badge will not be changed
+    // 0: The badge will be cleared
+    badgeNumber: -1,
+    // Displays notification in foreground, when app is active.
+    iOSForeground : true
+}
+
+exports._deprecatedProperties = {
+    // Changes since version 1.1.0
+    autoClear: {newPropertyKey: 'androidAutoCancel', since: "1.1.0"},
+    badge: {newPropertyKey: 'badgeNumber', since: "1.1.0"},
+    channelDescription: {newPropertyKey: 'androidChannelDescription', since: "1.1.0"},
+    channelId: {newPropertyKey: 'androidChannelId', since: "1.1.0"},
+    channelImportance: {newPropertyKey: 'androidChannelImportance', since: "1.1.0"},
+    channelName: {newPropertyKey: 'androidChannelName', since: "1.1.0"},
+    clock: {message: "Use for 'clock: true' = 'androidShowWhen' and clock: 'chronometer' = 'androidUsesChronometer'", since: "1.1.0"},
+    color: {newPropertyKey: 'androidColor', since: "1.1.0"},
+    description: {newPropertyKey: 'androidChannelDescription', since: "1.1.0"},
+    defaults: {newPropertyKey: 'androidDefaults', since: "1.1.0"},
+    foreground: {newPropertyKey: 'iOSForeground', since: "1.1.0"},
+    group: {newPropertyKey: 'androidGroup', since: "1.1.0"},
+    groupSummary: {newPropertyKey: 'androidGroupSummary', since: "1.1.0"},
+    icon: {newPropertyKey: 'androidLargeIcon', since: "1.1.0"},
+    iconType: {renanewPropertyKeymedTo: 'androidLargeIconType', since: "1.1.0"},
+    importance: {newPropertyKey: 'androidChannelImportance', since: "1.1.0"},
+    lockscreen: {newPropertyKey: 'androidLockscreen', since: "1.1.0"},
+    mediaSession: {removed: true, since: "1.1.0", additionalMessage: "Not supported anymore."},
+    onlyAlertOnce: {newPropertyKey: 'androidOnlyAlertOnce', since: "1.1.0"},
+    prio: {additionalMessage: 'Use androidChannelImportance, androidAlarmType and androidAllowWhileIdle instead.', since: "1.1.0"},
+    priority: {additionalMessage: 'Use androidChannelImportance, androidAlarmType and androidAllowWhileIdle instead.', since: "1.1.0"},
+    progressBar: {newPropertyKey: 'androidProgressBar', since: "1.1.0"},
+    smallIcon: {newPropertyKey: 'androidSmallIcon', since: "1.1.0"},
+    soundUsage: {newPropertyKey: 'androidChannelSoundUsage', since: "1.1.0"},
+    sticky: {newPropertyKey: 'androidOngoing', since: "1.1.0"},
+    ongoing: {newPropertyKey: 'androidOngoing', since: "1.1.0"},
+    summary: {newPropertyKey: 'androidSummary', since: "1.1.0"},
+    timeoutAfter: {newPropertyKey: 'androidTimeoutAfter', since: "1.1.0"},
+    titleCount: {newPropertyKey: 'androidTitleCount', since: "1.1.0"},
+    wakeup: {newPropertyKey: 'androidWakeUpScreen', since: "1.1.0"},
+}
+
 // Defaults
 exports._defaults = {
-    actions       : [],
-    attachments   : [],
-    autoClear     : true,
-    badge         : null,
-    channelId     : null,
-    clock         : true,
-    color         : null,
-    data          : null,
-    defaults      : 0,
-    foreground    : null,
-    group         : null,
-    groupSummary  : false,
-    icon          : null,
-    iconType      : null,
-    id            : 0,
-    launch        : true,
-    led           : true,
-    lockscreen    : true,
-    mediaSession  : null,
-    number        : 0,
-    onlyAlertOnce : false,
-    priority      : 0,
-    progressBar   : false,
-    silent        : false,
-    smallIcon     : 'res://icon',
-    sound         : true,
-    sticky        : false,
-    summary       : null,
-    text          : '',
-    timeoutAfter  : false,
-    title         : '',
-    trigger       : { type : 'calendar' },
-    vibrate       : false,
-    wakeup        : true
+    ...exports._commonOptions,
+    meta: {
+        plugin:  'cordova-plugin-local-notification',
+        version: '1.0.1-dev'
+    }
 };
 
-// Event listener
-exports._listener = {};
+/**
+ * Setting some things before 'deviceready' event has fired.
+ */
+channel.onCordovaReady.subscribe(function () {
+    channel.onCordovaInfoReady.subscribe(function () {
+        console.log("LocalNotification: onCordovaInfoReady");
+
+        // Merge defaults for Android
+        if (device.platform == 'Android') {
+            exports._defaults = {
+                ...exports._defaults,
+                ...exports._androidSpecificOptions
+            }
+
+            // Merge defaults for iOS
+        } else if (device.platform == 'iOS') {
+            exports._defaults = {
+                ...exports._defaults,
+                ...exports._iOSSpecificOptions
+            }
+        }
+
+        exports._setLaunchDetails();
+    });
+});
+
+// Called after 'deviceready' event
+channel.deviceready.subscribe(function () {
+    console.log("LocalNotification: deviceready");
+    if (!window.skipLocalNotificationReady) {
+        exports.fireQueuedEvents();
+    }
+});
 
 /**
- * Create Notification Channel. Android only.
- *
- * @param [ Object ]   options  channel config options.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Set the launch details if the app was launched by clicking on a toast.
+ */
+exports._setLaunchDetails = function () {
+    exports._exec('launch', null, function (details) {
+        if (details) {
+            exports.launchDetails = details;
+        }
+    });
+};
+
+/**
+ * ====================
+ * Plugin methods
+ * ====================
+ **/
+
+/**
+ * Fire queued events once the device is ready and all listeners are registered.
+ */
+exports.fireQueuedEvents = function() {
+    exports._exec('ready');
+};
+
+// Event listeners
+// For an event, multiple listeners can be added.
+exports._listeners = {};
+
+/**
+ * Overwrite default settings.
+ * @param {Object} newDefaults
+ */
+exports.setDefaults = function (newDefaults) {
+    Object.assign(this._defaults, newDefaults);
+};
+
+/**
+ * Android only: Create notification channel
+ * @param {Object} options channel options
+ * @param {Function} callback The function to be exec as the callback
+ * @param {Object} scope The callback function's scope
  */
 exports.createChannel = function (options, callback, scope) {
-
-    if(typeof(options.channelId) != "string"){
-        console.error('createChannel error: channelId must be a string.');
-        return false;
-    }
-    
-    if(typeof(options.channelName) != "string"){
-        console.error('createChannel error: channelName must be a string.');
-        return false;
-    }
-
-    var toasts = this._toArray(options);
-
-    this._exec('createChannel', toasts, callback, scope);
+    // Correct renamed properties and set defaults
+    exports._correctOptions(options, true);
+    exports._exec('createChannel', options, callback, scope);
 };
 
 /**
  * Android only: Deletes a notification channel.
  * If you create a new channel with this same id, the deleted channel will be un-deleted
  * with all of the same settings it had before it was deleted
- * See: https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String)
+ * See: https://developer.android.com/reference/androidx/core/app/NotificationManagerCompat#deleteNotificationChannel(java.lang.String)
  *
  * @param {string} channelId Channel ID to delete. Has to be a string like "my_channel_id"
  * @param {Function} callback The function to be exec as the callback.
  * @param {Object} scope  The callback function's scope.
- * @return {undefined}
  */
 exports.deleteChannel = function (channelId, callback, scope) {
-    this._exec('deleteChannel', channelId, callback, scope);
+    exports._exec('deleteChannel', channelId, callback, scope);
 };
 
 /**
  * Check permission to show notifications.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.hasPermission = function (callback, scope) {
-    this._exec('check', null, callback, scope);
-};
-
-/**
- * Check permission to schedule exact alarms. Android only.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.canScheduleExactAlarms = function (callback, scope) {
-    this._exec('canScheduleExactAlarms', null, callback, scope);
+    exports._exec('check', null, callback, scope);
 };
 
 /**
  * Request permission to show notifications.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.requestPermission = function (callback, scope) {
-    this._exec('request', null, callback, scope);
+    exports._exec('requestPermission', null, callback, scope);
 };
 
 /**
- * Schedule notifications.
- *
- * @param [ Array ]    notifications The notifications to schedule.
- * @param [ Function ] callback      The function to be exec as the callback.
- * @param [ Object ]   scope         The callback function's scope.
- * @param [ Object ]   args          Optional flags how to schedule.
- *
- * @return [ Void ]
+ * Android only: Check permission to schedule exact alarms.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
-exports.schedule = function (msgs, callback, scope, args) {
-    var fn = function (granted) {
-        var toasts = this._toArray(msgs);
+exports.canScheduleExactAlarms = function (callback, scope) {
+    exports._exec('canScheduleExactAlarms', null, callback, scope);
+};
 
-        if (!granted && callback) {
-            callback.call(scope || this, false);
-            return;
-        }
+/**
+ * Schedule notifications
+ * @param {Object|Array} options The notifications to schedule
+ * @param {Function} callback
+ * @param {Object} scope The callback function's scope.
+ * @param {Object} args Optional, can be {skipPermission: true} to skip the permission check
+ */
+exports.schedule = function (options, callback, scope, args) {
+    const optionsList = exports._toArray(options);
 
-        for (var i = 0, len = toasts.length; i < len; i++) {
-            var toast = toasts[i];
-            this._mergeWithDefaults(toast);
-            this._convertProperties(toast);
-        }
+    for (const options of optionsList) {
+        // Correct renamed properties and set defaults
+        exports._correctOptions(options, true);
+    }
 
-        this._exec('schedule', toasts, callback, scope);
-    };
-
+    // Skip permission check if requested and schedule directly
     if (args && args.skipPermission) {
-        fn.call(this, true);
+        console.log("Skip permission check");
+        exports._exec('schedule', optionsList, callback, scope);
+
+        // Ask for permission
     } else {
-        this.requestPermission(fn, this);
+        console.log("Requesting permission");
+
+        exports.requestPermission((granted) => {
+            console.log("Permission granted=" + granted);
+
+            if (!granted) {
+                if (callback) callback.call(scope || this, false);
+                return;
+            }
+
+            exports._exec('schedule', optionsList, callback, scope);
+        }, this);
     }
 };
 
 /**
- * Schedule notifications.
- *
- * @param [ Array ]    notifications The notifications to schedule.
- * @param [ Function ] callback      The function to be exec as the callback.
- * @param [ Object ]   scope         The callback function's scope.
- * @param [ Object ]   args          Optional flags how to schedule.
- *
- * @return [ Void ]
+ * Update notifications
+ * @param {Object|Array} options The notifications to update
+ * @param {Function} callback
+ * @param {Object} scope The callback function's scope.
+ * @param {Object} args Optional, can be {skipPermission: true} to skip the permission check
  */
-exports.update = function (msgs, callback, scope, args) {
-    var fn = function(granted) {
-        var toasts = this._toArray(msgs);
+exports.update = function (options, callback, scope, args) {
+    const optionsList = exports._toArray(options);
 
-        if (!granted && callback) {
-            callback.call(scope || this, false);
-            return;
-        }
+    for (const options of optionsList) {
+        // Correct renamed properties and don't merge defaults
+        // The defaults are not merged, because otherwise, some values
+        // could be set back to a default value
+        exports._correctOptions(options, false);
+    }
 
-        for (var i = 0, len = toasts.length; i < len; i++) {
-            this._convertProperties(toasts[i]);
-        }
-
-        this._exec('update', toasts, callback, scope);
-    };
-
+    // Skip permission check if requested and update directly
     if (args && args.skipPermission) {
-        fn.call(this, true);
+        exports._exec('update', optionsList, callback, scope);
+
+        // Ask for permission
     } else {
-        this.requestPermission(fn, this);
+        exports.requestPermission((granted) => {
+            if (!granted) {
+                if (callback) callback.call(scope || this, false);
+                return;
+            }
+    
+            exports._exec('update', optionsList, callback, scope);
+        }, this);
     }
 };
 
 /**
- * Clear the specified notifications by id.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Clear one or multiple notifications by id/ids
+ * @param {Array<number>|number} ids One Id or an array of Ids
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.clear = function (ids, callback, scope) {
-    ids = this._toArray(ids);
-    ids = this._convertIds(ids);
-
-    this._exec('clear', ids, callback, scope);
+    exports._exec('clear', exports._convertIdsToNumbers(ids), callback, scope);
 };
 
 /**
  * Clear all triggered notifications.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.clearAll = function (callback, scope) {
-    this._exec('clearAll', null, callback, scope);
+    exports._exec('clearAll', null, callback, scope);
 };
 
 /**
- * Clear the specified notifications by id.
- *
- * @param [ Array<Int> ] ids      The IDs of the notifications.
- * @param [ Function ]   callback The function to be exec as the callback.
- * @param [ Object ]     scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Clear one or multiple notifications by id/ids
+ * @param {Array<number>|number} ids One Id or an array of Ids
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.cancel = function (ids, callback, scope) {
-    ids = this._toArray(ids);
-    ids = this._convertIds(ids);
-
-    this._exec('cancel', ids, callback, scope);
+    exports._exec('cancel', exports._convertIdsToNumbers(ids), callback, scope);
 };
 
 /**
  * Cancel all scheduled notifications.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.cancelAll = function (callback, scope) {
-    this._exec('cancelAll', null, callback, scope);
+    exports._exec('cancelAll', null, callback, scope);
 };
 
 /**
  * Check if a notification is present.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {number} id The ID of the notification.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.isPresent = function (id, callback, scope) {
-    var fn = this._createCallbackFn(callback, scope);
-
-    this.getType(id, function (type) {
-        fn(type != 'unknown');
+    exports.getType(id, function (type) {
+        exports._callbackWithScope(callback, scope)(type != 'unknown');
     });
 };
 
 /**
  * Check if a notification is scheduled.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Int} id The ID of the notification.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.isScheduled = function (id, callback, scope) {
-    this.hasType(id, 'scheduled', callback, scope);
+    exports.hasType(id, 'scheduled', callback, scope);
 };
 
 /**
  * Check if a notification was triggered.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Int} id The ID of the notification.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.isTriggered = function (id, callback, scope) {
-    this.hasType(id, 'triggered', callback, scope);
+    exports.hasType(id, 'triggered', callback, scope);
 };
 
 /**
  * Check if a notification has a given type.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ String ]   type     The type of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {number} id The ID of the notification.
+ * @param {string} type The type of the notification.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.hasType = function (id, type, callback, scope) {
-    var fn = this._createCallbackFn(callback, scope);
-
-    this.getType(id, function (type2) {
-        fn(type == type2);
+    exports.getType(id, function (type2) {
+        exports._callbackWithScope(callback, scope)(type == type2);
     });
 };
 
 /**
  * Get the type (triggered, scheduled) for the notification.
- *
- * @param [ Int ]      id       The ID of the notification.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {number} id The ID of the notification.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.getType = function (id, callback, scope) {
-    this._exec('type', id, callback, scope);
+    exports._exec('type', id, callback, scope);
 };
 
 /**
  * List of all notification ids.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.getIds = function (callback, scope) {
-    this._exec('ids', 0, callback, scope);
+    exports._exec('ids', 0, callback, scope);
 };
 
 /**
  * List of all scheduled notification IDs.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.getScheduledIds = function (callback, scope) {
-    this._exec('ids', 1, callback, scope);
+    exports._exec('ids', 1, callback, scope);
 };
 
 /**
  * List of all triggered notification IDs.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.getTriggeredIds = function (callback, scope) {
-    this._exec('ids', 2, callback, scope);
+    exports._exec('ids', 2, callback, scope);
 };
 
 /**
@@ -391,18 +492,14 @@ exports.get = function () {
         args.unshift([]);
     }
 
-    var ids      = args[0],
-        callback = args[1],
-        scope    = args[2];
+    var ids = args[0], callback = args[1], scope = args[2];
 
     if (!Array.isArray(ids)) {
         this._exec('notification', Number(ids), callback, scope);
         return;
     }
 
-    ids = this._convertIds(ids);
-
-    this._exec('notifications', [3, ids], callback, scope);
+    this._exec('notifications', [3, exports._convertIdsToNumbers(ids)], callback, scope);
 };
 
 /**
@@ -478,268 +575,251 @@ exports.hasActions = function (id, callback, scope) {
 };
 
 /**
- * The (platform specific) default settings.
- *
- * @return [ Object ]
- */
-exports.getDefaults = function () {
-    var map = Object.assign({}, this._defaults);
-
-    for (var key in map) {
-        if (Array.isArray(map[key])) {
-            map[key] = Array.from(map[key]);
-        } else
-        if (Object.prototype.isPrototypeOf(map[key])) {
-            map[key] = Object.assign({}, map[key]);
-        }
-    }
-
-    return map;
-};
-
-/**
- * Overwrite default settings.
- *
- * @param [ Object ] newDefaults New default values.
- *
- * @return [ Void ]
- */
-exports.setDefaults = function (newDefaults) {
-    Object.assign(this._defaults, newDefaults);
-};
-
-/**
- * Register callback for given event.
- *
- * @param [ String ]   event    The name of the event.
- * @param [ Function ] callback The function to be exec as callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
- */
-exports.on = function (event, callback, scope) {
-    var type = typeof callback;
-
-    if (type !== 'function' && type !== 'string')
-        return;
-
-    if (!this._listener[event]) {
-        this._listener[event] = [];
-    }
-
-    var item = [callback, scope || window];
-
-    this._listener[event].push(item);
-};
-
-/**
- * Unregister callback for given event.
- *
- * @param [ String ]   event    The name of the event.
- * @param [ Function ] callback The function to be exec as callback.
- *
- * @return [ Void ]
- */
-exports.un = function (event, callback) {
-    var listener = this._listener[event];
-
-    if (!listener)
-        return;
-
-    for (var i = 0; i < listener.length; i++) {
-        var fn = listener[i][0];
-
-        if (fn == callback) {
-            listener.splice(i, 1);
-            break;
-        }
-    }
-};
-
-/**
- * Fire the event with given arguments.
- *
- * @param [ String ] event The event's name.
- * @param [ *Array]  args  The callback's arguments.
- *
- * @return [ Void]
- */
-exports.fireEvent = function (event) {
-    var args     = Array.apply(null, arguments).slice(1),
-        listener = this._listener[event];
-
-    if (!listener)
-        return;
-
-    if (args[0] && typeof args[0].data === 'string') {
-        args[0].data = JSON.parse(args[0].data);
-    }
-
-    for (var i = 0; i < listener.length; i++) {
-        var fn    = listener[i][0],
-            scope = listener[i][1];
-
-        if (typeof fn !== 'function') {
-            fn = scope[fn];
-        }
-
-        fn.apply(scope, args);
-    }
-};
-
-/**
- * Fire queued events once the device is ready and all listeners are registered.
- *
- * @return [ Void ]
- */
-exports.fireQueuedEvents = function() {
-    exports._exec('ready');
-};
-
-/**
  * Open native settings to enable notifications.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.openNotificationSettings = function (callback, scope) {
     this._exec('openNotificationSettings', null, callback, scope);
 };
 
 /**
- * Open native settings to enable alarms & reminders. Android only.
- *
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Android only: Open native settings to enable alarms & reminders.
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
 exports.openAlarmSettings = function (callback, scope) {
     this._exec('openAlarmSettings', null, callback, scope);
 };
 
 /**
- * Merge custom properties with the default values.
- *
- * @param [ Object ] options Set of custom values.
- *
- * @retrun [ Object ]
+ * iOS only: Clear the badge of the app icon.
+ * @param {Function} callback 
+ * @param {Object} scope 
  */
-exports._mergeWithDefaults = function (options) {
-    var values = this.getDefaults();
+exports.iOSClearBadge = function (callback, scope) {
+    this._exec('clearBadge', null, callback, scope);
+}
 
-    if (values.hasOwnProperty('sticky')) {
-        options.sticky = this._getValueFor(options, 'sticky', 'ongoing');
-    }
+/**
+ * Register callback for a given event.
+ * @param {string} event The name of the event.
+ * @param {Function|string} callback The function to be exec as callback or the
+ * method name on the scope, which should be called.
+ * @param {Object} scope The callback function's scope.
+ */
+exports.on = function (event, callback, scope) {
+    // If callback is a string, a method on the scope schould be called
+    if (typeof callback !== 'function' && typeof callback !== 'string') return;
 
-    if (options.sticky && options.autoClear !== true) {
-        options.autoClear = false;
-    }
+    // Create empty array, if there are no listeners already
+    if (!this._listeners[event]) this._listeners[event] = [];
 
-    Object.assign(values, options);
-
-    for (var key in values) {
-        if (values[key] !== null) {
-            options[key] = values[key];
-        } else {
-            delete options[key];
-        }
-
-        if (!this._defaults.hasOwnProperty(key)) {
-            console.warn('Unknown property: ' + key);
-        }
-    }
-
-    options.meta = {
-        plugin:  'cordova-plugin-local-notification',
-        version: '1.0.1-dev'
-    };
-
-    return options;
+    this._listeners[event].push([callback, scope || window]);
 };
 
 /**
- * Convert the passed values to their required type.
- *
- * @param [ Object ] options Properties to convert for.
- *
- * @return [ Object ] The converted property list
+ * Unregister callback for given event
+ * @param {string} event The name of the event
+ * @param {Function|string} callback Callback or method name for the scope, which should be unregistered
  */
-exports._convertProperties = function (options) {
-    var parseToInt = function (prop, options) {
-        if (isNaN(options[prop])) {
-            console.warn(prop + ' is not a number: ' + options[prop]);
-            return this._defaults[prop];
-        } else {
-            return Number(options[prop]);
-        }
-    };
-
-    if (options.id) {
-        options.id = parseToInt('id', options);
-    }
-
-    if (options.title) {
-        options.title = options.title.toString();
-    }
-
-    if (options.badge) {
-        options.badge = parseToInt('badge', options);
-    }
-
-    if (options.defaults) {
-        options.defaults = parseToInt('defaults', options);
-    }
-
-    if (options.smallIcon && !options.smallIcon.match(/^res:/)) {
-        console.warn('Property "smallIcon" must be of kind res://...');
-    }
-
-    if (typeof options.timeoutAfter === 'boolean') {
-        options.timeoutAfter = options.timeoutAfter ? 3600000 : null;
-    }
-
-    if (options.timeoutAfter) {
-        options.timeoutAfter = parseToInt('timeoutAfter', options);
-    }
-
-    options.data = JSON.stringify(options.data);
-
-    this._convertPriority(options);
-    this._convertTrigger(options);
-    this._convertActions(options);
-    this._convertProgressBar(options);
-
-    return options;
+exports.un = function (event, callback) {
+    // No listeners added to this event
+    if (!this._listeners[event]) return;
+    // Remove all listeners by callback or method name
+    this._listeners[event] = this._listeners[event].filter((listener) => listener[0] != callback);
 };
 
 /**
- * Convert the passed values for the priority to their required type.
- *
- * @param [ Map ] options Set of custom values.
- *
- * @return [ Map ] Interaction object with trigger spec.
+ * Fire the event with given arguments.
+ * @param {string} event The event's name.
+ * @param {...Object} args The callback's arguments. The first element, can be the options of a notification.
  */
-exports._convertPriority = function (options) {
-    var prio = options.priority || options.prio || 0;
+exports.fireEvent = function (event, ...args) {
+    // No listeners added for this event
+    if (!this._listeners[event]) return;
 
-    if (typeof prio === 'string') {
-        prio = { min: -2, low: -1, high: 1, max: 2 }[prio] || 0;
+    // Convert custom notification data to object
+    if (args[0] && typeof args[0].data === 'string') {
+        args[0].data = JSON.parse(args[0].data);
+    }
+
+    for (const listener of this._listeners[event]) {
+        const callback = listener[0];
+        const scope = listener[1];
+
+        // If callback is a string, a method on the scope schould be called
+        if (typeof callback === 'string') callback = scope[callback];
+
+        callback.apply(scope, args);
+    }
+};
+
+/**
+ * ====================
+ * Internal JS Methods for handling options etc.
+ * ====================
+ **/
+
+/**
+ * Correct renamed propertie and merge defaults optionally, also do the following:
+ * - correct options to their required type
+ * - warn about wrong smallIcon uri
+ * - log unknown and deprecated properties
+ * - Remove null values, because of a Android bug
+ * @param {Object} options The options to convert
+ */
+exports._correctOptions = function (options, mergeDefaults = false) {
+    exports._handleDeprecatedProperties(options)
+
+    // Warn about wrong androidSmallIcon uri
+    if (options.androidSmallIcon && !options.androidSmallIcon.match(/^res:/)) {
+        console.warn('Property "androidSmallIcon" must be of kind res://...')
+    }
+
+    // Convert custom data to string
+    options.data = JSON.stringify(options.data)
+
+    // No auto cancelling, if the notification is ongoing
+    if (options.androidOngoing) options.androidAutoCancel = false
+
+    exports._convertTrigger(options);
+    exports._convertActions(options);
+    exports._convertAndroidProgressBar(options);
+
+    if (mergeDefaults) {
+        for (const key in this._defaults) {
+            if (options[key] === undefined) options[key] = exports._defaults[key];
+        }
+    }
+
+    // Convert Enums
+    // Android: alarmType string to integer
+    if (typeof options.androidAlarmType === 'string') {
+        options.androidAlarmType = exports._androidAlarmTypes[options.androidAlarmType]
+    }
+
+    // Android: channelImportance string to integer
+    if (typeof options.androidChannelImportance === 'string') {
+        options.androidChannelImportance = exports._androidChannelImportanceTypes[options.androidChannelImportance]
+    }
+
+    // Due to a Android bug, null values have to be removed
+    exports._removeNullValues(options);
+    exports._logUnknownProperties(options);
+};
+
+/**
+ * Corrects renamed properties since Plugin version 1.1.0
+ * @param {Oject} options 
+ */
+exports._handleDeprecatedProperties = function (options) {
+    if (device.platform == "Android") {
+
+        // text as Array to androidMessages, since 1.1.0
+        if (Array.isArray(options.text)) {
+            options.androidMessages = options.text
+            console.log("Property 'text' as array is deprecated since version 1.1.0. Use 'androidMessages' instead.")
+        }
+
+        // "clock: true" to androidShowWhen, since 1.1.0
+        if (options.clock === true) {
+            options.androidShowWhen = true
+            console.log("Property 'clock: true' is deprecated since version 1.1.0. Use 'androidShowWhen: true' instead.")
+        }
+
+        // "clock: 'chronometer'" to androidUsesChronometer, since 1.1.0
+        if (options.clock == "chronometer") {
+            options.androidUsesChronometer = true
+            console.log("Property 'clock: 'chronometer'' is deprecated since version 1.1.0. Use 'androidUsesChronometer: true' instead.")
+        }
+
+        // led replaced by androidChannelEnableLights, since Android 8
+        if (options.led) options.androidChannelEnableLights = true
+
+        // priority changed to androidChannelImportance, androidAlarmType and androidAllowWhileIdle
+        this._androidHandleOldPropertyPriority(options)
+    }
+
+    // sound: true changed to sound: "default", since 1.1.0
+    if (options.sound === true) {
+        options.sound = "default"
+        console.log(`Property "sound: true" is deprecated since version 1.1.0. Use "sound: 'default'" instead.`)
+    }
+
+    // Handle renamed and removed properties
+    // Log deprecated properties
+    for (const key in options) {
+
+        // Check if the property is deprecated
+        const deprecatedProperty = this._deprecatedProperties[key];
+
+        // Property not deprecated
+        if (!deprecatedProperty) continue
+
+        let message;
+
+        // Check if propert is renamed
+        if (deprecatedProperty.newPropertyKey) {
+            message = `Use "${deprecatedProperty.newPropertyKey}" instead.`
+            // Set deprecated property value to new property
+            options[deprecatedProperty.newPropertyKey] = options[key]
+
+            // Property was removed
+        } else if (deprecatedProperty.removed) {
+            message = `Property removed`
+        }
+
+        if (deprecatedProperty.additionalMessage) {
+            message += ` ${deprecatedProperty.additionalMessage}`
+        }
+
+        console.warn(`Property "${key}" is deprecated since version ${deprecatedProperty.since}. ${message}`)
+    }
+}
+
+/**
+ * Android: Backward compatibility for property priority.
+ * Replaced by androidChannelImportance, androidAlarmType and androidAllowWhileIdle
+ * Removed in plugin version 1.1.0
+ * If priority is present, it will set androidAlarmType and androidAllowWhileIdle, but not androidChannelImportance.
+ * @param {Object} options
+ */
+exports._androidHandleOldPropertyPriority = function (options) {
+    let priority = options.priority || options.prio;
+
+    // Old property not found
+    if (priority === undefined) return
+
+    if (typeof priority === 'string') {
+        priority = { min: -2, low: -1, high: 1, max: 2 }[priority] || 0;
     }
 
     if (options.foreground === true) {
-        prio = Math.max(prio, 1);
+        priority = Math.max(priority, 1);
     }
 
     if (options.foreground === false) {
-        prio = Math.min(prio, 0);
+        priority = Math.min(priority, 0);
     }
 
-    options.priority = prio;
+    // PRIORITY_MIN and PRIORITY_LOW
+    if (priority < 0) {
+        options.androidAlarmType = "RTC"
+        options.androidAllowWhileIdle = false
 
-    return options;
+        // PRIORITY_DEFAULT and PRIORITY_HIGH
+    } else if (priority < 2) {
+        options.androidAlarmType = "RTC_WAKEUP"
+        options.androidAllowWhileIdle = false
+
+        // PRIORITY_MAX
+    } else {
+        options.androidAlarmType = "RTC_WAKEUP"
+        options.androidAllowWhileIdle = true
+    }
+
+    options.priority = priority;
 };
 
 /**
@@ -777,33 +857,26 @@ exports._convertActions = function (options) {
 
 /**
  * Convert the passed values for the trigger to their required type.
- *
- * @param [ Map ] options Set of custom values.
- *
- * @return [ Map ] Interaction object with trigger spec.
+ * @param {Object} options
+ * @return {Object} Converted options
  */
 exports._convertTrigger = function (options) {
-    var trigger  = options.trigger || {},
-        date     = this._getValueFor(trigger, 'at', 'firstAt', 'date');
+    if (!options.trigger) return;
 
-    var dateToNum = function (date) {
-        var num = typeof date == 'object' ? date.getTime() : date;
-        return Math.round(num);
-    };
+    let trigger = options.trigger;
 
-    if (!options.trigger)
-        return;
-
-    if (!trigger.type) {
-        trigger.type = trigger.center ? 'location' : 'calendar';
-    }
-
+    trigger.type = trigger.type || trigger.center ? 'location' : 'calendar';
     var isCal = trigger.type == 'calendar';
 
+    // Get trigger date from trigger
+    var date = exports._getValueFor(trigger, 'at', 'firstAt', 'date');
+
+    // Fallback: Get trigger date from options, if not defined in trigger
     if (isCal && !date) {
-        date = this._getValueFor(options, 'at', 'firstAt', 'date');
+        date = exports._getValueFor(options, 'at', 'firstAt', 'date');
     }
 
+    // Fallback: Transfer every option to trigger
     if (isCal && !trigger.every && options.every) {
         trigger.every = options.every;
     }
@@ -811,6 +884,11 @@ exports._convertTrigger = function (options) {
     if (isCal && (trigger.in || trigger.every)) {
         date = null;
     }
+
+    var dateToNum = function (date) {
+        var num = typeof date == 'object' ? date.getTime() : date;
+        return Math.round(num);
+    };
 
     if (isCal && date) {
         trigger.at = dateToNum(date);
@@ -855,106 +933,69 @@ exports._convertTrigger = function (options) {
 
 /**
  * Convert the passed values for the progressBar to their required type.
- *
- * @param [ Map ] options Set of custom values.
- *
- * @return [ Map ] Interaction object with trigger spec.
+ * @param {Object} options
  */
-exports._convertProgressBar = function (options) {
-    var isAndroid = device.platform == 'Android',
-        cfg       = options.progressBar;
+exports._convertAndroidProgressBar = function (options) {
+    if (options.androidProgressBar === undefined) return
+    let progressBar = options.androidProgressBar
 
-    if (cfg === undefined)
-        return;
+    progressBar.value = progressBar.value || 0;
+    progressBar.maxValue = progressBar.maxValue || 100;
+    progressBar.indeterminate = progressBar.indeterminate || false;
 
-    if (typeof cfg === 'boolean') {
-        cfg = options.progressBar = { enabled: cfg };
-    }
-
-    if (typeof cfg.enabled !== 'boolean') {
-        cfg.enabled = !!(cfg.value || cfg.maxValue || cfg.indeterminate !== null);
-    }
-
-    cfg.value = cfg.value || 0;
-
-    if (isAndroid) {
-        cfg.maxValue      = cfg.maxValue || 100;
-        cfg.indeterminate = !!cfg.indeterminate;
-    }
-
-    cfg.enabled = !!cfg.enabled;
-
-    if (cfg.enabled && options.clock === true) {
-        options.clock = 'chronometer';
-    }
-
-    return options;
+    // Show the Notification#when field as a stopwatch
+    if (options.androidShowWhen) options.androidUsesChronometer = true;
 };
+
+/**
+ * On Android exists the bug, that when using JSONObject.optString("key", null),
+ * it will return "NULL" as string and not plain null. This function removes
+ * all null values, to workaround this. If this is also a problem on iOS, is not known.
+ * 
+ * See: https://stackoverflow.com/questions/18226288/json-jsonobject-optstring-returns-string-null
+ * @param {Object} options 
+ */
+exports._removeNullValues = function (options) {
+    for (const key in options) {
+        if (options[key] === null) delete options[key];
+    }
+}
+
+/**
+ * Warns about unknown properties in options
+ * @param {Object} options
+ */
+exports._logUnknownProperties = function (options) {
+    for (const key in options) {
+        // Check if property is missing in defaults and is not a deprecated property
+        if (this._defaults[key] === undefined &&  this._deprecatedProperties[key] === undefined) {
+            console.warn('Unknown property: ' + key);
+        }
+    }
+}
 
 /**
  * Create a callback function to get executed within a specific scope.
  *
- * @param [ Function ] fn    The function to be exec as the callback.
- * @param [ Object ]   scope The callback function's scope.
- *
- * @return [ Function ]
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
+ * @return {Function} The callback function.
  */
-exports._createCallbackFn = function (fn, scope) {
-
-    if (typeof fn != 'function')
-        return;
+exports._callbackWithScope = function (callback, scope) {
+    if (typeof callback != 'function') return;
 
     return function () {
-        fn.apply(scope || this, arguments);
+        callback.apply(scope || this, arguments);
     };
 };
 
 /**
  * Convert the IDs to numbers.
- *
- * @param [ Array ] ids
- *
- * @return [ Array<Number> ]
+ * @param {Array|Object} ids Will be turned into an array, if it's not already.
+ * @return {Array<Number>}
  */
-exports._convertIds = function (ids) {
-    var convertedIds = [];
-
-    for (var i = 0, len = ids.length; i < len; i++) {
-        convertedIds.push(Number(ids[i]));
-    }
-
-    return convertedIds;
-};
-
-/**
- * First found value for the given keys.
- *
- * @param [ Object ]         options Object with key-value properties.
- * @param [ *Array<String> ] keys    List of keys.
- *
- * @return [ Object ]
- */
-exports._getValueFor = function (options) {
-    var keys = Array.apply(null, arguments).slice(1);
-
-    for (var i = 0, key = keys[i], len = keys.length; i < len; key = keys[++i]) {
-        if (options.hasOwnProperty(key)) {
-            return options[key];
-        }
-    }
-
-    return null;
-};
-
-/**
- * Convert a value to an array.
- *
- * @param [ Object ] obj Any kind of object.
- *
- * @return [ Array ] An array with the object as first item.
- */
-exports._toArray = function (obj) {
-    return Array.isArray(obj) ? Array.from(obj) : [obj];
+exports._convertIdsToNumbers = function (ids) {
+    return exports._toArray(ids).map((id) => Number(id))
 };
 
 /**
@@ -967,144 +1008,41 @@ exports._toArray = function (obj) {
  *
  * @return [ Void ]
  */
-exports._exec = function (action, args, callback, scope) {
+exports._exec = function (action, options, callback, scope) {
     exec(
-        this._createCallbackFn(callback, scope),
+        exports._callbackWithScope(callback, scope),
         null,
         'LocalNotification',
         action,
-        // Convert args to array, if not already
-        // or if args is not an array and not null, add it to an array
-        Array.isArray(args) ? args : args !== null ? [args] : []
+        // Convert options to array, if not already
+        options === null ? [] : this._toArray(options)
     );
 };
 
 /**
- * Set the launch details if the app was launched by clicking on a toast.
- *
- * @return [ Void ]
+ * First found value for the given keys.
+ * @param {Object} options
+ * @param {...string} findkeys Keys to find
+ * @returns {*|void} The first found value or undefined
  */
-exports._setLaunchDetails = function () {
-    exports._exec('launch', null, function (details) {
-        if (details) {
-            exports.launchDetails = details;
-        }
-    });
+exports._getValueFor = function (options, ...findKeys) {
+    for (const findKey of findKeys) {
+        if (options.hasOwnProperty(findKey)) return options[findKey];
+    }
+
+    return undefined;
 };
 
-// Polyfill for Object.assign
-if (typeof Object.assign != 'function') {
-  Object.assign = function(target) {
-    'use strict';
-    if (target == null) {
-      throw new TypeError('Cannot convert undefined or null to object');
-    }
+/**
+ * Convert a value to an array, if it is not already an array.
+ *
+ * @param {Object|Array} object Any kind of object, or an array.
+ * @return {Array} An array with the object as first item or the object itself, if it's already an array.
+ */
+exports._toArray = function (object) {
+    return Array.isArray(object) ? object : [object];
+};
 
-    target = Object(target);
-    for (var index = 1; index < arguments.length; index++) {
-      var source = arguments[index];
-      if (source != null) {
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-    }
-    return target;
-  };
-}
-
-// Polyfill for Array.from
-// Production steps of ECMA-262, Edition 6, 22.1.2.1
-// Reference: https://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.from
-if (!Array.from) {
-  Array.from = (function () {
-    var toStr = Object.prototype.toString;
-    var isCallable = function (fn) {
-      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
-    };
-    var toInteger = function (value) {
-      var number = Number(value);
-      if (isNaN(number)) { return 0; }
-      if (number === 0 || !isFinite(number)) { return number; }
-      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
-    };
-    var maxSafeInteger = Math.pow(2, 53) - 1;
-    var toLength = function (value) {
-      var len = toInteger(value);
-      return Math.min(Math.max(len, 0), maxSafeInteger);
-    };
-
-    // The length property of the from method is 1.
-    return function from(arrayLike/*, mapFn, thisArg */) {
-      // 1. Let C be the this value.
-      var C = this;
-
-      // 2. Let items be ToObject(arrayLike).
-      var items = Object(arrayLike);
-
-      // 3. ReturnIfAbrupt(items).
-      if (arrayLike == null) {
-        throw new TypeError("Array.from requires an array-like object - not null or undefined");
-      }
-
-      // 4. If mapfn is undefined, then let mapping be false.
-      var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
-      var T;
-      if (typeof mapFn !== 'undefined') {
-        // 5. else
-        // 5. a If IsCallable(mapfn) is false, throw a TypeError exception.
-        if (!isCallable(mapFn)) {
-          throw new TypeError('Array.from: when provided, the second argument must be a function');
-        }
-
-        // 5. b. If thisArg was supplied, let T be thisArg; else let T be undefined.
-        if (arguments.length > 2) {
-          T = arguments[2];
-        }
-      }
-
-      // 10. Let lenValue be Get(items, "length").
-      // 11. Let len be ToLength(lenValue).
-      var len = toLength(items.length);
-
-      // 13. If IsConstructor(C) is true, then
-      // 13. a. Let A be the result of calling the [[Construct]] internal method of C with an argument list containing the single item len.
-      // 14. a. Else, Let A be ArrayCreate(len).
-      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
-
-      // 16. Let k be 0.
-      var k = 0;
-      // 17. Repeat, while k < len… (also steps a - h)
-      var kValue;
-      while (k < len) {
-        kValue = items[k];
-        if (mapFn) {
-          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
-        } else {
-          A[k] = kValue;
-        }
-        k += 1;
-      }
-      // 18. Let putStatus be Put(A, "length", len, true).
-      A.length = len;
-      // 20. Return A.
-      return A;
-    };
-  }());
-}
-
-// Called after 'deviceready' event
-channel.deviceready.subscribe(function () {
-    if (!window.skipLocalNotificationReady) {
-        exports.fireQueuedEvents();
-    }
-});
-
-// Called before 'deviceready' event
-channel.onCordovaReady.subscribe(function () {
-    channel.onCordovaInfoReady.subscribe(function () {
-        exports._setLaunchDetails();
-    });
-});
+exports._deepCopy = function (object) {
+    return JSON.parse(JSON.stringify(object));
+};

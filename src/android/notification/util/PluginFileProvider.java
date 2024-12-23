@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
+/*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -17,8 +15,20 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
--->
+ */
 
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="external_files" path="."/>
-</paths>
+package de.appplant.cordova.plugin.localnotification.notification.util;
+
+import androidx.core.content.FileProvider;
+
+/**
+ * FileProvider is a special subclass of ContentProvider that facilitates secure sharing of
+ * files associated with an app by creating a content:// Uri for a file instead of a file:/// Uri.
+ * 
+ * It is possible to use FileProvider directly instead of extending it.
+ * However, this is not reliable and will causes crashes on some devices.
+ */
+public class PluginFileProvider extends FileProvider {
+    public PluginFileProvider() {
+    }
+}

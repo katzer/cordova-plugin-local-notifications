@@ -79,13 +79,13 @@ public final class Action {
      * Gets the icon for the action.
      */
     public int getIcon() {
-        AssetUtil assets = AssetUtil.getInstance(context);
-        String resPath   = options.optString("icon");
-        int resId        = assets.getResId(resPath);
+        String iconPath = options.optString("icon");
 
-        if (resId == 0) {
-            resId = android.R.drawable.screen_background_dark;
-        }
+        // Get icon from the app resources or system resources
+        int resId = new AssetUtil(context).getResourceId(iconPath, AssetUtil.RESOURCE_TYPE_DRAWABLE);
+
+        // Fallback, nothing found
+        if (resId == 0) resId = android.R.drawable.screen_background_dark;
 
         return resId;
     }

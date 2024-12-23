@@ -80,17 +80,15 @@ static char optionsKey;
 - (NSString*) encodeToJSON
 {
     NSString* json;
-    NSData* data;
     NSMutableDictionary* obj = [self.content.userInfo mutableCopy];
 
     [obj removeObjectForKey:@"updatedAt"];
 
-    if (obj == NULL || obj.count == 0)
-        return json;
+    if (obj == NULL || obj.count == 0) return json;
 
-    data = [NSJSONSerialization dataWithJSONObject:obj
-                                           options:NSJSONWritingPrettyPrinted
-                                             error:NULL];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:obj
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:NULL];
 
     json = [[NSString alloc] initWithData:data
                                  encoding:NSUTF8StringEncoding];

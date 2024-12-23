@@ -23,35 +23,34 @@
 
 package de.appplant.cordova.plugin.localnotification.notification.receiver;
 
+import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import org.json.JSONObject;
-
+import java.util.Date;
 import java.util.List;
 
+import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
 import de.appplant.cordova.plugin.localnotification.notification.Builder;
 import de.appplant.cordova.plugin.localnotification.notification.Manager;
 import de.appplant.cordova.plugin.localnotification.notification.Notification;
-import de.appplant.cordova.plugin.localnotification.notification.Options;
 import de.appplant.cordova.plugin.localnotification.notification.Request;
 
 /**
- * This class is triggered upon reboot of the device. It needs to re-register
- * the alarms with the AlarmManager since these alarms are lost in case of
- * reboot.
+ * This class is triggered, when the system has cleared the alarms and notifications,
+ * e.g. because of a device reboot, app update or granting the SCHEDULE_EXACT_ALARM permission.
+ * The alarms and notifications needs to be restored.
  */
-abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
+public class RestoreReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "AbstractRestoreReceiver";
+    public static final String TAG = "RestoreReceiver";
 
     /**
-     * Called on device reboot.
-     *
+     * Called when alarms and notifications need to be restored.
      * @param context Application context
-     * @param intent  Received intent with content data
+     * @param intent Received intent with content data
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -60,31 +59,32 @@ abstract public class AbstractRestoreReceiver extends BroadcastReceiver {
         // The device was booted and is unlocked
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
             // The app was updated
-            intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
+            intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED) ||
+            // The app is granted the SCHEDULE_EXACT_ALARM permission
+            intent.getAction().equals(AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED)) {
 
-            List<Notification> notifications = Manager.getInstance(context).getNotifications();
+            List<Notification> notifications = new Manager(context).getNotifications();
             Log.d(TAG, "Restoring notifications, count: " + notifications.size());
 
             for (Notification notification : notifications) {
-                onRestore(new Request(notification.getOptions()),
-                    buildNotification(new Builder(notification.getOptions())));
+                // Rebuild the notification with the click activity, clear receiver and builder
+                notification = new Builder(notification.getOptions())
+                    .setClickActivity(ClickHandlerActivity.class)
+                    .setClearReceiver(ClearReceiver.class)
+                    .build();
+
+                Request request = new Request(notification.getOptions());
+                Date triggerDate = request.getTriggerDate();
+                boolean shouldSchedule = triggerDate != null && triggerDate.after(new Date());
+        
+                // Notification is in the past, show only
+                if (!shouldSchedule) notification.show();
+        
+                // Notification should be scheduled or is repeating
+                if (shouldSchedule || notification.isRepeating()) {
+                    new Manager(notification.getContext()).schedule(request);
+                }
             }
         }
     }
-
-    /**
-     * Called when a local notification need to be restored.
-     *
-     * @param request Set of notification options.
-     * @param toast   Wrapper around the local notification.
-     */
-    abstract public void onRestore(Request request, Notification toast);
-
-    /**
-     * Build notification specified by options.
-     *
-     * @param builder Notification builder.
-     */
-    abstract public Notification buildNotification(Builder builder);
-
 }

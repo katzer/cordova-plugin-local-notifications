@@ -44,16 +44,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 /**
  * Initialize by using the given property values.
- *
- * @param [ NSDictionary* ] dict A key-value property map.
- *
+ * @param dictionary A key-value property map.
  * @return [ APPNotificationOptions ]
  */
 - (id) initWithDict:(NSDictionary*)dictionary
 {
-    self      = [self init];
+    self = [self init];
     self.dict = dictionary;
-
     return self;
 }
 
@@ -115,7 +112,7 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 }
 
 /**
- * Show notification.
+ * Don't show a notification, make no sound, no vibration, when app is in foreground
  *
  * @return [ BOOL ]
  */
@@ -129,21 +126,20 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  *
  * @return [ BOOL ]
  */
-- (int) priority
+- (BOOL) iOSForeground
 {
-    return [dict[@"priority"] intValue];
+    return [dict[@"iOSForeground"] boolValue];
 }
 
 /**
  * The badge number for the notification.
+ * 0 removes the badge, -1 don't changes the badge
  *
- * @return [ NSNumber* ]
+ * @return [ int ]
  */
-- (NSNumber*) badge
+- (int) badgeNumber
 {
-    id value = dict[@"badge"];
-
-    return (value == NULL) ? NULL : [NSNumber numberWithInt:[value intValue]];
+    return [dict[@"badgeNumber"] intValue];
 }
 
 /**
@@ -165,24 +161,24 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNNotificationSound*) sound
 {
-    NSString* path = dict[@"sound"];
-    NSString* file;
+    NSString* soundPath = dict[@"sound"];
 
-    if ([path isKindOfClass:NSNumber.class]) {
-        return [path boolValue] ? [UNNotificationSound defaultSound] : NULL;
+    if (soundPath == NULL || [soundPath length] == 0 ) return NULL;
+
+    if ([soundPath isEqualToString:@"default"]) {
+        return [UNNotificationSound defaultSound];
     }
 
-    if (!path.length)
-        return NULL;
+    // Change file:// to www/ for assets
+    if ([soundPath hasPrefix:@"file://"]) {
+        soundPath = [self soundPathForAsset:soundPath];
 
-    if ([path hasPrefix:@"file:/"]) {
-        file = [self soundNameForAsset:path];
-    } else
-    if ([path hasPrefix:@"res:"]) {
-        file = [self soundNameForResource:path];
+        // Gets the file name from the path
+    } else if ([soundPath hasPrefix:@"res:"]) {
+        soundPath = [self soundNameForResource:soundPath];
     }
 
-    return [UNNotificationSound soundNamed:file];
+    return [UNNotificationSound soundNamed:soundPath];
 }
 
 
@@ -193,20 +189,16 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (NSArray<UNNotificationAttachment *> *) attachments
 {
-    NSArray* paths              = dict[@"attachments"];
+    NSArray* attachmentsPaths = dict[@"attachments"];
     NSMutableArray* attachments = [[NSMutableArray alloc] init];
 
-    if (!paths)
-        return attachments;
+    if (!attachmentsPaths) return attachments;
 
-    for (NSString* path in paths) {
-        NSURL* url = [self urlForAttachmentPath:path];
-
-        UNNotificationAttachment* attachment;
-        attachment = [UNNotificationAttachment attachmentWithIdentifier:path
-                                                                    URL:url
-                                                                options:NULL
-                                                                  error:NULL];
+    for (NSString* path in attachmentsPaths) {
+        UNNotificationAttachment* attachment = [UNNotificationAttachment attachmentWithIdentifier:path
+                                                                                              URL:[self urlForAttachmentPath:path]
+                                                                                          options:NULL
+                                                                                            error:NULL];
 
         if (attachment) {
             [attachments addObject:attachment];
@@ -228,14 +220,9 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 {
     NSString* type = [self valueForTriggerOption:@"type"];
 
-    if ([type isEqualToString:@"location"])
-        return [self triggerWithRegion];
-
-    if (![type isEqualToString:@"calendar"])
-        NSLog(@"Unknown type: %@", type);
-
-    if ([self isRepeating])
-        return [self repeatingTrigger];
+    if ([type isEqualToString:@"location"]) return [self triggerWithRegion];
+    if (![type isEqualToString:@"calendar"]) NSLog(@"Unknown type: %@", type);
+    if ([self isRepeating]) return [self repeatingTrigger];
 
     return [self nonRepeatingTrigger];
 }
@@ -303,14 +290,11 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNNotificationTrigger*) nonRepeatingTrigger
 {
-    id timestamp = [self valueForTriggerOption:@"at"];
-
-    if (timestamp) {
+    if ([self valueForTriggerOption:@"at"]) {
         return [self triggerWithDateMatchingComponents:NO];
     }
 
-    return [UNTimeIntervalNotificationTrigger
-            triggerWithTimeInterval:[self timeInterval] repeats:NO];
+    return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[self timeInterval] repeats:NO];
 }
 
 /**
@@ -338,22 +322,16 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNTimeIntervalNotificationTrigger*) triggerWithTimeInterval
 {
-    double ticks   = [[self valueForTriggerOption:@"every"] doubleValue];
-    NSString* unit = [self valueForTriggerOption:@"unit"];
-    double seconds = [self convertTicksToSeconds:ticks unit:unit];
+    double seconds = [self convertTicksToSeconds:[[self valueForTriggerOption:@"every"] doubleValue]
+                                            unit:[self valueForTriggerOption:@"unit"]];
 
     if (seconds < 60) {
         NSLog(@"time interval must be at least 60 sec if repeating");
         seconds = 60;
     }
 
-    UNTimeIntervalNotificationTrigger* trigger =
-    [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds
-                                                       repeats:YES];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds
+                                                              repeats:YES];
 }
 
 /**
@@ -363,19 +341,13 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNCalendarNotificationTrigger*) triggerWithDateMatchingComponents:(BOOL)repeats
 {
-    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
-    NSDateComponents *date = [cal components:[self repeatInterval]
-                                    fromDate:[self triggerDate]];
+    NSDateComponents *date = [[self calendarWithMondayAsFirstDay] components:[self repeatInterval]
+                                                                    fromDate:[self triggerDate]];
 
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    UNCalendarNotificationTrigger* trigger =
-    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
-                                                             repeats:repeats];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                                    repeats:repeats];
 }
 
 /**
@@ -385,19 +357,12 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
  */
 - (UNCalendarNotificationTrigger*) triggerWithCustomDateMatchingComponents
 {
-    NSCalendar* cal        = [self calendarWithMondayAsFirstDay];
     NSDateComponents *date = [self customDateComponents];
-
-    date.calendar = cal;
+    date.calendar = [self calendarWithMondayAsFirstDay];
     date.timeZone = [NSTimeZone defaultTimeZone];
 
-    UNCalendarNotificationTrigger* trigger =
-    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
-                                                             repeats:YES];
-
-    NSLog(@"[local-notification] Next trigger at: %@", trigger.nextTriggerDate);
-
-    return trigger;
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date
+                                                                    repeats:YES];
 }
 
 /**
@@ -522,23 +487,18 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 }
 
 /**
- * Convert an assets path to an valid sound name attribute.
- *
- * @param [ NSString* ] path A relative assets file path.
- *
+ * Converts file:// to www/ for assets.
+ * @param path A relative assets file path.
  * @return [ NSString* ]
  */
-- (NSString*) soundNameForAsset:(NSString*)path
+- (NSString*) soundPathForAsset:(NSString*)path
 {
-    return [path stringByReplacingOccurrencesOfString:@"file:/"
-                                           withString:@"www"];
+    return [path stringByReplacingOccurrencesOfString:@"file://" withString:@"www/"];
 }
 
 /**
  * Convert a ressource path to an valid sound name attribute.
- *
- * @param [ NSString* ] path A relative ressource file path.
- *
+ * @param path A relative ressource file path.
  * @return [ NSString* ]
  */
 - (NSString*) soundNameForResource:(NSString*)path
@@ -548,163 +508,110 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 /**
  * URL for the specified attachment path.
- *
- * @param [ NSString* ] path Absolute/relative path or a base64 data.
- *
+ * @param path Absolute/relative path or a base64 data.
  * @return [ NSURL* ]
  */
 - (NSURL*) urlForAttachmentPath:(NSString*)path
 {
-    if ([path hasPrefix:@"file:///"])
-    {
-        return [self urlForFile:path];
-    }
-    else if ([path hasPrefix:@"res:"])
-    {
-        return [self urlForResource:path];
-    }
-    else if ([path hasPrefix:@"file://"])
-    {
-        return [self urlForAsset:path];
-    }
-    else if ([path hasPrefix:@"base64:"])
-    {
-        return [self urlFromBase64:path];
-    }
+    if ([path hasPrefix:@"file:///"]) return [self urlForFile:path];
+    if ([path hasPrefix:@"res:"]) return [self urlForResource:path];
+    if ([path hasPrefix:@"www"] || [path hasPrefix:@"file://"]) return [self urlForAsset:path];
+    if ([path hasPrefix:@"base64:"]) return [self urlFromBase64:path];
 
-    NSFileManager* fm = [NSFileManager defaultManager];
-
-    if (![fm fileExistsAtPath:path]){
-        NSLog(@"File not found: %@", path);
-    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) NSLog(@"File not found: %@", path);
 
     return [NSURL fileURLWithPath:path];
 }
 
 /**
  * URL to an absolute file path.
- *
- * @param [ NSString* ] path An absolute file path.
- *
+ * @param path An absolute file path.
  * @return [ NSURL* ]
  */
-- (NSURL*) urlForFile:(NSString*)path
+- (NSURL*) urlForFile:(NSString*)absoluteFilePath
 {
-    NSFileManager* fm = [NSFileManager defaultManager];
+    absoluteFilePath = [absoluteFilePath stringByReplacingOccurrencesOfString:@"file://" withString:@""];
 
-    NSString* absPath;
-    absPath = [path stringByReplacingOccurrencesOfString:@"file://"
-                                              withString:@""];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
+    if (![[NSFileManager defaultManager] fileExistsAtPath:absoluteFilePath]) {
+        NSLog(@"File not found: %@", absoluteFilePath);
     }
 
-    return [NSURL fileURLWithPath:absPath];
+    return [NSURL fileURLWithPath:absoluteFilePath];
 }
 
 /**
  * URL to a resource file.
- *
- * @param [ NSString* ] path A relative file path.
- *
+ * @param path A relative file path.
  * @return [ NSURL* ]
  */
 - (NSURL*) urlForResource:(NSString*)path
 {
-    NSFileManager* fm    = [NSFileManager defaultManager];
-    NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* bundlePath = [mainBundle resourcePath];
+    if ([path isEqualToString:@"res://icon"]) path = @"res://AppIcon60x60@3x.png";
 
-    if ([path isEqualToString:@"res://icon"]) {
-        path = @"res://AppIcon60x60@3x.png";
-    }
+    NSString* absPath = [path stringByReplacingOccurrencesOfString:@"res:/"
+                                                        withString:@""];
+    
+    absPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:absPath];
 
-    NSString* absPath;
-    absPath = [path stringByReplacingOccurrencesOfString:@"res:/"
-                                              withString:@""];
-
-    absPath = [bundlePath stringByAppendingString:absPath];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
-    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:absPath]) NSLog(@"File not found: %@", absPath);
 
     return [NSURL fileURLWithPath:absPath];
 }
 
 /**
  * URL to an asset file.
- *
  * @param path A relative www file path.
- *
  * @return [ NSURL* ]
  */
 - (NSURL*) urlForAsset:(NSString*)path
 {
-    NSFileManager* fm    = [NSFileManager defaultManager];
-    NSBundle* mainBundle = [NSBundle mainBundle];
-    NSString* bundlePath = [mainBundle bundlePath];
+    NSString *absoluteAssetPath = [NSString stringWithFormat:@"%@/%@",
+        [[NSBundle mainBundle] bundlePath],
+        [path stringByReplacingOccurrencesOfString:@"file://"
+                                        withString:@"www/"]];
 
-    NSString* absPath;
-    absPath = [path stringByReplacingOccurrencesOfString:@"file:/"
-                                              withString:@"/www"];
-
-    absPath = [bundlePath stringByAppendingString:absPath];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
+    if (![[NSFileManager defaultManager] fileExistsAtPath:absoluteAssetPath]) {
+        NSLog(@"File not found: %@", absoluteAssetPath);
     }
 
-    return [NSURL fileURLWithPath:absPath];
+    return [NSURL fileURLWithPath:absoluteAssetPath];
 }
 
 /**
  * URL for a base64 encoded string.
- *
- * @param [ NSString* ] base64String Base64 encoded string.
- *
+ * @param base64String Base64 encoded string.
  * @return [ NSURL* ]
  */
 - (NSURL*) urlFromBase64:(NSString*)base64String
 {
-    NSString *filename = [self basenameFromAttachmentPath:base64String];
-    NSUInteger length = [base64String length];
-    NSRegularExpression *regex;
-    NSString *dataString;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^base64:[^/]+.."
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:Nil];
 
-    regex = [NSRegularExpression regularExpressionWithPattern:@"^base64:[^/]+.."
-                                                      options:NSRegularExpressionCaseInsensitive
-                                                        error:Nil];
-
-    dataString = [regex stringByReplacingMatchesInString:base64String
-                                                 options:0
-                                                   range:NSMakeRange(0, length)
-                                            withTemplate:@""];
+    NSString *dataString = [regex stringByReplacingMatchesInString:base64String
+                                                           options:0
+                                                             range:NSMakeRange(0, [base64String length])
+                                                      withTemplate:@""];
 
     NSData* data = [[NSData alloc] initWithBase64EncodedString:dataString
                                                        options:0];
 
 
-    return [self urlForData:data withFileName:filename];
+    return [self urlForData:data withFileName:[self basenameFromAttachmentPath:base64String]];
 }
 
 /**
  * Extract the attachments basename.
- *
- * @param [ NSString* ] path The file path or base64 data.
- *
+ * @param path The file path or base64 data.
  * @return [ NSString* ]
  */
 - (NSString*) basenameFromAttachmentPath:(NSString*)path
 {
     if ([path hasPrefix:@"base64:"]) {
-        NSString* pathWithoutPrefix;
-        pathWithoutPrefix = [path stringByReplacingOccurrencesOfString:@"base64:"
-                                                            withString:@""];
+        NSString* pathWithoutPrefix = [path stringByReplacingOccurrencesOfString:@"base64:"
+                                                                      withString:@""];
 
-        return [pathWithoutPrefix substringToIndex:
-                [pathWithoutPrefix rangeOfString:@"//"].location];
+        return [pathWithoutPrefix substringToIndex:[pathWithoutPrefix rangeOfString:@"//"].location];
     }
 
     return path;
@@ -712,65 +619,50 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 /**
  * Write the data into a temp file.
- *
- * @param [ NSData* ]   data The data to save to file.
- * @param [ NSString* ] name The name of the file.
- *
+ * @param data The data to save to file.
+ * @param filename The name of the file.
  * @return [ NSURL* ]
  */
 - (NSURL*) urlForData:(NSData*)data withFileName:(NSString*) filename
 {
-    NSFileManager* fm = [NSFileManager defaultManager];
-    NSString* tempDir = NSTemporaryDirectory();
+    [[NSFileManager defaultManager] createDirectoryAtPath:NSTemporaryDirectory()
+                              withIntermediateDirectories:YES
+                                               attributes:NULL
+                                                    error:NULL];
 
-    [fm createDirectoryAtPath:tempDir withIntermediateDirectories:YES
-                   attributes:NULL
-                        error:NULL];
+    NSString* absPath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
 
-    NSString* absPath = [tempDir stringByAppendingPathComponent:filename];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:absPath]) NSLog(@"File not found: %@", absPath);
 
     NSURL* url = [NSURL fileURLWithPath:absPath];
     [data writeToURL:url atomically:NO];
-
-    if (![fm fileExistsAtPath:absPath]) {
-        NSLog(@"File not found: %@", absPath);
-    }
-
+    
     return url;
 }
 
 /**
  * Convert the amount of ticks into seconds.
- *
- * @param [ double ]    ticks The amount of ticks.
- * @param [ NSString* ] unit  The unit of the ticks (minute, hour, day, ...)
- *
+ * @param ticks The amount of ticks.
+ * @param unit  The unit of the ticks (minute, hour, day, ...)
  * @return [ double ] Amount of ticks in seconds.
  */
 - (double) convertTicksToSeconds:(double)ticks unit:(NSString*)unit
 {
     if ([unit isEqualToString:@"second"]) {
         return ticks;
-    } else
-    if ([unit isEqualToString:@"minute"]) {
+    } else if ([unit isEqualToString:@"minute"]) {
         return ticks * 60;
-    } else
-    if ([unit isEqualToString:@"hour"]) {
+    } else if ([unit isEqualToString:@"hour"]) {
         return ticks * 60 * 60;
-    } else
-    if ([unit isEqualToString:@"day"]) {
+    } else if ([unit isEqualToString:@"day"]) {
         return ticks * 60 * 60 * 24;
-    } else
-    if ([unit isEqualToString:@"week"]) {
+    } else if ([unit isEqualToString:@"week"]) {
         return ticks * 60 * 60 * 24 * 7;
-    } else
-    if ([unit isEqualToString:@"month"]) {
+    } else if ([unit isEqualToString:@"month"]) {
         return ticks * 60 * 60 * 24 * 30.438;
-    } else
-    if ([unit isEqualToString:@"quarter"]) {
+    } else if ([unit isEqualToString:@"quarter"]) {
         return ticks * 60 * 60 * 24 * 91.313;
-    } else
-    if ([unit isEqualToString:@"year"]) {
+    } else if ([unit isEqualToString:@"year"]) {
         return ticks * 60 * 60 * 24 * 365;
     }
 
@@ -779,18 +671,20 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 /**
  * Instance if a calendar where the monday is the first day of the week.
- *
  * @return [ NSCalendar* ]
  */
 - (NSCalendar*) calendarWithMondayAsFirstDay
 {
-    NSCalendar* cal = [[NSCalendar alloc]
-                       initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
-
-    cal.firstWeekday = 2;
-    cal.minimumDaysInFirstWeek = 1;
-
-    return cal;
+    NSCalendar* calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+    calendar.firstWeekday = 2;
+    calendar.minimumDaysInFirstWeek = 1;
+    return calendar;
 }
 
+/**
+ * String representation of this Object
+ */
+- (NSString *)description {
+   return [NSString stringWithFormat: @"%@", dict];
+}
 @end

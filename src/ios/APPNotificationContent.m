@@ -34,9 +34,7 @@ static char optionsKey;
 
 /**
  * Initialize a notification with the given options.
- *
- * @param [ NSDictionary* ] dict A key-value property map.
- *
+ * @param dict A key-value property map.
  * @return [ UNMutableNotificationContent ]
  */
 - (id) initWithOptions:(NSDictionary*)dict
@@ -51,20 +49,17 @@ static char optionsKey;
 
 /**
  * Initialize a notification by using the options found under userInfo.
- *
- * @return [ Void ]
  */
 - (void) __init
 {
-    APPNotificationOptions* options = self.options;
-
-    self.title              = options.title;
-    self.subtitle           = options.subtitle;
-    self.body               = options.text;
-    self.sound              = options.sound;
-    self.badge              = options.badge;
-    self.attachments        = options.attachments;
-    self.categoryIdentifier = options.actionGroupId;
+    self.title = self.options.title;
+    self.subtitle = self.options.subtitle;
+    self.body = self.options.text;
+    self.sound = self.options.sound;
+    // -1 will not change the badge, 0 will clear it
+    self.badge = self.options.badgeNumber == -1 ? nil : [NSNumber numberWithInt:self.options.badgeNumber];
+    self.attachments = self.options.attachments;
+    self.categoryIdentifier = self.options.actionGroupId;
 }
 
 #pragma mark -
@@ -90,18 +85,17 @@ static char optionsKey;
 }
 
 /**
- * The notifcations request ready to add to the notification center including
- * all informations about trigger behavior.
+ * Creates a notification request object that you use to schedule a notification.
  *
  * @return [ UNNotificationRequest* ]
  */
 - (UNNotificationRequest*) request
 {
-    APPNotificationOptions* opts = [self getOptions];
-
-    return [UNNotificationRequest requestWithIdentifier:opts.identifier
+    APPNotificationOptions* options = [self getOptions];
+    
+    return [UNNotificationRequest requestWithIdentifier:options.identifier
                                                 content:self
-                                                trigger:opts.trigger];
+                                                trigger:options.trigger];
 }
 
 #pragma mark -
@@ -119,15 +113,10 @@ static char optionsKey;
 
 /**
  * Set the options used to initialize the notification.
- *
- * @param [ NSDictionary* ] dict A key-value property map.
- *
- * @return [ Void ]
  */
 - (void) setOptions:(APPNotificationOptions*)options
 {
-    objc_setAssociatedObject(self, &optionsKey,
-                             options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, &optionsKey, options, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

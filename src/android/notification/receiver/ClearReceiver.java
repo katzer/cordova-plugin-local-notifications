@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2024
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -26,43 +27,44 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.localnotification.notification.Manager;
 import de.appplant.cordova.plugin.localnotification.notification.Notification;
+import de.appplant.cordova.plugin.localnotification.notification.Request;
 
 /**
- * Abstract delete receiver for local notifications. Creates the local
- * notification and calls the event functions for further proceeding.
+ * The clear intent receiver is triggered when the user clears a
+ * notification manually. It un-persists the cleared notification from the
+ * shared preferences.
  */
-abstract public class AbstractClearReceiver extends BroadcastReceiver {
+public class ClearReceiver extends BroadcastReceiver {
 
-    /**
+     /**
      * Called when the notification was cleared from the notification center.
-     *
      * @param context Application context
-     * @param intent  Received intent with content data
+     * @param intent Received intent with content data
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle      = intent.getExtras();
+        Bundle bundle = intent.getExtras();
+        if (bundle == null) return;
 
-        if (bundle == null)
-            return;
+        int notificationId = bundle.getInt(Notification.EXTRA_ID);
+        Notification notification = new Manager(context).getNotification(notificationId);
 
-        int toastId        = bundle.getInt(Notification.EXTRA_ID);
-        Notification toast = Manager.getInstance(context).get(toastId);
+        if (notification == null) return;
 
-        if (toast == null)
-            return;
+        // Cancel alarm and remove notification from storage, when it was the last occurence
+        if (bundle.getBoolean(Request.EXTRA_LAST, false)) {
+            notification.cancel();
 
-        onClear(toast, bundle);
+            // Clear only from statusbar, so that the next occurrences can be shown
+        } else {
+            notification.clear();
+        }
+
+        if (LocalNotification.isAppRunning()) {
+            LocalNotification.fireEvent("clear", notification);
+        }
     }
-
-    /**
-     * Called when a local notification was cleared from outside of the app.
-     *
-     * @param notification Wrapper around the local notification.
-     * @param bundle The bundled extras.
-     */
-    abstract public void onClear(Notification notification, Bundle bundle);
-
 }

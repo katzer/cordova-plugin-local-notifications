@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2024
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -28,13 +29,13 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
-import androidx.media.app.NotificationCompat.MediaStyle;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.app.NotificationManager;
+import androidx.core.graphics.drawable.IconCompat;
 import android.service.notification.StatusBarNotification;
 import android.os.Build;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -43,6 +44,7 @@ import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.localnotification.notification.Notification.EXTRA_UPDATE;
+import static de.appplant.cordova.plugin.localnotification.notification.Options.LARGE_ICON_TYPE_CIRCLE;
 
 /**
  * Builder class for local notifications. Build fully configured local
@@ -114,62 +116,78 @@ public final class Builder {
      * @return The final notification to display.
      */
     public Notification build() {
-        NotificationCompat.Builder builder;
+        // TODO: Does this work, when no builder is created?
+        if (options.isSilent()) return new Notification(context, options);
 
-        if (options.isSilent()) {
-            return new Notification(context, options);
-        }
-
-        Uri sound     = options.getSound();
         Bundle extras = new Bundle();
-
         extras.putInt(Notification.EXTRA_ID, options.getId());
-        extras.putString(Options.EXTRA_SOUND, sound.toString());
 
-        builder = findOrCreateBuilder()
-                .setDefaults(options.getDefaults())
-                .setExtras(extras)
-                .setOnlyAlertOnce(options.isOnlyAlertOnce())
-                .setChannelId(options.getChannelId())
-                .setContentTitle(options.getTitle())
-                .setContentText(options.getText())
-                .setTicker(options.getText())
-                .setNumber(options.getNumber())
-                .setAutoCancel(options.isAutoClear())
-                .setOngoing(options.isSticky())
-                .setColor(options.getColor())
-                .setVisibility(options.getVisibility())
-                .setPriority(options.getPrio())
-                .setShowWhen(options.showClock())
-                .setUsesChronometer(options.showChronometer())
-                .setGroup(options.getGroup())
-                .setGroupSummary(options.getGroupSummary())
-                .setTimeoutAfter(options.getTimeout())
-                .setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, options.getAndroidChannelId())
+            .setExtras(extras)
+            .setOnlyAlertOnce(options.isOnlyAlertOnce())
+            .setContentTitle(options.getTitle())
+            .setContentText(options.getText())
+            // Text that summarizes this notification for accessibility services.
+            // Since Android 5, this text is no longer shown on screen, but it is
+            // still useful to accessibility services (where it serves as an audible announcement
+            // of the notification's appearance).
+            .setTicker(options.getText())
+            // Since Android 8 shows as a badge count for Launchers that support badging
+            // prior to 8 it could be shown in the header
+            .setNumber(options.getBadgeNumber())
+            .setAutoCancel(options.isAndroidAutoCancel())
+            .setOngoing(options.isAndroidOngoing())
+            .setColor(options.getColor())
+            .setVisibility(options.getVisibility())
+            // Show the Notification when date
+            .setShowWhen(options.isAndroidShowWhen())
+            // Show the Notification#when field as a stopwatch. Instead of presenting when as a timestamp,
+            // the notification will show an automatically updating display of the minutes and seconds since
+            // when
+            .setUsesChronometer(options.isAndroidUsesChronometer())
+            .setGroup(options.getGroup())
+            .setGroupSummary(options.isGroupSummary());
 
-        if (sound != Uri.EMPTY && !isUpdate()) {
-            builder.setSound(sound);
+        // Specify the duration in milliseconds after which this notification should be canceled
+        if (options.getAndroidTimeoutAfter() >= 0) builder.setTimeoutAfter(options.getAndroidTimeoutAfter());
+
+        // Settings for Android older than 8
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setDefaults(options.getDefaults());
+            builder.setPriority(options.getPriorityByImportance());
+            builder.setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
+
+            Uri soundUri = options.getSoundUri();
+
+            if (soundUri != Uri.EMPTY && !isUpdate()) {
+                // Grant permission to the system to play the sound, needed in Android 7 and 8
+                new Manager(context).grantUriPermission(soundUri);
+                builder.setSound(soundUri);
+            }
         }
 
-        if (options.isWithProgressBar()) {
+        if (options.getProgressBar() != null) {
             builder.setProgress(
-                    options.getProgressMaxValue(),
-                    options.getProgressValue(),
-                    options.isIndeterminateProgress());
+                options.getProgressMaxValue(),
+                options.getProgressValue(),
+                options.isProgressIndeterminate());
         }
 
-        if (options.hasLargeIcon()) {
-            builder.setSmallIcon(options.getSmallIcon());
+        // Get smallIcon from resources only
+        //
+        // There exists also a setSmallIcon(IconCompat icon) method, but tested on Android 15, when multiple notifications with the
+        // same icon are posted, the app icon will be shown in statusbar instead of the small icon. This does not happen,
+        // when using the setSmallIcon(int icon) method.
+        builder.setSmallIcon(options.getSmallIcon());
 
-            Bitmap largeIcon = options.getLargeIcon();
-
-            if (options.getLargeIconType().equals("circle")) {
+        Bitmap largeIcon = options.getAndroidLargeIcon();
+        
+        if (largeIcon != null) {
+            if (options.getAndroidLargeIconType().equals(LARGE_ICON_TYPE_CIRCLE)) {
                 largeIcon = AssetUtil.getCircleBitmap(largeIcon);
             }
 
             builder.setLargeIcon(largeIcon);
-        } else {
-            builder.setSmallIcon(options.getSmallIcon());
         }
 
         applyStyle(builder);
@@ -182,165 +200,102 @@ public final class Builder {
 
     /**
      * Find out and set the notification style.
-     *
-     * @param builder Local notification builder instance.
+     * @param builder Notification builder instance.
      */
     private void applyStyle(NotificationCompat.Builder builder) {
-        // Check if option text is a JSONArray, will be null if it is a String
-        Message[] messages = options.getMessages();
-
-        // text is a JSONArray
-        if (messages != null) {
-            applyMessagingStyle(builder, messages);
-            return;
-        }
-
-        MediaSessionCompat.Token token = options.getMediaSessionToken();
-
-        if (token != null) {
-            applyMediaStyle(builder, token);
-            return;
-        }
-
-        List<Bitmap> pics = options.getAttachments();
-
-        if (pics.size() > 0) {
-            applyBigPictureStyle(builder, pics);
-            return;
-        }
-
-        String text = options.getText();
-
-        if (text != null && text.contains("\n")) {
-            applyInboxStyle(builder);
-            return;
-        }
-
-        if (text == null || options.getSummary() == null && text.length() < 45)
-            return;
-
-        applyBigTextStyle(builder);
+        if (applyMessagingStyle(builder)) return;
+        if (applyBigPictureStyle(builder)) return;
+        if (applyInboxStyle(builder)) return;
+        if (applyBigTextStyle(builder)) return;
     }
 
     /**
-     * Apply messaging style.
-     *
-     * @param builder  Local notification builder instance.
-     * @param messages The messages to add to the conversation.
+     * Apply messaging style
+     * @param builder Notification builder instance
+     * @return true if the messaging style was applied
      */
-    private void applyMessagingStyle(NotificationCompat.Builder builder,
-                                     Message[] messages) {
-
-        NotificationCompat.MessagingStyle style;
-        String title = options.getTitle();
+    private boolean applyMessagingStyle(NotificationCompat.Builder builder) {
+        Message[] messages = options.getAndroidMessages();
+        if (messages == null) return false;
 
         // Find if there is a notification already displayed with this ID.
-        android.app.Notification notification = findActiveNotification(options.getId());
+        StatusBarNotification activeNotification = new Manager(context).getActiveNotification(options.getId());
 
-        if (notification != null) {
-            // Notification already displayed. Extract the MessagingStyle to add the message.
-            style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(notification);
-        } else {
-            // There is no notification, create a new style.
-            style = new NotificationCompat.MessagingStyle("");
+        MessagingStyle style = activeNotification != null ?
+            // If the notification was already displayed, extract the MessagingStyle to add the message
+            MessagingStyle.extractMessagingStyleFromNotification(activeNotification.getNotification()) :
+            // No active notification, create a new style
+            new NotificationCompat.MessagingStyle("");
+
+        // Add the new messages to the style
+        for (Message message : messages) {
+            style.addMessage(message);
         }
 
-        // Add the new messages to the style.
-        for (Message msg : messages) {
-            style.addMessage(msg);
-        }
+        String title = options.getTitle();
 
         // Add the count of messages to the title if there is more than 1.
-        Integer sizeList = style.getMessages().size();
+        Integer messagesCount = style.getMessages().size();
 
-        if (sizeList > 1) {
-            String count = "(" + sizeList + ")"; // Default value.
-
-            if (options.getTitleCount() != null) {
-                count = options.getTitleCount();
-                count = count.replace("%n%", "" + sizeList);
-            }
-
-            if (!count.trim().equals("")) {
-                title += " " + count;
-            }
+        if (messagesCount > 1 && options.getTitleCount() != null && !options.getTitleCount().trim().isEmpty()) {
+            title += " " + options.getTitleCount().replace("%n%", "" + messagesCount);
         }
 
         style.setConversationTitle(title);
 
         // Use the style.
         builder.setStyle(style);
+
+        return true; // style applied
     }
 
     /**
-     * Apply inbox style.
-     *
-     * @param builder Local notification builder instance.
-     * @param pics    The pictures to show.
+     * Apply big picture style. Only uses the first attachment.
+     * @param builder Notification builder instance
+     * @return true if the big picture style was applied
      */
-    private void applyBigPictureStyle(NotificationCompat.Builder builder,
-                                      List<Bitmap> pics) {
+    private boolean applyBigPictureStyle(NotificationCompat.Builder builder) {
+        List<Bitmap> attachmentsPictures = options.getAttachments();
+        if (attachmentsPictures == null || attachmentsPictures.size() == 0) return false;
 
-        NotificationCompat.BigPictureStyle style;
-        String summary = options.getSummary();
-        String text    = options.getText();
+        builder.setStyle(new NotificationCompat.BigPictureStyle(builder)
+            .setSummaryText(options.getSummary() != null ? options.getSummary() : options.getText())
+            .bigPicture(attachmentsPictures.get(0))
+        );
 
-        style = new NotificationCompat.BigPictureStyle(builder)
-                .setSummaryText(summary == null ? text : summary)
-                .bigPicture(pics.get(0));
-
-        builder.setStyle(style);
+        return true; // style applied
     }
 
     /**
-     * Apply inbox style.
-     *
-     * @param builder Local notification builder instance.
+     * Apply inbox style
+     * @param builder Notification builder instance
+     * @return true if the inbox style was applied
      */
-    private void applyInboxStyle(NotificationCompat.Builder builder) {
-        NotificationCompat.InboxStyle style;
-        String text = options.getText();
+    private boolean applyInboxStyle(NotificationCompat.Builder builder) {
+        if (!options.getText().contains("\n")) return false;
 
-        style = new NotificationCompat.InboxStyle(builder)
-                .setSummaryText(options.getSummary());
+        NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle(builder)
+            .setSummaryText(options.getSummary());
 
-        for (String line : text.split("\n")) {
+        for (String line : options.getText().split("\n")) {
             style.addLine(line);
         }
 
         builder.setStyle(style);
+        return true; // style applied
     }
 
     /**
-     * Apply big text style.
-     *
-     * @param builder Local notification builder instance.
+     * Apply big text style
+     * @param builder Notification builder instance
+     * @return true if the big text style was applied
      */
-    private void applyBigTextStyle(NotificationCompat.Builder builder) {
-        NotificationCompat.BigTextStyle style;
-
-        style = new NotificationCompat.BigTextStyle(builder)
-                .setSummaryText(options.getSummary())
-                .bigText(options.getText());
-
-        builder.setStyle(style);
-    }
-
-    /**
-     * Apply media style.
-     *
-     * @param builder Local notification builder instance.
-     * @param token   The media session token.
-     */
-    private void applyMediaStyle(NotificationCompat.Builder builder,
-                                 MediaSessionCompat.Token token) {
-        MediaStyle style;
-
-        style = new MediaStyle(builder)
-                .setMediaSession(token)
-                .setShowActionsInCompactView(1);
-
-        builder.setStyle(style);
+    private boolean applyBigTextStyle(NotificationCompat.Builder builder) {
+        if (options.getSummary() == null && options.getText().length() < 45) return false;
+        builder.setStyle(new NotificationCompat.BigTextStyle(builder)
+            .setSummaryText(options.getSummary())
+            .bigText(options.getText()));
+        return true; // style applied
     }
 
     /**
@@ -375,15 +330,13 @@ public final class Builder {
      * @param builder Local notification builder instance.
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
-
-        if (clickActivity == null)
-            return;
+        if (clickActivity == null) return;
 
         Intent intent = new Intent(context, clickActivity)
-                .putExtra(Notification.EXTRA_ID, options.getId())
-                .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-                .putExtra(Options.EXTRA_LAUNCH, options.isLaunchingApp())
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            .putExtra(Notification.EXTRA_ID, options.getId())
+            .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
+            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         if (extras != null) {
             intent.putExtras(extras);
@@ -450,42 +403,4 @@ public final class Builder {
     private boolean isUpdate() {
         return extras != null && extras.getBoolean(EXTRA_UPDATE, false);
     }
-
-    /**
-     * Returns a cached builder instance or creates a new one.
-     */
-    private NotificationCompat.Builder findOrCreateBuilder() {
-        int key = options.getId();
-        NotificationCompat.Builder builder = Notification.getCachedBuilder(key);
-
-        if (builder == null) {
-            builder = new NotificationCompat.Builder(context, options.getChannelId());
-        }
-
-        return builder;
-    }
-
-    /**
-     * Find an active notification with a certain ID.
-     *
-     * @param  notId   Notification ID to find.
-     * @return Notification The active notification, null if not found.
-     */
-    private android.app.Notification findActiveNotification(Integer notId) {
-        // The getActiveNotifications method is only available from Android M.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
-
-            // Find the notification.
-            for (int i = 0; i < notifications.length; i++) {
-                if (notifications[i].getId() == notId) {
-                    return notifications[i].getNotification();
-                }
-            }
-        }
-
-        return null;
-    }
-
 }

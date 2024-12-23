@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2024
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.UUID;
 
@@ -50,239 +52,228 @@ import android.graphics.Paint;
 import android.graphics.Canvas;
 
 /**
- * Util class to map unified asset URIs to native URIs. URIs like file:///
- * map to absolute paths while file:// point relatively to the www folder
- * within the asset resources. And res:// means a resource from the native
- * res folder. Remote assets are accessible via http:// for example.
+ * Util class to map unified asset URIs to native URIs. See {@link AssetUtil#getUri(String, int)}.
  */
 public final class AssetUtil {
 
-    // Name of the storage folder
-    private static final String STORAGE_FOLDER = "/localnotification";
-
-    // Ref to the context passed through the constructor to access the
-    // resources and app directory.
-    private final Context context;
+    public static final String TAG = "AssetUtil";
 
     /**
-     * Constructor
-     *
-     * @param context Application context.
+     * Needed for access the resources and app directory.
      */
-    private AssetUtil(Context context) {
+    private final Context context;
+
+    public static final int RESOURCE_TYPE_DRAWABLE = 0;
+    public static final int RESOURCE_TYPE_RAW = 1;
+
+    public AssetUtil(Context context) {
         this.context = context;
     }
 
     /**
-     * Static method to retrieve class instance.
-     *
-     * @param context Application context.
+     * The Uri for a path.
+     * @param path The path to get the Uri for.
+     * @param resourceType Only needed, if the path is a res:// path. Represents the type of the resource,
+     * can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}.
+     * @return The Uri for the path or {@link Uri.EMPTY} if the path is empty, does not exists or is not recognizeable.
      */
-    public static AssetUtil getInstance(Context context) {
-        return new AssetUtil(context);
-    }
+    public Uri getUri(String path, int resourceType) {
+        if (path == null || path.isEmpty()) return Uri.EMPTY;
 
-    /**
-     * The URI for a path.
-     *
-     * @param path The given path.
-     */
-    public Uri parse(String path) {
-        if (path == null || path.isEmpty()) {
-            return Uri.EMPTY;
-        } else if (path.startsWith("res:")) {
-            return getUriForResourcePath(path);
-        } else if (path.startsWith("file:///")) {
-            return getUriFromPath(path);
-        } else if (path.startsWith("file://")) {
-            return getUriFromAsset(path);
-        } else if (path.startsWith("http")){
-            return getUriFromRemote(path);
-        } else if (path.startsWith("content://")){
-            return Uri.parse(path);
+        // Resource file from res directory
+        if (path.startsWith("res:")) return getUriForResource(path, resourceType);
+
+        // File from www folder
+        if (path.startsWith("www") || path.startsWith("file://")) return getSharedUriForAssetFile(path);
+
+        // Shared file in the shared_files directory
+        if (path.startsWith("shared://")) {
+            // Create content:// Uri
+            return getSharedUri(new File(getSharedDirectory(), path.replace("shared://", "")));
         }
 
+        // Path not recognizeable
+        Log.e(TAG, "Path not recognizeable: " + path);
         return Uri.EMPTY;
     }
 
     /**
-     * URI for a file.
-     *
-     * @param path Absolute path like file:///...
-     *
-     * @return URI pointing to the given path.
+     * Gets the URI for a resource in the res directory.
+     * @param resourcePath Path like res://mySound, res://myImage.png, etc.
+     * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
+     * @return {@link Uri.EMPTY} if a resource could not be found.
      */
-    private Uri getUriFromPath(String path) {
-        String absPath = path.replaceFirst("file://", "")
-                .replaceFirst("\\?.*$", "");
-        File file      = new File(absPath);
+    public Uri getUriForResource(String resourcePath, int resourceType) {
+        // Get from app resources
+        Resources resources = context.getResources();
+        int resourceId = getResourceId(resources, resourcePath, resourceType);
 
-        if (!file.exists()) {
-            Log.e("Asset", "File not found: " + file.getAbsolutePath());
+        // Get from system resources
+        if (resourceId == 0) {
+            resources = Resources.getSystem();
+            resourceId = getResourceId(resources, resourcePath, resourceType);
+        }
+
+        if (resourceId == 0) {
+            Log.w(TAG, "Resspurce not found: " + resourcePath);
             return Uri.EMPTY;
         }
 
-        return getUriFromFile(file);
-    }
-
-    /**
-     * URI for an asset.
-     *
-     * @param path Asset path like file://...
-     *
-     * @return URI pointing to the given path.
-     */
-    private Uri getUriFromAsset(String path) {
-        String resPath  = path.replaceFirst("file:/", "www")
-                .replaceFirst("\\?.*$", "");
-        String fileName = resPath.substring(resPath.lastIndexOf('/') + 1);
-        File file       = getTmpFile(fileName);
-
-        if (file == null)
-            return Uri.EMPTY;
-
-        try {
-            AssetManager assets  = context.getAssets();
-            InputStream in       = assets.open(resPath);
-            FileOutputStream out = new FileOutputStream(file);
-            copyFile(in, out);
-        } catch (Exception e) {
-            Log.e("Asset", "File not found: assets/" + resPath);
-            e.printStackTrace();
-            return Uri.EMPTY;
-        }
-
-        return getUriFromFile(file);
-    }
-
-    /**
-     * The URI for a resource.
-     *
-     * @param path The given relative path.
-     *
-     * @return URI pointing to the given path.
-     */
-    private Uri getUriForResourcePath(String path) {
-        Resources res  = context.getResources();
-        String resPath = path.replaceFirst("res://", "");
-        int resId      = getResId(resPath);
-
-        if (resId == 0) {
-            Log.e("Asset", "File not found: " + resPath);
-            return Uri.EMPTY;
-        }
-
+        // Will be something like:
+        // App Resource: android.resource://com.example.app/raw/mySound
         return new Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(res.getResourcePackageName(resId))
-                .appendPath(res.getResourceTypeName(resId))
-                .appendPath(res.getResourceEntryName(resId))
-                .build();
+            // Scheme: android.resource
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            // Authority: com.example.app (for the App)
+            .authority(resources.getResourcePackageName(resourceId))
+            // Resource directory: raw
+            .appendPath(resources.getResourceTypeName(resourceId))
+            // Resource name: mySound
+            .appendPath(resources.getResourceEntryName(resourceId))
+            .build();
     }
 
     /**
-     * Uri from remote located content.
-     *
-     * @param path Remote address.
-     *
-     * @return Uri of the downloaded file.
+     * Get the resource Id for a given resourceType. Searches in the App resources first, then in the system resources.
+     * @param resourcePath Resource path, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
+     * @return The resource ID or 0 if not found.
      */
-    private Uri getUriFromRemote(String path) {
-        File file = getTmpFile();
+    public int getResourceId(String resourcePath, int resourceType) {
+        // Get resource from App
+        int resourceId = getResourceId(context.getResources(), resourcePath, resourceType);
+        
+        // Get resource from system, if not found
+        if (resourceId == 0) return getResourceId(Resources.getSystem(), resourcePath, resourceType);
 
-        if (file == null)
-            return Uri.EMPTY;
-
-        try {
-            URL url = new URL(path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            StrictMode.ThreadPolicy policy =
-                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-            StrictMode.setThreadPolicy(policy);
-
-            connection.setRequestProperty("Connection", "close");
-            connection.setConnectTimeout(5000);
-            connection.connect();
-
-            InputStream in       = connection.getInputStream();
-            FileOutputStream out = new FileOutputStream(file);
-
-            copyFile(in, out);
-            return getUriFromFile(file);
-        } catch (MalformedURLException e) {
-            Log.e("Asset", "Incorrect URL");
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            Log.e("Asset", "Failed to create new File from HTTP Content");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e("Asset", "No Input can be created from http Stream");
-            e.printStackTrace();
-        }
-
-        return Uri.EMPTY;
+        return resourceId;
     }
 
     /**
-     * Copy content from input stream into output stream.
-     *
-     * @param in  The input stream.
-     * @param out The output stream.
+     * Get the resource Id for a given resourceType.
+     * @param resources The resources where to look for, can be {@link Context#getResources()} or {@link Resources#getSystem()}
+     * @param resourcePath The path of the resource, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
+     * @return The resource ID or 0 if not found.
      */
-    private void copyFile(InputStream in, FileOutputStream out) {
-        byte[] buffer = new byte[1024];
-        int read;
+    public int getResourceId(Resources resources, String resourcePath, int resourceType) {
+        if (resourceType == RESOURCE_TYPE_DRAWABLE) {
+            // Try first in drawable
+            int resourceId = getResourceId(resources, resourcePath, "drawable");
 
-        try {
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
+            // Try in mipmap if not found
+            if (resourceId == 0) {
+                resourceId = getResourceId(resources, resourcePath, "mipmap");
             }
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            return resourceId;
+
+            // Get sound, video, etc.
+        } else if (resourceType == RESOURCE_TYPE_RAW) {
+            return getResourceId(resources, resourcePath, "raw");
+        }
+
+        // Resource type unknown
+        Log.e(TAG, "Unknown resource type: " + resourceType);
+        return 0;
+    }
+
+    /**
+     * Get the resource Id. Searches in a given resource directory and resources.
+     * @param resources The resources where to look for, can be {@link Context#getResources()} or {@link Resources#getSystem()}
+     * @param resourcePath The path of the resource, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceDirectory The directory of the resource, for e.g. "mipmap", "drawable", "raw", etc.
+     * @return The resource ID or 0 if not found.
+     */
+    public int getResourceId(Resources resources, String resourcePath, String resourceDirectory) {
+        return resources.getIdentifier(getResourceName(resourcePath), resourceDirectory, getPackageName(resources));
+    }
+
+    /**
+     * Gets the resource name from the path.
+     * @param resourcePath Resource path as string.
+     */
+    public static String getResourceName(String resourcePath) {
+        String resourceName = resourcePath;
+
+        // Get the filename without the path
+        if (resourceName.contains("/")) {
+            resourceName = resourceName.substring(resourceName.lastIndexOf('/') + 1);
+        }
+
+        // Remove file extension
+        if (resourceName.contains(".")) {
+            resourceName = resourceName.substring(0, resourceName.lastIndexOf('.'));
+        }
+
+        return resourceName;
+    }
+
+    /**
+     * Package name specified by the resource bundle.
+     * @return "android" if system resources are used, otherwise the package name of the app.
+     */
+    private String getPackageName(Resources resources) {
+        return resources == Resources.getSystem() ? "android" : context.getPackageName();
+    }
+
+    /**
+     * Shared Uri for an asset file.
+     * Copies the asset file to the shared directory [App path]/files/shared_files, to make it accessible
+     * through a content:// Uri.
+     * @param assetPath Path like www/myFile.png or file://myFile.png
+     * @return content:// Uri pointing to the shared asset file in [App path]/files/shared_files.
+     * E.g. content://com.example.app.localnotifications.provider/shared_files/www/myAssetFile.png
+     */
+    private Uri getSharedUriForAssetFile(String assetPath) {
+        // Change file:// to www folder
+        assetPath = assetPath.replaceFirst("file://", "www/");
+
+        // Create all directories specified by the asset path
+        File sharedDirectory = new File(
+            getSharedDirectory(), 
+            // www/my/subfolder
+            assetPath.substring(0, assetPath.lastIndexOf('/')));
+        
+        // Create sub directories for the shared directory
+        sharedDirectory.mkdirs();
+
+        // Get the asset file to copy to the shared directory
+        String assetFilename = assetPath.substring(assetPath.lastIndexOf('/') + 1);
+        File sharedAssetFile = new File(sharedDirectory, assetFilename);
+
+        try {
+            copyFile(context.getAssets().open(assetPath), new FileOutputStream(sharedAssetFile));
+        } catch (Exception exception) {
+            Log.e(TAG, "File not found: " + assetPath, exception);
+            return Uri.EMPTY;
+        }
+
+        return getSharedUri(sharedAssetFile);
+    }
+
+    /**
+     * Get the content:// Uri for a shared file.
+     * @param sharedFile The file to get the Uri from
+     * @return E.g. content://com.example.app.localnotifications.provider/shared_files/mySharedFile.png
+     * or Uri.EMPTY if the file is outside the paths supported by the provider.
+     */
+    private Uri getSharedUri(File sharedFile) {
+        try {
+            return PluginFileProvider.getUriForFile(context, context.getPackageName() + ".localnotifications.provider", sharedFile);
+
+            // When the given sharedFile is outside the paths supported by the provider.
+        } catch (IllegalArgumentException exception) {
+            Log.e(TAG, "sharedFile is outside the paths supported by the provider: " + sharedFile.getAbsolutePath(), exception);
+            return Uri.EMPTY;
         }
     }
 
     /**
-     * Resource ID for drawable.
-     *
-     * @param resPath Resource path as string.
-     *
-     * @return The resource ID or 0 if not found.
+     * Get the shared directory for the app, defined by the file provider paths.
      */
-    public int getResId(String resPath) {
-        int resId = getResId(context.getResources(), resPath);
-
-        return resId;
-    }
-
-    /**
-     * Get resource ID.
-     *
-     * @param res     The resources where to look for.
-     * @param resPath The name of the resource.
-     *
-     * @return The resource ID or 0 if not found.
-     */
-    private int getResId(Resources res, String resPath) {
-        String pkgName = getPkgName(res);
-        String resName = getBaseName(resPath);
-        int resId;
-
-        resId = res.getIdentifier(resName, "mipmap", pkgName);
-
-        if (resId == 0) {
-            resId = res.getIdentifier(resName, "drawable", pkgName);
-        }
-
-        if (resId == 0) {
-            resId = res.getIdentifier(resName, "raw", pkgName);
-        }
-
-        return resId;
+    public File getSharedDirectory() {
+        return new File(context.getFilesDir(), "shared_files");
     }
 
     /**
@@ -291,8 +282,7 @@ public final class AssetUtil {
      * @param uri Internal image URI
      */
     public Bitmap getIconFromUri(Uri uri) throws IOException {
-        InputStream input = context.getContentResolver().openInputStream(uri);
-        return BitmapFactory.decodeStream(input);
+        return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri));
     }
 
     /**
@@ -304,9 +294,7 @@ public final class AssetUtil {
      * @return Circular bitmap.
      */
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
-        if (bitmap == null) {
-            return null;
-        }
+        if (bitmap == null) return null;
 
         final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
@@ -332,84 +320,23 @@ public final class AssetUtil {
     }
 
     /**
-     * Extract name of drawable resource from path.
+     * Copy content from input stream into output stream.
      *
-     * @param resPath Resource path as string.
+     * @param in  The input stream.
+     * @param out The output stream.
      */
-    private String getBaseName(String resPath) {
-        String drawable = resPath;
+    public static void copyFile(InputStream in, FileOutputStream out) {
+        byte[] buffer = new byte[1024];
+        int read;
 
-        if (drawable.contains("/")) {
-            drawable = drawable.substring(drawable.lastIndexOf('/') + 1);
-        }
-
-        if (resPath.contains(".")) {
-            drawable = drawable.substring(0, drawable.lastIndexOf('.'));
-        }
-
-        return drawable;
-    }
-
-    /**
-     * Returns a file located under the external cache dir of that app.
-     *
-     * @return File with a random UUID name.
-     */
-    private File getTmpFile() {
-        // If random UUID is not be enough see
-        // https://github.com/LukePulverenti/cordova-plugin-local-notifications/blob/267170db14044cbeff6f4c3c62d9b766b7a1dd62/src/android/notification/AssetUtil.java#L255
-        return getTmpFile(UUID.randomUUID().toString());
-    }
-
-    /**
-     * Returns a file located under the external cache dir of that app.
-     *
-     * @param name The name of the file.
-     *
-     * @return File with the provided name.
-     */
-    private File getTmpFile(String name) {
-        File dir = context.getExternalCacheDir();
-
-        if (dir == null) {
-            dir = context.getCacheDir();
-        }
-
-        if (dir == null) {
-            Log.e("Asset", "Missing cache dir");
-            return null;
-        }
-
-        String storage  = dir.toString() + STORAGE_FOLDER;
-
-        //noinspection ResultOfMethodCallIgnored
-        new File(storage).mkdir();
-
-        return new File(storage, name);
-    }
-
-    /**
-     * Get content URI for the specified file.
-     *
-     * @param file The file to get the URI.
-     *
-     * @return content://...
-     */
-    private Uri getUriFromFile(File file) {
         try {
-            String authority = context.getPackageName() + ".localnotifications.provider";
-            return AssetProvider.getUriForFile(context, authority, file);
-        } catch (IllegalArgumentException e) {
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (Exception e) {
             e.printStackTrace();
-            return Uri.EMPTY;
         }
     }
-
-    /**
-     * Package name specified by the resource bundle.
-     */
-    private String getPkgName(Resources res) {
-        return res == Resources.getSystem() ? "android" : context.getPackageName();
-    }
-
 }

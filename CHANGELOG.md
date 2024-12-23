@@ -1,28 +1,64 @@
-ChangeLog
----------
-#### Version 1.0.1-dev
+# ChangeLog
 
-##### Changes for Android
+## Version 1.0.1-dev
+
+- Improve documentation
+- Documentation of properties
+
+### Changes for Android
+- Handling [Android channels](README.md#android-notification-channels):
+    - New Methods: [createChannel](README.md#createchannel) and [deleteChannel](README.md#deletechannel)
+    - The [default channel](README.md#default-channel) is configurable
 - Bugfix: Make cancel/cancelAll/clear/clearAll work again. This was broken since Version 1.0.0 because of the change "Use app name as a tag for the notify call [PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)". For e.g. notifications were still in the statusbar, when clearing a notification.
+- Bugfix: `java.lang.IllegalStateException: Maximum limit of concurrent alarms 500 reached`, when canceling notifications and schedule new notifications
+    - When canceling a notification, the saved data for the notification was removed from the app and also a posted notification from the statusbar, but the alarm itself, which would create the notification, not. This was due to a wrongly created intent for clearing the scheduled alarms.
+- Bugfix: Reschedule notifications, when app is updated
+    - Android clears all pending alarms, when an app is updated, this was not properly handled.
+- Bugfix: Remove wrongly used intent-filter `LOCKED_BOOT_COMPLETED`
+    - The intent-filter `LOCKED_BOOT_COMPLETED` is executed, when the device was booted, but not yet unlocked by the user (e.g. the device is looked by a pin). To use this feature, the device encrypted storage has to be used, which is accessible by `context.createDeviceProtectedStorageContext()`. This has first to be implemented and was not implemented.
+- React on `SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED` when app is closed and not only in the background
 - Added [onlyAlertOnce](https://developer.android.com/reference/android/app/Notification.Builder#setOnlyAlertOnce(boolean)) option
-- Added [channel creation](README.md#android-notification-channels)
-    - Important: Renamed "channel" proprety to "channelId"
-- Update dependency ShortcutBadger from version 1.1.19 to 1.1.22 to fix native crashes
-- Bugfix: Catch any exceptions when attempting to get option for a notification
-- Gradle: Remove deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
-- Use `FLAG_IMMUTABLE` on every Android version. `FLAG_IMMUTABLE` was set for Android 12 and newer, but the flag is supported since Android 6. The code should be consistent between all Android versions.
-- Correct wrong package for classes in notification directory:
-    - The classes in the notification directory must be in the package "de.appplant.cordova.plugin.localnotification.notification" and not "de.appplant.cordova.plugin.notification", because "de.appplant.cordova.plugin.localnotification" is the package name of the plugin.
-    - Copy the classes in the right directory, when building an app
-- Bugfix: Correct canceling alarms of notifications
-    - When canceling a notification, the saved data for the notification was removed from the app and also a posted notification from the statusbar, but the alarm itself not, which would create the notification. This was due to a wrongly created intent for clearing the scheduled alarms in Notification.cancelScheduledAlarms. The Intent must be initialized with a context and a class along with the action.
-    Before it was only initialized with an action and without a context and class.
-    - Always set the receiver class for alarms to TriggerReceiver.class, so it's easier to cancel alarms.
-    - Will fix "java.lang.IllegalStateException: Maximum limit of concurrent alarms 500 reached", when canceling notifications and schedule new notifications.
-- Remove Android Support Library from plugin.xml
-    - This was overlooked, when switched to Android X.
+- Removed option `mediaSession` and the corresponding MediaStyle. This was not functional and also needed the extra Android library `android:media`.
 
-#### Version 1.0.0 (17.08.2024)
+#### Changes in resource handling
+- Added resource uri [shared://](README.md#resource-pattern-shared), to set at runtime created resources for e.g. a [sound](README.md#property-sound), [androidLargeIcon](README.md#property-androidlargeicon), etc.
+- Added resource path [www](README.md#resource-pattern-www) to access www-files
+- Removed resource uris `http`, `https`. You can use for this the [shared](README.md#resource-pattern-shared) dirctory and a `shared:` uri.
+- Removed resource uri `file:///`. file uris should not be used in Android.
+- Removed resource uri `content:`. You can instead use a [shared://](README.md#resource-pattern-shared) uri.
+
+#### Code fixes and cleanup
+- General code clenaup
+- Removed Plugin dependency `cordova-plugin-badge` and `ShortcutBadger`. These were only used for Android. Android can handle the badging itself and does not need a 3rd party library. You can configure the behaviour by the [badgeNumber](README.md#property-badgenumber) property.
+- Use `FLAG_IMMUTABLE` on every Android version
+    - Before it was set since Android 12, now since Android 7, to make the code consistent between all Android versions.
+- Bugfix: Catch any exceptions when attempting to get option for a notification
+- Correct wrong package for classes in the `notification` directory:
+    - The classes in the `notification` directory must be in the package `de.appplant.cordova.plugin.localnotification.notification` and not `de.appplant.cordova.plugin.notification`, because `de.appplant.cordova.plugin.localnotification` is the package name of the plugin.
+    - Copy the classes in the right directory, when building an app
+- Added `androidx.core:core` package version `1.12.0` for using `NotificationManagerCompat`. The Version is cofigurable by `ANDROIDX_CORE_VERSION`.
+    - Added `kotlin-bom` to fix duplicate classes errors.
+- Removed Android Support Library leftovers `com.android.support:support-v4` from plugin.xml
+    - This was overlooked, when switched to Android X.
+- Remove `android:media` Library: This was used for MediaSytle, which was removed.
+- Gradle: Remove deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
+- Always set the receiver class for alarms to `TriggerReceiver.class`, so it's easier to cancel alarms.
+
+### Changes for iOS
+- Plugin compatibility for upcoming `cordova-ios` version `8.0.0`
+- `package.json`: Correct incorrect `cordova-ios` dependency
+    - Version `10.0.0` was referenced, but the maximum available version currently is `7.1.1`
+    - Correct version also for old plugin version `0.9.0-beta.3`
+- New method [iOSClearBadge](README.md#iosclearbadge) for clearing the badge on iOS.
+- Added resource path [www](README.md#resource-pattern-www) to access www-files
+
+### Changed properties
+Some properties were changed. See [Changes since Version `1.1.0`](README.md#changes-since-version-110)
+
+### Other changes
+- Renamed plugin action `request` to `requestPermission`
+
+## Version 1.0.0 (17.08.2024)
 This Release contains mainly changes and fixes for the Android platform.
 
 - Make Plugin compatible with Android 12-14
@@ -34,21 +70,14 @@ This Release contains mainly changes and fixes for the Android platform.
 - Declare `SCHEDULE_EXACT_ALARM` permission, which is necessary for scheduling exact alarms since Android 12 (API 31). It is only pre-granted on Android 12. On Android 13 and newer, the user must grant the permission in the "Alarms & Reminders"-setting, if you still want exact alarms. If the permission is not granted, notifications will be scheduled inexact, which is still ok for the normal case.
 - Request `POST_NOTIFICATIONS` permission in Android 13 (API 33)
 - New methods for exact alarms:
-    - `canScheduleExactAlarms(successCallback, scope)` - Android only. Checks if the user has enabled the "Alarms & Reminders"-setting.  If not, the notificiatons will be scheduled inexact, which is still ok and will only be delayed by some minutes.
-        - On Android 12 the permission is granted by default
-        - On Android 13 and newer, the permission is not granted by default and have to be explicitly enabled by the user.
-        - On Android 11 and older, this method will always return `true` in the `successCallback`.
-    - `openAlarmSettings(successCallback, scope)` - Android only. Opens the "Alarms & Reminders"-settings as an Activity when running on Android 12 (SDK 31) or later, where the user can enable exact alarms. On Android older then 12, it will just call the `successCallback`, without doing anything. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
-        - If the user grants permission, already inexact scheduled notifications will automatically be rescheduled as exact alarms, but only if the app is still available in background.
-        - If exact alarms were alreay granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
-    - `openNotificationSettings(successCallback, scope)` - Opens the notifications settings of the app on Android 8 and newer. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used.
-        - On Android, the callback will just return "OK", after starting the activity.
-        - On Android older then 8, it opens the app details.
-        - On iOS it's not possible to open the notification settings, it will open the app settings.
-- Support sender image by new option `personIcon`
-- Initialize the sender as empty String instead of "Me" ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
-- Reuse existing messages when using MessagingStyle ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)). With this fix, users won't have to cache the messages in their Javascript code, the plugin will automatically check if there is an active notification with that ID and append the new messages to the existing ones. This will only be done when using MessagingStyle, which will be used, if the option `text` is filled with an `Array` instead of a `String`.
-- Added count of messages in a notification, wenn using Array for `text`. ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
+    - [canScheduleExactAlarms(successCallback, scope)](README.md#canscheduleexactalarms)
+    - [openAlarmSettings(successCallback, scope)](README.md#openalarmsettings)
+    - [openNotificationSettings(successCallback, scope)](README.md#opennotificationsettings)
+- Changes for MessagingStyle:
+    - Support sender image by new option `personIcon`
+    - Initialize the sender as empty String instead of "Me" ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
+    - Reuse existing messages when using MessagingStyle ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)). With this fix, users won't have to cache the messages in their Javascript code, the plugin will automatically check if there is an active notification with that ID and append the new messages to the existing ones. This will only be done when using MessagingStyle, which will be used, if the option `text` is filled with an `Array` instead of a `String`.
+    - Added count of messages in a notification, wenn using Array for `text`. ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
     - Added option `titleCount` to modify the count text of messages in a notification. The placeholder `%n%` can be used for inserting the messages count. If nothing is set, the text `(%n%)` will be used.
 - Use app name as a tag for the notify call ([PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781))
 - Use correct authority name ([PR #1853](https://github.com/katzer/cordova-plugin-local-notifications/pull/1853))
@@ -59,22 +88,22 @@ This Release contains mainly changes and fixes for the Android platform.
 
 A lot of changes were adopted from [moodlemobile](https://github.com/moodlemobile/cordova-plugin-local-notification). Thanks for the work!
 
-#### Version 0.9.0-beta.3 (13.02.2018)
+## Version 0.9.0-beta.3 (13.02.2018)
 
-#### Version 0.9.0-beta.2 (11.01.2018)
+## Version 0.9.0-beta.2 (11.01.2018)
 
-#### Version 0.9.0-beta.1 (11.11.2017)
+## Version 0.9.0-beta.1 (11.11.2017)
 
-#### Version 0.9.0-beta.0 (31.10.2017)
+## Version 0.9.0-beta.0 (31.10.2017)
 
-#### Version 0.8.5 (22.05.2017)
+## Version 0.8.5 (22.05.2017)
 - iOS 10
 
-#### Version 0.8.4 (04.01.2016)
+## Version 0.8.4 (04.01.2016)
 - Bug fixes
  - SyntaxError: missing ) after argument list
 
-#### Version 0.8.3 (03.01.2016)
+## Version 0.8.3 (03.01.2016)
 - Platform enhancements
  - Support for the `Crosswalk Engine`
  - Support for `cordova-ios@4` and the `WKWebView Engine`
@@ -97,7 +126,7 @@ A lot of changes were adopted from [moodlemobile](https://github.com/moodlemobil
  - Fixed #569 getScheduled returns two items per notification
  - Fixed #700 notifications appears on bootup
 
-#### Version 0.8.2 (08.11.2015)
+## Version 0.8.2 (08.11.2015)
 - Submitted to npm
 - Initial support for the `windows` platform
 - Re-add autoCancel option on Android
@@ -109,13 +138,13 @@ A lot of changes were adopted from [moodlemobile](https://github.com/moodlemobil
 - Update device plugin id
 - Several other fixes
 
-#### Version 0.8.1 (08.03.2015)
+## Version 0.8.1 (08.03.2015)
 
 - Fix incompatibility with cordova version 3.5-3.0
 - Fire `clear` instead of `cancel` event when clicked on repeating notifications
 - Do not fire `clear` or `cancel` event when clicked on persistent notifications
 
-### Version 0.8.0 (05.03.2015)
+## Version 0.8.0 (05.03.2015)
 
 - Support for iOS 8, Android 2 (SDK >= 7) and Android 5
  - Windows Phone 8.1 will be added soon

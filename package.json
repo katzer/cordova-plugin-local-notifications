@@ -14,10 +14,10 @@
     "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git"
   },
   "keywords": [
-    "appplant",
     "notification",
     "local notification",
     "user notification",
+    "schedule notification",
     "ecosystem:cordova",
     "cordova-ios",
     "cordova-android"
@@ -27,12 +27,14 @@
       "1.0.0": {
         "cordova": ">=12.0.0",
         "cordova-android": ">=13.0.0",
-        "cordova-ios": ">=7.0.0"
+        "cordova-ios": ">=7.0.0",
+        "cordova-plugin-device": ">=3.0.0"
       },
       "0.9.0-beta.3": {
         "cordova": ">=3.6.0",
         "cordova-android": ">=6.0.0",
-        "cordova-ios": ">=4.3.0"
+        "cordova-ios": ">=4.3.0",
+        "cordova-plugin-device": ">=2.0.0"
       }
     }
   },

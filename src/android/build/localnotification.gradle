@@ -22,11 +22,19 @@ repositories {
     }
 }
 
-if (!project.ext.has('appShortcutBadgerVersion')) {
-    ext.appShortcutBadgerVersion = '1.1.22'
-}
-
 dependencies {
-    implementation "me.leolin:ShortcutBadger:${appShortcutBadgerVersion}@aar"
-    implementation "androidx.media:media:1.7.0"
+    // When using androidx.core:core:1.12.0, there will be duplicate class errors like:
+    //
+    // Duplicate class kotlin.collections.jdk8.CollectionsJDK8Kt found in modules
+    //     kotlin-stdlib-1.8.22.jar -> jetified-kotlin-stdlib-1.8.22 (org.jetbrains.kotlin:kotlin-stdlib:1.8.22)
+    // and
+    //     kotlin-stdlib-jdk8-1.6.0.jar -> jetified-kotlin-stdlib-jdk8-1.6.0 (org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0)
+    //
+    // This is solved by using kotlin-bom.
+    // See: https://gist.github.com/danielcshn/7aa57155d766d46c043fde015f054d40
+    // See: https://kotlinlang.org/docs/whatsnew18.html#usage-of-the-latest-kotlin-stdlib-version-in-transitive-dependencies
+    //
+    // A BOM is a POM file containing <dependencyManagement> sections that manage dependency versions.
+    // See: https://docs.gradle.org/current/userguide/platforms.html#sec:bom-import
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:2.1.0")
 }

@@ -47,7 +47,7 @@ public final class CallbackContextUtil {
      * @param requestId Request ID.
      * @return Callback context.
      */
-    public static CallbackContext getContext(int requestId) throws Exception {
+    public static CallbackContext getCallbackContext(int requestId) throws Exception {
         if (!callbackContexts.containsKey(requestId)) {
             throw new Exception("No context found for request id=" + requestId);
         }
@@ -64,7 +64,6 @@ public final class CallbackContextUtil {
     public static int storeContext(CallbackContext callbackContext){
         Integer requestId = generateRandomRequestId();
         callbackContexts.put(requestId, callbackContext);
-
         return requestId;
     }
 

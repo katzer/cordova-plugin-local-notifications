@@ -52,7 +52,10 @@ public final class Request {
     // The options spec
     private final Options options;
 
-    // The right trigger for the options
+    /**
+     * DateTrigger for the every-option.
+     * Can be {@link IntervalTrigger} or {@link MatchTrigger}.
+     */
     private final DateTrigger trigger;
 
     // How often the trigger shall occur
@@ -70,11 +73,7 @@ public final class Request {
      * @param options The options spec.
      */
     public Request(Options options) {
-        this.options     = options;
-        this.spec        = options.getTrigger();
-        this.count       = Math.max(spec.optInt("count"), 1);
-        this.trigger     = buildTrigger();
-        this.triggerDate = trigger.getNextTriggerDate(getBaseDate());
+        this(options, getBaseDate(options));
     }
 
     /**
@@ -84,10 +83,10 @@ public final class Request {
      * @param base    The base date from where to calculate the next trigger.
      */
     public Request(Options options, Date base) {
-        this.options     = options;
-        this.spec        = options.getTrigger();
-        this.count       = Math.max(spec.optInt("count"), 1);
-        this.trigger     = buildTrigger();
+        this.options = options;
+        this.spec = options.getTrigger();
+        this.count = Math.max(spec.optInt("count"), 1);
+        this.trigger = buildDateTrigger();
         this.triggerDate = trigger.getNextTriggerDate(base);
     }
 
@@ -125,13 +124,8 @@ public final class Request {
      * Moves the internal occurrence counter by one.
      */
     boolean moveNext() {
-        if (hasNext()) {
-            triggerDate = getNextTriggerDate();
-        } else {
-            triggerDate = null;
-        }
-
-        return this.triggerDate != null;
+        triggerDate = hasNext() ? trigger.getNextTriggerDate(triggerDate) : null;
+        return triggerDate != null;
     }
 
     /**
@@ -142,43 +136,28 @@ public final class Request {
     public Date getTriggerDate() {
         if (triggerDate == null) return null;
 
-        long time = triggerDate.getTime();
-        Calendar now = Calendar.getInstance();
+        long triggerTime = triggerDate.getTime();
 
         // trigger date lays more then 60 seconds in the past, return null
-        if ((now.getTimeInMillis() - time) > 60000)
-            return null;
+        if ((System.currentTimeMillis() - triggerTime) > 60000) return null;
 
-        if (time >= spec.optLong("before", time + 1))
-            return null;
+        if (triggerTime >= spec.optLong("before", triggerTime + 1)) return null;
 
         return triggerDate;
     }
 
     /**
-     * Gets the next trigger date based on the current trigger date.
+     * Build a {@link DateTrigger} specified by options.
+     * If option {@code every} is an object, like
+     * <pre>
+     *   every: { month: 10, day: 27, hour: 9, minute: 0 }
+     * </pre>
+     * a {@link MatchTrigger} will be created, otherwise an {@link IntervalTrigger}.
      */
-    private Date getNextTriggerDate() {
-        return trigger.getNextTriggerDate(triggerDate);
-    }
-
-    /**
-     * Build the trigger specified in options.
-     */
-    private DateTrigger buildTrigger() {
-        Object every = spec.opt("every");
-
-        if (every instanceof JSONObject) {
-            List<Integer> cmp1 = getMatchingComponents();
-            List<Integer> cmp2 = getSpecialMatchingComponents();
-
-            return new MatchTrigger(cmp1, cmp2);
-        }
-
-        Unit unit = getUnit();
-        int ticks = getTicks();
-
-        return new IntervalTrigger(ticks, unit);
+    private DateTrigger buildDateTrigger() {
+        return spec.opt("every") instanceof JSONObject ?
+            new MatchTrigger(getMatchingComponents(), getSpecialMatchingComponents()) :
+            new IntervalTrigger(getTicks(), getUnit());
     }
 
     /**
@@ -202,23 +181,11 @@ public final class Request {
      * Gets the tick value.
      */
     private int getTicks() {
-        Object every = spec.opt("every");
-        int ticks    = 0;
-
-        if (spec.has("at")) {
-            ticks = 0;
-        } else
-        if (spec.has("in")) {
-            ticks = spec.optInt("in", 0);
-        } else
-        if (every instanceof String) {
-            ticks = 1;
-        } else
-        if (!(every instanceof JSONObject)) {
-            ticks = spec.optInt("every", 0);
-        }
-
-        return ticks;
+        if (spec.has("at")) return 0;
+        if (spec.has("in")) return spec.optInt("in", 0);
+        if (spec.opt("every") instanceof String) return 1;
+        if (!(spec.opt("every") instanceof JSONObject)) return spec.optInt("every", 0);
+        return 0;
     }
 
     /**
@@ -257,18 +224,12 @@ public final class Request {
     /**
      * Gets the base date from where to calculate the next trigger date.
      */
-    private Date getBaseDate() {
-        if (spec.has("at")) {
-            return new Date(spec.optLong("at", 0));
-        } else
-        if (spec.has("firstAt")) {
-            return new Date(spec.optLong("firstAt", 0));
-        } else
-        if (spec.has("after")) {
-            return new Date(spec.optLong("after", 0));
-        } else {
-            return new Date();
-        }
+    private static Date getBaseDate(Options options) {
+        JSONObject trigger = options.getTrigger();
+        if (trigger.has("at")) return new Date(trigger.optLong("at", 0));
+        if (trigger.has("firstAt")) return new Date(trigger.optLong("firstAt", 0));
+        if (trigger.has("after")) return new Date(trigger.optLong("after", 0));
+        return new Date();
     }
 
 }

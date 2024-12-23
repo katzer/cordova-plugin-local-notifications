@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2024
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -24,31 +25,30 @@
 package de.appplant.cordova.plugin.localnotification.notification;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import androidx.core.app.NotificationManagerCompat;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.service.notification.StatusBarNotification;
-import androidx.core.app.NotificationManagerCompat;
-import android.app.AlarmManager;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.util.Log;
+import android.os.PowerManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import de.appplant.cordova.plugin.badge.BadgeImpl;
-
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.M;
 import static android.os.Build.VERSION_CODES.O;
+import static android.os.Build.VERSION_CODES.P;
 import static android.os.Build.VERSION_CODES.S;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static de.appplant.cordova.plugin.localnotification.notification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.localnotification.notification.Notification.Type.TRIGGERED;
 import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
@@ -61,40 +61,11 @@ import de.appplant.cordova.plugin.localnotification.notification.util.AssetUtil;
 public final class Manager {
 
     public static final String TAG = "Manager";
-
-    // TODO: temporary
-    static final String CHANNEL_ID = "default-channel-id";
-
-    // TODO: temporary
-    private static final CharSequence CHANNEL_NAME = "Default channel";
-
-    // The application context
+    
     private Context context;
 
-    /**
-     * Constructor
-     *
-     * @param context Application context
-     */
-    private Manager(Context context) {
+    public Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
-    }
-
-    /**
-     * Static method to retrieve class instance.
-     *
-     * @param context Application context
-     */
-    public static Manager getInstance(Context context) {
-        return new Manager(context);
-    }
-
-    /**
-     * Ask if user has enabled permission for local notifications.
-     */
-    public boolean areNotificationsEnabled() {
-        return getNotCompMgr().areNotificationsEnabled();
     }
 
     /**
@@ -113,33 +84,11 @@ public final class Manager {
      * @param request Set of notification options.
      */
     public Notification schedule(Request request) {
-        Options options    = request.getOptions();
-        Notification toast = new Notification(context, options);
-
-        toast.schedule(request);
-
-        return toast;
-    }
-
-    /**
-     * TODO: temporary
-     */
-    @SuppressLint("WrongConstant")
-    private void createDefaultChannel() {
-        NotificationManager mgr = getNotMgr();
-
-        if (SDK_INT < O)
-            return;
-
-        NotificationChannel channel = mgr.getNotificationChannel(CHANNEL_ID);
-
-        if (channel != null)
-            return;
-
-        channel = new NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
-
-        mgr.createNotificationChannel(channel);
+        Notification notification = new Notification(context, request.getOptions());
+        // Create channel if not exists
+        createChannel(request.getOptions());
+        notification.schedule(request);
+        return notification;
     }
 
     /**
@@ -147,52 +96,48 @@ public final class Manager {
      * @param options Set of channel options.
      * 
      */
-    public void createChannel(JSONObject options) {
-        // Channels are supported since Android 8
+    public void createChannel(Options options) {
+        // Channels are only supported since Android 8
         if (SDK_INT < O) return;
 
-        NotificationManager mgr = getNotMgr();
-
-        String channelId = options.optString("channelId", "");
-        CharSequence channelName = options.optString("channelName", "");
-        int importance = options.optInt("importance", IMPORTANCE_DEFAULT);
-
-        NotificationChannel channel = mgr.getNotificationChannel(channelId);
+        // Check if channel exists
+        NotificationChannel channel = NotificationManagerCompat.from(context).getNotificationChannel(options.getAndroidChannelId());
         
         // Channel already created
         if (channel != null) return;
+
+        Log.d(TAG, "Create channel" + 
+            ", id=" + options.getAndroidChannelId() +
+            ", name=" + options.getAndroidChannelName() +
+            ", options=" + options);
+
+        // Create new channel
+        channel = new NotificationChannel(
+            options.getAndroidChannelId(),
+            options.getAndroidChannelName(), options.getImportance());
+
+        channel.setDescription(options.getAndroidChannelDescription());
+        channel.enableVibration(options.isVibrate());
+        channel.enableLights(options.getAndroidChannelEnableLights());
+
+        Uri soundUri = options.getSoundUri();
+        Log.d(TAG, "sound uri: " + soundUri);
+
+        // Grant permission to the system to play the sound, needed only in Android 8
+        if (soundUri != Uri.EMPTY && SDK_INT < P) {
+            grantUriPermission(soundUri);
+        }
         
-        channel = new NotificationChannel(channelId, channelName, importance);
+        // If options.getSoundUri() is Uri.EMPTY, an empty sound will be set, which means no sound
+        channel.setSound(soundUri, new AudioAttributes.Builder().setUsage(options.getSoundUsage()).build());
 
-        if (options.has("vibrate")) {
-            Boolean shouldVibrate = options.optBoolean("vibrate", false);
-            channel.enableVibration(shouldVibrate);
-        }
-
-        if (options.has("sound")) {
-            AssetUtil assets = AssetUtil.getInstance(this.context);
-            Uri soundUri = assets.parse(options.optString("sound", null));
-    
-            if (!soundUri.equals(Uri.EMPTY)) {
-                AudioAttributes attributes = new AudioAttributes.Builder().setUsage(
-                    options.optInt("soundUsage", AudioAttributes.USAGE_NOTIFICATION)).build();
-                channel.setSound(soundUri, attributes);
-            } else {
-                channel.setSound(null, null);
-            }
-        }
-
-        if (options.has("description")) {
-            channel.setDescription(options.optString("description", " "));
-        }
-
-        mgr.createNotificationChannel(channel);
+        NotificationManagerCompat.from(context).createNotificationChannel(channel);
     }
 
     /**
      * Deletes a notification channel by an id. If you create a new channel with this same id,
      * the deleted channel will be un-deleted with all of the same settings it had before it was deleted.
-     * @param channelId Like "my_channel_id"
+     * @param channelId Like "my_channel_01"
      */
     public void deleteChannel(String channelId) {
         // Channels are supported since Android 8
@@ -201,24 +146,22 @@ public final class Manager {
         Log.d(TAG, "Delete channel, id=" + channelId);
 
         // Cancel all notifications regarding this channel
-        for (Notification notification : Manager.getInstance(context).getNotifications()) {
-            if (notification.getOptions().getChannelId().equals(channelId)) {
+        for (Notification notification : new Manager(context).getNotifications()) {
+            if (notification.getOptions().getAndroidChannelId().equals(channelId)) {
                 notification.cancel();
             }
         }
 
-        getNotMgr().deleteNotificationChannel(channelId);
+        NotificationManagerCompat.from(context).deleteNotificationChannel(channelId);
     }
 
     /**
      * Update local notification specified by ID.
-     *
-     * @param id       The notification ID.
-     * @param updates  JSON object with notification options.
+     * @param notificationId The ID of the notification.
+     * @param updates JSON object with notification options.
      */
-    public Notification update(int id, JSONObject updates) {
-        Notification notification = get(id);
-
+    public Notification update(int notificationId, JSONObject updates) {
+        Notification notification = getNotification(notificationId);
         if (notification == null) return null;
 
         notification.update(updates);
@@ -228,130 +171,111 @@ public final class Manager {
 
     /**
      * Clear local notification specified by ID.
-     *
-     * @param id The notification ID.
      */
-    public Notification clear(int id) {
-        Notification toast = get(id);
-
-        if (toast != null) {
-            toast.clear();
-        }
-
-        return toast;
+    public Notification clear(int notificationId) {
+        Notification notification = getNotification(notificationId);
+        if (notification != null) notification.clear();
+        return notification;
     }
 
     /**
      * Clear all local notifications.
      */
     public void clearAll() {
-        List<Notification> toasts = getByType(TRIGGERED);
-
-        for (Notification toast : toasts) {
-            toast.clear();
+        for (Notification notification : getByType(TRIGGERED)) {
+            notification.clear();
         }
 
-        getNotCompMgr().cancelAll();
-        setBadge(0);
+        NotificationManagerCompat.from(context).cancelAll();
     }
 
     /**
      * Clear local notification specified by ID.
-     *
-     * @param id The notification ID
      */
-    public Notification cancel(int id) {
-        Notification toast = get(id);
-
-        if (toast != null) {
-            toast.cancel();
-        }
-
-        return toast;
+    public Notification cancel(int notificationId) {
+        Notification notification = getNotification(notificationId);
+        if (notification != null) notification.cancel();
+        return notification;
     }
 
     /**
      * Cancel all local notifications.
      */
     public void cancelAll() {
-        List<Notification> notifications = getNotifications();
-
-        for (Notification notification : notifications) {
+        for (Notification notification : getNotifications()) {
             notification.cancel();
         }
 
-        getNotCompMgr().cancelAll();
-        setBadge(0);
-    }
-
-    public boolean idExists(int id) {
-        return getPrefs().contains(Integer.toString(id));
+        NotificationManagerCompat.from(context).cancelAll();
     }
 
     /**
-     * All local notifications IDs.
+     * Check if a saved notification exists.
      */
-    public List<Integer> getIds() {
-        Set<String> keys = getPrefs().getAll().keySet();
-        List<Integer> ids = new ArrayList<Integer>();
+    public boolean notificationExists(int notificationId) {
+        return getSharedPreferences().contains(Integer.toString(notificationId));
+    }
 
-        for (String key : keys) {
+    /**
+     * Get saved notification ids
+     */
+    public List<Integer> getNotificationIds() {
+        List<Integer> notificationIds = new ArrayList<Integer>();
+
+        // The keys are the notification IDs
+        for (String key : getSharedPreferences().getAll().keySet()) {
             try {
-                ids.add(Integer.parseInt(key));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
+                notificationIds.add(Integer.parseInt(key));
+            } catch (NumberFormatException exception) {
+                exception.printStackTrace();
             }
         }
 
-        return ids;
+        return notificationIds;
     }
 
     /**
-     * All local notification IDs for given type.
-     *
+     * Get saved notification ids for a given type.
      * @param type The notification life cycle type
      */
-    public List<Integer> getIdsByType(Notification.Type type) {
+    public List<Integer> getNotificationIdsByType(Notification.Type type) {
+        // Returns triggered and scheduled notifications
+        if (type == Notification.Type.ALL) return getNotificationIds();
 
-        if (type == Notification.Type.ALL)
-            return getIds();
+        List<Integer> activeIds = new ArrayList<Integer>();
 
-        StatusBarNotification[] activeToasts = getActiveNotifications();
-        List<Integer> activeIds              = new ArrayList<Integer>();
-
-        for (StatusBarNotification toast : activeToasts) {
-            activeIds.add(toast.getId());
+        for (StatusBarNotification statusBarNotification : getActiveNotifications()) {
+            activeIds.add(statusBarNotification.getId());
         }
 
-        if (type == TRIGGERED)
-            return activeIds;
+        if (type == TRIGGERED) return activeIds;
 
-        List<Integer> ids = getIds();
-        ids.removeAll(activeIds);
+        // Return scheduled notifications
+        List<Integer> notificationIds = getNotificationIds();
+        // Remove triggered notifications
+        notificationIds.removeAll(activeIds);
 
-        return ids;
+        return notificationIds;
     }
 
     /**
      * List of all local notification.
      */
     public List<Notification> getNotifications() {
-        return getNotifications(getIds());
+        return getNotifications(getNotificationIds());
     }
 
     /**
      * List of local notifications with matching ID.
-     *
-     * @param ids Set of notification IDs.
      */
-    private List<Notification> getNotifications(List<Integer> ids) {
-        List<Notification> toasts = new ArrayList<Notification>();
+    private List<Notification> getNotifications(List<Integer> notificationIds) {
+        List<Notification> notifications = new ArrayList<Notification>();
 
-        for (int id : ids) {
-            if (idExists(id)) toasts.add(get(id));
+        for (int notificationId : notificationIds) {
+            if (notificationExists(notificationId)) notifications.add(getNotification(notificationId));
         }
 
-        return toasts;
+        return notifications;
     }
 
     /**
@@ -360,14 +284,14 @@ public final class Manager {
      * @param type The notification life cycle type
      */
     public List<Notification> getByType(Notification.Type type) {
-        return type == Notification.Type.ALL ? getNotifications() : getNotifications(getIdsByType(type));
+        return type == Notification.Type.ALL ? getNotifications() : getNotifications(getNotificationIdsByType(type));
     }
 
     /**
      * List of properties from all local notifications.
      */
     public List<JSONObject> getOptions() {
-        return getOptionsById(getIds());
+        return getOptionsById(getNotificationIds());
     }
 
     /**
@@ -408,79 +332,81 @@ public final class Manager {
 
     /**
      * Get local notification options.
-     *
-     * @param id Notification ID.
-     *
+     * @param notificationId
      * @return null if could not found.
      */
-    public Options getOptions(int id) {
-        if (!idExists(id)) return null;
+    public Options getOptions(int notificationId) {
+        if (!notificationExists(notificationId)) return null;
 
         try {
-            return new Options(context, new JSONObject(getPrefs().getString(Integer.toString(id), null)));
-        } catch (Exception e) {
-            e.printStackTrace();
+            return new Options(
+                context,
+                new JSONObject(
+                    getSharedPreferences().getString(Integer.toString(notificationId), null)));
+        } catch (Exception exception) {
+            exception.printStackTrace();
             return null;
         }
     }
 
     /**
      * Get existent local notification.
-     *
-     * @param id Notification ID.
-     *
      * @return null if could not found.
      */
-    public Notification get(int id) {
-        return idExists(id) ? new Notification(context, getOptions(id)) : null;
+    public Notification getNotification(int notificationId) {
+        return notificationExists(notificationId) ? new Notification(context, getOptions(notificationId)) : null;
     }
 
     /**
-     * Set the badge number of the app icon.
-     *
-     * @param badge The badge number.
+     * Returns the active status bar notification with the specified notificationId.
+     * If there is no active status bar notification, null will be returned.
+     * @param notificationId
      */
-    public void setBadge(int badge) {
-        if (badge == 0) {
-            new BadgeImpl(context).clearBadge();
-        } else {
-            new BadgeImpl(context).setBadge(badge);
+    StatusBarNotification getActiveNotification(int notificationId) {
+        for (StatusBarNotification statusBarNotification : getActiveNotifications()) {
+            if (statusBarNotification.getId() == notificationId) {
+                return statusBarNotification;
+            }
         }
-    }
 
-    /**
-     * Get all active status bar notifications.
-     */
-    StatusBarNotification[] getActiveNotifications() {
-        if (SDK_INT >= M) {
-            return getNotMgr().getActiveNotifications();
-        } else {
-            return new StatusBarNotification[0];
-        }
+        return null;
     }
 
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getPrefs() {
+    private SharedPreferences getSharedPreferences() {
         return context.getSharedPreferences(PREF_KEY_ID, Context.MODE_PRIVATE);
     }
 
     /**
-     * Notification manager for the application.
+     * Get all active status bar notifications.
      */
-    private NotificationManager getNotMgr() {
-        return (NotificationManager) context.getSystemService(
-                Context.NOTIFICATION_SERVICE);
+    public List<StatusBarNotification> getActiveNotifications() {
+        return NotificationManagerCompat.from(context).getActiveNotifications();
     }
 
     /**
-     * Notification compat manager for the application.
+     * Wake up the screen and returns a WakeLock, which have to be release, after the work is done.
+     * @return WakeLock, which have to be release, after the work is done.
      */
-    private NotificationManagerCompat getNotCompMgr() {
-        return NotificationManagerCompat.from(context);
+    public PowerManager.WakeLock wakeUpScreen() {
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLook = powerManager.newWakeLock(
+            PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "LocalNotification");
+        wakeLook.acquire();
+        return wakeLook;
     }
 
+    /**
+     * In Android 7 and 8, the app will crash if an external process has no
+     * permission to access content:// Uris, which are used for shared files in [App path]/files/shared_files.
+     * This was fixed in Android 9.
+     * See: https://stackoverflow.com/questions/39359465/android-7-0-notification-sound-from-file-provider-uri-not-playing
+     */
+    public void grantUriPermission(Uri uri) {
+        context.grantUriPermission("com.android.systemui", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
 }
 
 // codebeat:enable[TOO_MANY_FUNCTIONS]

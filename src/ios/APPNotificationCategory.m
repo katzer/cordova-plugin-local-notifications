@@ -30,18 +30,13 @@
 
 /**
  * Parse the provided spec map into an action group.
- *
- * @param [ NSDictionary* ] spec A key-value property map.
- *                               Must contain an id and a list of actions.
- *
+ * @param list A key-value property map. Must contain an id and a list of actions.
  * @return [ UNNotificationCategory* ]
  */
 + (UNNotificationCategory*) parse:(NSArray*)list withId:(NSString*)groupId
 {
-    NSArray* actions = [self parseActions:list];
-
     return [UNNotificationCategory categoryWithIdentifier:groupId
-                                                  actions:actions
+                                                  actions:[self parseActions:list]
                                         intentIdentifiers:@[]
                                                   options:UNNotificationCategoryOptionCustomDismissAction];
 }

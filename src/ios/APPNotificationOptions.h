@@ -28,10 +28,10 @@
 @property (readonly, getter=actionGroupId) NSString*            actionGroupId;
 @property (readonly, getter=title)         NSString*            title;
 @property (readonly, getter=subtitle)      NSString*            subtitle;
-@property (readonly, getter=badge)         NSNumber*            badge;
+@property (readonly, getter=badgeNumber)   int                  badgeNumber;
 @property (readonly, getter=text)          NSString*            text;
+@property (readonly, getter=iOSForeground) BOOL                 iOSForeground;
 @property (readonly, getter=silent)        BOOL                 silent;
-@property (readonly, getter=priority)      int                  priority;
 @property (readonly, getter=sound)         UNNotificationSound* sound;
 @property (readonly, getter=userInfo)      NSDictionary*        userInfo;
 @property (readonly, getter=attachments)   NSArray<UNNotificationAttachment*>*attachments;
