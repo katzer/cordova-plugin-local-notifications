@@ -700,10 +700,10 @@ cordova.plugins.notification.local.setDefaults({
 
 ## Properties
 
-### Changed Properties
+### Changed properties
 List of changed properties on newer plugin versions.
 
-#### Changes since Version `1.1.0`
+#### Changes since version `1.1.0`
 
 There were some properties renamed. You can still use the old ones, but you will get a deprecation warning in the log and they will be removed in future versions.
 
@@ -741,7 +741,7 @@ There were some properties renamed. You can still use the old ones, but you will
 | titleCount              | androidTitleCount           |
 | wakeup                  | androidWakeUpScreen         |
 
-### Common Properties
+### Common properties
 
 These properties can be used on all platforms, but some may behave differently on each platform.
 
@@ -796,7 +796,7 @@ These properties are only available on Android.
 | led                    | `false`           | Android 7 only. Can be a Hex-String like `#FF00FF` or `{color: '#FF00FF', on: 500, off: 500}` and sets the led of a notification. Replaced by `androidChannelEnableLights`. |
 | vibrate                | `false`            | On Android 7, sets the vibration of a notification. Since Android 8, this sets the vibration of a [notification channel](#create-channel). In iOS it would be possible, but it is not implemented yet. |
 
-### iOS Properties
+### iOS properties
 
 These properties are only available on iOS.
 

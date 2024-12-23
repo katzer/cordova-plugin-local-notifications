@@ -33,15 +33,14 @@
 - Use `FLAG_IMMUTABLE` on every Android version
     - Before it was set since Android 12, now since Android 7, to make the code consistent between all Android versions.
 - Bugfix: Catch any exceptions when attempting to get option for a notification
-- Correct wrong package for classes in the `notification` directory:
-    - The classes in the `notification` directory must be in the package `de.appplant.cordova.plugin.localnotification.notification` and not `de.appplant.cordova.plugin.notification`, because `de.appplant.cordova.plugin.localnotification` is the package name of the plugin.
-    - Copy the classes in the right directory, when building an app
-- Added `androidx.core:core` package version `1.12.0` for using `NotificationManagerCompat`. The Version is cofigurable by `ANDROIDX_CORE_VERSION`.
+- Removed subfolder `notification` and correct package declaration `de.appplant.cordova.plugin.notification` to `de.appplant.cordova.plugin.localnotification`
+- Added `androidx.core:core` package version `1.12.0` for using `NotificationManagerCompat`
+    - The version is cofigurable by `ANDROIDX_CORE_VERSION`.
     - Added `kotlin-bom` to fix duplicate classes errors.
-- Removed Android Support Library leftovers `com.android.support:support-v4` from plugin.xml
+- Removed Android Support Library leftovers `com.android.support:support-v4` from `plugin.xml`
     - This was overlooked, when switched to Android X.
-- Remove `android:media` Library: This was used for MediaSytle, which was removed.
-- Gradle: Remove deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
+- Removed `android:media` Library: This was used for MediaSytle, which was removed.
+- Gradle: Removed deprecated repository `jcenter`. The appeareance of `jcenter` as a repository, produced the gradle warning `Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.`
 - Always set the receiver class for alarms to `TriggerReceiver.class`, so it's easier to cancel alarms.
 
 ### Changes for iOS
@@ -53,7 +52,7 @@
 - Added resource path [www](README.md#resource-pattern-www) to access www-files
 
 ### Changed properties
-Some properties were changed. See [Changes since Version `1.1.0`](README.md#changes-since-version-110)
+Some properties were changed. See [Changes since version `1.1.0`](README.md#changes-since-version-110)
 
 ### Other changes
 - Renamed plugin action `request` to `requestPermission`
