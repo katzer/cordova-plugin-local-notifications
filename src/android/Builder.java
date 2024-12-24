@@ -180,7 +180,7 @@ public final class Builder {
         // when using the setSmallIcon(int icon) method.
         builder.setSmallIcon(options.getSmallIcon());
 
-        Bitmap largeIcon = options.getAndroidLargeIcon();
+        Bitmap largeIcon = new AssetUtil(context).getBitmap(options.getAndroidLargeIcon());
         
         if (largeIcon != null) {
             if (options.getAndroidLargeIconType().equals(LARGE_ICON_TYPE_CIRCLE)) {
