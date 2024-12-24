@@ -24,12 +24,24 @@ package de.appplant.cordova.plugin.localnotification.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
+import androidx.appcompat.content.res.AppCompatResources;
+
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
 import android.net.Uri;
-import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.File;
@@ -37,19 +49,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.UUID;
-
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Paint;
-import android.graphics.Canvas;
 
 /**
  * Util class to map unified asset URIs to native URIs. See {@link AssetUtil#getUri(String, int)}.
@@ -98,7 +97,7 @@ public final class AssetUtil {
     }
 
     /**
-     * Gets the URI for a resource in the res directory.
+     * Gets the Uri for a resource in the res directory.
      * @param resourcePath Path like res://mySound, res://myImage.png, etc.
      * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
      * @return {@link Uri.EMPTY} if a resource could not be found.
@@ -115,7 +114,7 @@ public final class AssetUtil {
         }
 
         if (resourceId == 0) {
-            Log.w(TAG, "Resspurce not found: " + resourcePath);
+            Log.w(TAG, "Ressource not found: " + resourcePath);
             return Uri.EMPTY;
         }
 
@@ -135,16 +134,16 @@ public final class AssetUtil {
 
     /**
      * Get the resource Id for a given resourceType. Searches in the App resources first, then in the system resources.
-     * @param resourcePath Resource path, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceName Can also be a resource path like "res://mySound", "res://myImage.png", etc.
      * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
      * @return The resource ID or 0 if not found.
      */
-    public int getResourceId(String resourcePath, int resourceType) {
+    public int getResourceId(String resourceName, int resourceType) {
         // Get resource from App
-        int resourceId = getResourceId(context.getResources(), resourcePath, resourceType);
+        int resourceId = getResourceId(context.getResources(), resourceName, resourceType);
         
         // Get resource from system, if not found
-        if (resourceId == 0) return getResourceId(Resources.getSystem(), resourcePath, resourceType);
+        if (resourceId == 0) return getResourceId(Resources.getSystem(), resourceName, resourceType);
 
         return resourceId;
     }
@@ -152,25 +151,25 @@ public final class AssetUtil {
     /**
      * Get the resource Id for a given resourceType.
      * @param resources The resources where to look for, can be {@link Context#getResources()} or {@link Resources#getSystem()}
-     * @param resourcePath The path of the resource, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceName Can also be a resource path like "res://mySound", "res://myImage.png", etc.
      * @param resourceType Can be {@link AssetUtil#RESOURCE_TYPE_DRAWABLE} or {@link AssetUtil#RESOURCE_TYPE_RAW}
      * @return The resource ID or 0 if not found.
      */
-    public int getResourceId(Resources resources, String resourcePath, int resourceType) {
+    public int getResourceId(Resources resources, String resourceName, int resourceType) {
         if (resourceType == RESOURCE_TYPE_DRAWABLE) {
             // Try first in drawable
-            int resourceId = getResourceId(resources, resourcePath, "drawable");
+            int resourceId = getResourceId(resources, resourceName, "drawable");
 
             // Try in mipmap if not found
             if (resourceId == 0) {
-                resourceId = getResourceId(resources, resourcePath, "mipmap");
+                resourceId = getResourceId(resources, resourceName, "mipmap");
             }
 
             return resourceId;
 
             // Get sound, video, etc.
         } else if (resourceType == RESOURCE_TYPE_RAW) {
-            return getResourceId(resources, resourcePath, "raw");
+            return getResourceId(resources, resourceName, "raw");
         }
 
         // Resource type unknown
@@ -181,12 +180,12 @@ public final class AssetUtil {
     /**
      * Get the resource Id. Searches in a given resource directory and resources.
      * @param resources The resources where to look for, can be {@link Context#getResources()} or {@link Resources#getSystem()}
-     * @param resourcePath The path of the resource, for e.g. "res://mySound", "res://myImage.png", etc.
+     * @param resourceName Can also be a resource path like "res://mySound", "res://myImage.png", etc.
      * @param resourceDirectory The directory of the resource, for e.g. "mipmap", "drawable", "raw", etc.
      * @return The resource ID or 0 if not found.
      */
-    public int getResourceId(Resources resources, String resourcePath, String resourceDirectory) {
-        return resources.getIdentifier(getResourceName(resourcePath), resourceDirectory, getPackageName(resources));
+    public int getResourceId(Resources resources, String resourceName, String resourceDirectory) {
+        return resources.getIdentifier(getResourceName(resourceName), resourceDirectory, getPackageName(resources));
     }
 
     /**
@@ -277,12 +276,56 @@ public final class AssetUtil {
     }
 
     /**
-     * Convert URI to Bitmap.
-     *
-     * @param uri Internal image URI
+     * Get the bitmap for a resource path, which can be e.g. a res://, www or shared:// path.
+     * @return The bitmap or null if the resource could not be found, or an {@link IOException} occurred.
      */
-    public Bitmap getIconFromUri(Uri uri) throws IOException {
+    public Bitmap getBitmap(String resourcePath) {
+        // Check if uri exists
+        Uri resourceUri = getUri(resourcePath, AssetUtil.RESOURCE_TYPE_DRAWABLE);
+        if (resourceUri == Uri.EMPTY) return null;
+
+        // Get bitmap from app resources
+        if (resourcePath.startsWith("res://")) {
+            return getBitmapFromDrawable(getResourceId(resourcePath, AssetUtil.RESOURCE_TYPE_DRAWABLE));
+
+            // Get bitmap from file
+        } else {
+            try {
+                return getBitmapFromUri(resourceUri);
+            } catch (IOException exception){
+                Log.e(TAG, "Could not get bitmap" + resourcePath, exception);
+                return null;
+            }
+        }
+    }
+    /**
+     * Convert Uri to Bitmap.
+     */
+    public Bitmap getBitmapFromUri(Uri uri) throws IOException {
         return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri));
+    }
+
+    /**
+     * Get a bitmap from a drawable resource, which can be a bitmap or vector drawable.
+     * @param drawableId
+     * @return The bitmap or null if the drawable type is unsupported.
+     */
+    public Bitmap getBitmapFromDrawable(int drawableId) {
+        Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+
+        } else if (drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable) {
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
+        }
+
+        Log.e(TAG, "Unsupported drawable type: " + drawable.getClass().getName());
+        return null;
     }
 
     /**

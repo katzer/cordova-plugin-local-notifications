@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
@@ -72,6 +73,8 @@ import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX;
  */
 public final class Options {
 
+    private static final String TAG = "Options";
+    
     // Key name for bundled launch extra
     public static final String EXTRA_LAUNCH = "NOTIFICATION_LAUNCH";
 
@@ -329,23 +332,14 @@ public final class Options {
         return options.optInt("androidChannelSoundUsage", AudioAttributes.USAGE_NOTIFICATION);
     }
 
-    Bitmap getAndroidLargeIcon() {
-        String largeIconPath = options.optString("androidLargeIcon", null);
-        if (largeIconPath == null) return null;
-
-        try {
-            return assetUtil.getIconFromUri(assetUtil.getUri(largeIconPath, AssetUtil.RESOURCE_TYPE_DRAWABLE));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return null;
+    public String getAndroidLargeIcon() {
+        return options.optString("androidLargeIcon", null);
     }
 
     /**
      * Type of the large icon.
      */
-    String getAndroidLargeIconType() {
+    public String getAndroidLargeIconType() {
         return options.optString("androidLargeIconType", LARGE_ICON_TYPE_SQUARE);
     }
 
@@ -359,6 +353,11 @@ public final class Options {
 
         // Try to get the resource from the app resources or system resources
         int resId = assetUtil.getResourceId(smallIconPath, AssetUtil.RESOURCE_TYPE_DRAWABLE);
+
+        // Log error, if no icon is found
+        if (resId == 0) {
+            Log.e(TAG, "androidSmallIcon not found: " + smallIconPath);
+        }
 
         // Fallback to a system icon, which should exists
         if (resId == 0) resId = assetUtil.getResourceId("ic_popup_reminder", AssetUtil.RESOURCE_TYPE_DRAWABLE);
@@ -572,23 +571,19 @@ public final class Options {
         JSONArray attachments = options.optJSONArray("attachments");
         if (attachments == null) return null;
 
-        List<Bitmap> pics = new ArrayList<Bitmap>();
+        List<Bitmap> bitmaps = new ArrayList<Bitmap>();
 
-        for (int attachmentIndex = 0; attachmentIndex < attachments.length(); attachmentIndex++) {
-            Uri assetUri = assetUtil.getUri(attachments.optString(attachmentIndex), AssetUtil.RESOURCE_TYPE_DRAWABLE);
+        for (int index = 0; index < attachments.length(); index++) {
+            Bitmap assetBitmap = assetUtil.getBitmap(attachments.optString(index));
 
-            if (assetUri == Uri.EMPTY) continue;
+            if (assetBitmap == null) continue;
 
-            try {
-                pics.add(assetUtil.getIconFromUri(assetUri));
-                // Only use the first pic
-                break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Only use the first attachment
+            bitmaps.add(assetBitmap);
+            break;
         }
 
-        return pics;
+        return bitmaps;
     }
 
     /**
@@ -631,18 +626,10 @@ public final class Options {
 
         for (int i = 0; i < messages.length; i++) {
             JSONObject messageJSON = messagesJSONArray.optJSONObject(i);
-            String personIconString = messageJSON.optString("personIcon", null);
 
-            IconCompat personIcon = null;
-
-            if (personIconString != null) {
-                try {
-                    personIcon = IconCompat.createWithBitmap(
-                        AssetUtil.getCircleBitmap(assetUtil.getIconFromUri(assetUtil.getUri(personIconString, AssetUtil.RESOURCE_TYPE_DRAWABLE))));
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
+            // Use person icon if available
+            Bitmap personBitmap = assetUtil.getBitmap(messageJSON.optString("personIcon", null));
+            IconCompat personIcon = personBitmap != null ? IconCompat.createWithBitmap(AssetUtil.getCircleBitmap(personBitmap)) : null;
 
             messages[i] = new Message(
                 messageJSON.optString("message"),

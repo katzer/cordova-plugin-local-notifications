@@ -451,7 +451,13 @@ androidMessags: [
 ]
 ```
 
-For setting the path for `personIcon` see [URL resolving](#url-resolving).
+##### Property `personIcon`
+Will be drawn as a circle icon.
+
+Possible values:
+- `res://personIcon.png` - Resource from the app bundle, see [documentation](#resource-pattern-res)
+- `www/personIcon.png` - Resource fromt the `www` folder, see [documentation](#resource-pattern-file)
+- `shared://personIcon.png` - Resource from the shared folder, see [documentation](#resource-pattern-shared)
 
 ### Grouping
 <img src="images/android-icon.svg" width="16"> Android only
@@ -891,7 +897,7 @@ Set as Hex-String like `#FF0000`. Calls [Notification.Builder#setColor](https://
 #### Property `androidLargeIcon`
 Default: `null`
 
-Add a large icon to the notification content view. In the platform template, this image will be shown either on the right of the notification, with an aspect ratio of up to 16:9, or (when the notification is grouped) on the left in place of the small icon. Calls [Notification.Builder#setLargeIcon(android.graphics.Bitmap)](https://developer.android.com/reference/android/app/Notification.Builder#setLargeIcon(android.graphics.Bitmap))
+Add a large icon to the notification content view. In the platform template, this image will be shown either on the right of the notification, with an aspect ratio of up to 16:9, or (when the notification is grouped) on the left in place of the small icon. Calls [Notification.Builder#setLargeIcon(android.graphics.Bitmap)](https://developer.android.com/reference/android/app/Notification.Builder#setLargeIcon(android.graphics.Bitmap)).
 
 Examples:
 - `res://myLargeIcon.png` - Resource from the app bundle, see [documentation](#resource-pattern-res)
@@ -901,8 +907,7 @@ Examples:
 #### Property `androidSmallIcon`
 Default: `res://ic_popup_reminder` (=Bell icon)
 
-Sets the small icon resource, which will be used to represent the notification in the status bar.
-Since Android 8, the icon must be a monochrome icon, which can only use a white color on a transparent background. The icon will be colored by the system in respective circumstances. 
+Sets the small icon resource, which will be used to represent the notification in the status bar. Since Android 8, the icon must be a monochrome icon, which can only use a white color on a transparent background. The icon will be colored by the system in respective circumstances. You can also use a vector drawable, but only for a `res:\\` paths. You can get vector drawables on [Google Fonts Icons](https://fonts.google.com/icons) as example or for using it. Just select the download for Android. To know, what vector drawables are, see the Android documentation [Vector drawables overview](https://developer.android.com/develop/ui/views/graphics/vector-drawable-resources).
 
 The platform template for the expanded view will draw this icon in the left, unless a large icon has also been specified, in which case the small icon will be moved to the right-hand side. Calls [Notification.Builder#setSmallIcon(int)](https://developer.android.com/reference/android/app/Notification.Builder#setSmallIcon(int)).
 
