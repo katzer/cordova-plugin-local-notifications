@@ -411,13 +411,13 @@
  * Schedule the local notification.
  * @param notification The notification to schedule.
  */
-- (void) scheduleNotification:(APPNotificationContent*)notification
+- (void) scheduleNotification:(APPNotificationContent*)appNotificationContent
 {
     __weak APPLocalNotification* weakSelf = self;
-    UNNotificationRequest* request = notification.request;
+    UNNotificationRequest* request = appNotificationContent.request;
     NSString* event = [request wasUpdated] ? @"update" : @"add";
     
-    NSLog(@"Schedule notification, event=%@, trigger=%@, options=%@", event, request.trigger, notification.options);
+    NSLog(@"Schedule notification, event=%@, trigger=%@, options=%@", event, request.trigger, appNotificationContent.options);
     
     [_center addNotificationRequest:request
               withCompletionHandler:^(NSError* e) {
@@ -627,7 +627,9 @@
     }
 
     NSString *js = [NSString stringWithFormat:@"cordova.plugins.notification.local.fireEvent('%@', %@)", event, params];
-
+    
+    NSLog(@"%@", js);
+    
     if (deviceready) {
         [self.commandDelegate evalJs:js];
     } else {
