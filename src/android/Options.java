@@ -365,8 +365,8 @@ public final class Options {
         return resId;
     }
 
-    boolean isVibrate() {
-        return options.optBoolean("vibrate", false);
+    boolean isAndroidChannelEnableVibration() {
+        return options.optBoolean("androidChannelEnableVibration", false);
     }
 
     /**
@@ -431,15 +431,13 @@ public final class Options {
     }
 
     /**
-     * Only for Android older than 8.
-     * Set the default notification options that will be used.
-     * The value should be one or more of the following fields combined with
-     * bitwise-or: DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS.
+     * Only for Android 7. Defaults for notification, which are bitwise or linked:
+     * DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS.
      */
     int getDefaults() {
         int defaults = options.optInt("androidDefaults");
 
-        if (isVibrate()) {
+        if (isAndroidChannelEnableVibration()) {
             defaults |= DEFAULT_VIBRATE;
         } else {
             defaults &= DEFAULT_VIBRATE;

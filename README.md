@@ -644,8 +644,8 @@ cordova.plugins.notification.local.createChannel({
     androidChannelName: "My Channel Name", // string, defaults to "Default Channel"
     androidChannelDescription: "Description of channel", // string (optional)
     androidChannelImportance: "IMPORTANCE_DEFAULT", // string (optional), see property documentation for importance
-    vibrate: true, // bool (optional), default is false
     androidChannelEnableLights: true, // bool (optional), default is false
+    androidChannelEnableVibration: true, // bool (optional), default is false
     sound: 'www/audio/ring.mp3', // string (optional), defaults to "default", which represents the default sound for a notification. If you set `null`, no sound will be set for the notification
     androidChannelSoundUsage: 5 // int (optional), default is USAGE_NOTIFICATION
   }, successCallback, this)
@@ -747,6 +747,14 @@ There were some properties renamed. You can still use the old ones, but you will
 | titleCount              | androidTitleCount           |
 | wakeup                  | androidWakeUpScreen         |
 
+### Changes since version `1.1.1`
+
+There were some properties renamed. You can still use the old ones, but you will get a deprecation warning in the log and they will be removed in future versions.
+
+| Old Property            | New Property                  | Reason                  |
+| :---------------------- | :---------------------------- | ----------------------- |
+| vibrate                 | androidChannelEnableVibration | The vibration cannot be controlled on iOS. So this is a Android only property and can only be set on a channel. See [androidChannelEnableVibration](#property-androidchannelenablevibration)|
+
 ### Common properties
 
 These properties can be used on all platforms, but some may behave differently on each platform.
@@ -762,7 +770,7 @@ These properties can be used on all platforms, but some may behave differently o
 | [priority](#property-priority) | `0` (=PRIORITY_DEFAULT) | Deprecated. Use [androidChannelImportance](#property-androidchannelimportance), [androidAlarmType](#property-androidalarmtype) and [androidAllowWhileIdle](#property-androidallowwhileidle) |
 | silent                | `false`            | iOS: Don't show a notification, make no sound, no vibration, when app is in foreground. Android: Don't show a notification (Does not create a Builder. Must be tested if that works) |
 | text                  | `""`               | Text of the notification. Android features: 1. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) will be used. 2. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
-| [sound](#property-sound) | `default`          |  |
+| [sound](#property-sound) | `default`          | Sets the sound of a notification. On iOS it also turns on/off the vibration. |
 | title                 | `""` (Sets the app name)               | Title of the notification. Has to be a String. If it is empty, the app name will be used. |
 | [trigger](#triggers)  | `{type : "calendar"}`| Notifications may trigger immediately or depend on calendar or location. |
 
@@ -777,6 +785,7 @@ These properties are only available on Android.
 | androidAutoCancel      | `true`            | Make this notification automatically dismissed when the user touches it |
 | androidChannelDescription | `null`            | Sets the `description` of a [notification channel](#android-notification-channels). |
 | androidChannelEnableLights | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#create-channel) should display notification lights, on devices that support that feature. |
+| [androidChannelEnableVibration](#property-androidchannelenablevibration) | `false`            | Enables the vibration of a channel. |
 | androidChannelId       | `default_channel` | Set the `channelId` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
 | androidChannelImportance | `IMPORTANCE_DEFAULT` | Sets the [importance](#property-androidchannelimportance) of a [notification channel](#android-notification-channels) |
 | androidChannelName     | `Default channel` | Set the `channelName` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
@@ -800,7 +809,6 @@ These properties are only available on Android.
 | androidWakeUpScreen    | `true`            | If the screen should go on, when a notification arrives |
 | androidDefaults        | `0`               | Android 7 only. Sets the default notification options that will be used only on Android 7. Bitwise-or of: DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS. |
 | led                    | `false`           | Android 7 only. Can be a Hex-String like `#FF00FF` or `{color: '#FF00FF', on: 500, off: 500}` and sets the led of a notification. Replaced by `androidChannelEnableLights`. |
-| vibrate                | `false`            | On Android 7, sets the vibration of a notification. Since Android 8, this sets the vibration of a [notification channel](#create-channel). In iOS it would be possible, but it is not implemented yet. |
 
 ### iOS properties
 
@@ -809,6 +817,9 @@ These properties are only available on iOS.
 | Property               | Default value         | Comment                   |
 | :----------------------| :-------------------- | :------------------------ |
 | iOSForeground          | `true`               | Displays a notification when the app is in foreground. Renamed from `foreground` to `iOSForeground` and changed to `true` by default in Version 1.1.0 |
+
+#### Some notes:
+- The vibration cannot be turned off separately. It can only be turned off, if no sound is set.
 
 ### Default values
 
@@ -843,6 +854,11 @@ If the alarm should be scheduled on a specific time or in relevance to the time,
 | [RTC](https://developer.android.com/reference/android/app/AlarmManager#RTC) | x | Alarm time in `System.currentTimeMillis()` (wall clock time in UTC). This alarm does not wake the device up; if it goes off while the device is asleep, it will not be delivered until the next time the device wakes up. |
 | [ELAPSED_REALTIME_WAKEUP](https://developer.android.com/reference/android/app/AlarmManager#ELAPSED_REALTIME_WAKEUP) | - | Alarm time in `SystemClock.elapsedRealtime()` (time since boot, including sleep), which will wake up the device (the CPU, not the screen) when it goes off. |
 | [ELAPSED_REALTIME](https://developer.android.com/reference/android/app/AlarmManager#ELAPSED_REALTIME) | - | Alarm time in `SystemClock.elapsedRealtime()` (time since boot, including sleep). This alarm does not wake the device up; if it goes off while the device is asleep, it will not be delivered until the next time the device wakes up. |
+
+#### Property `androidChannelEnableVibration`
+Default: `false`
+
+Sets the vibration of a [notification channel](#create-channel) by setting [NotificationChannel#enableVibration(boolean)](https://developer.android.com/reference/android/app/NotificationChannel#enableVibration(boolean)). On Android 7 this sets the vibration of a notification directly.
 
 #### Property `androidChannelImportance`
 Default: `"IMPORTANCE_DEFAULT"`
@@ -996,8 +1012,8 @@ When the value was [PRIORITY_MAX](https://developer.android.com/reference/androi
 #### Property `sound`
 Default: `default`
 
-The value `default` sets the system default sound for a notification, on Android for the notification channel.
-The value `null` will disable the sound.
+The value `default` sets the system default sound for a notification. The value `null` will disable the sound.
+On Android it sets the sound of a notification channel. On iOS it enables/disables also the vibration.
 
 Example:
 - `res://mySound.wav` - Resource from the app bundle, see [documentation](#resource-pattern-res)
@@ -1008,6 +1024,8 @@ Example:
 Before Android 8 it sets the sound of a notification. Since Android 8 it sets the sound of a [notification channel](#create-channel).
 
 ##### iOS
+Enables/disables also the vibration. If no sound is set, no vibration will occur.
+
 You can package the audio data in an `aiff`, `wav`, or `caf` file. Sound files must be less than 30 seconds in length.
 If the sound file is longer than 30 seconds, the system plays the default sound instead. See [UNNotificationSound - Prepare Sound Resources](https://developer.apple.com/documentation/usernotifications/unnotificationsound?language=objc#Prepare-Sound-Resources).
 

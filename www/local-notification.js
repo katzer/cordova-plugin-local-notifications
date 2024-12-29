@@ -67,6 +67,7 @@ exports._androidSpecificOptions = {
     androidAutoCancel : true,
     androidChannelEnableLights: false,
     androidChannelDescription: null,
+    androidChannelEnableVibration: false,
     androidChannelId: "default_channel",
     androidChannelImportance: "IMPORTANCE_DEFAULT",
     androidChannelName: "Default channel",
@@ -102,9 +103,7 @@ exports._androidSpecificOptions = {
     // Increments the badge by the specified number for that notification
     badgeNumber: 1,
     // Only for Android 7
-    led: false,
-    // Since Android 8, this sets the vibration of a notification channel.
-    vibrate: false
+    led: false
 }
 
 // Options only available on iOS
@@ -149,6 +148,7 @@ exports._deprecatedProperties = {
     summary: {newPropertyKey: 'androidSummary', since: "1.1.0"},
     timeoutAfter: {newPropertyKey: 'androidTimeoutAfter', since: "1.1.0"},
     titleCount: {newPropertyKey: 'androidTitleCount', since: "1.1.0"},
+    vibrate: {newPropertyKey: 'androidChannelEnableVibration', since: "1.1.1"},
     wakeup: {newPropertyKey: 'androidWakeUpScreen', since: "1.1.0"},
 }
 

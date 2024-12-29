@@ -2,6 +2,9 @@
 
 ## Version 1.1.1-dev
 
+### Android
+- Renamed property `vibrate` to [androidChannelEnableVibration](README.md#property-androidchannelenablevibration)
+
 ## Version 1.1.0 (23.12.2024)
 
 - Improve documentation

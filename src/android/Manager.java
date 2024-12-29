@@ -117,7 +117,7 @@ public final class Manager {
             options.getAndroidChannelName(), options.getImportance());
 
         channel.setDescription(options.getAndroidChannelDescription());
-        channel.enableVibration(options.isVibrate());
+        channel.enableVibration(options.isAndroidChannelEnableVibration());
         channel.enableLights(options.getAndroidChannelEnableLights());
 
         Uri soundUri = options.getSoundUri();
