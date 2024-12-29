@@ -4,6 +4,7 @@
 
 ### Android
 - Renamed property `vibrate` to [androidChannelEnableVibration](README.md#property-androidchannelenablevibration)
+- Image resources: Support `res://`, `www` and `shared://` for [attachments](README.md#property-attachments) and [attachments.personIcon](README.md#property-personicon)
 ### iOS
 - Since iOS 14: Show a notification always in the notification center like on Android, also if [iOSForeground](#property-iosforeground) is `false`.
 
