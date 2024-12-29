@@ -755,6 +755,9 @@ There were some properties renamed. You can still use the old ones, but you will
 | :---------------------- | :---------------------------- | ----------------------- |
 | vibrate                 | androidChannelEnableVibration | The vibration cannot be controlled on iOS. So this is a Android only property and can only be set on a channel. See [androidChannelEnableVibration](#property-androidchannelenablevibration)|
 
+#### iOS
+- Show a notification always in the notification center like on Android, also if [iOSForeground](#property-iosforeground) is `false`.
+
 ### Common properties
 
 These properties can be used on all platforms, but some may behave differently on each platform.
@@ -814,9 +817,9 @@ These properties are only available on Android.
 
 These properties are only available on iOS.
 
-| Property               | Default value         | Comment                   |
-| :----------------------| :-------------------- | :------------------------ |
-| iOSForeground          | `true`               | Displays a notification when the app is in foreground. Renamed from `foreground` to `iOSForeground` and changed to `true` by default in Version 1.1.0 |
+| Property                                 | Default value         | Comment                   |
+| :--------------------------------------- | :-------------------- | :------------------------ |
+| [iOSForeground](#property-iosforeground) | `true`                | Displays a notification banner, when app is in foreground. |
 
 #### Some notes:
 - The vibration cannot be turned off separately. It can only be turned off, if no sound is set.
@@ -991,6 +994,11 @@ Sets [UNMutableNotificationContent#badge](https://developer.apple.com/documentat
 You can clear the badge with the function [iOSClearBadge](#iosclearbadge).
 
 The badge will also be cleared, if you call `clearAll` or `cancelAll`.
+
+#### Property `iOSForeground`
+Default: `true`
+
+Displays a notification banner when the app is in foreground, otherwise the notification could only make a noise (sound and vibrate), change the badge, but is not shown as a banner. Since iOS 14, the notification is always displayed in the Notification Center, no matter how this option is set to be consistent with Android. Renamed from `foreground` to `iOSForeground` and changed to `true` by default in Version `1.1.0`.
 
 #### Property `priority`
 Default: `0` (=PRIORITY_DEFAULT)

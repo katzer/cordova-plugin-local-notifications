@@ -4,6 +4,8 @@
 
 ### Android
 - Renamed property `vibrate` to [androidChannelEnableVibration](README.md#property-androidchannelenablevibration)
+### iOS
+- Since iOS 14: Show a notification always in the notification center like on Android, also if [iOSForeground](#property-iosforeground) is `false`.
 
 ## Version 1.1.0 (23.12.2024)
 

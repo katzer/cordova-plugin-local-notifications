@@ -41,11 +41,6 @@
 
 @implementation APPLocalNotification
 
-UNNotificationPresentationOptions const OptionNone  = UNNotificationPresentationOptionNone;
-UNNotificationPresentationOptions const OptionBadge = UNNotificationPresentationOptionBadge;
-UNNotificationPresentationOptions const OptionSound = UNNotificationPresentationOptionSound;
-UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentationOptionAlert;
-
 @synthesize deviceready, isActive, eventQueue;
 
 #pragma mark -
@@ -456,31 +451,50 @@ UNNotificationPresentationOptions const OptionAlert = UNNotificationPresentation
  */
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center
         willPresentNotification:(UNNotification *)notification
-          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))handler
+          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
     [_delegate userNotificationCenter:center
               willPresentNotification:notification
-                withCompletionHandler:handler];
+                withCompletionHandler:completionHandler];
 
     if ([notification.request.trigger isKindOfClass:UNPushNotificationTrigger.class]) return;
     
-    APPNotificationOptions* options = notification.request.options;
-    NSLog(@"Handle notification while app is in foreground: %@", options);
+    APPNotificationOptions* notificationOptions = notification.request.options;
+    NSLog(@"Handle notification while app is in foreground: %@", notificationOptions);
     
     if (![notification.request wasUpdated]) {
         [self fireEvent:@"trigger" notification:notification.request];
     }
 
-    if (options.silent) {
-        handler(OptionNone);
+    // Init to None, if notification should be silent
+    UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionNone;
     
-    // Display notification only if the app is in background,
-    // or if explicitly set by "iOSForeground" option.
-    } else if (!isActive || options.iOSForeground) {
-        handler(OptionBadge|OptionSound|OptionAlert);
-    } else {
-        handler(OptionBadge|OptionSound);
+    // Notification should not be silent
+    if (!notificationOptions.silent) {
+        // Default is badge, sound and notification center like in Android
+        presentationOptions = UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        
+        // Display notification always in Notification Center like in Android
+        // Only works since iOS 14, UNNotificationPresentationOptionAlert was splitted in
+        // UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
+        if (@available(iOS 14, *)) {
+            presentationOptions |= UNNotificationPresentationOptionList;
+        }
+        
+        // Show banner only when option iOSForeground is true, or app is in background
+        if (notificationOptions.iOSForeground || !isActive) {
+            // UNNotificationPresentationOptionBanner available since iOS 14
+            if (@available(iOS 14, *)) {
+                presentationOptions |= UNNotificationPresentationOptionBanner;
+                
+                // iOS older then 14: Show notification as banner and in notification center
+            } else {
+                presentationOptions |= UNNotificationPresentationOptionAlert;
+            }
+        }
     }
+
+    completionHandler(presentationOptions);
 }
 
 /**
