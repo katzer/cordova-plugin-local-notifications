@@ -456,7 +456,7 @@ Will be drawn as a circle icon.
 
 Possible values:
 - `res://personIcon.png` - Resource from the app bundle, see [documentation](#resource-pattern-res)
-- `www/personIcon.png` - Resource fromt the `www` folder, see [documentation](#resource-pattern-file)
+- `www/personIcon.png` - Resource from the `www` folder, see [documentation](#resource-pattern-www)
 - `shared://personIcon.png` - Resource from the shared folder, see [documentation](#resource-pattern-shared)
 
 ### Grouping
@@ -822,18 +822,13 @@ These properties are only available on iOS.
 | [iOSForeground](#property-iosforeground) | `true`                | Displays a notification banner, when app is in foreground. |
 
 #### Some notes:
+- A progressbar is natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734)
 - The vibration cannot be turned off separately. It can only be turned off, if no sound is set.
 
 ### Default values
 
 Default values for the properties can be get by [getDefaults](#getdefaults).
 Values can be changed by [setDefaults](#setdefaults)
-
-#### Notes
-
-Some notes about unsupported properties on iOS:
-
-- progressBar: Natively not supported by iOS, [see Stackoverflow](https://stackoverflow.com/questions/48500532/progress-view-in-local-notification/48500734#48500734)
 
 ### Available properties
 
