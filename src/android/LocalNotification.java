@@ -692,20 +692,16 @@ public class LocalNotification extends CordovaPlugin {
      * If the app is running in foreground.
      */
     private static boolean isInForeground() {
-
-        if (!deviceready || weakReferenceCordovaWebView == null)
-            return false;
+        if (!deviceready || weakReferenceCordovaWebView == null) return false;
 
         CordovaWebView cordovaWebView = weakReferenceCordovaWebView.get();
 
-        KeyguardManager km = (KeyguardManager) cordovaWebView.getContext()
-                .getSystemService(Context.KEYGUARD_SERVICE);
+        // Class to manage and query the state of the lock screen (also known as Keyguard).
+        KeyguardManager km = (KeyguardManager) cordovaWebView.getContext().getSystemService(Context.KEYGUARD_SERVICE);
 
-        //noinspection SimplifiableIfStatement
-        if (km != null && km.isKeyguardLocked())
-            return false;
-
-        return cordovaWebView.getView().getWindowVisibility() == View.VISIBLE;
+        // - km can be null if running as an instant app
+        // - Only true, if lock screen is not visible and the app is visible.
+        return (km == null || (km != null && !km.isKeyguardLocked())) && cordovaWebView.getView().getWindowVisibility() == View.VISIBLE;
     }
 
     /**

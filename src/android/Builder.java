@@ -324,9 +324,7 @@ public final class Builder {
     }
 
     /**
-     * Set intent to handle the click event. Will bring the app to
-     * foreground.
-     *
+     * Set intent to handle the click event. Will bring the app to foreground.
      * @param builder Local notification builder instance.
      */
     private void applyContentReceiver(NotificationCompat.Builder builder) {
