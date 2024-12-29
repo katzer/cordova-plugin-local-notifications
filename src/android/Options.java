@@ -227,7 +227,7 @@ public final class Options {
     /**
      * Since Android 8. The channel id of that notification.
      */
-    String getAndroidChannelId() {
+    public String getAndroidChannelId() {
         return options.optString("androidChannelId", "default_channel");
     }
 
@@ -316,7 +316,7 @@ public final class Options {
     /**
      * Sound file path for the local notification.
      */
-    Uri getSoundUri() {
+    public Uri getSoundUri() {
         String soundName = getSound();
 
         if (soundName == null || soundName.isEmpty()) return Uri.EMPTY;

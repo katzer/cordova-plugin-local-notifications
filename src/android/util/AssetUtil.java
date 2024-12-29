@@ -114,7 +114,7 @@ public final class AssetUtil {
         }
 
         if (resourceId == 0) {
-            Log.w(TAG, "Ressource not found: " + resourcePath);
+            Log.w(TAG, "Resource not found: " + resourcePath);
             return Uri.EMPTY;
         }
 

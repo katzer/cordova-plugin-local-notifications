@@ -91,6 +91,12 @@ public final class Manager {
         return notification;
     }
 
+    public NotificationChannel getChannel(Options options) {
+        // Channels are only supported since Android 8
+        if (SDK_INT < O) return null;
+        return NotificationManagerCompat.from(context).getNotificationChannel(options.getAndroidChannelId());
+    }
+
     /**
      * Create Notification channel with options
      * @param options Set of channel options.
@@ -101,7 +107,7 @@ public final class Manager {
         if (SDK_INT < O) return;
 
         // Check if channel exists
-        NotificationChannel channel = NotificationManagerCompat.from(context).getNotificationChannel(options.getAndroidChannelId());
+        NotificationChannel channel = getChannel(options);
         
         // Channel already created
         if (channel != null) return;

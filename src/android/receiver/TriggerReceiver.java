@@ -73,20 +73,9 @@ public class TriggerReceiver extends BroadcastReceiver {
 
         if (notification == null) return;
 
-        trigger(context, notification, bundle);
-    }
-
-    /**
-     * Called when a local notification was triggered. Does present the local
-     * notification, re-schedule the alarm if necessary and fire trigger event.
-     * @param notification Wrapper around the local notification.
-     * @param bundle The bundled extras.
-     */
-    public void trigger(Context context, Notification notification, Bundle bundle) {
         Log.d(TAG, "trigger, notificationId=" + notification.getId());
 
         PowerManager.WakeLock wakeLock = null;
-        Options options = notification.getOptions();
 
         // Turn the screen on
         if (options.isAndroidWakeUpScreen()) {
