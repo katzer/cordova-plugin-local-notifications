@@ -163,13 +163,6 @@
             <!-- Needed, to turn the screen on, when a notification is posted -->
             <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-            <!--
-              Permission since Android 12 to schedule exact alarms.
-              Since Android 13 this is no longer being pre-granted and the user have to
-              explicitly grant this permission in the alarms & reminders settings.
-            -->
-            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-
             <!-- Runtime permission for Android 13 and higher to post notifications -->
             <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
         </config-file>

@@ -272,6 +272,7 @@ exports.hasPermission = function (callback, scope) {
  * @param {Object} scope The callback function's scope.
  */
 exports.requestPermission = function (callback, scope) {
+    console.log("Requesting permission");
     exports._exec('requestPermission', null, callback, scope);
 };
 
@@ -306,8 +307,6 @@ exports.schedule = function (options, callback, scope, args) {
 
         // Ask for permission
     } else {
-        console.log("Requesting permission");
-
         exports.requestPermission((granted) => {
             console.log("Permission granted=" + granted);
 

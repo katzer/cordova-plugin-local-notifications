@@ -112,28 +112,83 @@ On each platform are limits about how much notifications can be scheduled:
 Repeating notifications count as 1 notification, except if you schedule with the [trigger count](#repeating) option on Android.
 
 ## Properties
-A notification does have a set of configurable properties. See [documentation](#properties-3).
+A notification does have a set of configurable properties. See [all properties](#properties-1).
 
 ## Permissions
-Each platform may require the user to grant permissions first before the app is allowed to schedule notifications. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check if you have still the permission to post notifications, use [hasPermission](#haspermission).
+Each platform may require the user to grant permissions first before the app is allowed to schedule notifications. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check, if you have still the permission to post notifications, use [hasPermission](#haspermission).
 
-Example on iOS when requesting for permission:
-
-![Requesting permission to post notifications on iOS](images/ios-permission.png)
+|       |       |
+| :---- | :---- |
+| <img width="240" src="images/ios-request-permission.png"><p align="center">iOS Example</p> | <img width="240" src="images/android-request-permission.png"><p align="center">Android example</p> |
 
 ## Android notification channels
 Since Android 8 notification channels must be created to post noitifications. A [default channel](#android-default-channel) will be created for you, if you do not create one. You can also create your own channel by [createChannel](#createchannel) or when [scheduling a notification](#create-channel-by-posting-a-notification). For deleting a channel use [deleteChannel](#deletechannel).
 
 ## Android inexact and exact alarms
-Since Android 13 notifications will be scheduled inexact by default. This means the notifications can be delayed by some minutes. If you want exact alarms, the user must grant the permission in the "Alarms & Reminders"-setting, which you can call by [openAlarmSettings](#openalarmsettings). To check, if exact alarms are permitted, you can use [canScheduleExactAlarms](#canscheduleexactalarms).
+Since Android 12 notifications will be scheduled inexact by default, which means the notifications can be delayed by some minutes. If you want exact alarms you have two options.
 
-## Specials about Android
+### Exact alarms: User grants permission
+You must add the [SCHEDULE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#SCHEDULE_EXACT_ALARM) permission to `AndroidManifest.xml`. You can do this with your `config.xml`.
+
+First add the Android xml namespace to your `widget` tag:
+
+```xml
+<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
+````
+
+Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+</config-file>
+```
+
+This tells Android that your app wants to have the permission to schedule exact alarms.
+
+|      |      |
+| :--- | :--- |
+| <img width="320" src="images/android-alarms-and-reminders-in-app-settings.png" /> | After declaring `SCHEDULE_EXACT_ALARM` as permission, your app have a new entry in the app settings called `Alarms & reminders`, where the user can enable/disable exact alarms. |
+| <img width="320" src="images/android-alarms-and-reminders-setting.png" /> | Clicking on this entry will open the setting to enable/disable exact alarms. This screen will also been shown if you call [openAlarmSettings](#openalarmsettings) |
+
+On Android 12 `SCHEDULE_EXACT_ALARM` is pre-granted. On Android 13 and newer the user has to permit this in the "Alarms & Reminders" setting, which you can open by [openAlarmSettings](#openalarmsettings). You can use the [resume](https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#resume) event of Cordova to check if exact alarms are permitted by [canScheduleExactAlarms](#canscheduleexactalarms). If you have already posted inexact alarms, before the user granted the exact alarm permission, inexact alarms will be automatically rescheduled by this plugin as exact alarms. The downside is, when the user revokes the exact alarm permission, your app will be killed and all exact alarms will be canceled without rescheduling them as inexact alarms. You have to reschedule them the next time the user starts your app. You can read everything about it in the [Android documentation](https://developer.android.com/about/versions/14/changes/schedule-exact-alarms).
+
+### Exact alarms: Define your app as a Calender or Alarm Clock app
+This is a very special case you should think about. When you declare your app as a calendar or alarm clock app, the app have to fullfill the requirements and must be approved by Google in the Play Store. Google could remove the app from the store if the app is found to be misusing the permission.
+
+Calendar or alarm clock apps need to send calendar reminders, wake-up alarms, or alerts when the app is no longer running. These apps can request the [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM) permission. The `USE_EXACT_ALARM` permission will be granted on install, and apps holding this permission will be able to schedule exact alarms just like apps with the `SCHEDULE_EXACT_ALARM` permission. The advantage is, that this permission can't be revoked by the user.
+
+To declare the `USE_EXACT_ALARM` permission in the `AndroidManifest.xml`, you can do this with your `config.xml`.
+
+First add the Android xml namespace to your `widget` tag:
+
+```xml
+<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
+````
+
+Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+</config-file>
+```
+
+The permission `SCHEDULE_EXACT_ALARM` must be decared to be backward compatible with Android 12. The is why the permission is limited by `android:maxSdkVersion="32"`, see [StackOverflow](https://stackoverflow.com/questions/73972021/android-permission-schedule-exact-alarm-required-with-use-exact-alarm-for-alarm) or the documentation of [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM).
+
+The permission `USE_EXACT_ALARM` exists since Android 13 and will be used from then on.
+
+## Alarm rescheduling on Android
 
 ### App Update
-When installing an update of your app, all notifications will be rescheduled by this plugin, because Android removes all scheduled alarms on an update.
+Android removes all alarms when the app is updated. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_MY_PACKAGE_REPLACED](https://developer.android.com/reference/android/content/Intent#ACTION_MY_PACKAGE_REPLACED).
 
 ### Device reboot
-When the device reboots, all notifications will be rescheduled by the plugin, because Android cancels all alarams after a device reboot. If the user has setup a device lock, the user must first unlock this so the notifications can be rescheduled.
+Android removes all alarms when the device reboots. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_BOOT_COMPLETED](https://developer.android.com/reference/android/content/Intent#ACTION_BOOT_COMPLETED), but only after the device has been unlocked.
+
+### User grants exact alarms
+If you use [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) for scheduling exact alarms and the user permits the permission in the "Alarms & Reminders", inexact alarms will be rescheduled as exact alarms. This is done by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED](https://developer.android.com/reference/android/app/AlarmManager#ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED). This action will not be called if the user revokes the permission. All exact alarms will be canceld then.
 
 ## Actions
 
@@ -198,7 +253,7 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-### Properties
+### Action properties
 
 Actions do have a set of configurable properties. Not all of them are supported across all platforms.
 
@@ -276,7 +331,7 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-### Properties
+### Trigger properties
 
 The properties depend on the trigger type. Not all of them are supported across all platforms.
 
@@ -325,7 +380,6 @@ The properties depend on the trigger type. Not all of them are supported across 
 |              | notifyOnEntry | Boolean |                  |         | x   |
 |              | notifyOnExit  | Boolean |                  |         | x   |
 |              | single        | Boolean |                  |         | x   |
-
 
 ## Progress
 <img src="images/android-icon.svg" width="16"> Android only
@@ -380,7 +434,7 @@ cordova.plugins.notification.local.schedule({
     <img src="images/android-inbox.png">
 </p>
 
-### Summarizing
+## Summarizing
 <img src="images/android-icon.svg" width="16"> Android only
 
 Instead of displaying multiple notifications, you can create one notification that summarizes them all.
@@ -412,7 +466,8 @@ cordova.plugins.notification.local.update({
 ```
 
 For displaying the messages, [NotificationCompat.MessagingStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.MessagingStyle) will be used.
-#### Available properties for `androidMessages`
+
+### Properties for `androidMessages`
 ```javascript
 androidMessags: [
     {
@@ -424,7 +479,7 @@ androidMessags: [
 ]
 ```
 
-##### Property `personIcon`
+#### Property `personIcon`
 Will be drawn as a circle icon.
 
 Possible values:
@@ -432,7 +487,7 @@ Possible values:
 - `www/personIcon.png` - Resource from the `www` folder, see [documentation](#resource-pattern-www)
 - `shared://personIcon.png` - Resource from the shared folder, see [documentation](#resource-pattern-shared)
 
-### Grouping
+## Grouping
 <img src="images/android-icon.svg" width="16"> Android only
 
 Your app can present multiple notifications as a single group:
@@ -525,7 +580,6 @@ Not an official interface, however its possible to manually fire events.
 cordova.plugins.notification.local.core.fireEvent(event, args);
 ```
 
-
 ## Launch Details
 
 Check the `launchDetails` to find out if the app was launched by clicking on a notification.
@@ -549,7 +603,6 @@ Once the app and Ionic is ready, you can fire the queued events manually.
 ```js
 cordova.plugins.notification.local.fireQueuedEvents();
 ```
-
 
 ## Methods
 
@@ -661,7 +714,13 @@ Clears the badge.
 ### openAlarmSettings
 <img src="images/android-icon.svg" width="16"> Android only. Since Android 12 (SDK 31).
 
-Opens the "Alarms & Reminders"-settings as an Activity when running on Android 12 (SDK 31) or later, where the user can enable exact alarms. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
+Opens the `Alarms & reminders` setting as an Activity when running on Android 12 (SDK 31) or later, where the user can enable exact alarms.
+
+<img width="240" src="images/android-alarms-and-reminders-setting.png" />
+
+This is only available, if [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) is declared as permission in the `AndroidManifest.xml`.
+
+This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
 - If the user grants permission, already inexact scheduled notifications will be rescheduled as exact alarms.
 - If exact alarms were already granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
 - On Android older then 12, it will just call the `successCallback`, without doing anything. 
@@ -681,9 +740,9 @@ cordova.plugins.notification.local.requestPermission(function (granted) { ... })
 
 If this method is called, a dialog will be shown to the user to ask for the permission.
 
-Example on iOS when requesting for permission:
-
-![Requesting permission to post notifications on iOS](images/ios-permission.png)
+|       |       |
+| :---- | :---- |
+| <img width="240" src="images/ios-request-permission.png"><p align="center">iOS Example</p> | <img width="240" src="images/android-request-permission.png"><p align="center">Android example</p> |
 
 The user can still allow/deny the permission through the system settings.
 
@@ -754,7 +813,7 @@ There were some properties renamed. You can still use the old ones, but you will
 | vibrate                 | androidChannelEnableVibration | The vibration cannot be controlled on iOS. So this is a Android only property and can only be set on a channel. See [androidChannelEnableVibration](#property-androidchannelenablevibration)|
 
 #### iOS
-- Show a notification always in the notification center like on Android, also if [iOSForeground](#property-iosforeground) is `false`.
+- Show a notification in the notification center when the app is on foreground, like on Android.  Happens also if [iOSForeground](#property-iosforeground) is `false`.
 
 ### Common properties
 
@@ -842,7 +901,7 @@ This executes [AlarmManager.setAndAllowWhileIdle](https://developer.android.com/
 #### Property `androidAlarmType`
 Default: `RTC_WAKEUP`
 
-If the alarm should be scheduled on a specific time or in relevance to the time, when the device was booted and if the alarm should wakeup the device cpu (not the screen).
+If the alarm should be scheduled on a specific time or in relevance to the time, when the device was booted and if the alarm should wakeup the device cpu (not the screen). See also the Android documentation [Choose an alarm type](https://developer.android.com/develop/background-work/services/alarms/schedule#type).
 
 | Value            | Support | Description |
 |:-----------------|:--------|:------------|
@@ -996,7 +1055,7 @@ The badge will also be cleared, if you call `clearAll` or `cancelAll`.
 #### Property `iOSForeground`
 Default: `true`
 
-Displays a notification banner when the app is in foreground, otherwise the notification could only make a noise (sound and vibrate), change the badge, but is not shown as a banner. Since iOS 14, the notification is always displayed in the Notification Center, no matter how this option is set to be consistent with Android. Renamed from `foreground` to `iOSForeground` and changed to `true` by default in Version `1.1.0`.
+Displays a notification banner when the app is in foreground, otherwise the notification would only make a noise (sound and vibrate), change the badge, but is not shown as a banner. Since iOS 14, the notification is always displayed in the Notification Center, no matter how this option is set to be consistent with Android. Renamed from `foreground` to `iOSForeground` and changed to `true` by default in Version `1.1.0`.
 
 #### Property `priority`
 Default: `0` (=PRIORITY_DEFAULT)
