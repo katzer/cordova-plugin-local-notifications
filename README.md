@@ -122,41 +122,7 @@ Example on iOS when requesting for permission:
 ![Requesting permission to post notifications on iOS](images/ios-permission.png)
 
 ## Android notification channels
-Since Android 8 notification channels must be created to post noitifications.
-A default channel will be created, if you do not create one.
-
-### Default channel
-The following settings will be used, if you do not specifiy a channel.
-
-```javascript
-{
-    androidChannelId: "default_channel",
-    androidChannelName: "Default channel",
-    androidChannelImportance: "IMPORTANCE_DEFAULT"
-}
-```
-
-You can change the defaults by calling [setDefaults](#setdefaults) or you can overwrite them, when scheduling a notification or creating a channel.
-
-### Create channel
-You can create a channel directly with [createChannel](#createchannel) or when scheduling a notification. A channel is not changeable, after it is created. This is a restriction by Android. For setting the channel, use `androidChannelId` when scheduling a notification.
-
-#### Create channel by posting a notification
-A channel can be created directly, when posting a notification:
-
-```javascript
-cordova.plugins.notification.local.schedule({
-    id: 1,
-    title: 'My first notification',
-    androidChannelId: "my_channel_01",
-    androidChannelName: "My Channel Name"
-});
-```
-
-If you omit some channel properties, the defaults will be used.
-
-### Delete a channel ###
-You can delete a channel with the [deleteChannel](#deletechannel) method.
+Since Android 8 notification channels must be created to post noitifications. A [default channel](#android-default-channel) will be created for you, if you do not create one. You can also create your own channel by [createChannel](#createchannel) or when [scheduling a notification](#create-channel-by-posting-a-notification). For deleting a channel use [deleteChannel](#deletechannel).
 
 ## Android inexact and exact alarms
 Since Android 13 notifications will be scheduled inexact by default. This means the notifications can be delayed by some minutes. If you want exact alarms, the user must grant the permission in the "Alarms & Reminders"-setting, which you can call by [openAlarmSettings](#openalarmsettings). To check, if exact alarms are permitted, you can use [canScheduleExactAlarms](#canscheduleexactalarms).
@@ -488,6 +454,35 @@ cordova.plugins.notification.local.schedule([
     <img src="images/android-stack.png">
 </p>
 
+## Android channels
+
+### Default channel
+The following settings will be used for the default Android channel.
+
+```javascript
+{
+    androidChannelId: "default_channel",
+    androidChannelName: "Default channel",
+    androidChannelImportance: "IMPORTANCE_DEFAULT"
+}
+```
+
+You can change the defaults by calling [setDefaults](#setdefaults) or you can overwrite them, when scheduling a notification or [creating a channel](#createchannel).
+
+### Create channel by posting a notification
+A channel can be created directly when posting a notification:
+
+```javascript
+cordova.plugins.notification.local.schedule({
+    id: 1,
+    title: 'My first notification',
+    androidChannelId: "my_channel_01",
+    androidChannelName: "My Channel Name"
+});
+```
+
+If you omit some channel properties the [default channel properties](#default-channel) will be used.
+
 ## Events
 
 The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
@@ -610,12 +605,10 @@ Checks if the user has enabled the "Alarms & Reminders"-setting. If not, the not
 ### createChannel
 <img src="images/android-icon.svg" width="16"> Android only
 
-Creates a channel, if it not already exists.
+Creates a channel, if it not already exists. A channel is not changeable, after it is created. This is a restriction by Android.
+If a notification does not specify a [androidChannelId](#property-androidchannelid) a [default channel](#default-channel) will be used.
 
-A channel is not changeable, after it is created. This is a restriction by Android.
-If a notification does not specify a `androidChannelId` a [default channel](#default-channel) will be used.
-
-For setting the channel, use `androidChannelId` when scheduling a notification.
+For setting the channel, use [androidChannelId](#property-androidchannelid) when scheduling a notification.
 
 Overview of all properties for a channel:
 
@@ -794,7 +787,7 @@ These properties are only available on Android.
 | androidChannelDescription | `null`            | Sets the `description` of a [notification channel](#android-notification-channels). |
 | androidChannelEnableLights | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#create-channel) should display notification lights, on devices that support that feature. |
 | [androidChannelEnableVibration](#property-androidchannelenablevibration) | `false`            | Enables the vibration of a channel. |
-| androidChannelId       | `default_channel` | Set the `channelId` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
+| [androidChannelId](#property-androidchannelid) | `default_channel` | Specifies the channel id to be posted on. |
 | androidChannelImportance | `IMPORTANCE_DEFAULT` | Sets the [importance](#property-androidchannelimportance) of a [notification channel](#android-notification-channels) |
 | androidChannelName     | `Default channel` | Set the `channelName` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
 | androidChannelSoundUsage | `5` (=USAGE_NOTIFICATION) | Sets the [androidChannelSoundUsage](#property-androidchannelsoundusage) of a [notification channel](#create-channel). |
@@ -862,6 +855,11 @@ If the alarm should be scheduled on a specific time or in relevance to the time,
 Default: `false`
 
 Sets the vibration of a [notification channel](#create-channel) by setting [NotificationChannel#enableVibration(boolean)](https://developer.android.com/reference/android/app/NotificationChannel#enableVibration(boolean)). On Android 7 this sets the vibration of a notification directly.
+
+#### Property `androidChannelId`
+Default: `default_channel`
+
+Sets the `channelId` for the notification to be posted on. Use [Snake Case](https://en.wikipedia.org/wiki/Snake_case) for the id, which means, the id should be written in lowercase and words should be separated by underscores (`_`) and not hyphens (`-`) or whitespaces.
 
 #### Property `androidChannelImportance`
 Default: `"IMPORTANCE_DEFAULT"`
