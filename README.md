@@ -114,6 +114,13 @@ Repeating notifications count as 1 notification, except if you schedule with the
 ## Properties
 A notification does have a set of configurable properties. See [documentation](#properties-3).
 
+## Permissions
+Each platform may require the user to grant permissions first before the app is allowed to schedule notifications. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check if you have still the permission to post notifications, use [hasPermission](#haspermission).
+
+Example on iOS when requesting for permission:
+
+![Requesting permission to post notifications on iOS](images/ios-permission.png)
+
 ## Android notification channels
 Since Android 8 notification channels must be created to post noitifications.
 A default channel will be created, if you do not create one.
@@ -481,32 +488,6 @@ cordova.plugins.notification.local.schedule([
     <img src="images/android-stack.png">
 </p>
 
-
-## Permissions
-
-Each platform may require the user to grant permissions first before the app is allowed to schedule notifications.
-
-```js
-cordova.plugins.notification.local.hasPermission(function (granted) { ... });
-```
-
-If requesting via plug-in, a system dialog does pop up for the first time. Later its only possible to tweak the settings through the system settings.
-
-```js
-cordova.plugins.notification.local.requestPermission(function (granted) { ... });
-```
-
-<p align="center">
-    <img src="images/ios-permission.png">
-</p>
-
-Checking the permissions is done automatically, however it's possible to skip that.
-
-```js
-cordova.plugins.notification.local.schedule(toast, callback, scope, { skipPermission: true });
-```
-
-
 ## Events
 
 The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
@@ -603,7 +584,7 @@ Note: This list has still to be documented.
 | getTriggeredIds                |         |     |                           |
 | getType                        |         |     |                           |
 | hasActions                     |         |     |                           |
-| hasPermission                  |         |     |                           |
+| [hasPermission](#hasPermission) | x       | x   | Checks if the app has permission to post notifications. |
 | [iOSClearBadge](#iosclearbadge) | -       | x   | Clears the badge          |
 | isPresent                      |         |     |                           |
 | isScheduled                    |         |     |                           |
@@ -612,7 +593,7 @@ Note: This list has still to be documented.
 | openAlarmSettings              | x       | -   | Android only. Supported since Android 12. Opens the "Alarms & Reminders"-settings, where the user can manually enable exact alarms. |
 | openNotificationSettings       | x       | (x) | Opens the notifications settings since Android 8. On iOS it opens the app settings. |
 | removeActions                  |         |     |                           |
-| requestPermission              |         |     |                           |
+| [requestPermission](#requestpermission) | x       | x   | Request permission to post notifications. This is called automatically when scheduling notifications. |
 | schedule                       |         |     |                           |
 | setDefaults                    | x       | x   | Overwrites default values of notifications. Gets the default for notification properties. See [setDefaults](#setdefaults) |
 | un                             |         |     |                           |
@@ -674,6 +655,13 @@ Example:
 cordova.plugins.notification.local.getDefaults();
 ```
 
+### hasPermission
+Checks if the app has permissions to post notifications.
+
+```js
+cordova.plugins.notification.local.hasPermission(function (granted) { ... });
+```
+
 ### iOSClearBadge
 Clears the badge.
 
@@ -690,6 +678,23 @@ Opens the notifications settings of the app on Android 8 and newer. This method 
 - On Android, the callback will just return "OK", after starting the activity.
 - On Android older then 8, it opens the app details.
 - On iOS it's not possible to open the notification settings, it will open the app settings.
+
+### requestPermission
+Request permission to post notifications. This is called automatically by the plugin when scheduling notifications, but you can also request it manually before scheduling notifications:
+
+```js
+cordova.plugins.notification.local.requestPermission(function (granted) { ... });
+```
+
+If this method is called, a dialog will be shown to the user to ask for the permission.
+
+Example on iOS when requesting for permission:
+
+![Requesting permission to post notifications on iOS](images/ios-permission.png)
+
+The user can still allow/deny the permission through the system settings.
+
+To check if permissions are granted, without calling this method, use [hasPermission](#haspermission).
 
 ### setDefaults
 
