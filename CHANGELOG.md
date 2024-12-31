@@ -18,6 +18,7 @@
 - Handling [Android channels](README.md#android-notification-channels):
     - New Methods: [createChannel](README.md#createchannel) and [deleteChannel](README.md#deletechannel)
     - The [default channel](README.md#default-channel) is configurable
+- Changed default channel id from `default-channel-id` to `default_channel`
 - Bugfix: Make cancel/cancelAll/clear/clearAll work again. This was broken since Version 1.0.0 because of the change "Use app name as a tag for the notify call [PR #1781](https://github.com/katzer/cordova-plugin-local-notifications/pull/1781)". For e.g. notifications were still in the statusbar, when clearing a notification.
 - Bugfix: `java.lang.IllegalStateException: Maximum limit of concurrent alarms 500 reached`, when canceling notifications and schedule new notifications
     - When canceling a notification, the saved data for the notification was removed from the app and also a posted notification from the statusbar, but the alarm itself, which would create the notification, not. This was due to a wrongly created intent for clearing the scheduled alarms.
