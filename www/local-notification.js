@@ -263,7 +263,7 @@ exports.deleteChannel = function (channelId, callback, scope) {
  * @param {Object} scope The callback function's scope.
  */
 exports.hasPermission = function (callback, scope) {
-    exports._exec('check', null, callback, scope);
+    exports._exec('hasPermission', null, callback, scope);
 };
 
 /**

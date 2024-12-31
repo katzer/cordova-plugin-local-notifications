@@ -121,7 +121,7 @@
             [self scheduleNotification:[[APPNotificationContent alloc] initWithOptions:options]];
         }
 
-        [self check:command];
+        [self hasPermission:command];
     }];
 }
 
@@ -148,7 +148,7 @@
             [self fireEvent:@"update" notification:notification];
         }
 
-        [self check:command];
+        [self hasPermission:command];
     }];
 }
 
@@ -323,7 +323,7 @@
 /**
  * Check for permission to show notifications.
  */
-- (void) check:(CDVInvokedUrlCommand*)command
+- (void) hasPermission:(CDVInvokedUrlCommand*)command
 {
     [_center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings* settings) {
         BOOL authorized = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
@@ -339,7 +339,7 @@
 {
     [_center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert)
                            completionHandler:^(BOOL granted, NSError* e) {
-                               [self check:command];
+                               [self hasPermission:command];
                            }
     ];
 }

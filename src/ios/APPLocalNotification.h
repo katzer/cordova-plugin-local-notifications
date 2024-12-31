@@ -30,7 +30,7 @@
 
 - (void) actions:(CDVInvokedUrlCommand*)command;
 
-- (void) check:(CDVInvokedUrlCommand*)command;
+- (void) hasPermission:(CDVInvokedUrlCommand*)command;
 - (void) requestPermission:(CDVInvokedUrlCommand*)command;
 
 - (void) schedule:(CDVInvokedUrlCommand*)command;

@@ -152,8 +152,8 @@ public class LocalNotification extends CordovaPlugin {
                     createChannel(args, command);
                 } else if (action.equals("deleteChannel")) {
                     deleteChannel(args, command);
-                } else if (action.equals("check")) {
-                    check(command);
+                } else if (action.equals("hasPermission")) {
+                    hasPermission(command);
                 } else if (action.equals("requestPermission")) {
                     requestPermission(command);
                 } else if (action.equals("actions")) {
@@ -216,10 +216,9 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Ask if user has enabled permission for local notifications.
-     * @param callbackContext The callback context used when calling back into JavaScript.
+     * Ask if user has enabled permission to post notifications.
      */
-    private void check(CallbackContext callbackContext) {
+    private void hasPermission(CallbackContext callbackContext) {
         success(callbackContext, NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
     }
 
@@ -323,7 +322,7 @@ public class LocalNotification extends CordovaPlugin {
                 new Options(getContext(), optionsJSONList.optJSONObject(index)))));
         }
 
-        check(command);
+        hasPermission(command);
     }    
     
     /**
@@ -371,7 +370,7 @@ public class LocalNotification extends CordovaPlugin {
             fireEvent("update", toast);
         }
 
-        check(command);
+        hasPermission(command);
     }
 
     /**
