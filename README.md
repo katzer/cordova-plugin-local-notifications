@@ -121,80 +121,34 @@ Each platform may require the user to grant permissions first before the app is 
 | :---- | :---- |
 | <img width="240" src="images/ios-request-permission.png"><p align="center">iOS Example</p> | <img width="240" src="images/android-request-permission.png"><p align="center">Android example</p> |
 
-## Android notification channels
+## Android specials
+
+### Notification channels
 Since Android 8 notification channels must be created to post noitifications. A [default channel](#android-default-channel) will be created for you, if you do not create one. You can also create your own channel by [createChannel](#createchannel) or when [scheduling a notification](#create-channel-by-posting-a-notification). For deleting a channel use [deleteChannel](#deletechannel).
 
-## Android inexact and exact alarms
-Since Android 12 notifications will be scheduled inexact by default, which means the notifications can be delayed by some minutes. If you want exact alarms you have two options.
+### Inexact alarms since Android 12
+Since Android 12 alarms will be scheduled inexact by default. On Android 12 (API level 31) and higher, the system invokes the alarm within one hour of the supplied trigger time, unless any battery-saving restrictions are in effect such as battery saver or Doze. Most apps can schedule tasks and events using inexact alarms to complete several common use cases. If your app's core functionality depends on a precisely-timed alarm — such as for an alarm clock app or a calendar app — then it's OK to use an exact alarm instead.
 
-### Exact alarms: User grants permission
-You must add the [SCHEDULE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#SCHEDULE_EXACT_ALARM) permission to `AndroidManifest.xml`. You can do this with your `config.xml`.
+See [Schedule exact alarms](#android-schedule-exact-alarms), if you want use exact alarms.
 
-First add the Android xml namespace to your `widget` tag:
+See [Android documentation](https://developer.android.com/develop/background-work/services/alarms/schedule) for more information.
 
-```xml
-<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
-````
+### Alarm rescheduling
 
-Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
-
-```xml
-<config-file target="AndroidManifest.xml" parent="/manifest">
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-</config-file>
-```
-
-This tells Android that your app wants to have the permission to schedule exact alarms.
-
-|      |      |
-| :--- | :--- |
-| <img width="320" src="images/android-alarms-and-reminders-in-app-settings.png" /> | After declaring `SCHEDULE_EXACT_ALARM` as permission, your app have a new entry in the app settings called `Alarms & reminders`, where the user can enable/disable exact alarms. |
-| <img width="320" src="images/android-alarms-and-reminders-setting.png" /> | Clicking on this entry will open the setting to enable/disable exact alarms. This screen will also been shown if you call [openAlarmSettings](#openalarmsettings) |
-
-On Android 12 `SCHEDULE_EXACT_ALARM` is pre-granted. On Android 13 and newer the user has to permit this in the "Alarms & Reminders" setting, which you can open by [openAlarmSettings](#openalarmsettings). You can use the [resume](https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#resume) event of Cordova to check if exact alarms are permitted by [canScheduleExactAlarms](#canscheduleexactalarms). If you have already posted inexact alarms, before the user granted the exact alarm permission, inexact alarms will be automatically rescheduled by this plugin as exact alarms. The downside is, when the user revokes the exact alarm permission, your app will be killed and all exact alarms will be canceled without rescheduling them as inexact alarms. You have to reschedule them the next time the user starts your app. You can read everything about it in the [Android documentation](https://developer.android.com/about/versions/14/changes/schedule-exact-alarms).
-
-### Exact alarms: Define your app as a Calender or Alarm Clock app
-This is a very special case you should think about. When you declare your app as a calendar or alarm clock app, the app have to fullfill the requirements and must be approved by Google in the Play Store. Google could remove the app from the store if the app is found to be misusing the permission.
-
-Calendar or alarm clock apps need to send calendar reminders, wake-up alarms, or alerts when the app is no longer running. These apps can request the [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM) permission. The `USE_EXACT_ALARM` permission will be granted on install, and apps holding this permission will be able to schedule exact alarms just like apps with the `SCHEDULE_EXACT_ALARM` permission. The advantage is, that this permission can't be revoked by the user.
-
-To declare the `USE_EXACT_ALARM` permission in the `AndroidManifest.xml`, you can do this with your `config.xml`.
-
-First add the Android xml namespace to your `widget` tag:
-
-```xml
-<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
-````
-
-Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
-
-```xml
-<config-file target="AndroidManifest.xml" parent="/manifest">
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-</config-file>
-```
-
-The permission `SCHEDULE_EXACT_ALARM` must be decared to be backward compatible with Android 12. The is why the permission is limited by `android:maxSdkVersion="32"`, see [StackOverflow](https://stackoverflow.com/questions/73972021/android-permission-schedule-exact-alarm-required-with-use-exact-alarm-for-alarm) or the documentation of [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM).
-
-The permission `USE_EXACT_ALARM` exists since Android 13 and will be used from then on.
-
-## Alarm rescheduling on Android
-
-### App Update
+#### App Update
 Android removes all alarms when the app is updated. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_MY_PACKAGE_REPLACED](https://developer.android.com/reference/android/content/Intent#ACTION_MY_PACKAGE_REPLACED).
 
-### Device reboot
+#### Device reboot
 Android removes all alarms when the device reboots. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_BOOT_COMPLETED](https://developer.android.com/reference/android/content/Intent#ACTION_BOOT_COMPLETED), but only after the device has been unlocked.
 
-### User grants exact alarms
+#### User grants exact alarms
 If you use [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) for scheduling exact alarms and the user permits the permission in the "Alarms & Reminders", inexact alarms will be rescheduled as exact alarms. This is done by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED](https://developer.android.com/reference/android/app/AlarmManager#ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED). This action will not be called if the user revokes the permission. All exact alarms will be canceld then.
 
-### Android 15: Alarms get canceled on `Force stop`
+[](README.md#android-15-alarms-get-canceled-on-force-stop)
+#### Android 15: Alarms get canceled on `Force stop`
 Since Android 15 all pending alarms will get canceled if the user force stops an app, this is a change by Google, see https://developer.android.com/about/versions/15/behavior-changes-all#enhanced-stop-states. The alarms will be re-registered, if the user starts the app again. If the user clears the app from the app stack the alarms will not get canceled.
 
 Keep in mind, that force stopping is only known by advised users and if they do it, they have a reason to do this and they should be aware, that the app will no longer function correctly as the System also states when clicking on `Force stop` by showing an alert with the message `If you force stop an app, it may misbehave.`
-
 
 ## Actions
 
@@ -543,6 +497,65 @@ cordova.plugins.notification.local.schedule({
 ```
 
 If you omit some channel properties the [default channel properties](#default-channel) will be used.
+
+## Android: Schedule exact alarms
+Since Android 12 notifications will be scheduled inexact by default. On Android 12 (API level 31) and higher, the system invokes the alarm within one hour of the supplied trigger time, unless any battery-saving restrictions are in effect such as battery saver or Doze. Most apps can schedule tasks and events using inexact alarms to complete several common use cases. If your app's core functionality depends on a precisely-timed alarm — such as for an alarm clock app or a calendar app — then it's OK to use an exact alarm instead.
+
+See [Android documentation](https://developer.android.com/develop/background-work/services/alarms/schedule) for more information.
+
+You have two options, to schedule exact alarms.
+
+### Exact alarms: User grants permission
+You must add the [SCHEDULE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#SCHEDULE_EXACT_ALARM) permission to `AndroidManifest.xml`. You can do this with your `config.xml`.
+
+First add the Android xml namespace to your `widget` tag:
+
+```xml
+<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
+````
+
+Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+</config-file>
+```
+
+This tells Android that your app wants to have the permission to schedule exact alarms.
+
+|      |      |
+| :--- | :--- |
+| <img width="320" src="images/android-alarms-and-reminders-in-app-settings.png" /> | After declaring `SCHEDULE_EXACT_ALARM` as permission, your app have a new entry in the app settings called `Alarms & reminders`, where the user can enable/disable exact alarms. |
+| <img width="320" src="images/android-alarms-and-reminders-setting.png" /> | Clicking on this entry will open the setting to enable/disable exact alarms. This screen will also been shown if you call [openAlarmSettings](#openalarmsettings) |
+
+On Android 12 `SCHEDULE_EXACT_ALARM` is pre-granted. On Android 13 and newer the user has to permit this in the "Alarms & Reminders" setting, which you can open by [openAlarmSettings](#openalarmsettings). You can use the [resume](https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#resume) event of Cordova to check if exact alarms are permitted by [canScheduleExactAlarms](#canscheduleexactalarms). If you have already posted inexact alarms, before the user granted the exact alarm permission, inexact alarms will be automatically rescheduled by this plugin as exact alarms. The downside is, when the user revokes the exact alarm permission, your app will be killed and all exact alarms will be canceled without rescheduling them as inexact alarms. You have to reschedule them the next time the user starts your app. You can read everything about it in the [Android documentation](https://developer.android.com/about/versions/14/changes/schedule-exact-alarms).
+
+### Exact alarms: Define your app as a Calender or Alarm Clock app
+This is a very special case you should think about. When you declare your app as a calendar or alarm clock app, the app have to fullfill the requirements and must be approved by Google in the Play Store. Google could remove the app from the store if the app is found to be misusing the permission.
+
+Calendar or alarm clock apps need to send calendar reminders, wake-up alarms, or alerts when the app is no longer running. These apps can request the [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM) permission. The `USE_EXACT_ALARM` permission will be granted on install, and apps holding this permission will be able to schedule exact alarms just like apps with the `SCHEDULE_EXACT_ALARM` permission. The advantage is, that this permission can't be revoked by the user.
+
+To declare the `USE_EXACT_ALARM` permission in the `AndroidManifest.xml`, you can do this with your `config.xml`.
+
+First add the Android xml namespace to your `widget` tag:
+
+```xml
+<widget ... xmlns:android="http://schemas.android.com/apk/res/android">
+````
+
+Then add the following [config-file](https://cordova.apache.org/docs/en/12.x/plugin_ref/spec.html#config-file) declaration to your `config.xml`:
+
+```xml
+<config-file target="AndroidManifest.xml" parent="/manifest">
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+</config-file>
+```
+
+The permission `SCHEDULE_EXACT_ALARM` must be decared to be backward compatible with Android 12. The is why the permission is limited by `android:maxSdkVersion="32"`, see [StackOverflow](https://stackoverflow.com/questions/73972021/android-permission-schedule-exact-alarm-required-with-use-exact-alarm-for-alarm) or the documentation of [USE_EXACT_ALARM](https://developer.android.com/reference/android/Manifest.permission#USE_EXACT_ALARM).
+
+The permission `USE_EXACT_ALARM` exists since Android 13 and will be used from then on.
 
 ## Events
 
