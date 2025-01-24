@@ -133,6 +133,27 @@ See [Schedule exact alarms](#android-schedule-exact-alarms), if you want use exa
 
 See [Android documentation](https://developer.android.com/develop/background-work/services/alarms/schedule) for more information.
 
+### App hibernation / App unused
+If your app targets Android 11 (API level 30) or higher and the user doesn't interact with your app for 3 months<sup>1</sup>, the system places your app in a hibernation state which will cancel all pending notifications. When the user interacts with your app again, the app exits hibernation and the notifications will be re-scheduled. It doesn't count as app usage if the user dismisses a notification. If the app is hibernated, the user will get informed about it:
+
+<img width="240" src="images/android-app-unused-notification.png">
+
+The documentation says that permissions are also revoked, but testing the hibernation behavior on an Android 15 emulator showed, that the app keeps the permission to post notifications.
+
+You can manually test the hibernation behavior, see [App hibernation > Manually invoke hibernation behavior](https://developer.android.com/topic/performance/app-hibernation#manually-invoke).
+
+To see a complete list, what counts as app usage and what not, see [App hibernation > App usage](https://developer.android.com/topic/performance/app-hibernation#app-usage).
+
+<sup>1</sup> 3 months are based on executing `adb shell device_config get permissions \ auto_revoke_unused_threshold_millis2` which will return `7776000000` milliseconds on an Android 15 Emulator which are nearly 3 months (~2.96 months).
+
+#### Manage App hibernation
+
+There is an app setting called `Manage app if unused`, which is enabled by default:
+
+<img width="240" src="images/android-app-settings-manage-app-if-unused.png">
+
+(The setting name `Manage app if unused` is found under Android 15. On other Android versions, it could be named differently.)
+
 ### Alarm rescheduling
 
 #### App Update
