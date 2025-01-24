@@ -4,8 +4,12 @@
 name: Node.js Package
 
 on:
+  # Run workflow, when a new release is created
   release:
     types: [created]
+
+  # Allows to run this workflow manually
+  workflow_dispatch:
 
 jobs:
   build:
