@@ -77,7 +77,7 @@ Install from local source:
 
 ## Upgrade Notice
 
-In Version 1.1.0 some properties were changed. Please see [Changes since Version `1.1.0`](#changes-since-version-110)
+In Version 1.1.0 and newer, some properties were changed. Please see [Changed properties](#changed-properties).
 
 ## Basics
 

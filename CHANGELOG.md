@@ -1,15 +1,18 @@
 # ChangeLog
 
-## Version 1.1.1-dev
+## Version 1.1.1 (24.01.2025)
 
 ### Android
-- Improve documentation
-- `SCHEDULE_EXACT_ALARM` is not pre-configured anymore by this plugin to have more flexibility. If you want exact alarms, see [Android inexact and exact alarms](README.md#android-inexact-and-exact-alarms)
+- `SCHEDULE_EXACT_ALARM` is not pre-configured anymore by this plugin to have more flexibility. If you want exact alarms, see [Schedule exact alarms](README.md#android-schedule-exact-alarms).
 - You can declare `USE_EXACT_ALARM` to set your app as a calendar or alarm clock app. See [Exact alarms: Define your app as a Calender or Alarm Clock app](README.md#exact-alarms-define-your-app-as-a-calender-or-alarm-clock-app)
 - Renamed property `vibrate` to [androidChannelEnableVibration](README.md#property-androidchannelenablevibration)
 - Image resources: Support `res://`, `www` and `shared://` for [attachments](README.md#property-attachments) and [attachments.personIcon](README.md#property-personicon)
+
 ### iOS
-- Since iOS 14: Show a notification in the notification center when the app is in foreground, like on Android. Happens also if [iOSForeground](#property-iosforeground) is `false`.
+- Since iOS 14: Show a notification in the notification center when the app is in foreground, like on Android. Happens also if [iOSForeground](README.md#property-iosforeground) is `false`.
+
+### Common
+- Improved documentation
 - Renamed internal plugin method `check` to `hasPermission` to make it consistent with `cordova.plugins.notification.local.hasPermission`
 
 ## Version 1.1.0 (23.12.2024)
