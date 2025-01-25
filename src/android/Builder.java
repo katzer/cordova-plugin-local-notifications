@@ -390,7 +390,7 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        return PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_MUTABLE | FLAG_UPDATE_CURRENT);
     }
 
     /**
