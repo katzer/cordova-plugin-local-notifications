@@ -157,7 +157,7 @@ exports._defaults = {
     ...exports._commonOptions,
     meta: {
         plugin:  'cordova-plugin-local-notification',
-        version: '1.1.1'
+        version: '1.1.2-dev'
     }
 };
 
