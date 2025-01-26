@@ -1,8 +1,8 @@
-<p align="center">
+<p style="text-align: center;">
     <img src="images/logo.png">
 </p>
 
-<p align="center">
+<p style="text-align: center;">
     <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
         <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
     </a>
@@ -11,14 +11,9 @@
     </a>
 </p>
 
-<br>
-
 > A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
 
-<br>
-
-<img align="right" width="40%" src="https://developer.android.com/static/images/ui/notifications/notification-drawer_2x.png">
-
+<img style="float: right; padding: 20px; padding-right: 40px;" width="40%" src="images/android-notification-example.png">
 
 ### Notification components
 
@@ -90,8 +85,8 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-<p align="center">
-    <img src="images/ios-basic.png">
+<p style="text-align: center;">
+    <img width="40%" src="images/ios-notification.png">
 </p>
 
 The plugin allows to schedule multiple notifications at once.
@@ -117,9 +112,8 @@ A notification does have a set of configurable properties. See [all properties](
 ## Permissions
 Each platform may require the user to grant permissions first before the app is allowed to schedule notifications. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check, if you have still the permission to post notifications, use [hasPermission](#haspermission).
 
-|       |       |
-| :---- | :---- |
-| <img width="240" src="images/ios-request-permission.png"><p align="center">iOS Example</p> | <img width="240" src="images/android-request-permission.png"><p align="center">Android example</p> |
+<img width="240" src="images/ios-request-permission.png">
+<img width="240" src="images/android-request-permission.png">
 
 ## Android specials
 
@@ -136,7 +130,7 @@ See [Android documentation](https://developer.android.com/develop/background-wor
 ### App hibernation / App unused
 If your app targets Android 11 (API level 30) or higher and the user doesn't interact with your app for 3 months<sup>1</sup>, the system places your app in a hibernation state which will cancel all pending notifications. When the user interacts with your app again, the app exits hibernation and the notifications will be re-scheduled. It doesn't count as app usage if the user dismisses a notification. If the app is hibernated, the user will get informed about it:
 
-<img width="240" src="images/android-app-unused-notification.png">
+<img width="320" src="images/android-app-unused-notification.png">
 
 The documentation says that permissions are also revoked, but testing the hibernation behavior on an Android 15 emulator showed, that the app keeps the permission to post notifications.
 
@@ -150,7 +144,7 @@ To see a complete list, what counts as app usage and what not, see [App hibernat
 
 There is an app setting called `Manage app if unused`, which is enabled by default:
 
-<img width="240" src="images/android-app-settings-manage-app-if-unused.png">
+<img width="320" src="images/android-app-settings-manage-app-if-unused.png">
 
 (The setting name `Manage app if unused` is found under Android 15. On other Android versions, it could be named differently.)
 
@@ -192,9 +186,9 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-<p align="center">
-    <img width="240" src="images/ios-actions.png">
-    <img width="240" src="images/android-actions.png">
+<p style="text-align: center;">
+    <img width="320" src="images/ios-actions.png">
+    <img width="320" src="images/android-actions.png">
 </p>
 
 On iOS the actions are not visible by default. You have to long press on the notification to see them.
@@ -375,7 +369,7 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-<p align="center">
+<p style="text-align: center;">
     <img src="images/android-progress.png">
 </p>
 
@@ -407,7 +401,7 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-<p align="center">
+<p style="text-align: center;">
     <img src="images/android-inbox.png">
 </p>
 
@@ -429,7 +423,7 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-<p align="center">
+<p style="text-align: center;">
     <img src="images/android-chat.png">
 </p>
 
@@ -482,7 +476,7 @@ cordova.plugins.notification.local.schedule([
 ]);
 ```
 
-<p align="center">
+<p style="text-align: center;">
     <img src="images/android-stack.png">
 </p>
 
@@ -776,9 +770,8 @@ cordova.plugins.notification.local.requestPermission(function (granted) { ... })
 
 If this method is called, a dialog will be shown to the user to ask for the permission.
 
-|       |       |
-| :---- | :---- |
-| <img width="240" src="images/ios-request-permission.png"><p align="center">iOS Example</p> | <img width="240" src="images/android-request-permission.png"><p align="center">Android example</p> |
+<img width="240" src="images/ios-request-permission.png">
+<img width="240" src="images/android-request-permission.png">
 
 The user can still allow/deny the permission through the system settings.
 
