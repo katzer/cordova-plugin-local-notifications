@@ -173,66 +173,62 @@ Keep in mind, that force stopping is only known by advised users and if they do 
 
 ## Actions
 
-The plugin knows two types of actions: _button_ and _input_.
+You can add actions, which can be a button or an input to a notification. Before you can use them you have to pre-define them:
 
-```js
-cordova.plugins.notification.local.schedule({
-    title: 'The big survey',
-    text: 'Are you a fan of RB Leipzig?',
-    attachments: ['www/img/rb-leipzig.jpg'],
-    actions: [
-        { id: 'yes', title: 'Yes' },
-        { id: 'no',  title: 'No' }
-    ]
-});
-```
-
-<p align="center">
-    <img width="31%" src="images/android-actions.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img width="31%" src="images/ios-actions.png">
-</p>
-
-Icons on action buttons are not displayed anymore since Android 7, [see documentation](https://developer.android.com/reference/android/app/Notification.Action.Builder#Builder(int,%20java.lang.CharSequence,%20android.app.PendingIntent))
-
-### Input
-
-```js
-cordova.plugins.notification.local.schedule({
-    title: 'Justin Rhyss',
-    text: 'Do you want to go see a movie tonight?',
-    actions: [{
-        id: 'reply',
-        type: 'input',
-        title: 'Reply',
-        emptyText: 'Type message',
-    }, ... ]
-});
-```
-
-<p align="center">
-    <img src="images/android-reply.png">
-</p>
-
-It is recommended to pre-define action groups rather then specifying them with each new notification of the same type.
-
-
-```js
-cordova.plugins.notification.local.addActions('yes-no', [
-    { id: 'yes', title: 'Yes' },
-    { id: 'no',  title: 'No'  }
+```javascript
+cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
+    { id: 'YES_ACTION', title: 'Yes' },
+    { id: 'NO_ACTION',  title: 'No'  }
 ]);
 ```
 
-Once you have defined an action group, you can reference it when scheduling notifications:
+Then you have to assign the defined actions when scheduling a notification:
 
-```js
+```javascript
 cordova.plugins.notification.local.schedule({
     title: 'Justin Rhyss',
     text: 'Do you want to go see a movie tonight?',
-    actions: 'yes-no'
+    actions: 'YES_NO_CATEGORY'
 });
 ```
+
+<p align="center">
+    <img width="240" src="images/ios-actions.png">
+    <img width="240" src="images/android-actions.png">
+</p>
+
+On iOS the actions are not visible by default. You have to long press on the notification to see them.
+
+Icons on action buttons are not possible. Android had supported it, but stopped this in [Android 7](https://developer.android.com/reference/android/app/Notification.Action.Builder#Builder(int,%20java.lang.CharSequence,%20android.app.PendingIntent)).
+
+The plugin knows two types of actions `button` and `input`. If you do not specifiy a type, an action is by default a button.
+
+### Input
+
+You can define an action as input.
+
+Register actions:
+
+```javascript
+cordova.plugins.notification.local.addActions('REPLY_NO_CATEGORY', [
+    { id: 'REPLY_ACTION', type: 'input', title: 'Reply', emptyText: 'Type message',},
+    { id: 'NO_ACTION', title: 'No'}
+]);
+```
+
+Schedule with registered actions:
+
+```javascript
+cordova.plugins.notification.local.schedule({
+    title: 'Justin Rhyss',
+    text: 'Do you want to go see a movie tonight?',
+    actions: 'REPLY_NO_CATEGORY'
+});
+```
+
+| iOS          | Android      |
+| :----------- | :----------- |
+| <img width="240" src="images/ios-actions-with-input.png"> | <img width="240" src="images/android-actions-with-input-not-clicked.png"><br><img width="240" src="images/android-actions-with-input-clicked.png"> |
 
 ### Action properties
 
