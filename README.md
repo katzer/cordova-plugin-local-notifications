@@ -224,6 +224,28 @@ cordova.plugins.notification.local.schedule({
 | :----------- | :----------- |
 | <img width="240" src="images/ios-actions-with-input.png"> | <img width="240" src="images/android-actions-with-input-not-clicked.png"><br><img width="240" src="images/android-actions-with-input-clicked.png"> |
 
+### Handle action events
+You can subscribe to an action event.
+
+Example:
+
+```javascript
+cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
+    { id: 'YES_ACTION', title: 'Yes' },
+    { id: 'NO_ACTION',  title: 'No'  }
+]);
+```
+
+You have to subscribe to the action id:
+
+```javascript
+cordova.plugins.notification.local.on('YES_ACTION', (notification, eopts) => {
+    // Your code
+});
+```
+
+To unsubcribe see [Events](#events).
+
 ### Action properties
 
 Actions do have a set of configurable properties. Not all of them are supported across all platforms.
@@ -570,7 +592,7 @@ The permission `USE_EXACT_ALARM` exists since Android 13 and will be used from t
 
 ## Events
 
-The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`.
+The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall` and [action events](#handle-action-events).
 
 ```js
 cordova.plugins.notification.local.on(event, callback, scope);
@@ -584,23 +606,6 @@ cordova.plugins.notification.local.un(event, callback, scope);
 
 __Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.
 Hence you should define your callback as a separate function, not inline. If you want to use `this` inside of your callback, you also have to provide `this` as `scope` to `cordova.plugins.notification.local.on`.
-
-### Custom
-
-The plugin also fires events specified by actions.
-
-```js
-cordova.plugins.notification.local.schedule({
-    title: 'Do you want to go see a movie tonight?',
-    actions: [{ id: 'yes', title: 'Yes' }]
-});
-```
-
-The name of the event is the id of the action.
-
-```js
-cordova.plugins.notification.local.on('yes', function (notification, eopts) { ... });
-```
 
 ### Fire manually
 
