@@ -96,6 +96,7 @@
             }
         
         if (action) {
+            NSLog(@"Adding action: %@", action);
             [actions addObject:action];
         }
     }

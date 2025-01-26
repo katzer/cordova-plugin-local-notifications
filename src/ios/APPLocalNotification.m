@@ -354,6 +354,7 @@
         NSArray* actions = [command argumentAtIndex:2];
 
         switch ([command.arguments[0] intValue]) {
+            // addActions
             case 0:
                 [self->_center addActionGroup:[APPNotificationCategory parse:actions withId:identifier]];
                 [self execCallback:command];

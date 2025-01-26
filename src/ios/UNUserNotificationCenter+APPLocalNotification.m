@@ -63,7 +63,8 @@ NSString * const kAPPGeneralCategory = @"GENERAL";
                 break;
             }
         }
-
+        
+        NSLog(@"Adding action category: %@", addCategory.identifier);
         [mutableCategories addObject:addCategory];
         [self setNotificationCategories:mutableCategories];
     }];
