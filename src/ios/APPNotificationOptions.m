@@ -525,7 +525,6 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 
 /**
  * URL to an absolute file path.
- * @param path An absolute file path.
  * @return [ NSURL* ]
  */
 - (NSURL*) urlForFile:(NSString*)absoluteFilePath

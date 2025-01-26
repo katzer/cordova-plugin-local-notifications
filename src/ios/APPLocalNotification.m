@@ -410,7 +410,6 @@
 
 /**
  * Schedule the local notification.
- * @param notification The notification to schedule.
  */
 - (void) scheduleNotification:(APPNotificationContent*)appNotificationContent
 {
