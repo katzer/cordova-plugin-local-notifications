@@ -1047,6 +1047,14 @@ Support resource patterns:
 - [shared://](#resource-pattern-shared)
 - [www](#resource-pattern-www)
 
+Example folded and unfolded:
+
+<img width="320" src="images/android-attachments-image-folded.png">
+
+<img width="320" src="images/android-attachments-image-unfolded.png">
+
+The notification will be automatically unfolded in the notification center if your app presents only one notification. On the lockscreen the notification is always folded.
+
 ##### iOS
 The visual and audio attachments to display alongside the notification’s main content, see documentation of [UNMutableNotificationContent.attachments](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent/attachments).
 
@@ -1055,6 +1063,25 @@ Support resource patterns:
 - [res://](#resource-pattern-res) - App resource
 - [www](#resource-pattern-www)
 - `base64://` - Base64 string
+
+If you attach an image, the image will shown as a small image to the right in the notification and will be expanded when you press long on the notification.
+
+Example folded and unfolded:
+
+<img width="320" src="images/ios-attachments-image-folded.png">
+
+<img width="320" src="images/ios-attachments-image-unfolded.png">
+
+##### Code example
+
+```javascript
+cordova.plugins.notification.local.schedule({
+    id: 1,
+    title: 'Get a fan!',
+    text: 'RB Leipzig is looking for a new fan! Click here to apply!',
+    attachments: ['www/img/rb-leipzig.png']
+});
+```
 
 #### Property `badgeNumber`
 Default:
