@@ -2,6 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
+ * Copyright (c) Manuel Beck 2025
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -21,16 +22,20 @@
 
 package de.appplant.cordova.plugin.localnotification.util;
 
+import android.util.Log;
 import java.util.HashMap;
 import java.util.Random;
 
 import org.apache.cordova.CallbackContext;
 
 /**
- * Utils class to handle callback contexts.
- * Most of the code in this class was copied from the Diagnostic plugin: https://github.com/dpa99c/cordova-diagnostic-plugin
+ * Utils class to store and reuse a CallbackContext.
+ * Most of the code in this class was copied from the Diagnostic plugin:
+ * https://github.com/dpa99c/cordova-diagnostic-plugin
  */
 public final class CallbackContextUtil {
+
+    private static final String TAG = "CallbackContextUtil";
 
     // Map of permission request code to callback context.
     protected static HashMap<Integer, CallbackContext> callbackContexts = new HashMap<Integer, CallbackContext>();
@@ -38,75 +43,56 @@ public final class CallbackContextUtil {
     /**
      * Constructor
      */
-    private CallbackContextUtil() {
-    }
+    private CallbackContextUtil() {}
 
     /**
-     * Gets a callback context.
-     *
-     * @param requestId Request ID.
-     * @return Callback context.
+     * Gets a callback context for a request code or null if not found.
+     * @return CallbackContext or null if not found.
      */
-    public static CallbackContext getCallbackContext(int requestId) throws Exception {
-        if (!callbackContexts.containsKey(requestId)) {
-            throw new Exception("No context found for request id=" + requestId);
+    public static CallbackContext getCallbackContext(int requestCode) {
+        CallbackContext callbackContext = callbackContexts.get(requestCode);
+
+        // Log error, if no context found
+        if (callbackContexts == null) {
+            Log.e(TAG, "No context found for request code=" + requestCode);
         }
 
-        return callbackContexts.get(requestId);
+        return callbackContext;
     }
 
     /**
-     * Store a callback context.
-     *
-     * @param callbackContext Context to store.
-     * @return Random request ID.
+     * Store a {@link CallbackContext} for later retrieval and return a random request code for which it is stored.
+     * @return Random request code for the stored context.
      */
-    public static int storeContext(CallbackContext callbackContext){
-        Integer requestId = generateRandomRequestId();
-        callbackContexts.put(requestId, callbackContext);
-        return requestId;
+    public static int storeContext(CallbackContext callbackContext) {
+        return storeContext(callbackContext, getRandomRequestCode());
     }
 
     /**
-     * Removes a callback context.
-     *
-     * @param requestId Request ID.
+     * Store a {@link CallbackContext} for later retrieval and return the request code.
+     * @return Request code for the stored context.
      */
-    public static void clearContext(int requestId) {
-        if (!callbackContexts.containsKey(requestId)) {
-            return;
-        }
-
-        callbackContexts.remove(requestId);
+    public static int storeContext(CallbackContext callbackContext, int requestCode){
+        callbackContexts.put(requestCode, callbackContext);
+        return requestCode;
     }
 
     /**
-     * Generate a random request ID.
-     *
-     * @return Random request ID.
+     * Removes the stored {@link CallbackContext} for a request code.
      */
-    private static Integer generateRandomRequestId() {
-        Integer requestId = null;
-
-        while (requestId == null) {
-            requestId = generateRandom();
-            if (callbackContexts.containsKey(requestId)) {
-                requestId = null;
-            }
-        }
-
-        return requestId;
+    public static void clearContext(int requestCode) {
+        if (!callbackContexts.containsKey(requestCode)) return;
+        callbackContexts.remove(requestCode);
     }
 
     /**
-     * Generate a random number.
-     *
-     * @return Random number.
+     * Generate a random request code between 1 and 1000000 which is not already in use.
      */
-    private static Integer generateRandom() {
-        Random rn = new Random();
-
-        return rn.nextInt(1000000) + 1;
+    private static Integer getRandomRequestCode() {
+        do {
+            int requestCode = new Random().nextInt(1000000) + 1;
+            // Only return, if the request code is not already in use
+            if (!callbackContexts.containsKey(requestCode)) return requestCode;
+        } while (true);
     }
-
 }
