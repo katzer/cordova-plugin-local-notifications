@@ -40,6 +40,11 @@ import android.os.Build;
 import android.content.IntentFilter;
 import androidx.core.app.NotificationManagerCompat;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.IntentCompat;
+import androidx.core.content.PackageManagerCompat;
+import androidx.core.content.UnusedAppRestrictionsConstants;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -61,6 +66,8 @@ import de.appplant.cordova.plugin.localnotification.Request;
 import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 import de.appplant.cordova.plugin.localnotification.util.CallbackContextUtil;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import static de.appplant.cordova.plugin.localnotification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.localnotification.Notification.Type.TRIGGERED;
@@ -87,6 +94,8 @@ public class LocalNotification extends CordovaPlugin {
 
     // Launch details
     private static Pair<Integer, String> launchDetails;
+
+    private static int REQUEST_CODE_MANAGE_UNUSED_APP_RESTRICTIONS = 1005;
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -139,6 +148,11 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public boolean execute(final String action, final JSONArray args, final CallbackContext command) throws JSONException {
+        Log.d(TAG, "execute" + 
+            ", action=" + action +
+            ", args=" + args +
+            ", command=" + command);
+
         if (action.equals("launch")) {
             launch(command);
             return true;
@@ -184,6 +198,10 @@ public class LocalNotification extends CordovaPlugin {
                     openNotificationSettings(command);
                 } else if (action.equals("openAlarmSettings")) {
                     openAlarmSettings(command);
+                } else if (action.equals("getUnusedAppRestrictionsStatus")) {
+                    getUnusedAppRestrictionsStatus(command);
+                } else if (action.equals("openManageUnusedAppRestrictions")) {
+                    openManageUnusedAppRestrictions(command);
                 }
             }
         });
@@ -219,7 +237,7 @@ public class LocalNotification extends CordovaPlugin {
      * Ask if user has enabled permission to post notifications.
      */
     private void hasPermission(CallbackContext callbackContext) {
-        success(callbackContext, NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
+        successBoolean(callbackContext, NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
     }
 
     /**
@@ -228,7 +246,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into JavaScript.
      */
     private void canScheduleExactAlarms(CallbackContext command) {
-        success(command, getManager().canScheduleExactAlarms());
+        successBoolean(command, getManager().canScheduleExactAlarms());
     }
 
     /**
@@ -238,21 +256,23 @@ public class LocalNotification extends CordovaPlugin {
     private void requestPermission(CallbackContext callbackContext) {
         // Permission is granted.
         if (NotificationManagerCompat.from(getContext()).areNotificationsEnabled()) {
-            success(callbackContext, true);
+            successBoolean(callbackContext, true);
             return;
         }
 
         // If Notifications are disabled and POST_NOTIFICATIONS runtime permission is not supported
         // we can't ask the user to enable notifications, so we return false.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            success(callbackContext, false);
+            successBoolean(callbackContext, false);
             return;
         }
 
+        // Store the callback context for later use in onRequestPermissionResult
+        // and get a random request code to identify the context later
+        int randomRequestCode = CallbackContextUtil.storeContext(callbackContext);
+
         // Request the runtime permission.
-        cordova.requestPermission(this,
-            CallbackContextUtil.storeContext(callbackContext),
-            Manifest.permission.POST_NOTIFICATIONS);
+        cordova.requestPermission(this, randomRequestCode, Manifest.permission.POST_NOTIFICATIONS);
     }
 
     /**
@@ -268,43 +288,36 @@ public class LocalNotification extends CordovaPlugin {
             ", permissions=" + Arrays.toString(permissions) +
             ", grantResults=" + Arrays.toString(grantResults));
         
-        try {
-            // Inform the webview about the result
-            // CallbackContextUtil.getCallbackContext will throw an Expcetion, if the context is not stored there:
-            // "No context found for request id=" + requestId);
-            success(CallbackContextUtil.getCallbackContext(requestCode), grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        CallbackContext callbackContext = CallbackContextUtil.getCallbackContext(requestCode);
 
-            // Remove the saved context
-            CallbackContextUtil.clearContext(requestCode);
-        } catch (Exception exception) {
-            Log.e(TAG, "Exception occurred in onRequestPermissionResult", exception);
-        }
+        if (callbackContext != null) successBoolean(callbackContext, grantResults[0] == PackageManager.PERMISSION_GRANTED);
+
+        // Remove the saved context
+        CallbackContextUtil.clearContext(requestCode);
     }
 
     /**
      * Register action group.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * @param args The exec() arguments in JSON form.
+     * @param callbackContext The callback context used when calling back into JavaScript.
      */
-    private void actions(JSONArray args, CallbackContext command) {
-        int task        = args.optInt(0);
-        String id       = args.optString(1);
-        JSONArray list  = args.optJSONArray(2);
+    private void actions(JSONArray args, CallbackContext callbackContext) {
+        int task = args.optInt(0);
+        String id = args.optString(1);
+        JSONArray list = args.optJSONArray(2);
 
         switch (task) {
             case 0:
                 ActionGroup group = ActionGroup.parse(getContext(), id, list);
                 ActionGroup.register(group);
-                command.success();
+                callbackContext.success();
                 break;
             case 1:
                 ActionGroup.unregister(id);
-                command.success();
+                callbackContext.success();
                 break;
             case 2:
-                success(command, ActionGroup.isRegistered(id));
+                successBoolean(callbackContext, ActionGroup.isRegistered(id));
                 break;
         }
     }
@@ -595,6 +608,70 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Returns the status of Unused App Restrictions, which was introduced in Android 11.
+     * Any return value besides FEATURE_NOT_AVAILABLE indicates that at least one unused app
+     * restriction feature is available on the device.
+     * ERROR means, there was an issue when fetching whether the unused app restriction features
+     * on the device are enabled for this application.
+     * 
+     * @return int @see UnusedAppRestrictionsConstants
+     * @see https://developer.android.com/topic/performance/app-hibernation
+     */
+    private void getUnusedAppRestrictionsStatus(CallbackContext callbackContext) {
+        ListenableFuture<Integer> listenableFuture = PackageManagerCompat.getUnusedAppRestrictionsStatus(getContext());
+        listenableFuture.addListener(new Runnable() {
+            public void run() {
+                try {
+                    callbackContext.success(listenableFuture.get());
+                } catch (Exception exception) {
+                    callbackContext.success(UnusedAppRestrictionsConstants.ERROR);
+                }
+            }
+          }, ContextCompat.getMainExecutor(getContext()));
+    }
+
+    /**
+     * Starts an Intent to redirect the user to manage their unused app restriction settings.
+     * If getUnusedAppRestrictionsStatus returns FEATURE_NOT_AVAILABLE, this method will throw an
+     * {@link UnsupportedOperationException}.
+     * @throws UnsupportedOperationException
+     */
+    private void openManageUnusedAppRestrictions(CallbackContext callbackContext) {
+        Intent intent = IntentCompat.createManageUnusedAppRestrictionsIntent(
+            getContext(), cordova.getActivity().getApplicationContext().getPackageName());
+        
+        // Store the callback context for later use in onActivityResult to inform the webview
+        CallbackContextUtil.storeContext(callbackContext, REQUEST_CODE_MANAGE_UNUSED_APP_RESTRICTIONS);
+
+        // Start the activity
+        this.cordova.startActivityForResult(this, intent, REQUEST_CODE_MANAGE_UNUSED_APP_RESTRICTIONS);
+    }
+
+    /**
+     * Called when an activity launched exits, giving the requestCode started it with,
+     * the resultCode it returned, and any additional data from it.
+     * @param requestCode The request code originally supplied to startActivityForResult(), allowing you to
+     * identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param intent An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d(TAG, "onActivityResult" + 
+            ", requestCode=" + requestCode +
+            ", resultCode=" + resultCode +
+            ", intent=" + intent);
+
+        // Get the saved CallbackContext for the request code
+        CallbackContext callbackContext = CallbackContextUtil.getCallbackContext(requestCode);
+
+        if (callbackContext != null) callbackContext.success(resultCode);
+
+        // Remove the saved CallbackContext
+        CallbackContextUtil.clearContext(requestCode);
+    }
+
+    /**
      * Call all pending callbacks after the deviceready event has been fired.
      */
     private static synchronized void deviceready() {
@@ -608,11 +685,10 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Invoke success callback with a single boolean argument.
-     * @param callbackContext The callback context used when calling back into JavaScript.
-     * @param success Can be true or false.
+     * Helper method to invoke the {@link CallbackContext} with a boolean argument,
+     * because there does not exists a success method with a boolean in {@link CallbackContext}.
      */
-    private void success(CallbackContext callbackContext, boolean success) {
+    private void successBoolean(CallbackContext callbackContext, boolean success) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, success));
     }
 

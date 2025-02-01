@@ -58,6 +58,33 @@ exports._androidChannelImportanceTypes = {
     'IMPORTANCE_MAX': 5
 }
 
+exports.androidUnusedAppRestrictionsStatusCodes = {
+    // The status of Unused App Restrictions could not be retrieved from this app e.g. 
+    // if the app's target SDK version <30 or the user is in locked device boot mode
+    // Check the logs for the reason
+    ERROR: 0,
+
+    // There are no available Unused App Restrictions for this app
+    FEATURE_NOT_AVAILABLE: 1,
+
+    // Any available Unused App Restrictions on the device are disabled for this app.
+    // In other words, this app is exempt from having its permissions automatically removed or being hibernated.
+    DISABLED: 2,
+
+    // Unused App Restrictions introduced by Android API 30, and since made available on earlier (API 23-29) devices
+    // are enabled for this app: permission auto-reset. Note: This value is only used on API 29 or earlier devices.
+    API_30_BACKPORT: 3,
+
+    // Unused App Restrictions introduced by Android API 30 are enabled for this app: permission auto-reset.
+    // Note: This value is only used on API 30 or later devices.
+    API_30: 4,
+
+    // Unused App Restrictions introduced by Android API 31 are enabled for this app:
+    // permission auto-reset and app hibernation.
+    // Note: This value is only used on API 31 or later devices.
+    API_31: 5
+}
+
 // Options only available on Android
 exports._androidSpecificOptions = {
     androidAlarmType: "RTC_WAKEUP",
@@ -601,6 +628,24 @@ exports.iOSClearBadge = function (callback, scope) {
 }
 
 /**
+ * Android only: Returns the status of Unused App Restrictions.
+ * @param {Function} successCallback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
+ */
+exports.getUnusedAppRestrictionsStatus = function (successCallback, scope) {
+    exports._exec('getUnusedAppRestrictionsStatus', null, successCallback, scope);
+}
+
+/**
+ * Android only: Redirects the user to manage their unused app restriction settings.
+ * @param {Function} successCallback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
+ */
+exports.openManageUnusedAppRestrictions = function (successCallback, scope) {
+    exports._exec('openManageUnusedAppRestrictions', null, successCallback, scope);
+}
+
+/**
  * Register callback for a given event.
  * @param {string} event The name of the event.
  * @param {Function|string} callback The function to be exec as callback or the
@@ -653,6 +698,16 @@ exports.fireEvent = function (event, ...args) {
         callback.apply(scope, args);
     }
 };
+
+/**
+ * Helper method to return the key for a value in an object.
+ * @param {Object} object 
+ * @param {*} value 
+ * @returns {string} The key of the value in the object or {@link undefined} if not found.
+ */
+exports.getKey = function (object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
 
 /**
  * ====================

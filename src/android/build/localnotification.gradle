@@ -37,4 +37,8 @@ dependencies {
     // A BOM is a POM file containing <dependencyManagement> sections that manage dependency versions.
     // See: https://docs.gradle.org/current/userguide/platforms.html#sec:bom-import
     implementation platform("org.jetbrains.kotlin:kotlin-bom:2.1.0")
+
+    // Needed for getUnusedAppRestrictionsStatus:
+    // - Class ListenableFuture
+    implementation("com.google.guava:guava:33.4.0-android")
 }

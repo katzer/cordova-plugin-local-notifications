@@ -269,8 +269,7 @@ public final class Options {
         String title = options.optString("title", "");
 
         if (title.isEmpty()) {
-            title = context.getApplicationInfo().loadLabel(
-                    context.getPackageManager()).toString();
+            title = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
         }
 
         return title;
