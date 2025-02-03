@@ -31,8 +31,8 @@
 
 ### Supported platforms
 
-- Android 7.0+ (cordova-android 13.0.0)
-- iOS 11.3+ (cordova-ios 7.0.0)
+- Android 7.0+ (minimum version by cordova-android 13.0.0) with a minimum WebView Version 60 (Android 8 is shipped with a WebView version 58 and must be updated with Google Play Store before)
+- iOS 11.3+ (minimum version by cordova-ios 7.0.0)
 
 ### Installation
 
@@ -110,10 +110,12 @@ Repeating notifications count as 1 notification, except if you schedule with the
 A notification does have a set of configurable properties. See [all properties](#properties-1).
 
 ## Permissions
-Each platform may require the user to grant permissions first before the app is allowed to schedule notifications. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check, if you have still the permission to post notifications, use [hasPermission](#haspermission).
+On iOS and Android 13+ permissions must be requested from the user before notifications can be posted. This is done automatically, when scheduling a notification. If you want do it manually, you can use [requestPermission](#requestpermission). Please keep in mind, that the user can still change the permission later in the system. If you want to check, if you have still the permission to post notifications, use [hasPermission](#haspermission).
 
 <img width="240" src="images/ios-request-permission.png">
 <img width="240" src="images/android-request-permission.png">
+
+On Android, the permissions must be requested since Android 13. In earlier versions no permissions must be granted.
 
 ## Android specials
 
@@ -128,25 +130,35 @@ See [Schedule exact alarms](#android-schedule-exact-alarms), if you want use exa
 See [Android documentation](https://developer.android.com/develop/background-work/services/alarms/schedule) for more information.
 
 ### App hibernation / App unused
-If your app targets Android 11 (API level 30) or higher and the user doesn't interact with your app for 3 months<sup>1</sup>, the system places your app in a hibernation state which will cancel all pending notifications. When the user interacts with your app again, the app exits hibernation and the notifications will be re-scheduled. It doesn't count as app usage if the user dismisses a notification. If the app is hibernated, the user will get informed about it:
+If your app runs on Android 12 and newer and the user doesn't interact with your app for 3 months, the system places your app in a hibernation state which will cancel all pending notifications and revokes permissions. When the user interacts with your app again, the app exits hibernation and the notifications will be re-scheduled. It doesn't count as app usage if the user dismisses a notification. If the app is hibernated, the user will get informed about it:
 
-<img width="320" src="images/android-app-unused-notification.png">
+<img width="320" src="images/android-app-hibernation-notification.png">
 
 The documentation says that permissions are also revoked, but testing the hibernation behavior on an Android 15 emulator showed, that the app keeps the permission to post notifications.
 
-You can manually test the hibernation behavior, see [App hibernation > Manually invoke hibernation behavior](https://developer.android.com/topic/performance/app-hibernation#manually-invoke).
-
-To see a complete list, what counts as app usage and what not, see [App hibernation > App usage](https://developer.android.com/topic/performance/app-hibernation#app-usage).
-
-<sup>1</sup> 3 months are based on executing `adb shell device_config get permissions \ auto_revoke_unused_threshold_millis2` which will return `7776000000` milliseconds on an Android 15 Emulator which are nearly 3 months (~2.96 months).
+#### Notes
+- Android introduced this behavior in Android 11 and additionally backported this to Android 6 to 10 through the Google Play Store but only the permissions are revoked and not the pending notifications. Because permissions are only needed since Android 13, this does not affect this plugin. Since Android 12 notifications are also canceld besides revoking the permissions.
+- You can manually test the hibernation behavior, see [App hibernation > Manually invoke hibernation behavior](https://developer.android.com/topic/performance/app-hibernation#manually-invoke).
+- To see a complete list, what counts as app usage and what not, see [App hibernation > App usage](https://developer.android.com/topic/performance/app-hibernation#app-usage).
+- 3 months are based on executing `adb shell device_config get permissions \ auto_revoke_unused_threshold_millis2` which will return `7776000000` milliseconds on an Android 15 Emulator which are nearly 3 months (~2.96 months).
 
 #### Manage App hibernation
 
-There is an app setting called `Manage app if unused`, which is enabled by default:
+You can get the status of the setting by calling [getUnusedAppRestrictionsStatus](#getunusedapprestrictionsstatus). To redirect the user to the setting, call [openManageUnusedAppRestrictions](#openmanageunusedapprestrictions). Before opening the setting, you can inform the user about this behavior and explain which setting he has to deactivate. When opening the settings, the system will not scroll to the right entry and the setting is named differently on different Android versions:
 
-<img width="320" src="images/android-app-settings-manage-app-if-unused.png">
+Sample Android 12:
 
-(The setting name `Manage app if unused` is found under Android 15. On other Android versions, it could be named differently.)
+<img width="240" src="images/android-app-hibernation-settings-android-12.png">
+
+On other Android versions it is named differently:
+
+Android 13/14:
+
+<img width="320" src="images/android-app-hibernation-settings-android-13-14.png">
+
+Android 15:
+
+<img width="320" src="images/android-app-hibernation-settings-android-15.png">
 
 ### Alarm rescheduling
 
@@ -666,6 +678,7 @@ Note: This list has still to be documented.
 | getTriggered                   |         |     |                           |
 | getTriggeredIds                |         |     |                           |
 | getType                        |         |     |                           |
+| [getUnusedAppRestrictionsStatus](#getUnusedAppRestrictionsStatus) | x       | -   | Gets the status of the unused app restrictions status |
 | hasActions                     |         |     |                           |
 | [hasPermission](#hasPermission) | x       | x   | Checks if the app has permission to post notifications. |
 | [iOSClearBadge](#iosclearbadge) | -       | x   | Clears the badge          |
@@ -674,6 +687,7 @@ Note: This list has still to be documented.
 | isTriggered                    |         |     |                           |
 | on                             |         |     |                           |
 | openAlarmSettings              | x       | -   | Android only. Supported since Android 12. Opens the "Alarms & Reminders"-settings, where the user can manually enable exact alarms. |
+| [openManageUnusedAppRestrictions](#openManageUnusedAppRestrictions) | x       | -   | Opens the unused app restriction settings directly in the app. |
 | openNotificationSettings       | x       | (x) | Opens the notifications settings since Android 8. On iOS it opens the app settings. |
 | removeActions                  |         |     |                           |
 | [requestPermission](#requestpermission) | x       | x   | Request permission to post notifications. This is called automatically when scheduling notifications. |
@@ -736,6 +750,38 @@ Example:
 cordova.plugins.notification.local.getDefaults();
 ```
 
+### getUnusedAppRestrictionsStatus
+
+Returns the status of unused app restrictions also called [app hibernation](#app-hibernation--app-unused), which was introduced in Android 11 and is backported to Android 6 through the Google Play Store. From Android 6 to 11, only permissions gets revoked, what does not affect notifications, because notifications needs requesting permissions only since Android 13. But because since Android 12 also notifications get canceled, the status is relevant for Android 12 and later. When unused app restrictions are active, it will return `API_30_BACKPORT` (on Android 6 to 10), `API_30` on Android 11 or `API_31`on Android 12 and later. If it is disabled, `DISABLED` will be returned.
+
+Sample:
+
+```javascript
+cordova.plugins.notification.local.getUnusedAppRestrictionsStatus(
+    (status) => {
+        // Shortcode for getting possibile status codes for status
+        const statusCodes = cordova.plugins.notification.local.androidUnusedAppRestrictionsStatusCodes;
+
+        // app hibernation is active on Android 12 and later
+        if (status == statusCodes.API_31) {
+
+        }
+    },
+    this
+);
+```
+
+Possible status codes:
+
+| Name                    | Value     | Description             |
+| :---------------------- | :-------- | ----------------------- |
+| ERROR                   | 0         | The status of Unused App Restrictions could not be retrieved from this app e.g. if the user is in locked device boot mode. Check the logs for the reason. |
+| FEATURE_NOT_AVAILABLE   | 1         | There are no available Unused App Restrictions for this app. This would happen on devices older then Android 6, but this plugin supports minimum Android 7. |
+| DISABLED                | 2         | Any available Unused App Restrictions on the device are disabled for this app. In other words, this app is exempt from having its permissions automatically removed or being hibernated. |
+| API_30_BACKPORT         | 3         | Unused App Restrictions introduced by Android API 30 (Android 11), and since made available on earlier (API 23-29 = Android 6 to 10) devices are enabled for this app: permission auto-reset. Note: This value is only used on API 29 (Android 10) or earlier devices. |
+| API_30                  | 4         | Unused App Restrictions introduced by Android API 30 (Android 11) are enabled for this app: permission auto-reset. Note: This value is only used on API 30 (Android 11) or later devices. |
+| API_31                  | 5         | Unused App Restrictions introduced by Android API 31 (Android 12) are enabled for this app: permission auto-reset and app hibernation. Note: This value is only used on API 31 (Android 12) or later devices. |
+
 ### hasPermission
 Checks if the app has permissions to post notifications.
 
@@ -759,6 +805,20 @@ This method will not wait for the user to be returned back to the app. For this,
 - If the user grants permission, already inexact scheduled notifications will be rescheduled as exact alarms.
 - If exact alarms were already granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
 - On Android older then 12, it will just call the `successCallback`, without doing anything. 
+
+### openManageUnusedAppRestrictions
+
+Opens the unused app restriction settings directly in your app. The `successCallback` will be called if the user returns to your app.
+
+Sample:
+
+```javascript
+cordova.plugins.notification.local.openManageUnusedAppRestrictions((result) => {
+    // User has returned from the settings
+}, this);
+```
+
+You can check in the `successCallback` what the user selected, by calling [getUnusedAppRestrictionsStatus](#getunusedapprestrictionsstatus).
 
 ### openNotificationSettings
 Opens the notifications settings of the app on Android 8 and newer. This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used.

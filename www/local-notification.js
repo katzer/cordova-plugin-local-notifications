@@ -64,7 +64,7 @@ exports.androidUnusedAppRestrictionsStatusCodes = {
     // Check the logs for the reason
     ERROR: 0,
 
-    // There are no available Unused App Restrictions for this app
+    // There are no available Unused App Restrictions for this app (would only happen on Devices older then Android 7)
     FEATURE_NOT_AVAILABLE: 1,
 
     // Any available Unused App Restrictions on the device are disabled for this app.

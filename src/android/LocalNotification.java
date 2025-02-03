@@ -608,12 +608,8 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Returns the status of Unused App Restrictions, which was introduced in Android 11.
-     * Any return value besides FEATURE_NOT_AVAILABLE indicates that at least one unused app
-     * restriction feature is available on the device.
-     * ERROR means, there was an issue when fetching whether the unused app restriction features
-     * on the device are enabled for this application.
-     * 
+     * Returns the status of Unused App Restrictions, which was introduced in Android 11 and
+     * backported to Android 6 to 10 through the Google Play Store.
      * @return int @see UnusedAppRestrictionsConstants
      * @see https://developer.android.com/topic/performance/app-hibernation
      */
@@ -632,9 +628,6 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Starts an Intent to redirect the user to manage their unused app restriction settings.
-     * If getUnusedAppRestrictionsStatus returns FEATURE_NOT_AVAILABLE, this method will throw an
-     * {@link UnsupportedOperationException}.
-     * @throws UnsupportedOperationException
      */
     private void openManageUnusedAppRestrictions(CallbackContext callbackContext) {
         Intent intent = IntentCompat.createManageUnusedAppRestrictionsIntent(

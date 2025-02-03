@@ -2,6 +2,19 @@
 
 ## Version 1.1.2-dev
 
+### Android
+- Bugfix for input actions: Make PendingIntent for actions mutable. Fixes a crash when using input actions
+- New methods for handling unused app restrictions settings
+  - `getUnusedAppRestrictionsStatus`: Gets the status of the unused app restrictions status
+  - `openManageUnusedAppRestrictions`: Opens the settings for controlling the unused app restrictions status
+
+### iOS
+- Fix warnigs when using cordova-ios 8.0.0
+  - Remove wrong named params from code documentation.
+
+### Common
+- Improve documentation
+
 ## Version 1.1.1 (24.01.2025)
 
 ### Android
