@@ -160,6 +160,16 @@ Android 15:
 
 <img width="320" src="images/android-app-hibernation-settings-android-15.png">
 
+### Doze and Standby
+
+Android has two power-saving features that extend battery life for users by managing how apps behave when a device isn't connected to a power source: Doze and App Standby. Doze reduces battery consumption by deferring background CPU and network activity for apps when the device is unused for long periods of time. App Standby defers background network activity for apps with no recent user activity.
+
+To fire notifications when the device is in doze mode, you can schedule notifications with the property [androidAllowWhileIdle](#property-androidallowwhileidle).
+
+App Standby does not affect you when showing a notification.
+
+You can read everything about it in the [Android documentatation](https://developer.android.com/training/monitoring-device-state/doze-standby).
+
 ### Alarm rescheduling
 
 #### App Update
