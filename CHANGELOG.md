@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.1.2-dev
+## Version 1.1.2 (08.02.2025)
 
 ### Android
 - Bugfix for input actions: Make PendingIntent for actions mutable. Fixes a crash when using input actions
