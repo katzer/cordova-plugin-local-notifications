@@ -129,4 +129,4 @@ body:
         * ios XCode logs
         * Android: $ adb logcat
     validations:
-      required: true
+      required: false
