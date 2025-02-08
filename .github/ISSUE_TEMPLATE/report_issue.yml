@@ -1,0 +1,132 @@
+name: 🐞 Bug report
+description: Create a report to help us improve
+title: "[BUG] "
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the form below with as much detail as possible.
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin version
+      placeholder: e.g. 1.2.3
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: e.g. Android, iOS, Windows
+    validations:
+      required: true
+
+  - type: input
+    id: os_version
+    attributes:
+      label: OS version
+      placeholder: e.g. iOS 14.4, Android 10
+    validations:
+      required: true
+
+  - type: input
+    id: device_manufacturer_model
+    attributes:
+      label: Device manufacturer / model
+      placeholder: e.g. Samsung Galaxy S10
+    validations:
+      required: true
+
+  - type: input
+    id: cordova_version
+    attributes:
+      label: Cordova version
+      placeholder: e.g. 10.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: cordova_platform_version
+    attributes:
+      label: Cordova platform version
+      placeholder: e.g. cordova-android 9.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: plugin_config
+    attributes:
+      label: Plugin config
+      placeholder: Add your plugin configuration here...
+    validations:
+      required: true
+
+  - type: input
+    id: ionic_version
+    attributes:
+      label: Ionic Version (if using Ionic)
+      placeholder: e.g. 5.4.16
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: Describe expected behavior...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual behavior
+      description: A clear and concise description of what actually happens.
+      placeholder: Describe actual behavior...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Include code to reproduce the issue if relevant.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What were you trying to do?
+      placeholder: Provide context here...
+    validations:
+      required: true
+
+  - type: textarea
+    id: debug_logs
+    attributes:
+      label: Debug logs
+      description: Include iOS / Android logs.
+      placeholder: |
+        * ios XCode logs
+        * Android: $ adb logcat
+    validations:
+      required: true
