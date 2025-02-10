@@ -69,7 +69,22 @@ Install from local source:
 
 ## Upgrade Notice
 
-In Version 1.1.0 and newer, some properties were changed. Please see [Changed properties](#changed-properties).
+### Updates in version 1.1.0
+A lot of properties were renamed, see [Changed properties](#changes-since-version-110).
+
+#### Android
+The [Default channel](#default-channel) id was changed from `default-channel-id` to `default_channel`. If you upgrade to this version and schedule notifications, there will be two channels from then on, the old one and the new one. You can remove the old one with [deleteChannel](#deletechannel).
+
+#### iOS
+[iOSForeground](#property-iosforeground) is `true` by default
+
+### Updates in version 1.1.1
+
+#### Android
+The property `vibrate` was renamed to [androidChannelEnableVibration](#property-androidchannelenablevibration).
+
+#### iOS
+A notification will be always showed in the notification center like on Android. Happens also if [iOSForeground](#property-iosforeground) is `false`.
 
 ## Basics
 
@@ -914,9 +929,6 @@ There were some properties renamed. You can still use the old ones, but you will
 | Old Property            | New Property                  | Reason                  |
 | :---------------------- | :---------------------------- | ----------------------- |
 | vibrate                 | androidChannelEnableVibration | The vibration cannot be controlled on iOS. So this is a Android only property and can only be set on a channel. See [androidChannelEnableVibration](#property-androidchannelenablevibration)|
-
-#### iOS
-- Show a notification in the notification center when the app is on foreground, like on Android.  Happens also if [iOSForeground](#property-iosforeground) is `false`.
 
 ### Common properties
 
