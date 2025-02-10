@@ -2,18 +2,15 @@
     <img src="images/logo.png">
 </p>
 
-<p style="text-align: center;">
-    <a href="https://www.npmjs.com/package/cordova-plugin-local-notification">
-        <img src="https://badge.fury.io/js/cordova-plugin-local-notification.svg" alt="npm version" />
-    </a>
-    <a href="https://opensource.org/licenses/Apache-2.0">
-        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
-    </a>
-</p>
+[![npm version](https://badge.fury.io/js/cordova-plugin-local-notification.svg)](https://badge.fury.io/js/cordova-plugin-local-notification)
+<a href="https://opensource.org/licenses/Apache-2.0">
+    <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
+</a>
+
 
 > A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
 
-<img style="float: right; padding: 20px; padding-right: 40px;" width="40%" src="images/android-notification-example.png">
+<img style="float: right; padding: 20px; padding-right: 40px;" width="320" src="images/android-notification-example.png">
 
 ### Notification components
 
@@ -86,7 +83,7 @@ cordova.plugins.notification.local.schedule({
 ```
 
 <p style="text-align: center;">
-    <img width="40%" src="images/ios-notification.png">
+    <img width="320" src="images/ios-notification.png">
 </p>
 
 The plugin allows to schedule multiple notifications at once.
@@ -120,7 +117,7 @@ On Android, the permissions must be requested since Android 13. In earlier versi
 ## Android specials
 
 ### Notification channels
-Since Android 8 notification channels must be created to post noitifications. A [default channel](#android-default-channel) will be created for you, if you do not create one. You can also create your own channel by [createChannel](#createchannel) or when [scheduling a notification](#create-channel-by-posting-a-notification). For deleting a channel use [deleteChannel](#deletechannel).
+Since Android 8 notification channels must be created to post noitifications. A [default channel](#default-channel) will be created for you, if you do not create one. You can also create your own channel by [createChannel](#createchannel) or when [scheduling a notification](#create-channel-by-posting-a-notification). For deleting a channel use [deleteChannel](#deletechannel).
 
 ### Inexact alarms since Android 12
 Since Android 12 alarms will be scheduled inexact by default. On Android 12 (API level 31) and higher, the system invokes the alarm within one hour of the supplied trigger time, unless any battery-saving restrictions are in effect such as battery saver or Doze. Most apps can schedule tasks and events using inexact alarms to complete several common use cases. If your app's core functionality depends on a precisely-timed alarm — such as for an alarm clock app or a calendar app — then it's OK to use an exact alarm instead.
@@ -539,6 +536,8 @@ The following settings will be used for the default Android channel.
 
 You can change the defaults by calling [setDefaults](#setdefaults) or you can overwrite them, when scheduling a notification or [creating a channel](#createchannel).
 
+The default channel id was changed in version 1.1.0 from `default-channel-id` to `default_channel`.
+
 ### Create channel by posting a notification
 A channel can be created directly when posting a notification:
 
@@ -670,14 +669,14 @@ Note: This list has still to be documented.
 
 | Method                         | Android | iOS | Comment                   |
 | :------------------------------| :-------| :-- | :------------------------ |
-| addActions                     |         |     |                           |
+| addActions                     | x       | x   | Defines some actions in a group to re-use them. See [Actions](#actions). |
 | cancel                         | x       | x   |                           |
 | cancelAll                      | x       | x   |                           |
-| canScheduleExactAlarms         | x       | -   | Android only. Checks if exact alarms are permitted. Since Android 13 inexact alarms are permitted by default. |
+| [canScheduleExactAlarms](#canscheduleexactalarms) | x       | -   | Checks if exact alarms are permitted. Since Android 13 inexact alarms are permitted by default. |
 | clear                          | x       | x   | On Android, it clears a already posted notification from the statusbar. |
 | clearAll                       | x       | x   |                           |
-| createChannel                  | x       | -   | Android only. Creates a channel for Android to post notifications on. |
-| deleteChannel                  | x       | -   | Android only. Delete a channel by an id. See [Documentation](#delete-a-channel)|
+| [createChannel](#createchannel) | x       | -   | Creates a channel for Android to post notifications on. |
+| [deleteChannel](#deletechannel) | x       | -   | Delete a channel by an id. |
 | fireQueuedEvents               | x       | x   | Fire queued events once the device is ready and all listeners are registered. This is done automatically, when `deviceready` is fired. Calls the Plugin with a `ready` action. |
 | get                            |         |     |                           |
 | getAll                         |         |     |                           |
@@ -695,16 +694,16 @@ Note: This list has still to be documented.
 | isPresent                      |         |     |                           |
 | isScheduled                    |         |     |                           |
 | isTriggered                    |         |     |                           |
-| on                             |         |     |                           |
-| openAlarmSettings              | x       | -   | Android only. Supported since Android 12. Opens the "Alarms & Reminders"-settings, where the user can manually enable exact alarms. |
+| on                             | x       | x   | Listen to an [Event](#events) |
+| [openAlarmSettings](#openalarmsettings) | x       | -   | Supported since Android 12. Opens the "Alarms & Reminders"-settings, where the user can manually enable exact alarms. |
 | [openManageUnusedAppRestrictions](#openManageUnusedAppRestrictions) | x       | -   | Opens the unused app restriction settings directly in the app. |
-| openNotificationSettings       | x       | (x) | Opens the notifications settings since Android 8. On iOS it opens the app settings. |
+| [openNotificationSettings](#opennotificationsettings) | x       | (x) | Opens the notifications settings since Android 8. On iOS it opens the app settings. |
 | removeActions                  |         |     |                           |
 | [requestPermission](#requestpermission) | x       | x   | Request permission to post notifications. This is called automatically when scheduling notifications. |
-| schedule                       |         |     |                           |
-| setDefaults                    | x       | x   | Overwrites default values of notifications. Gets the default for notification properties. See [setDefaults](#setdefaults) |
-| un                             |         |     |                           |
-| update                         |         |     |                           |
+| schedule                       | x       | x    | Schedules a single notification or multiple notifications. Accepts an object or an Array. |
+| [setDefaults](#setdefaults)    | x       | x   | Overwrites default values of notifications. Gets the default for notification properties. |
+| un                             | x       | x   | Unlisten to an [Event](#events) |
+| update                         | x       | x  | Updates a single notification or multiple notifications. The notification id has to be set to update a notification. Accepts an obect or an Array. |
 
 ### canScheduleExactAlarms
 <img src="images/android-icon.svg" width="16"> Android only
