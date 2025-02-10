@@ -363,27 +363,25 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Update multiple local notifications.
-     *
-     * @param updates Notification properties including their IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * Update multiple notifications.
+     * @param optionsList Notification properties including their IDs.
+     * @param callbackContext
      */
-    private void update(JSONArray updates, CallbackContext command) {
-        Manager mgr = getManager();
+    private void update(JSONArray optionsList, CallbackContext callbackContext) {
+        for (int index = 0; index < optionsList.length(); index++) {
 
-        for (int i = 0; i < updates.length(); i++) {
-            JSONObject update  = updates.optJSONObject(i);
-            int id             = update.optInt("id", 0);
-            Notification toast = mgr.update(id, update);
+            JSONObject updateOptions = optionsList.optJSONObject(index);
+            int notificationId = updateOptions.optInt("id", 0);
+            Notification notification = getManager().update(notificationId, updateOptions);
+            
+            // Notification didn't exist and couldn't be updated
+            if (notification == null) continue;
 
-            if (toast == null)
-                continue;
-
-            fireEvent("update", toast);
+            // Inform webView about the update
+            fireEvent("update", notification);
         }
 
-        hasPermission(command);
+        hasPermission(callbackContext);
     }
 
     /**
