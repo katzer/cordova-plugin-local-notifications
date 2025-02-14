@@ -287,10 +287,14 @@ public class LocalNotification extends CordovaPlugin {
             ", requestCode=" + requestCode +
             ", permissions=" + Arrays.toString(permissions) +
             ", grantResults=" + Arrays.toString(grantResults));
-        
+
+        // grantResults can be empty, but it's not clear, why this can happen
+        // see https://github.com/katzer/cordova-plugin-local-notifications/pull/2058
+        // set to false, if grantResults is empty
+        boolean permissionGranted = grantResults.length > 0 ? grantResults[0] == PackageManager.PERMISSION_GRANTED : false;
         CallbackContext callbackContext = CallbackContextUtil.getCallbackContext(requestCode);
 
-        if (callbackContext != null) successBoolean(callbackContext, grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        if (callbackContext != null) successBoolean(callbackContext, permissionGranted);
 
         // Remove the saved context
         CallbackContextUtil.clearContext(requestCode);
