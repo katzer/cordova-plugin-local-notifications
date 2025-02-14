@@ -2,6 +2,10 @@
 
 ## Version 1.1.3-dev
 
+### Android
+- fix(crash): ArrayIndexOutOfBoundsException when checking if permission were granted PR #2058
+  - grantResults is an empty array on some devices
+
 ## Version 1.1.2 (08.02.2025)
 
 ### Android
