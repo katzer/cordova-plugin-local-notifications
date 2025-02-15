@@ -276,9 +276,12 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Called by the system when the user grants permissions.
+     * Called by {@link CordovaActivity#onRequestPermissionsResult} when the user grants permissions, which
+     * was called by Android.
+     * 
      * @deprecated In the future {@link #onRequestPermissionsResult} should be used, but cordova calls still the old
      * method: https://github.com/apache/cordova-android/issues/1388
+     * @see Android method onRequestPermissionsResult: https://developer.android.com/reference/android/app/Activity#onRequestPermissionsResult(int,%20java.lang.String[],%20int[])
      */
     @Override
     @Deprecated
@@ -288,9 +291,8 @@ public class LocalNotification extends CordovaPlugin {
             ", permissions=" + Arrays.toString(permissions) +
             ", grantResults=" + Arrays.toString(grantResults));
 
-        // grantResults can be empty, but it's not clear, why this can happen
-        // see https://github.com/katzer/cordova-plugin-local-notifications/pull/2058
-        // set to false, if grantResults is empty
+        // It is possible that the permissions request interaction with the user is interrupted.
+        // In this case the permissions and grantResults array is empty, which should be treated as a cancellation.
         boolean permissionGranted = grantResults.length > 0 ? grantResults[0] == PackageManager.PERMISSION_GRANTED : false;
         CallbackContext callbackContext = CallbackContextUtil.getCallbackContext(requestCode);
 

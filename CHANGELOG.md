@@ -3,8 +3,8 @@
 ## Version 1.1.3-dev
 
 ### Android
-- fix(crash): ArrayIndexOutOfBoundsException when checking if permission were granted PR #2058
-  - grantResults is an empty array on some devices
+- fix(crash): `ArrayIndexOutOfBoundsException` can occur, if the user dismisses a permission request without clicking a button
+  - Reported by #UzverNumber47. Thanks :)
 
 ## Version 1.1.2 (08.02.2025)
 
