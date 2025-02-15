@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.1.3-dev
+## Version 1.1.3 (15.02.2025)
 
 ### Android
 - fix(crash): `ArrayIndexOutOfBoundsException` can occur, if the user dismisses a permission request without clicking a button
