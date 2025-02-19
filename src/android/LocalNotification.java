@@ -392,25 +392,14 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Cancel multiple local notifications.
-     *
-     * @param ids     Set of local notification IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
-    private void cancel(JSONArray ids, CallbackContext command) {
-        Manager mgr = getManager();
-
-        for (int i = 0; i < ids.length(); i++) {
-            int id             = ids.optInt(i, 0);
-            Notification toast = mgr.cancel(id);
-
-            if (toast == null)
-                continue;
-
-            fireEvent("cancel", toast);
+    private void cancel(JSONArray notificationIds, CallbackContext callbackContext) {
+        for (int index = 0; index < notificationIds.length(); index++) {
+            Notification notification = getManager().cancel(notificationIds.optInt(index, 0));
+            if (notification == null) continue;
+            fireEvent("cancel", notification);
         }
-
-        command.success();
+        callbackContext.success();
     }
 
     /**
