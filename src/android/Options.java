@@ -133,15 +133,6 @@ public final class Options {
     }
 
     /**
-     * The identifier for the local notification.
-     *
-     * @return The notification ID as the string
-     */
-    String getIdentifier() {
-        return getId().toString();
-    }
-
-    /**
      * Badge number for the notification
      * 0 hides the badge number, -1 leaves the badge number unchanged
      */

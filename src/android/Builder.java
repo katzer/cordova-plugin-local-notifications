@@ -310,7 +310,7 @@ public final class Builder {
             return;
 
         Intent intent = new Intent(context, clearReceiver)
-                .setAction(options.getIdentifier())
+                .setAction(options.getId().toString())
                 .putExtra(Notification.EXTRA_ID, options.getId());
 
         if (extras != null) {

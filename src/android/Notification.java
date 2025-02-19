@@ -322,7 +322,7 @@ public final class Notification {
      * have multiple alarms.
      */
     private void cancelScheduledAlarms() {
-        Set<String> intentActionIds = getSharedPreferences(PREF_KEY_PID).getStringSet(options.getIdentifier(), null);
+        Set<String> intentActionIds = getSharedPreferences(PREF_KEY_PID).getStringSet(options.getId().toString(), null);
 
         if (intentActionIds == null) return;
 
@@ -376,13 +376,13 @@ public final class Notification {
     private void persist(Set<String> intentActionIds) {
         // Save options for this notification
         getSharedPreferences(PREF_KEY_ID).edit()
-        .putString(options.getIdentifier(), options.toString())
+        .putString(options.getId().toString(), options.toString())
         .apply();
 
         // Save intent action identifiers for this notification
         if (intentActionIds != null) {
             getSharedPreferences(PREF_KEY_PID).edit()
-            .putStringSet(options.getIdentifier(), intentActionIds)
+            .putStringSet(options.getId().toString(), intentActionIds)
             .apply();
         }
     }
@@ -391,8 +391,8 @@ public final class Notification {
      * Remove the notification from the Android shared Preferences.
      */
     private void unpersist() {
-        getSharedPreferences(PREF_KEY_ID).edit().remove(options.getIdentifier()).apply();
-        getSharedPreferences(PREF_KEY_PID).edit().remove(options.getIdentifier()).apply();
+        getSharedPreferences(PREF_KEY_ID).edit().remove(options.getId().toString()).apply();
+        getSharedPreferences(PREF_KEY_PID).edit().remove(options.getId().toString()).apply();
     }
 
     /**
