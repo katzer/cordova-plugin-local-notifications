@@ -49,7 +49,7 @@ public final class Request {
     // Key name for bundled extras
     public static final String EXTRA_LAST = "NOTIFICATION_LAST";
 
-    // The options spec
+    // The notification options
     private final Options options;
 
     /**
@@ -61,16 +61,15 @@ public final class Request {
     // How often the trigger shall occur
     private final int count;
 
-    // The trigger spec
-    private final JSONObject spec;
+    // The trigger options
+    private final JSONObject triggerOptions;
 
     // The current trigger date
     private Date triggerDate;
 
     /**
      * Create a request with a base date specified through the passed options.
-     *
-     * @param options The options spec.
+     * @param options The notification options
      */
     public Request(Options options) {
         this(options, getBaseDate(options));
@@ -84,14 +83,14 @@ public final class Request {
      */
     public Request(Options options, Date base) {
         this.options = options;
-        this.spec = options.getTrigger();
-        this.count = Math.max(spec.optInt("count"), 1);
+        this.triggerOptions = options.getTrigger();
+        this.count = Math.max(triggerOptions.optInt("count"), 1);
         this.trigger = buildDateTrigger();
         this.triggerDate = trigger.getNextTriggerDate(base);
     }
 
     /**
-     * Gets the options spec.
+     * Gets the notification options
      */
     public Options getOptions() {
         return options;
@@ -141,7 +140,7 @@ public final class Request {
         // trigger date lays more then 60 seconds in the past, return null
         if ((System.currentTimeMillis() - triggerTime) > 60000) return null;
 
-        if (triggerTime >= spec.optLong("before", triggerTime + 1)) return null;
+        if (triggerTime >= triggerOptions.optLong("before", triggerTime + 1)) return null;
 
         return triggerDate;
     }
@@ -155,7 +154,7 @@ public final class Request {
      * a {@link MatchTrigger} will be created, otherwise an {@link IntervalTrigger}.
      */
     private DateTrigger buildDateTrigger() {
-        return spec.opt("every") instanceof JSONObject ?
+        return triggerOptions.opt("every") instanceof JSONObject ?
             new MatchTrigger(getMatchingComponents(), getSpecialMatchingComponents()) :
             new IntervalTrigger(getTicks(), getUnit());
     }
@@ -164,14 +163,14 @@ public final class Request {
      * Gets the unit value.
      */
     private Unit getUnit() {
-        Object every = spec.opt("every");
+        Object every = triggerOptions.opt("every");
         String unit  = "SECOND";
 
-        if (spec.has("unit")) {
-            unit = spec.optString("unit", "second");
+        if (triggerOptions.has("unit")) {
+            unit = triggerOptions.optString("unit", "second");
         } else
         if (every instanceof String) {
-            unit = spec.optString("every", "second");
+            unit = triggerOptions.optString("every", "second");
         }
 
         return Unit.valueOf(unit.toUpperCase());
@@ -181,10 +180,10 @@ public final class Request {
      * Gets the tick value.
      */
     private int getTicks() {
-        if (spec.has("at")) return 0;
-        if (spec.has("in")) return spec.optInt("in", 0);
-        if (spec.opt("every") instanceof String) return 1;
-        if (!(spec.opt("every") instanceof JSONObject)) return spec.optInt("every", 0);
+        if (triggerOptions.has("at")) return 0;
+        if (triggerOptions.has("in")) return triggerOptions.optInt("in", 0);
+        if (triggerOptions.opt("every") instanceof String) return 1;
+        if (!(triggerOptions.opt("every") instanceof JSONObject)) return triggerOptions.optInt("every", 0);
         return 0;
     }
 
@@ -194,7 +193,7 @@ public final class Request {
      * @return [min, hour, day, month, year]
      */
     private List<Integer> getMatchingComponents() {
-        JSONObject every = spec.optJSONObject("every");
+        JSONObject every = triggerOptions.optJSONObject("every");
 
         return Arrays.asList(
                 (Integer) every.opt("minute"),
@@ -211,7 +210,7 @@ public final class Request {
      * @return [min, hour, day, month, year]
      */
     private List<Integer> getSpecialMatchingComponents() {
-        JSONObject every = spec.optJSONObject("every");
+        JSONObject every = triggerOptions.optJSONObject("every");
 
         return Arrays.asList(
                 (Integer) every.opt("weekday"),
