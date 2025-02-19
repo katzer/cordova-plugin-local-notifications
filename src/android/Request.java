@@ -56,7 +56,7 @@ public final class Request {
      * DateTrigger for the every-option.
      * Can be {@link IntervalTrigger} or {@link MatchTrigger}.
      */
-    private final DateTrigger trigger;
+    private final DateTrigger dateTrigger;
 
     // How often the trigger shall occur
     private final int count;
@@ -85,8 +85,8 @@ public final class Request {
         this.options = options;
         this.triggerOptions = options.getTrigger();
         this.count = Math.max(triggerOptions.optInt("count"), 1);
-        this.trigger = buildDateTrigger();
-        this.triggerDate = trigger.getNextTriggerDate(base);
+        this.dateTrigger = buildDateTrigger();
+        this.triggerDate = dateTrigger.getNextTriggerDate(base);
     }
 
     /**
@@ -109,7 +109,7 @@ public final class Request {
      * The value of the internal occurrence counter.
      */
     int getOccurrence() {
-        return trigger.getOccurrence();
+        return dateTrigger.getOccurrence();
     }
 
     /**
@@ -123,7 +123,7 @@ public final class Request {
      * Moves the internal occurrence counter by one.
      */
     boolean moveNext() {
-        triggerDate = hasNext() ? trigger.getNextTriggerDate(triggerDate) : null;
+        triggerDate = hasNext() ? dateTrigger.getNextTriggerDate(triggerDate) : null;
         return triggerDate != null;
     }
 
