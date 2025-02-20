@@ -308,7 +308,8 @@ Actions do have a set of configurable properties. Not all of them are supported 
 
 Notifications may trigger immediately or depend on calendar or location.
 
-To trigger at a fix date:
+### Fixed date
+Trigger at a fixed date:
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -318,7 +319,12 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-Or relative from now:
+| Property      | Type    | Value            | Android | iOS |
+| :------------ | :------ | :--------------- | :------ | :-- |
+| at            | Date    |                  | x       | x   |
+
+### Relative
+Relative from now:
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -327,6 +333,11 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
+| Property      | Type    | Value            | Android | iOS |
+| :------------ | :------ | :--------------- | :------ | :-- |
+| in            | Int     |                  | x       | x   |
+| unit          | String  | `second`, `minute`, `hour`, `day`, `week`, `month`, `quarter`, `year` | x       | x   |
+
 ### Repeating
 
 Repeat relative from now:
@@ -334,11 +345,18 @@ Repeat relative from now:
 ```js
 cordova.plugins.notification.local.schedule({
     title: 'Design team meeting',
-    trigger: { every: 'day', count: 5 }
+    trigger: { every: 'day', count: 5 } // count is only supported by Android
 });
 ```
 
-Or trigger every time the date matches:
+| Property      | Type    | Value            | Android | iOS | Note |
+| :------------ | :------ | :--------------- | :------ | :-- | :--- |
+| before        | Date    |                  | x       |     | |
+| firstAt       | Date    |                  | x       |     | |
+| count         | Int     |                  | x       |     |      |
+| every         | String  | `minute`, `hour`, `day`, `week`, `month`, `quarter` <img src="images/android-icon.svg" width="16">, `year` | x       | x   | |
+
+Trigger every time the date matches:
 
 ```js
 cordova.plugins.notification.local.schedule({
@@ -347,7 +365,15 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
+| Property      | Type    | Value            | Android | iOS | Note |
+| :------------ | :------ | :--------------- | :------ | :-- | :--- |
+| before        | Date    |                  | x       |     | |
+| after         | Date    |                  | x       |     | |
+| count         | Int     |                  | x       |     |      |
+| every         | Object  | `minute`, `hour`, `day`, `weekday`, `weekdayOrdinal` <img src="images/apple-icon.svg" width="16">, `week` <img src="images/apple-icon.svg" width="16">, `weekOfMonth`, `month`, `quarter`  <img src="images/apple-icon.svg" width="16">, `year` | x       | x   | |
+
 ### Location based
+<img src="images/apple-icon.svg" width="16"> iOS only
 
 To trigger when the user enters a region:
 
@@ -363,55 +389,13 @@ cordova.plugins.notification.local.schedule({
 });
 ```
 
-### Trigger properties
-
-The properties depend on the trigger type. Not all of them are supported across all platforms.
-
-| Type         | Property      | Type    | Value            | Android | iOS |
-| :----------- | :------------ | :------ | :--------------- | :------ | :-- |
-| Fix          |
-|              | at            | Date    |                  | x       | x   |
-| Timespan     |
-|              | in            | Int     |                  | x       | x   |
-|              | unit          | String  | `second`         | x       | x   |
-|              | unit          | String  | `minute`         | x       | x   |
-|              | unit          | String  | `hour`           | x       | x   |
-|              | unit          | String  | `day`            | x       | x   |
-|              | unit          | String  | `week`           | x       | x   |
-|              | unit          | String  | `month`          | x       | x   |
-|              | unit          | String  | `quarter`        | x       | x   |
-|              | unit          | String  | `year`           | x       | x   |
-| Repeat       |
-|              | count         | Int     |                  | x       |     |
-|              | every         | String  | `minute`         | x       | x   |
-|              | every         | String  | `hour`           | x       | x   |
-|              | every         | String  | `day`            | x       | x   |
-|              | every         | String  | `week`           | x       | x   |
-|              | every         | String  | `month`          | x       | x   |
-|              | every         | String  | `quarter`        | x       |     |
-|              | every         | String  | `year`           | x       | x   |
-|              | before        | Date    |                  | x       |     |
-|              | firstAt       | Date    |                  | x       |     |
-| Match        |
-|              | count         | Int     |                  | x       |     |
-|              | every         | Object  | `minute`         | x       | x   |
-|              | every         | Object  | `hour`           | x       | x   |
-|              | every         | Object  | `day`            | x       | x   |
-|              | every         | Object  | `weekday`        | x       | x   |
-|              | every         | Object  | `weekdayOrdinal` |         | x   |
-|              | every         | Object  | `week`           |         | x   |
-|              | every         | Object  | `weekOfMonth`    | x       | x   |
-|              | every         | Object  | `month`          | x       | x   |
-|              | every         | Object  | `quarter`        |         | x   |
-|              | every         | Object  | `year`           | x       | x   |
-|              | before        | Date    |                  | x       |     |
-|              | after         | Date    |                  | x       |     |
-| Location     |
-|              | center        | Array   | `[lat, long]`    |         | x   |
-|              | radius        | Int     |                  |         | x   |
-|              | notifyOnEntry | Boolean |                  |         | x   |
-|              | notifyOnExit  | Boolean |                  |         | x   |
-|              | single        | Boolean |                  |         | x   |
+| Property      | Type    | Value            | Android | iOS | Note |
+| :------------ | :------ | :--------------- | :------ | :-- | :--- |
+| center        | Array   | `[lat, long]`    |         | x   |      |
+| radius        | Int     |                  |         | x   |      |
+| notifyOnEntry | Boolean |                  |         | x   |      |
+| notifyOnExit  | Boolean |                  |         | x   |      |
+| single        | Boolean |                  |         | x   |      |
 
 ## Progress
 <img src="images/android-icon.svg" width="16"> Android only
