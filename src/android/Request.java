@@ -98,7 +98,7 @@ public final class Request {
 
     /**
      * The identifier for the request in the form
-     * {notification-id}-{occurrence} e.g. "1173-2"
+     * {notification-id}-{occurrence} e.g. "1173-1"
      * @return The notification ID as the string
      */
     String getIdentifier() {
@@ -116,7 +116,7 @@ public final class Request {
      * If there's one more trigger date to calculate.
      */
     private boolean hasNext() {
-        return triggerDate != null && getOccurrence() <= count;
+        return triggerDate != null && getOccurrence() < count;
     }
 
     /**

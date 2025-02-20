@@ -30,7 +30,7 @@ abstract public class DateTrigger {
     public enum Unit { SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR }
 
     // Internal counter
-    private int occurrence = 1;
+    private int occurrence = 0;
 
     /**
      * Gets the next trigger date.

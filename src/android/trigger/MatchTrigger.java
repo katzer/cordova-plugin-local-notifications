@@ -253,14 +253,14 @@ public class MatchTrigger extends IntervalTrigger {
     @Override
     public Date getNextTriggerDate(Date base) {
         Date date = base;
+        incOccurrence();
 
+        // If there's more than one occurrence, add the interval
         if (getOccurrence() > 1) {
             Calendar cal = getCal(base);
             addInterval(cal);
             date = cal.getTime();
         }
-
-        incOccurrence();
 
         return getTriggerDate(date);
     }
