@@ -2,6 +2,10 @@
 
 ## Version 1.1.4-dev
 
+### Android
+- Code refactoring
+- DateTrigger: Set occurrence initial to 0 and not 1
+
 ## Version 1.1.3 (15.02.2025)
 
 ### Android
