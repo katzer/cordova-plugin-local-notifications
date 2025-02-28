@@ -121,7 +121,7 @@ On each platform are limits about how much notifications can be scheduled:
 - iOS: 64
 - Android: 500
 
-Repeating notifications count as 1 notification, except if you schedule with the [trigger count](#repeating) option on Android.
+Repeating notifications count as 1 notification.
 
 ## Properties
 A notification does have a set of configurable properties. See [all properties](#properties-1).

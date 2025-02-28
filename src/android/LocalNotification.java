@@ -62,7 +62,6 @@ import java.util.List;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 import de.appplant.cordova.plugin.localnotification.Options;
-import de.appplant.cordova.plugin.localnotification.Request;
 import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 import de.appplant.cordova.plugin.localnotification.util.CallbackContextUtil;
@@ -246,7 +245,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param command The callback context used when calling back into JavaScript.
      */
     private void canScheduleExactAlarms(CallbackContext command) {
-        successBoolean(command, getManager().canScheduleExactAlarms());
+        successBoolean(command, Manager.canScheduleExactAlarms(getContext()));
     }
 
     /**
@@ -337,8 +336,10 @@ public class LocalNotification extends CordovaPlugin {
      */
     private void schedule(JSONArray optionsJSONList, CallbackContext command) {
         for (int index = 0; index < optionsJSONList.length(); index++) {
-            fireEvent("add", getManager().schedule(new Request(
-                new Options(getContext(), optionsJSONList.optJSONObject(index)))));
+            Options options = new Options(getContext(), optionsJSONList.optJSONObject(index));
+            Notification notification = new Notification(getContext(), options);
+            notification.schedule();
+            fireEvent("add", notification);
         }
 
         hasPermission(command);
@@ -352,7 +353,7 @@ public class LocalNotification extends CordovaPlugin {
      *                JavaScript.
      */
     private void createChannel(JSONArray args, CallbackContext callbackContext) {
-        getManager().createChannel(new Options(getContext(), args.optJSONObject(0)));
+        Manager.createChannel(getContext(), new Options(getContext(), args.optJSONObject(0)));
         callbackContext.success();
     }
 
@@ -451,29 +452,24 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Get the type of the notification (unknown, scheduled, triggered).
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
-    private void type(JSONArray args, CallbackContext command) {
-        int id = args.optInt(0);
-        Notification toast = getManager().getNotification(id);
+    private void type(JSONArray args, CallbackContext callbackContext) {
+        Notification notification = Notification.fromSharedPreferences(getContext(), args.optInt(0));
 
-        if (toast == null) {
-            command.success("unknown");
+        if (notification == null) {
+            callbackContext.success("unknown");
             return;
         }
 
-        switch (toast.getType()) {
+        switch (notification.getType()) {
             case SCHEDULED:
-                command.success("scheduled");
+                callbackContext.success("scheduled");
                 break;
             case TRIGGERED:
-                command.success("triggered");
+                callbackContext.success("triggered");
                 break;
             default:
-                command.success("unknown");
+                callbackContext.success("unknown");
                 break;
         }
     }
@@ -509,55 +505,48 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Options from local notification.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * Sends options from a notification to WebView
      */
-    private void notification(JSONArray args, CallbackContext command) {
-        int id       = args.optInt(0);
-        Options opts = getManager().getOptions(id);
+    private void notification(JSONArray args, CallbackContext callbackContext) {
+        Notification notification = Notification.fromSharedPreferences(getContext(), args.optInt(0));
 
-        if (opts != null) {
-            command.success(opts.getDict());
+        if (notification != null) {
+            callbackContext.success(notification.getOptions().getDict());
         } else {
-            command.success();
+            callbackContext.success();
         }
     }
 
     /**
      * Set of options from local notification.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
-    private void notifications(JSONArray args, CallbackContext command) {
-        int type      = args.optInt(0);
+    private void notifications(JSONArray args, CallbackContext callbackContext) {
+        int type = args.optInt(0);
         JSONArray ids = args.optJSONArray(1);
-        Manager mgr   = getManager();
-        List<JSONObject> options;
+        List<Notification> notifications = new ArrayList<Notification>();
 
         switch (type) {
             case 0:
-                options = mgr.getOptions();
+                notifications = getManager().getNotifications();
                 break;
             case 1:
-                options = mgr.getOptionsByType(SCHEDULED);
+                notifications = getManager().getByType(SCHEDULED);
                 break;
             case 2:
-                options = mgr.getOptionsByType(TRIGGERED);
+                notifications = getManager().getByType(TRIGGERED);
                 break;
             case 3:
-                options = mgr.getOptionsById(toList(ids));
-                break;
-            default:
-                options = new ArrayList<JSONObject>(0);
+                notifications = getManager().getNotifications(toList(ids));
                 break;
         }
 
-        command.success(new JSONArray(options));
+        ArrayList<JSONObject> options = new ArrayList<JSONObject>();
+
+        for (Notification notification : notifications) {
+            options.add(notification.getOptions().getDict());
+        }
+
+        callbackContext.success(new JSONArray(options));
     }
     /**
      * Open the Android Notification settings for current app.

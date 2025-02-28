@@ -35,7 +35,6 @@ import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 import de.appplant.cordova.plugin.localnotification.Options;
-import de.appplant.cordova.plugin.localnotification.Request;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 
 /**
@@ -54,12 +53,13 @@ public class ClickHandlerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);
-        Notification notification = new Manager(getApplicationContext()).getNotification(notificationId);
+        Notification notification = Notification.fromSharedPreferences(
+            getApplicationContext(), getIntent().getExtras().getInt(Notification.EXTRA_ID));
         finish();
 
         if (notification == null) return;
 
+        // Gets input from action and sets it in data
         String action = getIntent().getExtras().getString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
         JSONObject data = new JSONObject();
         setTextInput(action, data);
@@ -69,7 +69,7 @@ public class ClickHandlerActivity extends Activity {
 
         if (notification.getOptions().isAndroidOngoing()) return;
 
-        if (isLast()) {
+        if (notification.getDateTrigger().isLastOccurrence()) {
             notification.cancel();
         } else {
             notification.clear();
@@ -118,12 +118,5 @@ public class ClickHandlerActivity extends Activity {
             | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         context.startActivity(intent);
-    }
-
-    /**
-     * If the notification was the last scheduled one by request.
-     */
-    private boolean isLast() {
-        return getIntent().getBooleanExtra(Request.EXTRA_LAST, false);
     }
 }

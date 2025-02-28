@@ -49,7 +49,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.O;
 import static android.os.Build.VERSION_CODES.P;
 import static android.os.Build.VERSION_CODES.S;
-import static de.appplant.cordova.plugin.localnotification.Notification.PREF_KEY_ID;
 import static de.appplant.cordova.plugin.localnotification.Notification.Type.TRIGGERED;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
@@ -59,6 +58,8 @@ import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
  * cancel or clear local notifications.
  */
 public final class Manager {
+    // Key for shared preferences
+    static final String PREF_KEY_ID = "NOTIFICATION_ID";
 
     public static final String TAG = "Manager";
     
@@ -71,27 +72,14 @@ public final class Manager {
     /**
      * Check if the setting to schedule exact alarms is enabled.
      */
-    public boolean canScheduleExactAlarms() {
+    public static boolean canScheduleExactAlarms(Context context) {
         // Supported since Android 12
         if (SDK_INT < S) return true;
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         return alarmManager.canScheduleExactAlarms();
     }
 
-    /**
-     * Schedule local notification specified by request.
-     *
-     * @param request Set of notification options.
-     */
-    public Notification schedule(Request request) {
-        Notification notification = new Notification(context, request.getOptions());
-        // Create channel if not exists
-        createChannel(request.getOptions());
-        notification.schedule(request);
-        return notification;
-    }
-
-    public NotificationChannel getChannel(Options options) {
+    public static NotificationChannel getChannel(Context context, Options options) {
         // Channels are only supported since Android 8
         if (SDK_INT < O) return null;
         return NotificationManagerCompat.from(context).getNotificationChannel(options.getAndroidChannelId());
@@ -102,12 +90,12 @@ public final class Manager {
      * @param options Set of channel options.
      * 
      */
-    public void createChannel(Options options) {
+    public static void createChannel(Context context, Options options) {
         // Channels are only supported since Android 8
         if (SDK_INT < O) return;
 
         // Check if channel exists
-        NotificationChannel channel = getChannel(options);
+        NotificationChannel channel = getChannel(context, options);
         
         // Channel already created
         if (channel != null) return;
@@ -131,7 +119,7 @@ public final class Manager {
 
         // Grant permission to the system to play the sound, needed only in Android 8
         if (soundUri != Uri.EMPTY && SDK_INT < P) {
-            grantUriPermission(soundUri);
+            grantUriPermission(context, soundUri);
         }
         
         // If options.getSoundUri() is Uri.EMPTY, an empty sound will be set, which means no sound
@@ -167,7 +155,7 @@ public final class Manager {
      * @param updates JSON object with notification options.
      */
     public Notification update(int notificationId, JSONObject updates) {
-        Notification notification = getNotification(notificationId);
+        Notification notification = Notification.fromSharedPreferences(context, notificationId);
         if (notification == null) return null;
 
         notification.update(updates);
@@ -179,7 +167,7 @@ public final class Manager {
      * Clear local notification specified by ID.
      */
     public Notification clear(int notificationId) {
-        Notification notification = getNotification(notificationId);
+        Notification notification = Notification.fromSharedPreferences(context, notificationId);
         if (notification != null) notification.clear();
         return notification;
     }
@@ -199,7 +187,7 @@ public final class Manager {
      * Clear local notification specified by ID.
      */
     public Notification cancel(int notificationId) {
-        Notification notification = getNotification(notificationId);
+        Notification notification = Notification.fromSharedPreferences(context, notificationId);
         if (notification != null) notification.cancel();
         return notification;
     }
@@ -216,20 +204,16 @@ public final class Manager {
     }
 
     /**
-     * Check if a saved notification exists.
-     */
-    public boolean notificationExists(int notificationId) {
-        return getSharedPreferences().contains(Integer.toString(notificationId));
-    }
-
-    /**
      * Get saved notification ids
      */
     public List<Integer> getNotificationIds() {
         List<Integer> notificationIds = new ArrayList<Integer>();
 
-        // The keys are the notification IDs
+        // Options are stored by the notification id in the shared preferences
         for (String key : getSharedPreferences().getAll().keySet()) {
+            // Skip keys with underscore for e.g. _occurrence
+            if (key.contains("_")) continue;
+
             try {
                 notificationIds.add(Integer.parseInt(key));
             } catch (NumberFormatException exception) {
@@ -274,11 +258,12 @@ public final class Manager {
     /**
      * List of local notifications with matching ID.
      */
-    private List<Notification> getNotifications(List<Integer> notificationIds) {
+    public List<Notification> getNotifications(List<Integer> notificationIds) {
         List<Notification> notifications = new ArrayList<Notification>();
 
         for (int notificationId : notificationIds) {
-            if (notificationExists(notificationId)) notifications.add(getNotification(notificationId));
+            Notification notification = Notification.fromSharedPreferences(context, notificationId);
+            if (notification != null) notifications.add(notification);
         }
 
         return notifications;
@@ -291,76 +276,6 @@ public final class Manager {
      */
     public List<Notification> getByType(Notification.Type type) {
         return type == Notification.Type.ALL ? getNotifications() : getNotifications(getNotificationIdsByType(type));
-    }
-
-    /**
-     * List of properties from all local notifications.
-     */
-    public List<JSONObject> getOptions() {
-        return getOptionsById(getNotificationIds());
-    }
-
-    /**
-     * List of properties from local notifications with matching ID.
-     *
-     * @param ids Set of notification IDs
-     */
-    public List<JSONObject> getOptionsById(List<Integer> ids) {
-        List<JSONObject> toasts = new ArrayList<JSONObject>();
-
-        for (int id : ids) {
-            Options options = getOptions(id);
-
-            if (options != null) {
-                toasts.add(options.getDict());
-            }
-        }
-
-        return toasts;
-    }
-
-    /**
-     * List of properties from all local notifications from given type.
-     *
-     * @param type
-     *      The notification life cycle type
-     */
-    public List<JSONObject> getOptionsByType(Notification.Type type) {
-        ArrayList<JSONObject> options = new ArrayList<JSONObject>();
-        List<Notification> notifications = getByType(type);
-
-        for (Notification notification : notifications) {
-            options.add(notification.getOptions().getDict());
-        }
-
-        return options;
-    }
-
-    /**
-     * Get local notification options.
-     * @param notificationId
-     * @return null if could not found.
-     */
-    public Options getOptions(int notificationId) {
-        if (!notificationExists(notificationId)) return null;
-
-        try {
-            return new Options(
-                context,
-                new JSONObject(
-                    getSharedPreferences().getString(Integer.toString(notificationId), null)));
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Get existent local notification.
-     * @return null if could not found.
-     */
-    public Notification getNotification(int notificationId) {
-        return notificationExists(notificationId) ? new Notification(context, getOptions(notificationId)) : null;
     }
 
     /**
@@ -378,10 +293,14 @@ public final class Manager {
         return null;
     }
 
+    public SharedPreferences getSharedPreferences() {
+        return getSharedPreferences(context);
+    }
+
     /**
      * Shared private preferences for the application.
      */
-    private SharedPreferences getSharedPreferences() {
+    public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(PREF_KEY_ID, Context.MODE_PRIVATE);
     }
 
@@ -410,7 +329,7 @@ public final class Manager {
      * This was fixed in Android 9.
      * See: https://stackoverflow.com/questions/39359465/android-7-0-notification-sound-from-file-provider-uri-not-playing
      */
-    public void grantUriPermission(Uri uri) {
+    public static void grantUriPermission(Context context, Uri uri) {
         context.grantUriPermission("com.android.systemui", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 }

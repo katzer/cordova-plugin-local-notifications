@@ -33,10 +33,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
-import de.appplant.cordova.plugin.localnotification.Builder;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
-import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * This class is triggered, when the system has cleared the alarms and notifications,
@@ -67,23 +65,7 @@ public class RestoreReceiver extends BroadcastReceiver {
             Log.d(TAG, "Restoring notifications, count: " + notifications.size());
 
             for (Notification notification : notifications) {
-                // Rebuild the notification with the click activity, clear receiver and builder
-                notification = new Builder(notification.getOptions())
-                    .setClickActivity(ClickHandlerActivity.class)
-                    .setClearReceiver(ClearReceiver.class)
-                    .build();
-
-                Request request = new Request(notification.getOptions());
-                Date triggerDate = request.getTriggerDate();
-                boolean shouldSchedule = triggerDate != null && triggerDate.after(new Date());
-        
-                // Notification is in the past, show only
-                if (!shouldSchedule) notification.show();
-        
-                // Notification should be scheduled or is repeating
-                if (shouldSchedule || notification.isRepeating()) {
-                    new Manager(notification.getContext()).schedule(request);
-                }
+                notification.schedule();
             }
         }
     }

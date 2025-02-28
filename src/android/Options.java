@@ -166,13 +166,72 @@ public final class Options {
         return options.optJSONObject("trigger");
     }
 
+    public long getTriggerAt() {
+        return getTrigger().optLong("at", 0);
+    }
+
+    public int getTriggerIn() {
+        return getTrigger().optInt("in", 0);
+    }
+
+    public String getTriggerUnit() {
+        return getTrigger().optString("unit", null);
+    }
+
+    /**
+     * Only for repeating notifications, when the first notification should be triggered.
+     */
+    public long getTriggerFirstAt() {
+        return getTrigger().optLong("firstAt", 0);
+    }
+
+    /**
+     * Only for repeating notifications, when the first notification should be triggered.
+     */
+    public long getTriggerAfter() {
+        return getTrigger().optLong("after", 0);
+    }
+
+    /**
+     * If a repeating notification should be stopped after some occurrences. -1 means infinite.
+     * @return
+     */
+    public int getTriggerCount() {
+        return getTrigger().optInt("count", -1);
+    }
+
+    /**
+     * Gets trigger.every as string. If trigger.every is an object, it returns null
+     */
+    public String getTriggerEveryAsString() {
+        return getTrigger().opt("every") instanceof String ? getTrigger().optString("every") : null;
+    }
+
+    /**
+     * Gets trigger.every as object. If trigger.every is a String, it returns null
+     */
+    public JSONObject getTriggerEveryAsObject() {
+        return getTrigger().optJSONObject("every");
+    }
+
+    /**
+     * If it's a repeating notification. It must not be endless, when it has a count property.
+     */
+    public boolean isRepeating() {
+        return getTrigger().has("every");
+    }
+
     /**
      * If the trigger shall be infinite.
      */
-    public boolean isInfiniteTrigger() {
-        return getTrigger().has("every") && getTrigger().optInt("count", -1) < 0;
+    public boolean isRepeatingInfinite() {
+        return isRepeating() && getTriggerCount() < 0;
     }
 
+    public long getTriggerBefore() {
+        return getTrigger().optLong("before", 0);
+    }
+    
     /**
      * Gets the value of the silent flag.
      */

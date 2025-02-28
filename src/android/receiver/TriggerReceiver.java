@@ -33,11 +33,10 @@ import java.util.Calendar;
 
 import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.Builder;
+import de.appplant.cordova.plugin.localnotification.BuilderCreator;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 import de.appplant.cordova.plugin.localnotification.Options;
-import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -62,23 +61,21 @@ public class TriggerReceiver extends BroadcastReceiver {
         if (bundle == null) return;
 
         int notificationId = bundle.getInt(Notification.EXTRA_ID, 0);
-        Options options = new Manager(context).getOptions(notificationId);
-        if (options == null) return;
+        Notification notification = Notification.fromSharedPreferences(context, notificationId);
+        if (notification == null) return;
 
-        Notification notification = new Builder(options)
+        notification.setBuilder(new BuilderCreator(notification)
             .setClickActivity(ClickHandlerActivity.class)
             .setClearReceiver(ClearReceiver.class)
             .setExtras(bundle)
-            .build();
-
-        if (notification == null) return;
+            .create());
 
         Log.d(TAG, "trigger, notificationId=" + notification.getId());
 
         PowerManager.WakeLock wakeLock = null;
 
         // Turn the screen on
-        if (options.isAndroidWakeUpScreen()) {
+        if (notification.getOptions().isAndroidWakeUpScreen()) {
             wakeLock = new Manager(context).wakeUpScreen();
         }
 
@@ -91,11 +88,10 @@ public class TriggerReceiver extends BroadcastReceiver {
         boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
         if (!isUpdate && LocalNotification.isAppRunning()) LocalNotification.fireEvent("trigger", notification);
 
-        // Schedule next notification, if notification is endless repeating
-        if (options.isInfiniteTrigger()) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, 1);
-            new Manager(context).schedule(new Request(options, calendar.getTime()));
-        }
+        // Schedule next notification if available
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 1);
+        notification.getDateTrigger().setBaseDate(calendar.getTime());
+        notification.schedule();
     }
 }

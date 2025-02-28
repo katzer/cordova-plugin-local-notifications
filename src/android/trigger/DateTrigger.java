@@ -21,25 +21,114 @@
 
 package de.appplant.cordova.plugin.localnotification.trigger;
 
+import android.util.Log;
 import java.util.Calendar;
 import java.util.Date;
 
-abstract public class DateTrigger {
+import de.appplant.cordova.plugin.localnotification.Options;
+
+public abstract class DateTrigger {
+
+    public static final String TAG = "DateTrigger";
 
     // Default unit is SECOND
     public enum Unit { SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR }
+    
+    public Options options;
 
-    // Internal counter
-    private int occurrence = 0;
+    int occurrence = 0;
+
+    /**
+     * The base date from where to calculate the next trigger
+     */
+    Date baseDate;
+
+    /**
+     * trigger date calculated by {@link #getNextTriggerDate()}
+     */
+    Date triggerDate;
+
+    /**
+     * @param options Notification options
+     */
+    public DateTrigger(Options options) {
+        this.options = options;
+        this.baseDate = getFirstBaseDate();
+    }
+
+    /**
+     * Gets the frist date from where to calculate the next trigger.
+     */
+    private Date getFirstBaseDate() {
+        // Get first trigger from config or set to current date
+        return getFirstTriggerFromConfig() > 0 ? new Date(getFirstTriggerFromConfig()) : new Date();
+    }
+
+    /**
+     * Only for repeating triggers, when the first trigger should occur by config.
+     * Returns 0 there is nothing set.
+     * @return
+     */
+    private long getFirstTriggerFromConfig() {
+        if (options.getTriggerFirstAt() > 0) return options.getTriggerFirstAt();
+        if (options.getTriggerAfter() > 0) return options.getTriggerAfter();
+        return 0;
+    }
+
+    /**
+     * Calculates the next trigger. Can return null if there's no next trigger.
+     * @param baseCalendar The base calendar from where to calculate the next trigger.
+     */
+    public abstract Date calculateNextTrigger(Calendar baseCalendar);
 
     /**
      * Gets the next trigger date.
-     *
      * @param base The date from where to calculate the trigger date.
-     *
      * @return null if there's none next trigger date.
      */
-    abstract public Date getNextTriggerDate(Date base);
+    public Date getNextTriggerDate() {
+        // Use last trigger date as base date for calculating the next trigger
+        if (triggerDate != null) baseDate = triggerDate;
+
+        // Clear the last trigger date, so it's reflecting the current status of this date trigger
+        triggerDate = null;
+
+        // All occurrences have been run through
+        if (isLastOccurrence()) return null;
+
+        Date nextTriggerDate = calculateNextTrigger(dateToCalendar(baseDate));
+
+        Log.d(TAG, "Next trigger date: " + nextTriggerDate + ", notificaitonId=" + options.getId());
+        
+        if (nextTriggerDate == null) return null;
+
+        // Check if the trigger is within the before option (only for repeating triggers)
+        if (!isWithinTriggerbefore(options, nextTriggerDate)) return null;
+
+        // Count occurrence
+        occurrence++;
+
+        // Remember trigger date
+        triggerDate = nextTriggerDate;
+
+        return nextTriggerDate;
+    }
+
+    /**
+     * Sets the base date from where to calculate the next trigger. This is initially set by
+     * {@link #getFirstBaseDate()} but can be overwritten.
+     */
+    public void setBaseDate(Date baseDate) {
+        this.baseDate = baseDate;
+    }
+
+    /**
+     * Sets the occurrence of the trigger.
+     * @param occurence
+     */
+    public void setOccurrence(int occurence) {
+        this.occurrence = occurence;
+    }
 
     /**
      * The value of the occurrence.
@@ -48,23 +137,68 @@ abstract public class DateTrigger {
         return occurrence;
     }
 
-    /**
-     * Increase the occurrence by 1.
-     */
-    void incOccurrence() {
-        occurrence += 1;
+    public boolean isLastOccurrence() {
+        // trigger is not repeating like it is for trigger.at and trigger.in
+        // there can only be 1 occurrence 
+        if (!options.isRepeating() && occurrence == 1) return true;
+
+        // Repeating trigger: All occurrences have been run through specified by the count option
+        if (options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount()) return true;
+
+        // It's not the last occurrence
+        return false;
     }
 
     /**
-     * Gets a calendar instance pointing to the specified date.
-     *
-     * @param date The date to point.
+     * Converts {@link Date} to {@link Calendar}.
      */
-    Calendar getCal(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-
-        return cal;
+    Calendar dateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 
+    /**
+     * Adds the amount of {@link Unit} to the calendar.
+     * @param calendar The calendar to manipulate.
+     */
+    void addInterval(Calendar calendar, Unit unit, int amount) {
+        switch (unit) {
+            case SECOND:
+                calendar.add(Calendar.SECOND, amount);
+                break;
+            case MINUTE:
+                calendar.add(Calendar.MINUTE, amount);
+                break;
+            case HOUR:
+                calendar.add(Calendar.HOUR_OF_DAY, amount);
+                break;
+            case DAY:
+                calendar.add(Calendar.DAY_OF_YEAR, amount);
+                break;
+            case WEEK:
+                calendar.add(Calendar.WEEK_OF_YEAR, amount);
+                break;
+            case MONTH:
+                calendar.add(Calendar.MONTH, amount);
+                break;
+            case QUARTER:
+                calendar.add(Calendar.MONTH, amount * 3);
+                break;
+            case YEAR:
+                calendar.add(Calendar.YEAR, amount);
+                break;
+        }
+    }
+
+    /**
+     * Checks if the trigger date is within the trigger before option, if present
+     * @param options
+     * @param triggerDate
+     * @return
+     */
+    public boolean isWithinTriggerbefore(Options options, Date triggerDate) {
+        // Return true, if there is no trigger before option, otherwise compare against it
+        return !options.getTrigger().has("before") || triggerDate.getTime() < options.getTriggerBefore();
+    }
 }

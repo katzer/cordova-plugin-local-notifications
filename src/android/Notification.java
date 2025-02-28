@@ -51,6 +51,9 @@ import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
 import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
+import de.appplant.cordova.plugin.localnotification.trigger.DateTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -71,12 +74,6 @@ public final class Notification {
     // Extra key for the update flag
     public static final String EXTRA_UPDATE = "NOTIFICATION_UPDATE";
 
-    // Key for private preferences
-    static final String PREF_KEY_ID = "NOTIFICATION_ID";
-
-    // Key for private preferences
-    private static final String PREF_KEY_PID = "NOTIFICATION_PID";
-
     // Application context passed by constructor
     private final Context context;
 
@@ -86,7 +83,13 @@ public final class Notification {
     /**
      * Notification builder instance. Can be {@code null}.
      */
-    private final NotificationCompat.Builder builder;
+    private NotificationCompat.Builder builder;
+
+    /**
+     * DateTrigger for the trigger property.
+     * Can be {@link IntervalTrigger} or {@link MatchTrigger}.
+     */
+    private final DateTrigger dateTrigger;
 
     /**
      * Constructor
@@ -107,6 +110,21 @@ public final class Notification {
         this.context = context;
         this.options = options;
         this.builder = builder;
+
+        // DateTrigger for the trigger property
+        // If trigger.every exists and is an object, a MatchTrigger will be created, otherwise an IntervalTrigger
+        this.dateTrigger = options.getTrigger().opt("every") instanceof JSONObject ?
+            // Example: trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
+            new MatchTrigger(options) :
+            // Examples:
+            // trigger: { at: new Date(2017, 10, 27, 15) }
+            // trigger: { in: 1, unit: 'hour' }
+            // trigger: { every: 'day', count: 5 }
+            new IntervalTrigger(options);
+    }
+
+    public void setBuilder(NotificationCompat.Builder builder) {
+        this.builder = builder;
     }
 
     /**
@@ -123,6 +141,10 @@ public final class Notification {
         return options;
     }
 
+    public DateTrigger getDateTrigger() {
+        return dateTrigger;
+    }
+
     /**
      * Get notification ID.
      */
@@ -131,11 +153,12 @@ public final class Notification {
     }
 
     /**
-     * If it's a repeating notification.
+     * The action identifier in the form NOTIFICATION_ID{notification-id}-{occurrence} like "NOTIFICATION_ID1173-1"
      */
-    public boolean isRepeating() {
-        return getOptions().getTrigger().has("every");
+    String getIntentActionIdentifier() {
+        return Manager.PREF_KEY_ID + options.getId();
     }
+
 
     /**
      * Notification type can be one of triggered or scheduled.
@@ -151,99 +174,78 @@ public final class Notification {
     }
 
     /**
-     * Schedule the local notification.
-     * @param request Set of notification options.
+     * Schedule the local notification. It's safe to call this, if there are no more occurrences
+     * or if the schedule time is in the past.
      */
-    public void schedule(Request request) {
-        // Cancel notification, if it was already scheduled or triggered
-        cancel();
+    public void schedule() {
+        Date triggerDate = dateTrigger.getNextTriggerDate();
 
-        List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
-        Set<String> intentActionIds = new ArraySet<String>();
-
-        // Loop all occurrences specified by the trigger option
-        do {
-            Date triggerDate = request.getTriggerDate();
-            if (triggerDate == null) continue;
-
-            Intent intent = new Intent(context, TriggerReceiver.class)
-                    // action identifier like "NOTIFICATION_ID1173-2"
-                    .setAction(PREF_KEY_ID + request.getIdentifier())
-                    .putExtra(Notification.EXTRA_ID, options.getId())
-                    .putExtra(Request.EXTRA_OCCURRENCE, request.getOccurrence());
-            
-            intents.add(new Pair<Date, Intent>(triggerDate, intent));
-
-            // Save action identifier for occurrence
-            intentActionIds.add(intent.getAction());
-
-        // Move to next occurrence
-        } while (request.moveNext());
-
-        // Nothing to schedule
-        if (intents.isEmpty()) {
+        // No next trigger date available, all triggers are done
+        if (triggerDate == null) {
+            // Remove notification options from shared preferences
             unpersist();
             return;
         }
-        
-        if (!options.isInfiniteTrigger()) {
-            Intent last = intents.get(intents.size() - 1).second;
-            last.putExtra(Request.EXTRA_LAST, true);
+
+        // Create channel if not exists
+        Manager.createChannel(getContext(), options);
+
+        Intent intent = new Intent(context, TriggerReceiver.class)
+            // action identifier for the intent like "NOTIFICATION_ID1173"
+            .setAction(getIntentActionIdentifier())
+            // Notification-ID
+            .putExtra(EXTRA_ID, options.getId());
+
+        // Store notification data
+        persist();
+
+        // Date is in the past, trigger directly
+        if (!triggerDate.after(new Date())) {
+            trigger(intent);
+            return;
         }
 
-        persist(intentActionIds);
+        boolean canScheduleExactAlarms = Manager.canScheduleExactAlarms(context);
 
-        boolean canScheduleExactAlarms = new Manager(context).canScheduleExactAlarms();
+        Log.d(TAG, "Schedule notification" +
+            ", notificationId: " + options.getId() +
+            ", intentAction=" + intent.getAction() +
+            ", trigger-date: " + triggerDate +
+            ", occurrence: " + dateTrigger.getOccurrence() +
+            ", options=" + options +
+            ", canScheduleExactAlarms: " + canScheduleExactAlarms);
+        
+        // AlarmManager.set: If there is already an alarm scheduled for the same IntentSender,
+        // that previous alarm will first be canceled.
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        for (Pair<Date, Intent> pair : intents) {
-            Date triggerDate = pair.first;
-            Intent intent = pair.second;
-
-            // Date is in the past and must not be scheduled, trigger directly
-            if (!triggerDate.after(new Date())) {
-                trigger(intent);
-                continue;
-            }
-
-            Log.d(TAG, "Schedule notification" +
-                ", notificationId: " + options.getId() +
-                ", intentAction=" + intent.getAction() +
-                ", trigger-date: " + triggerDate + 
-                ", options=" + options +
-                ", canScheduleExactAlarms: " + canScheduleExactAlarms);
-            
-            // AlarmManager.set: If there is already an alarm scheduled for the same IntentSender,
-            // that previous alarm will first be canceled.
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-            // A maximum of 500 alarms can be scheduled, catch exception
-            try {
-                // Execute alarm even when the system is in low-power idle (a.k.a. doze) modes.
-                if (options.isAndroidAllowWhileIdle()) {
-                    if (canScheduleExactAlarms) {
-                        getAlarmManager().setExactAndAllowWhileIdle(
-                            options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
-                    } else {
-                        getAlarmManager().setAndAllowWhileIdle(
-                            options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
-                    }
-
-                    // Execute alarm by RTC or RTC_WAKEUP
+        // A maximum of 500 alarms can be scheduled, catch exception
+        try {
+            // Execute alarm even when the system is in low-power idle (a.k.a. doze) modes.
+            if (options.isAndroidAllowWhileIdle()) {
+                if (canScheduleExactAlarms) {
+                    getAlarmManager().setExactAndAllowWhileIdle(
+                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
                 } else {
-                    if (canScheduleExactAlarms) {
-                        getAlarmManager().setExact(
-                            options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
-                    } else {
-                        getAlarmManager().set(
-                            options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
-                    }
+                    getAlarmManager().setAndAllowWhileIdle(
+                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
                 }
 
-                // Maximum 500 alarms can be scheduled.
-                // If more are scheduled, an exception will be thrown.
-            } catch (Exception exception) {
-                Log.d(TAG, "Exception occurred during scheduling notification", exception);
+                // Execute alarm by RTC or RTC_WAKEUP
+            } else {
+                if (canScheduleExactAlarms) {
+                    getAlarmManager().setExact(
+                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                } else {
+                    getAlarmManager().set(
+                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                }
             }
+
+            // Maximum 500 alarms can be scheduled.
+            // If more are scheduled, an exception will be thrown.
+        } catch (Exception exception) {
+            Log.d(TAG, "Exception occurred during scheduling notification", exception);
         }
     }
 
@@ -273,13 +275,13 @@ public final class Notification {
         mergeJSONObjects(updates);
         Log.d(TAG, "Update notification, options=" + options);
 
-        // Store the options
-        persist(null);
+        // Store notification data
+        persist();
 
         // Update already triggered notification in status bar
         if (getType() == Type.TRIGGERED) {
             Intent intent = new Intent(context, TriggerReceiver.class)
-                    .setAction(PREF_KEY_ID + options.getId())
+                    .setAction(Manager.PREF_KEY_ID + options.getId())
                     .putExtra(Notification.EXTRA_ID, options.getId())
                     .putExtra(Notification.EXTRA_UPDATE, true);
 
@@ -296,7 +298,7 @@ public final class Notification {
         NotificationManagerCompat.from(context).cancel(getAppName(), getId());
 
         // If the notification is not repeating, remove notification data from the app
-        if (!isRepeating()) {
+        if (!options.isRepeating()) {
           unpersist();
         }
     }
@@ -306,9 +308,8 @@ public final class Notification {
      */
     public void cancel() {
         Log.d(TAG, "Cancel notification, options=" + options);
-        // Cancel all alarms for this notification. If the notification is repeating, it can
-        // have multiple alarms
-        cancelScheduledAlarms();
+
+        cancelScheduledAlarm();
 
         // Remove saved notification data from the app
         unpersist();
@@ -321,34 +322,29 @@ public final class Notification {
      * Cancel all alarms for this notification. If the notification is repeating, it can
      * have multiple alarms.
      */
-    private void cancelScheduledAlarms() {
-        Set<String> intentActionIds = getSharedPreferences(PREF_KEY_PID).getStringSet(options.getId().toString(), null);
+    private void cancelScheduledAlarm() {
+        String intentActionId = getIntentActionIdentifier();
+        Log.d(TAG, "Cancel PendingIntent, intentActionId=" + intentActionId);
 
-        if (intentActionIds == null) return;
+        // Create similar PendingIntent to cancel the alarm
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+            context, 0,
+            // The intent have to be build with the same context, class and action
+            new Intent(context, TriggerReceiver.class).setAction(intentActionId),
+            // If the PendingIntent could not be found, null will be returned (configured by FLAG_NO_CREATE)
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
 
-        for (String intentActionId : intentActionIds) {
-            Log.d(TAG, "Cancel PendingIntent, intentActionId=" + intentActionId);
-
-            // Create similar PendingIntent to cancel the alarm
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context, 0,
-                // The intent have to be build with the same context, class and action
-                new Intent(context, TriggerReceiver.class).setAction(intentActionId),
-                // If the PendingIntent could not be found, null will be returned (configured by FLAG_NO_CREATE)
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
-
-            // PendingIntent could not be found
-            if (pendingIntent == null) {
-                Log.d(TAG, "Could not cancel PendingIntent, intentActionId=" + intentActionId + ", PendingIntent not found");
-                continue;
-            }
-
-            // Remove any alarms with a matching Intent. Any alarm, of any type, whose Intent matches this one
-            // (as defined by Intent#filterEquals), will be canceled.
-            // Intent#filterEquals: That is, if their action, data, type, identity, class, and categories are the same.
-            // This does not compare any extra data included in the intents.
-            getAlarmManager().cancel(pendingIntent);
+        // PendingIntent could not be found
+        if (pendingIntent == null) {
+            Log.d(TAG, "Could not cancel PendingIntent, intentActionId=" + intentActionId + ", PendingIntent not found");
+            return;
         }
+
+        // Remove any alarms with a matching Intent. Any alarm, of any type, whose Intent matches this one
+        // (as defined by Intent#filterEquals), will be canceled.
+        // Intent#filterEquals: That is, if their action, data, type, identity, class, and categories are the same.
+        // This does not compare any extra data included in the intents.
+        getAlarmManager().cancel(pendingIntent);
     }
 
     /**
@@ -370,29 +366,48 @@ public final class Notification {
      * Persist the information of this notification to the Android Shared
      * Preferences. This will allow the application to restore the notification
      * upon device reboot, app restart, retrieve notifications, aso.
-     *
-     * @param intentActionIds List of intent actions to persist.
      */
-    private void persist(Set<String> intentActionIds) {
-        // Save options for this notification
-        getSharedPreferences(PREF_KEY_ID).edit()
-        .putString(options.getId().toString(), options.toString())
+    private void persist() {
+        Manager.getSharedPreferences(context).edit()
+        // Store options
+        .putString(getSharedPreferencesKeyOptions(options.getId()), options.toString())
+        // Store occurrence
+        .putInt(getSharedPreferencesKeyOccurrence(options.getId()), dateTrigger.getOccurrence())
         .apply();
-
-        // Save intent action identifiers for this notification
-        if (intentActionIds != null) {
-            getSharedPreferences(PREF_KEY_PID).edit()
-            .putStringSet(options.getId().toString(), intentActionIds)
-            .apply();
-        }
     }
 
     /**
      * Remove the notification from the Android shared Preferences.
      */
     private void unpersist() {
-        getSharedPreferences(PREF_KEY_ID).edit().remove(options.getId().toString()).apply();
-        getSharedPreferences(PREF_KEY_PID).edit().remove(options.getId().toString()).apply();
+        Manager.getSharedPreferences(context).edit()
+        .remove(getSharedPreferencesKeyOptions(options.getId()))
+        .remove(getSharedPreferencesKeyOccurrence(options.getId()))
+        .apply();
+    }
+
+    /**
+     * Gets the stored notification options from the Android shared Preferences.
+     */
+    public static Notification fromSharedPreferences(Context context, int notificationId) {
+        String optionsJSONString = Manager.getSharedPreferences(context).getString(
+            getSharedPreferencesKeyOptions(notificationId), null);
+
+        if (optionsJSONString == null) return null;
+        
+        try {
+            Notification notification = new Notification(context, new Options(context, new JSONObject(optionsJSONString)));
+            // Restore occurrence in date trigger
+            notification.dateTrigger.setOccurrence(Manager.getSharedPreferences(context).getInt(
+                Notification.getSharedPreferencesKeyOccurrence(notification.getOptions().getId()), 0));
+            return notification;
+        } catch (JSONException exception) {
+            Log.e(TAG, "Could not parse stored notification options to JSON" + 
+                ", notificationId=" + notificationId +
+                ", jsonString=" + optionsJSONString,
+                exception);
+            return null;
+        }
     }
 
     /**
@@ -411,11 +426,12 @@ public final class Notification {
         }
     }
 
-    /**
-     * Shared private preferences for the application.
-     */
-    private SharedPreferences getSharedPreferences(String key) {
-        return context.getSharedPreferences(key, Context.MODE_PRIVATE);
+    public static String getSharedPreferencesKeyOccurrence(int notificationId) {
+        return notificationId + "_occurrence";
+    }
+
+    public static String getSharedPreferencesKeyOptions(int notificationId) {
+        return "" + notificationId;
     }
 
     /**

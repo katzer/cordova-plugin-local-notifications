@@ -47,10 +47,9 @@ import static de.appplant.cordova.plugin.localnotification.Notification.EXTRA_UP
 import static de.appplant.cordova.plugin.localnotification.Options.LARGE_ICON_TYPE_CIRCLE;
 
 /**
- * Builder class for local notifications. Build fully configured local
- * notification specified by JSON object passed from JS side.
+ * Builds a NotificationCompat.Builder from notification options.
  */
-public final class Builder {
+public final class BuilderCreator {
 
     // Application context passed by constructor
     private final Context context;
@@ -70,14 +69,9 @@ public final class Builder {
     // Additional extras to merge into each intent
     private Bundle extras;
 
-    /**
-     * Constructor
-     *
-     * @param options Notification options
-     */
-    public Builder(Options options) {
-        this.context = options.getContext();
-        this.options = options;
+    public BuilderCreator(Notification notification) {
+        this.context = notification.getContext();
+        this.options = notification.getOptions();
     }
 
     /**
@@ -85,7 +79,7 @@ public final class Builder {
      *
      * @param receiver Broadcast receiver for the clear event.
      */
-    public Builder setClearReceiver(Class<?> receiver) {
+    public BuilderCreator setClearReceiver(Class<?> receiver) {
         this.clearReceiver = receiver;
         return this;
     }
@@ -95,7 +89,7 @@ public final class Builder {
      *
      * @param activity The activity to handler the click event.
      */
-    public Builder setClickActivity(Class<?> activity) {
+    public BuilderCreator setClickActivity(Class<?> activity) {
         this.clickActivity = activity;
         return this;
     }
@@ -105,7 +99,7 @@ public final class Builder {
      *
      * @param extras The bundled extras to merge into.
      */
-    public Builder setExtras(Bundle extras) {
+    public BuilderCreator setExtras(Bundle extras) {
         this.extras = extras;
         return this;
     }
@@ -115,9 +109,9 @@ public final class Builder {
      *
      * @return The final notification to display.
      */
-    public Notification build() {
+    public NotificationCompat.Builder create() {
         // TODO: Does this work, when no builder is created?
-        if (options.isSilent()) return new Notification(context, options);
+        if (options.isSilent()) return null;
 
         Bundle extras = new Bundle();
         extras.putInt(Notification.EXTRA_ID, options.getId());
@@ -161,7 +155,7 @@ public final class Builder {
 
             if (soundUri != Uri.EMPTY && !isUpdate()) {
                 // Grant permission to the system to play the sound, needed in Android 7 and 8
-                new Manager(context).grantUriPermission(soundUri);
+                Manager.grantUriPermission(context, soundUri);
                 builder.setSound(soundUri);
             }
         }
@@ -195,7 +189,7 @@ public final class Builder {
         applyDeleteReceiver(builder);
         applyContentReceiver(builder);
 
-        return new Notification(context, options, builder);
+        return builder;
     }
 
     /**

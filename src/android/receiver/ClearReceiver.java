@@ -30,7 +30,6 @@ import android.os.Bundle;
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
-import de.appplant.cordova.plugin.localnotification.Request;
 
 /**
  * The clear intent receiver is triggered when the user clears a
@@ -49,13 +48,11 @@ public class ClearReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         if (bundle == null) return;
 
-        int notificationId = bundle.getInt(Notification.EXTRA_ID);
-        Notification notification = new Manager(context).getNotification(notificationId);
-
+        Notification notification = Notification.fromSharedPreferences(context, bundle.getInt(Notification.EXTRA_ID));
         if (notification == null) return;
 
         // Cancel alarm and remove notification from storage, when it was the last occurence
-        if (bundle.getBoolean(Request.EXTRA_LAST, false)) {
+        if (notification.getDateTrigger().isLastOccurrence()) {
             notification.cancel();
 
             // Clear only from statusbar, so that the next occurrences can be shown
@@ -63,8 +60,6 @@ public class ClearReceiver extends BroadcastReceiver {
             notification.clear();
         }
 
-        if (LocalNotification.isAppRunning()) {
-            LocalNotification.fireEvent("clear", notification);
-        }
+        if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("clear", notification);
     }
 }

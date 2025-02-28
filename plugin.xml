@@ -224,7 +224,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification/util" />
 
         <source-file
-            src="src/android/Builder.java"
+            src="src/android/BuilderCreator.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
@@ -237,10 +237,6 @@
 
         <source-file
             src="src/android/Options.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification" />
-
-        <source-file
-            src="src/android/Request.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 

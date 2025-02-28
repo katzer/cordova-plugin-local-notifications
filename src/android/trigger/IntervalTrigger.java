@@ -21,81 +21,99 @@
 
 package de.appplant.cordova.plugin.localnotification.trigger;
 
+import android.util.Log;
+
 import java.util.Calendar;
 import java.util.Date;
 
+import de.appplant.cordova.plugin.localnotification.Options;
+
 /**
- * Trigger class for interval based notification. Trigger by a fixed interval
- * from now.
+ * Trigger class for interval based notification.
+ * Trigger by a fixed interval from now.
+ * 
+ * Examples:
+ *   trigger: { at: new Date(2017, 10, 27, 15) }
+ *   trigger: { in: 1, unit: 'hour' }
+ *   trigger: { every: 'day', count: 5 }
  */
 public class IntervalTrigger extends DateTrigger {
 
-    // The number of ticks per interval
-    private final int ticks;
+    public static final String TAG = "IntervalTrigger";
 
-    // The unit of the ticks
-    final Unit unit;
-
-    /**
-     * Interval trigger based from now.
-     *
-     * @param ticks The number of ticks per interval.
-     * @param unit  The unit of the ticks.
-     */
-    public IntervalTrigger(int ticks, Unit unit) {
-        this.ticks = ticks;
-        this.unit  = unit;
+    public IntervalTrigger(Options options) {
+        super(options);
     }
 
     /**
-     * Gets the next trigger date.
-     *
-     * @param base The date from where to calculate the trigger date.
-     *
-     * @return null if there's none next trigger date.
+     * Calculates the next trigger.
+     * @param baseCalendar The base calendar from where to calculate the next trigger.
      */
-    @Override
-    public Date getNextTriggerDate(Date base) {
-        Calendar cal = getCal(base);
+    public Date calculateNextTrigger(Calendar baseCalendar) {
+        Log.d(TAG, "Calculating next trigger" +
+            ", baseCalendar=" + baseCalendar.getTime() +
+            ", occurrence=" + occurrence +
+            ", unit=" + getUnit() +
+            ", amount=" + getUnitAmount() +
+            ", count=" + options.getTriggerCount());
 
-        addInterval(cal);
-        incOccurrence();
+        // trigger.at only triggers once
+        if (options.getTriggerAt() > 0) {
+            if (occurrence > 0) return null;
+            return new Date(options.getTriggerAt());
+        }
 
-        return cal.getTime();
+        // trigger.in or trigger.every
+        // trigger.in should only calculated once
+        if (options.getTriggerIn() > 0 && occurrence > 0) return null;
+
+        addInterval(baseCalendar, getUnit(), getUnitAmount());
+
+        Log.d(TAG, "Next trigger calculated, triggerDate=" + baseCalendar.getTime());
+        return baseCalendar.getTime();
     }
 
     /**
-     * Adds the amount of ticks to the calendar.
-     *
-     * @param cal The calendar to manipulate.
+     * Gets a {@link Unit} enum determined from the trigger option.
+     * Examples:
+     *   trigger: { in: 1, unit: 'hour' } resolves to Unit.HOUR
+     *   trigger: { every: 'day', count: 5 } resolves to Unit.DAY
+     * Defaults to Unit.SECOND, when nothing set
      */
-    void addInterval(Calendar cal) {
-        switch (unit) {
-            case SECOND:
-                cal.add(Calendar.SECOND, ticks);
-                break;
-            case MINUTE:
-                cal.add(Calendar.MINUTE, ticks);
-                break;
-            case HOUR:
-                cal.add(Calendar.HOUR_OF_DAY, ticks);
-                break;
-            case DAY:
-                cal.add(Calendar.DAY_OF_YEAR, ticks);
-                break;
-            case WEEK:
-                cal.add(Calendar.WEEK_OF_YEAR, ticks);
-                break;
-            case MONTH:
-                cal.add(Calendar.MONTH, ticks);
-                break;
-            case QUARTER:
-                cal.add(Calendar.MONTH, ticks * 3);
-                break;
-            case YEAR:
-                cal.add(Calendar.YEAR, ticks);
-                break;
+    private Unit getUnit() {
+        // When nothing given or input is invalid
+        Unit defaultUnit = Unit.MINUTE;
+
+        // First, try unit option, if available
+        String unit = options.getTriggerUnit();
+
+        // If unit not available, try every option
+        if (unit == null) unit = options.getTriggerEveryAsString();
+
+        // If every option not available, set default
+        if (unit == null) unit = defaultUnit.toString();
+
+        // Convert string to enum
+        try {
+            return Unit.valueOf(unit.toUpperCase());
+        } catch (Exception exception) {
+            Log.e(TAG, "Could not convert unit to Enum, using default of '" + defaultUnit + "', value=" + unit, exception);
+            return defaultUnit;
         }
     }
 
+    /**
+     * How often a {@link Unit} should be added
+     */
+    private int getUnitAmount() {
+        // trigger: { in: 1, unit: 'hour' }
+        // Add amount by in option
+        if (options.getTriggerIn() > 0) return options.getTriggerIn();
+
+        // trigger: { every: 'day', count: 5 }
+        // Amount should be added by one
+        if (options.getTriggerEveryAsString() != null) return 1;
+
+        return 0;
+    }
 }
