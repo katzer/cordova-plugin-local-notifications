@@ -5,11 +5,12 @@
 ### Android
 - Refactor trigger handling
   - `DateTrigger`: Set occurrence initial to 0 (not 1)
-  - Repeating notification: Don't cancel previously posted notification, when scheduling next notification, fixes [Issue #2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
+  - Repeating notification: Don't cancel previously posted notification, when scheduling next notification, fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
   - Don't schedule all occurrences at once when `trigger.count` is set, schedule one after the other, like it's done when `trigger.count` is not set
   - Remove `Request.java` and use `DateTrigger` directly in a `Notification`. Intialise the appropriate `DateTrigger` when a `Notification` is created.
   - Store occurrence when a notification is scheduled
   - Rename `Builder` to `BuilderCreator` and set the builder directly in a `Notification`. Don't create a Notification from the Builder.
+  - Fallback for false units when using `trigger: {in: xxx, unit: 'xxx'}`. Unit `minute` will be use if `unit` is set wrong. Fixes [Issue 2060](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060) 
 
 ### Common
 - Improve documentation: [trigger property](README.md#triggers)
