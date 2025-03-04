@@ -561,43 +561,34 @@ exports.getTriggered = function (callback, scope) {
 };
 
 /**
- * Add an group of actions by id.
- *
- * @param [ String ]   id       The Id of the group.
- * @param [ Array]     actions  The action config settings.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Adds an action group with actions.
+ * @param {string} actionsGroupId
+ * @param {Array} actions The actions to add for the groupId
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
-exports.addActions = function (id, actions, callback, scope) {
-    this._exec('actions', [0, id, actions], callback, scope);
+exports.addActions = function (actionsGroupId, actions, callback, scope) {
+    this._exec('actions', [0, actionsGroupId, actions], callback, scope);
 };
 
 /**
- * Remove an group of actions by id.
- *
- * @param [ String ]   id       The Id of the group.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * Remove an actions group.
+ * @param {string} actionsGroupId
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
-exports.removeActions = function (id, callback, scope) {
-    this._exec('actions', [1, id], callback, scope);
+exports.removeActions = function (actionsGroupId, callback, scope) {
+    this._exec('actions', [1, actionsGroupId], callback, scope);
 };
 
 /**
  * Check if a group of actions is defined.
- *
- * @param [ String ]   id       The Id of the group.
- * @param [ Function ] callback The function to be exec as the callback.
- * @param [ Object ]   scope    The callback function's scope.
- *
- * @return [ Void ]
+ * @param {string} actionsGroupId
+ * @param {Function} callback The function to be exec as the callback.
+ * @param {Object} scope The callback function's scope.
  */
-exports.hasActions = function (id, callback, scope) {
-    this._exec('actions', [2, id], callback, scope);
+exports.hasActions = function (actionsGroupId, callback, scope) {
+    this._exec('actions', [2, actionsGroupId], callback, scope);
 };
 
 /**

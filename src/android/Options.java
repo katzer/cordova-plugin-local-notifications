@@ -635,28 +635,26 @@ public final class Options {
 
     /**
      * Gets the list of actions to display.
+     * @return null if there are no actions.
      */
     Action[] getActions() {
-        Object value      = options.opt("actions");
-        String groupId    = null;
-        JSONArray actions = null;
-        ActionGroup group = null;
+        Object actions = options.opt("actions");
+        if (actions == null) return null;
 
-        if (value instanceof String) {
-            groupId = (String) value;
-        } else
-        if (value instanceof JSONArray) {
-            actions = (JSONArray) value;
+        // Get the action group
+        ActionGroup actionGroup = null;
+
+        // Action is a group id like actions: 'YES_NO_CATEGORY'
+        if (actions instanceof String) {
+            actionGroup = ActionGroup.lookup((String) actions);
+
+            // Action is a list of actions like actions: [{...}, {...}]
+            // Note: Will be not supported anymore in the future
+        } else if (actions instanceof JSONArray) {;
+            actionGroup = ActionGroup.parse(context, (JSONArray) actions);
         }
 
-        if (groupId != null) {
-            group = ActionGroup.lookup(groupId);
-        } else
-        if (actions != null && actions.length() > 0) {
-            group = ActionGroup.parse(context, actions);
-        }
-
-        return (group != null) ? group.getActions() : null;
+        return actionGroup != null ? actionGroup.getActions() : null;
     }
 
     /**

@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.localnotification.action.Action;
+import de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
@@ -51,7 +52,6 @@ import static de.appplant.cordova.plugin.localnotification.Options.LARGE_ICON_TY
  */
 public final class BuilderCreator {
 
-    // Application context passed by constructor
     private final Context context;
 
     // Notification options passed by JS
@@ -60,38 +60,12 @@ public final class BuilderCreator {
     // To generate unique request codes
     private final Random random = new Random();
 
-    // Receiver to handle the clear event
-    private Class<?> clearReceiver;
-
-    // Activity to handle the click event
-    private Class<?> clickActivity;
-
     // Additional extras to merge into each intent
     private Bundle extras;
 
     public BuilderCreator(Notification notification) {
         this.context = notification.getContext();
         this.options = notification.getOptions();
-    }
-
-    /**
-     * Set clear receiver.
-     *
-     * @param receiver Broadcast receiver for the clear event.
-     */
-    public BuilderCreator setClearReceiver(Class<?> receiver) {
-        this.clearReceiver = receiver;
-        return this;
-    }
-
-    /**
-     * Set click activity.
-     *
-     * @param activity The activity to handler the click event.
-     */
-    public BuilderCreator setClickActivity(Class<?> activity) {
-        this.clickActivity = activity;
-        return this;
     }
 
     /**
@@ -105,9 +79,8 @@ public final class BuilderCreator {
     }
 
     /**
-     * Creates the notification with all its options passed through JS.
-     *
-     * @return The final notification to display.
+     * Creates a {@link NotificationCompat.Builder} from options
+     * @return The builder instance or null if the notification is silent.
      */
     public NotificationCompat.Builder create() {
         // TODO: Does this work, when no builder is created?
@@ -185,9 +158,13 @@ public final class BuilderCreator {
         }
 
         applyStyle(builder);
-        applyActions(builder);
-        applyDeleteReceiver(builder);
-        applyContentReceiver(builder);
+        addActions(builder);
+
+        // Supply a PendingIntent to send when the notification is cleared by the user directly from the notification panel
+        setDeleteIntent(builder);
+
+        // Supply a PendingIntent to send when the notification is clicked
+        setContentIntent(builder);
 
         return builder;
     }
@@ -293,71 +270,55 @@ public final class BuilderCreator {
     }
 
     /**
-     * Set intent to handle the delete event. Will clean up some persisted
-     * preferences.
-     *
-     * @param builder Local notification builder instance.
+     * Supply a PendingIntent to send when the notification is cleared by the user directly
+     * from the notification panel. For example, this intent is sent when the user clicks the
+     * "Clear all" button, or the individual "X" buttons on notifications.
+     * This intent is not sent when the application calls NotificationManager.cancel(int).
      */
-    private void applyDeleteReceiver(NotificationCompat.Builder builder) {
+    private void setDeleteIntent(NotificationCompat.Builder builder) {
+        Intent intent = new Intent(context, ClearReceiver.class)
+            .setAction(options.getId().toString())
+            .putExtra(Notification.EXTRA_ID, options.getId());
 
-        if (clearReceiver == null)
-            return;
-
-        Intent intent = new Intent(context, clearReceiver)
-                .setAction(options.getId().toString())
-                .putExtra(Notification.EXTRA_ID, options.getId());
-
-        if (extras != null) {
-            intent.putExtras(extras);
-        }
-
-        int reqCode = random.nextInt();
+        if (extras != null) intent.putExtras(extras);
 
         builder.setDeleteIntent(PendingIntent.getBroadcast(
-            context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
+            context, random.nextInt(), intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
     }
 
     /**
-     * Set intent to handle the click event. Will bring the app to foreground.
-     * @param builder Local notification builder instance.
+     * Supply a PendingIntent to send when the notification is clicked.
+     * Will bring the app to foreground.
      */
-    private void applyContentReceiver(NotificationCompat.Builder builder) {
-        if (clickActivity == null) return;
-
-        Intent intent = new Intent(context, clickActivity)
+    private void setContentIntent(NotificationCompat.Builder builder) {
+        Intent intent = new Intent(context, ClickHandlerActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
             .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        if (extras != null) {
-            intent.putExtras(extras);
-        }
+        if (extras != null) intent.putExtras(extras);
 
-        int reqCode = random.nextInt();
-        
         builder.setContentIntent(PendingIntent.getActivity(
-            context, reqCode, intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
+            context, random.nextInt(), intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
     }
 
     /**
      * Add all actions to the builder if there are any actions.
-     *
-     * @param builder Local notification builder instance.
      */
-    private void applyActions(NotificationCompat.Builder builder) {
+    private void addActions(NotificationCompat.Builder builder) {
         Action[] actions = options.getActions();
-        if (actions == null || actions.length == 0) return;
+        if (actions == null) return;
 
         for (Action action : actions) {
-            NotificationCompat.Action.Builder btn = new NotificationCompat.Action.Builder(
+            NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
                 action.getIcon(), action.getTitle(), getPendingIntentForAction(action));
 
             if (action.isWithInput()) {
-                btn.addRemoteInput(action.getInput());
+                actionBuilder.addRemoteInput(action.getInput());
             }
 
-            builder.addAction(btn.build());
+            builder.addAction(actionBuilder.build());
         }
     }
 
@@ -368,7 +329,7 @@ public final class BuilderCreator {
      * @param action Notification action needing the PendingIntent
      */
     private PendingIntent getPendingIntentForAction(Action action) {
-        Intent intent = new Intent(context, clickActivity)
+        Intent intent = new Intent(context, ClickHandlerActivity.class)
                 .putExtra(Notification.EXTRA_ID, options.getId())
                 .putExtra(Action.EXTRA_ID, action.getId())
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())

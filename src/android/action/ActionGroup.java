@@ -97,33 +97,26 @@ public final class ActionGroup {
 
     /**
      * Creates an action group by parsing the specified action specs.
-     *
-     * @param id   The id for the action group.
-     * @param list The list of actions.
-     *
+     * @param actionGroupId
+     * @param actionsJSONArray The list of actions.
      * @return A new action group.
      */
-    public static ActionGroup parse(Context context, String id, JSONArray list) {
-        List<Action> actions = new ArrayList<Action>(list.length());
+    public static ActionGroup parse(Context context, String actionGroupId, JSONArray actionsJSONArray) {
+        List<Action> actions = new ArrayList<Action>(actionsJSONArray.length());
 
-        for (int i = 0; i < list.length(); i++) {
-            JSONObject opts = list.optJSONObject(i);
-            String type     = opts.optString("type", "button");
+        for (int i = 0; i < actionsJSONArray.length(); i++) {
+            JSONObject actionOptions = actionsJSONArray.optJSONObject(i);
+            String actionType = actionOptions.optString("type", "button");
 
-            if (type.equals("input") && SDK_INT < N) {
-                Log.w("Action", "Type input is not supported");
+            if (!(actionType.equals("button") || actionType.equals("input"))) {
+                Log.w("Action", "Unknown type: " + actionType);
                 continue;
             }
 
-            if (!(type.equals("button") || type.equals("input"))) {
-                Log.w("Action", "Unknown type: " + type);
-                continue;
-            }
-
-            actions.add(new Action(context, opts));
+            actions.add(new Action(context, actionOptions));
         }
 
-        return new ActionGroup(id, actions.toArray(new Action[actions.size()]));
+        return new ActionGroup(actionGroupId, actions.toArray(new Action[actions.size()]));
     }
 
     /**

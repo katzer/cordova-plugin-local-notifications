@@ -345,26 +345,30 @@
 }
 
 /**
- * Register/update an action group.
+ * Register, removes or checks for an action group.
  */
 - (void) actions:(CDVInvokedUrlCommand *)command
 {
     [self.commandDelegate runInBackground:^{
-        NSString* identifier = [command argumentAtIndex:1];
-        NSArray* actions = [command argumentAtIndex:2];
+        NSString* actionGroupId = [command argumentAtIndex:1];
 
+        // The first agrument defines, which method was called
         switch ([command.arguments[0] intValue]) {
-            // addActions
+            // addActions was called
             case 0:
-                [self->_center addActionGroup:[APPNotificationCategory parse:actions withId:identifier]];
+                NSArray* actions = [command argumentAtIndex:2];
+                [self->_center addActionGroup:[APPNotificationCategory parse:actions
+                                                                      withId:actionGroupId]];
                 [self execCallback:command];
                 break;
+            // removeActions was called
             case 1:
-                [self->_center removeActionGroup:identifier];
+                [self->_center removeActionGroup:actionGroupId];
                 [self execCallback:command];
                 break;
+            // hasActions was called
             case 2:
-                [self execCallback:command arg:[self->_center hasActionGroup:identifier]];
+                [self execCallback:command arg:[self->_center hasActionGroup:actionGroupId]];
                 break;
         }
     }];

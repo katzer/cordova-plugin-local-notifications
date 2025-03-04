@@ -47,39 +47,39 @@ public final class Action {
     private final Context context;
 
     // The action spec
-    private final JSONObject options;
+    private final JSONObject actionOptionsJSON;
 
     /**
      * Structure to encapsulate a named action that can be shown as part of
      * this notification.
      *
      * @param context The application context.
-     * @param options The action options.
+     * @param actionOptionsJSON The action options.
      */
-    Action(Context context, JSONObject options) {
+    Action(Context context, JSONObject actionOptionsJSON) {
         this.context = context;
-        this.options = options;
+        this.actionOptionsJSON = actionOptionsJSON;
     }
 
     /**
      * Gets the ID for the action.
      */
     public String getId() {
-        return options.optString("id", getTitle());
+        return actionOptionsJSON.optString("id", getTitle());
     }
 
     /**
      * Gets the Title for the action.
      */
     public String getTitle() {
-        return options.optString("title", "unknown");
+        return actionOptionsJSON.optString("title", "unknown");
     }
 
     /**
      * Gets the icon for the action.
      */
     public int getIcon() {
-        String iconPath = options.optString("icon");
+        String iconPath = actionOptionsJSON.optString("icon");
 
         // Get icon from the app resources or system resources
         int resId = new AssetUtil(context).getResourceId(iconPath, AssetUtil.RESOURCE_TYPE_DRAWABLE);
@@ -94,14 +94,14 @@ public final class Action {
      * Gets the value of the launch flag.
      */
     public boolean isLaunchingApp() {
-        return options.optBoolean("launch", false);
+        return actionOptionsJSON.optBoolean("launch", false);
     }
 
     /**
      * Gets the type for the action.
      */
     public boolean isWithInput() {
-        String type = options.optString("type");
+        String type = actionOptionsJSON.optString("type");
         return type.equals("input");
     }
 
@@ -110,8 +110,8 @@ public final class Action {
      */
     public RemoteInput getInput() {
         return new RemoteInput.Builder(getId())
-                .setLabel(options.optString("emptyText"))
-                .setAllowFreeFormInput(options.optBoolean("editable", true))
+                .setLabel(actionOptionsJSON.optString("emptyText"))
+                .setAllowFreeFormInput(actionOptionsJSON.optBoolean("editable", true))
                 .setChoices(getChoices())
                 .build();
     }
@@ -120,7 +120,7 @@ public final class Action {
      * List of possible choices for input actions.
      */
     private String[] getChoices() {
-        JSONArray opts = options.optJSONArray("choices");
+        JSONArray opts = actionOptionsJSON.optJSONArray("choices");
 
         if (opts == null)
             return null;

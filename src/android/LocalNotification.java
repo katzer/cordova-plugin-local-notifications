@@ -302,27 +302,29 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Register action group.
+     * Register, removes or checks for an action group
      * @param args The exec() arguments in JSON form.
      * @param callbackContext The callback context used when calling back into JavaScript.
      */
     private void actions(JSONArray args, CallbackContext callbackContext) {
-        int task = args.optInt(0);
-        String id = args.optString(1);
-        JSONArray list = args.optJSONArray(2);
+        String actionGroupId = args.optString(1);
 
-        switch (task) {
+        // The first agrument defines, which method was called
+        switch (args.optInt(0)) {
+            // addActions was called
             case 0:
-                ActionGroup group = ActionGroup.parse(getContext(), id, list);
+                ActionGroup group = ActionGroup.parse(getContext(), actionGroupId, args.optJSONArray(2));
                 ActionGroup.register(group);
                 callbackContext.success();
                 break;
+            // removeActions was called
             case 1:
-                ActionGroup.unregister(id);
+                ActionGroup.unregister(actionGroupId);
                 callbackContext.success();
                 break;
+            // hasActions was called
             case 2:
-                successBoolean(callbackContext, ActionGroup.isRegistered(id));
+                successBoolean(callbackContext, ActionGroup.isRegistered(actionGroupId));
                 break;
         }
     }

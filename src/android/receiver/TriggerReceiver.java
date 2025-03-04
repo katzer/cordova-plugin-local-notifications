@@ -64,11 +64,7 @@ public class TriggerReceiver extends BroadcastReceiver {
         Notification notification = Notification.fromSharedPreferences(context, notificationId);
         if (notification == null) return;
 
-        notification.setBuilder(new BuilderCreator(notification)
-            .setClickActivity(ClickHandlerActivity.class)
-            .setClearReceiver(ClearReceiver.class)
-            .setExtras(bundle)
-            .create());
+        notification.setBuilder(new BuilderCreator(notification).setExtras(bundle).create());
 
         Log.d(TAG, "trigger, notificationId=" + notification.getId());
 
