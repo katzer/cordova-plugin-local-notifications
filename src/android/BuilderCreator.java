@@ -61,7 +61,7 @@ public final class BuilderCreator {
     private final Random random = new Random();
 
     // Additional extras to merge into each intent
-    private Bundle extras;
+    private Bundle intentExtras;
 
     public BuilderCreator(Notification notification) {
         this.context = notification.getContext();
@@ -69,12 +69,10 @@ public final class BuilderCreator {
     }
 
     /**
-     * Set bundle extras.
-     *
-     * @param extras The bundled extras to merge into.
+     * Set extras to merge into each intent
      */
-    public BuilderCreator setExtras(Bundle extras) {
-        this.extras = extras;
+    public BuilderCreator setIntentExtras(Bundle intentExtras) {
+        this.intentExtras = intentExtras;
         return this;
     }
 
@@ -126,7 +124,8 @@ public final class BuilderCreator {
 
             Uri soundUri = options.getSoundUri();
 
-            if (soundUri != Uri.EMPTY && !isUpdate()) {
+            // Set sound only, if the notification should not be updated
+            if (soundUri != Uri.EMPTY && !(intentExtras != null && intentExtras.getBoolean(EXTRA_UPDATE, false))) {
                 // Grant permission to the system to play the sound, needed in Android 7 and 8
                 Manager.grantUriPermission(context, soundUri);
                 builder.setSound(soundUri);
@@ -280,7 +279,7 @@ public final class BuilderCreator {
             .setAction(options.getId().toString())
             .putExtra(Notification.EXTRA_ID, options.getId());
 
-        if (extras != null) intent.putExtras(extras);
+        if (intentExtras != null) intent.putExtras(intentExtras);
 
         builder.setDeleteIntent(PendingIntent.getBroadcast(
             context, random.nextInt(), intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
@@ -297,7 +296,7 @@ public final class BuilderCreator {
             .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        if (extras != null) intent.putExtras(extras);
+        if (intentExtras != null) intent.putExtras(intentExtras);
 
         builder.setContentIntent(PendingIntent.getActivity(
             context, random.nextInt(), intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
@@ -335,21 +334,8 @@ public final class BuilderCreator {
                 .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        if (extras != null) {
-            intent.putExtras(extras);
-        }
+        if (intentExtras != null) intent.putExtras(intentExtras);
 
-        int reqCode = random.nextInt();
-
-        return PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_MUTABLE | FLAG_UPDATE_CURRENT);
-    }
-
-    /**
-     * If the builder shall build an notification or an updated version.
-     *
-     * @return true in case of an updated version.
-     */
-    private boolean isUpdate() {
-        return extras != null && extras.getBoolean(EXTRA_UPDATE, false);
+        return PendingIntent.getActivity(context, random.nextInt(), intent, PendingIntent.FLAG_MUTABLE | FLAG_UPDATE_CURRENT);
     }
 }
