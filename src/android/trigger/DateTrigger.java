@@ -53,21 +53,14 @@ public abstract class DateTrigger {
      */
     public DateTrigger(Options options) {
         this.options = options;
-        this.baseDate = getFirstBaseDate();
-    }
-
-    /**
-     * Gets the frist date from where to calculate the next trigger.
-     */
-    private Date getFirstBaseDate() {
-        // Get first trigger from config or set to current date
-        return getFirstTriggerFromConfig() > 0 ? new Date(getFirstTriggerFromConfig()) : new Date();
+        // Set the base date from where to calculate the next trigger
+        // This can be set by config or is set to the current date
+        this.baseDate = getFirstTriggerFromConfig() > 0 ? new Date(getFirstTriggerFromConfig()) : new Date();
     }
 
     /**
      * Only for repeating triggers, when the first trigger should occur by config.
-     * Returns 0 there is nothing set.
-     * @return
+     * @return 0 if there is nothing set in the config
      */
     private long getFirstTriggerFromConfig() {
         if (options.getTriggerFirstAt() > 0) return options.getTriggerFirstAt();
@@ -112,6 +105,18 @@ public abstract class DateTrigger {
         triggerDate = nextTriggerDate;
 
         return nextTriggerDate;
+    }
+
+    /**
+     * To restore the triggerDate, when the notification is loaded from the SharedPreferences.
+     * @param date
+     */
+    public void setTriggerDate(Date date) {
+        this.triggerDate = date;
+    }
+
+    public Date getTriggerDate() {
+        return triggerDate;
     }
 
     /**

@@ -79,13 +79,12 @@ public class TriggerReceiver extends BroadcastReceiver {
         // The wake lock has to be released after the notification was shown
         if (wakeLock != null) wakeLock.release();
 
-        boolean isUpdate = bundle.getBoolean(Notification.EXTRA_UPDATE, false);
-        if (!isUpdate && LocalNotification.isAppRunning()) LocalNotification.fireEvent("trigger", notification);
+        // Fire trigger event only, if notification was not updated
+        if (!bundle.getBoolean(Notification.EXTRA_UPDATE, false) && LocalNotification.isAppRunning()) {
+            LocalNotification.fireEvent("trigger", notification);
+        }
 
         // Schedule next notification if available
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 1);
-        notification.getDateTrigger().setBaseDate(calendar.getTime());
         notification.schedule();
     }
 }

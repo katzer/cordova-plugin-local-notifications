@@ -183,7 +183,7 @@ public final class Notification {
         // No next trigger date available, all triggers are done
         if (triggerDate == null) {
             // Remove notification options from shared preferences
-            unpersist();
+            removeFromSharedPreferences();
             return;
         }
 
@@ -197,7 +197,7 @@ public final class Notification {
             .putExtra(EXTRA_ID, options.getId());
 
         // Store notification data
-        persist();
+        storeInSharedPreferences();
 
         // Date is in the past, trigger directly
         if (!triggerDate.after(new Date())) {
@@ -276,7 +276,7 @@ public final class Notification {
         Log.d(TAG, "Update notification, options=" + options);
 
         // Store notification data
-        persist();
+        storeInSharedPreferences();
 
         // Update already triggered notification in status bar
         if (getType() == Type.TRIGGERED) {
@@ -299,7 +299,7 @@ public final class Notification {
 
         // If the notification is not repeating, remove notification data from the app
         if (!options.isRepeating()) {
-          unpersist();
+          removeFromSharedPreferences();
         }
     }
 
@@ -312,7 +312,7 @@ public final class Notification {
         cancelScheduledAlarm();
 
         // Remove saved notification data from the app
-        unpersist();
+        removeFromSharedPreferences();
 
         // Clear the notification from the status bar if posted
         NotificationManagerCompat.from(context).cancel(getAppName(), getId());
@@ -363,26 +363,29 @@ public final class Notification {
     }
 
     /**
-     * Persist the information of this notification to the Android Shared
-     * Preferences. This will allow the application to restore the notification
-     * upon device reboot, app restart, retrieve notifications, aso.
+     * Stores the information of this notification in the SharedPreferences.
+     * This will allow the application to restore the notification upon device reboot,
+     * app restart, retrieve notifications, etc.
      */
-    private void persist() {
+    private void storeInSharedPreferences() {
         Manager.getSharedPreferences(context).edit()
-        // Store options
+        // options as JSON string
         .putString(getSharedPreferencesKeyOptions(options.getId()), options.toString())
-        // Store occurrence
+        // occurrence for restoration
         .putInt(getSharedPreferencesKeyOccurrence(options.getId()), dateTrigger.getOccurrence())
+        // triggerDate for restoration
+        .putLong(getSharedPreferencesKeyTriggerDate(options.getId()), dateTrigger.getTriggerDate().getTime())
         .apply();
     }
 
     /**
-     * Remove the notification from the Android shared Preferences.
+     * Removes the notification data from the SharedPreferences.
      */
-    private void unpersist() {
+    private void removeFromSharedPreferences() {
         Manager.getSharedPreferences(context).edit()
         .remove(getSharedPreferencesKeyOptions(options.getId()))
         .remove(getSharedPreferencesKeyOccurrence(options.getId()))
+        .remove(getSharedPreferencesKeyTriggerDate(options.getId()))
         .apply();
     }
 
@@ -400,6 +403,14 @@ public final class Notification {
             // Restore occurrence in date trigger
             notification.dateTrigger.setOccurrence(Manager.getSharedPreferences(context).getInt(
                 Notification.getSharedPreferencesKeyOccurrence(notification.getOptions().getId()), 0));
+            
+            // Restore triggerDate in date trigger
+            // The restored triggerTime is only 0 if the data was stored by an older plugin version (older than 1.1.4)
+            long triggerTime = Manager.getSharedPreferences(context).getLong(
+                Notification.getSharedPreferencesKeyTriggerDate(notification.getOptions().getId()), 0);
+
+            if (triggerTime != 0) notification.dateTrigger.setTriggerDate(new Date(triggerTime));
+
             return notification;
         } catch (JSONException exception) {
             Log.e(TAG, "Could not parse stored notification options to JSON" + 
@@ -428,6 +439,10 @@ public final class Notification {
 
     public static String getSharedPreferencesKeyOccurrence(int notificationId) {
         return notificationId + "_occurrence";
+    }
+
+    public static String getSharedPreferencesKeyTriggerDate(int notificationId) {
+        return notificationId + "_triggerDate";
     }
 
     public static String getSharedPreferencesKeyOptions(int notificationId) {
