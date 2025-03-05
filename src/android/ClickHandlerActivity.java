@@ -55,15 +55,17 @@ public class ClickHandlerActivity extends Activity {
 
         Notification notification = Notification.fromSharedPreferences(
             getApplicationContext(), getIntent().getExtras().getInt(Notification.EXTRA_ID));
-        finish();
 
+        finish();
+        
         if (notification == null) return;
 
         // Gets input from action and sets it in data
         String action = getIntent().getExtras().getString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
         JSONObject data = new JSONObject();
         setTextInput(action, data);
-        launchAppIf();
+        
+        if (getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true)) launchApp();
 
         LocalNotification.fireEvent(action, notification, data);
 
@@ -90,15 +92,6 @@ public class ClickHandlerActivity extends Activity {
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
-    }
-
-    /**
-     * Launch app if requested by user.
-     */
-    private void launchAppIf() {
-        boolean doLaunch = getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true);
-        if (!doLaunch) return;
-        launchApp();
     }
 
     /**
