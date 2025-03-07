@@ -85,6 +85,6 @@ public class TriggerReceiver extends BroadcastReceiver {
         }
 
         // Schedule next notification if available
-        notification.schedule();
+        notification.scheduleNext();
     }
 }

@@ -45,6 +45,13 @@ public class IntervalTrigger extends DateTrigger {
         super(options);
     }
 
+    public boolean isLastOccurrence() {
+        // trigger.at and trigger.in have maximum 1 occurrence 
+        return ((options.getTriggerAt() > 0 || options.getTriggerIn() > 0) && occurrence == 1) ||
+            // trigger.every: Check if trigger.count is exceeded if set
+           (options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount());
+    }
+
     /**
      * Calculates the next trigger.
      * @param baseCalendar The base calendar from where to calculate the next trigger.
@@ -55,21 +62,23 @@ public class IntervalTrigger extends DateTrigger {
             ", occurrence=" + occurrence +
             ", unit=" + getUnit() +
             ", amount=" + getUnitAmount() +
-            ", count=" + options.getTriggerCount());
+            ", trigger.count=" + options.getTriggerCount());
 
-        // trigger.at only triggers once
-        if (options.getTriggerAt() > 0) {
-            if (occurrence > 0) return null;
-            return new Date(options.getTriggerAt());
-        }
+        // All occurrences are done
+        if (isLastOccurrence()) return null;
 
-        // trigger.in or trigger.every
-        // trigger.in should only calculated once
-        if (options.getTriggerIn() > 0 && occurrence > 0) return null;
+        // trigger.at
+        if (options.getTriggerAt() > 0) return new Date(options.getTriggerAt());
 
+        // trigger.in
+        // trigger.every
         addInterval(baseCalendar, getUnit(), getUnitAmount());
 
         Log.d(TAG, "Next trigger calculated, triggerDate=" + baseCalendar.getTime());
+
+        // Check if the trigger is within the before option (only for repeating triggers)
+        if (!isWithinTriggerbefore(baseCalendar)) return null;
+
         return baseCalendar.getTime();
     }
 

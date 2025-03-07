@@ -23,115 +23,26 @@ package de.appplant.cordova.plugin.localnotification.trigger;
 
 import android.util.Log;
 import org.json.JSONObject;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import de.appplant.cordova.plugin.localnotification.Options;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.DAY;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.HOUR;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.MINUTE;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.MONTH;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.WEEK;
-import static de.appplant.cordova.plugin.localnotification.trigger.DateTrigger.Unit.YEAR;
-import static java.util.Calendar.DAY_OF_WEEK;
-import static java.util.Calendar.WEEK_OF_MONTH;
-import static java.util.Calendar.WEEK_OF_YEAR;
 
-/**
- * Trigger for date matching components.
- */
 public class MatchTrigger extends DateTrigger {
 
-    // Used to determine the interval
-    private static Unit[] INTERVALS = { null, MINUTE, HOUR, DAY, MONTH, YEAR };
-
-    // Maps these crap where Sunday is the 1st day of the week
-    private static int[] WEEKDAYS = { 0, 2, 3, 4, 5, 6, 7, 1 };
-
-    // Maps these crap where Sunday is the 1st day of the week
-    private static int[] WEEKDAYS_REV = { 0, 7, 1, 2, 3, 4, 5, 6 };
-
-    private static int MATCHER_INDEX_MINUTE = 0;
-    private static int MATCHER_INDEX_HOUR = 1;
-    private static int MATCHER_INDEX_DAY = 2;
-    private static int MATCHER_INDEX_MONTH = 3;
-    private static int MATCHER_INDEX_YEAR = 4;
-
-    private static int SPECIALS_INDEX_WEEKDAY = 0;
-    // Not implemented yet
-    private static int SPECIALS_INDEX_WEEKDAY_ORDINAL = 1;
-    private static int SPECIALS_INDEX_WEEK_OF_MONTH = 2;
-    // Not implemented yet
-    private static int SPECIALS_INDEX_QUARTER = 3;
-
-    private Unit unit;
-
-    // The date matching components
-    private final List<Integer> matchers;
-
-    // The special matching components
-    private final List<Integer> specials;
+    private JSONObject triggerEvery;
 
     /**
-     * Date matching trigger from now.
+     * E.g. trigger every: { minute: 10, hour: 9, day: 27, month: 10 }
      */
     public MatchTrigger(Options options) {
         super(options);
-        this.matchers = getMatchingComponents();
-        this.specials = getSpecialMatchingComponents();
-        this.unit = getUnit();
+        this.triggerEvery = options.getTriggerEveryAsObject();
     }
 
-    /**
-     * Gets an array of all date parts to construct a datetime instance.
-     * @return [minute, hour, day, month, year]
-     */
-    private List<Integer> getMatchingComponents() {
-        JSONObject triggerEvery = options.getTriggerEveryAsObject();
-        
-        return Arrays.asList(
-            (Integer) triggerEvery.opt("minute"),
-            (Integer) triggerEvery.opt("hour"),
-            (Integer) triggerEvery.opt("day"),
-            (Integer) triggerEvery.opt("month"),
-            (Integer) triggerEvery.opt("year")
-        );
-    }
-
-    /**
-     * Gets an array of all date parts to construct a datetime instance.
-     * @return [weekday, weekdayOrdinal, weekOfMonth, quarter]
-     */
-    private List<Integer> getSpecialMatchingComponents() {
-        JSONObject triggerEvery = options.getTriggerEveryAsObject();
-
-        List<Integer> specials = Arrays.asList(
-            (Integer) triggerEvery.opt("weekday"),
-            (Integer) triggerEvery.opt("weekdayOrdinal"),
-            (Integer) triggerEvery.opt("weekOfMonth"),
-            (Integer) triggerEvery.opt("quarter")
-        );
-
-        if (specials.get(SPECIALS_INDEX_WEEKDAY) != null) {
-            specials.set(SPECIALS_INDEX_WEEKDAY, WEEKDAYS[specials.get(SPECIALS_INDEX_WEEKDAY)]);
-        }
-
-        return specials;
-    }
-
-    private Unit getUnit() {
-        // Use the next higher unit as the last one defined in matchers
-        // If minute and hour is defined but not day, matchers.indexOf(null) will return 2, which would
-        // use the 3rd element of INTERVALS, which is DAY
-        Unit unit1 = INTERVALS[1 + matchers.indexOf(null)];
-        Unit unit2 = null;
-
-        if (specials.get(SPECIALS_INDEX_WEEKDAY) != null) unit2 = WEEK;
-        if (unit2 == null) return unit1;
-
-        return (unit1.compareTo(unit2) < 0) ? unit2 : unit1;
+    public boolean isLastOccurrence() {
+        // Check if trigger.count is exceeded if it is set
+        return options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount();
     }
 
     /**
@@ -142,224 +53,177 @@ public class MatchTrigger extends DateTrigger {
         Log.d(TAG, "Calculating next trigger" +
             ", baseCalendar=" + baseCalendar.getTime() +
             ", occurrence=" + occurrence +
-            ", unit=" + getUnit() +
-            ", count=" + options.getTriggerCount());
+            ", trigger.count=" + options.getTriggerCount());
+        
+        // All occurrences are done
+        if (isLastOccurrence()) return null;
 
         Calendar nextCalendar = (Calendar) baseCalendar.clone();
 
-        // Add unit to base calendar, if it's not the first occurrence
-        if (occurrence > 0) addInterval(nextCalendar, unit, 1);
+        // Set calendar to trigger.every values like minute: 20, hour: 9, etc.
+        // Returns the next higher Calendar field for calculating the next trigger
+        // If 0 is returned the options are empty or wrong
+        int nextTriggerCalendarFieldToIncrease = setToEveryValues(nextCalendar);
 
-        Calendar calendarWithMatchers = getCalendarWithMatchers(nextCalendar);
+        // Nothing should be increased, options are empty or wrong
+        if (nextTriggerCalendarFieldToIncrease == 0) return null;
 
-        if (calendarWithMatchers.compareTo(nextCalendar) >= 0) return applySpecials(calendarWithMatchers);
-
-        if (unit == null || calendarWithMatchers.get(Calendar.YEAR) < nextCalendar.get(Calendar.YEAR)) return null;
-
-        if (calendarWithMatchers.get(Calendar.MONTH) <  nextCalendar.get(Calendar.MONTH)) {
-            switch (unit) {
-                case MINUTE:
-                case HOUR:
-                case DAY:
-                case WEEK:
-                    if (matchers.get(MATCHER_INDEX_YEAR) == null) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                        break;
-                    } else
-                        return null;
-                case YEAR:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                    break;
-            }
-        } else
-        if (calendarWithMatchers.get(Calendar.DAY_OF_YEAR) < nextCalendar.get(Calendar.DAY_OF_YEAR)) {
-            switch (unit) {
-                case MINUTE:
-                case HOUR:
-                    if (matchers.get(MATCHER_INDEX_MONTH) == null) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.MONTH, 1);
-                        break;
-                    } else
-                    if (matchers.get(MATCHER_INDEX_YEAR) == null) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                        break;
-                    }
-                    else
-                        return null;
-                case MONTH:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.MONTH, 1);
-                    break;
-                case YEAR:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                    break;
-            }
-        } else
-        if (calendarWithMatchers.get(Calendar.HOUR_OF_DAY) < nextCalendar.get(Calendar.HOUR_OF_DAY)) {
-            switch (unit) {
-                case MINUTE:
-                    if (matchers.get(MATCHER_INDEX_DAY) == null) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.DAY_OF_YEAR, 1);
-                        break;
-                    } else
-                    if (matchers.get(MATCHER_INDEX_MONTH) == null) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.MONTH, 1);
-                        break;
-                    }
-                    else
-                        return null;
-                case HOUR:
-                    if (calendarWithMatchers.get(Calendar.MINUTE) < nextCalendar.get(Calendar.MINUTE)) {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.HOUR_OF_DAY, 1);
-                    } else {
-                        addToDate(calendarWithMatchers, nextCalendar, Calendar.HOUR_OF_DAY, 0);
-                    }
-                    break;
-                case DAY:
-                case WEEK:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case MONTH:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.MONTH, 1);
-                    break;
-                case YEAR:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                    break;
-            }
-        } else
-        if (calendarWithMatchers.get(Calendar.MINUTE) < nextCalendar.get(Calendar.MINUTE)) {
-            switch (unit) {
-                case MINUTE:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.MINUTE, 1);
-                    break;
-                case HOUR:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.HOUR_OF_DAY, 1);
-                    break;
-                case DAY:
-                case WEEK:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.DAY_OF_YEAR, 1);
-                    break;
-                case MONTH:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.MONTH, 1);
-                    break;
-                case YEAR:
-                    addToDate(calendarWithMatchers, nextCalendar, Calendar.YEAR, 1);
-                    break;
-            }
+        // If the next trigger is in the past or equal, increase the calendar
+        // The trigger could be set by trigger.every to the past.
+        // For e.g., if the current time is 9:30 and every: {minute: 10} is set, the trigger
+        // would be set to 9:10. To get a next trigger, the hour have to be increased by 1 to 10:10.
+        if (nextCalendar.compareTo(baseCalendar) <= 0) {
+            nextCalendar.add(nextTriggerCalendarFieldToIncrease, 1);
+            // Correct trigger after incrementing it
+            // Example: If weekday was set to monday and a year was added,
+            // the weekday could be changed to another day, set to monday again
+            setToEveryValues(nextCalendar);
         }
 
-        return applySpecials(calendarWithMatchers);
+        // Check if the trigger is within the before option
+        if (!isWithinTriggerbefore(nextCalendar)) return null;
+
+        return nextCalendar.getTime();
     }
 
     /**
-     * Gets a new calendar based on a given calendar and sets the matcher values from config
+     * Set trigger.every values like { month: 10, day: 27, ...} in the given calendar.
+     * @param calendar
+     * @return The next higher {@link Calendar} field that has to be increase from the highest trigger.every option
+     * For e.g. returns {@link Calendar.HOUR} when maximum minute is set,
+     * or {@link Calendar.DAY_OF_YEAR} when maximum hour is set.
+     * Returns 0 if no or wrong trigger.every values are set.
      */
-    private Calendar getCalendarWithMatchers(Calendar baseCalendar) {
-        Calendar newCalendar = (Calendar) baseCalendar.clone();
-        newCalendar.set(Calendar.SECOND, 0);
+    private int setToEveryValues(Calendar calendar) {
+        int nextTriggerCalendarFieldToIncrease = 0;
 
-        // Set matcher minute, set to 0 if not present
-        Integer matcherMinute = matchers.get(MATCHER_INDEX_MINUTE) == null ? 0 : matchers.get(MATCHER_INDEX_MINUTE);
-        newCalendar.set(Calendar.MINUTE, matcherMinute);
-
-        // Set matcher hour, set to 0 if not present
-        Integer matcherHour = matchers.get(MATCHER_INDEX_HOUR) == null ? 0 : matchers.get(MATCHER_INDEX_HOUR);
-        newCalendar.set(Calendar.HOUR_OF_DAY, matcherHour);
-        
-        // Set matcher day, month, year, if present
-        if (matchers.get(MATCHER_INDEX_DAY) != null) newCalendar.set(Calendar.DAY_OF_MONTH, matchers.get(MATCHER_INDEX_DAY));
-        if (matchers.get(MATCHER_INDEX_MONTH) != null) newCalendar.set(Calendar.MONTH, matchers.get(MATCHER_INDEX_MONTH) - 1);
-        if (matchers.get(MATCHER_INDEX_YEAR) != null) newCalendar.set(Calendar.YEAR, matchers.get(MATCHER_INDEX_YEAR));
-
-        return newCalendar;
-    }
-
-    private Date applySpecials(Calendar calendar) {
-        if (specials.get(SPECIALS_INDEX_WEEK_OF_MONTH) != null && !setWeekOfMonth(calendar)) return null;
-        if (specials.get(SPECIALS_INDEX_WEEKDAY) != null && !setDayOfWeek(calendar)) return null;
-        return calendar.getTime();
-    }
-
-    /**
-     * Sets the field value of now to date and adds by count.
-     */
-    private void addToDate(Calendar calendar, Calendar now, int field, int count) {
-        calendar.set(field, now.get(field));
-        calendar.add(field, count);
-    }
-
-    /**
-     * Set the day of the year but ensure that the calendar does point to a
-     * date in future.
-     *
-     * @param calendar   The calendar to manipulate.
-     *
-     * @return true if the operation could be made.
-     */
-    private boolean setDayOfWeek(Calendar calendar) {
-        calendar.setFirstDayOfWeek(Calendar.MONDAY);
-        int day = WEEKDAYS_REV[calendar.get(DAY_OF_WEEK)];
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        int dayToSet = WEEKDAYS_REV[specials.get(SPECIALS_INDEX_WEEKDAY)];
-
-        if (matchers.get(MATCHER_INDEX_DAY) != null) return false;
-
-        if (day > dayToSet) {
-            if (specials.get(SPECIALS_INDEX_WEEK_OF_MONTH) == null) {
-                calendar.add(WEEK_OF_YEAR, 1);
-            } else if (matchers.get(MATCHER_INDEX_MONTH) == null) {
-                calendar.add(Calendar.MONTH, 1);
-            } else if (matchers.get(MATCHER_INDEX_YEAR) == null) {
-                calendar.add(Calendar.YEAR, 1);
-            } else
-                return false;
-        }
-
+        // Set second to 0
         calendar.set(Calendar.SECOND, 0);
-        calendar.set(DAY_OF_WEEK, specials.get(SPECIALS_INDEX_WEEKDAY));
 
-        if (matchers.get(MATCHER_INDEX_MONTH) != null && calendar.get(Calendar.MONTH) != month) return false;
-        if (matchers.get(MATCHER_INDEX_YEAR) != null && calendar.get(Calendar.YEAR) != year) return false;
+        // Set minute from options in next calendar
+        if (triggerEvery.has("minute")) {
+            calendar.set(Calendar.MINUTE, triggerEvery.optInt("minute"));
+            // One hour has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.HOUR;
+        }
 
-        return true;
+        // Set hour from options in next calendar
+        if (triggerEvery.has("hour")) {
+            calendar.set(Calendar.HOUR_OF_DAY, triggerEvery.optInt("hour"));
+            resetTimeIfNotSetByTrigger(calendar);
+            // One day has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.DAY_OF_YEAR;
+        }
+
+        // Set day from options in next calendar
+        if (triggerEvery.has("day")) {
+            calendar.set(Calendar.DAY_OF_MONTH, triggerEvery.optInt("day"));
+            resetTimeIfNotSetByTrigger(calendar);
+            // One month has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.MONTH;
+        }
+ 
+        // Set weekday (day of week) from options in next calendar (1 = Monday, 7 = Sunday)
+        if (triggerEvery.has("weekday")) {
+            // Calendar.MONDAY is 2, so we have to add 1 to the weekday
+            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEvery.optInt("weekday"));
+
+            resetTimeIfNotSetByTrigger(calendar);
+
+            // One week has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.WEEK_OF_YEAR;
+        }
+ 
+        // Set weekOfMonth from options in next calendar
+        if (triggerEvery.has("weekOfMonth")) {
+ 
+            int weekOfMonth = triggerEvery.optInt("weekOfMonth");
+            calendar.set(Calendar.WEEK_OF_MONTH, weekOfMonth);
+ 
+            // Reset hour/minute
+            resetTimeIfNotSetByTrigger(calendar);
+            resetWeekdayIfNotSetByTrigger(calendar);
+
+            // If the week of month is the first week, set day of month to 1
+            if (weekOfMonth == 1) {
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                // Correct weekday if it is set, but prevent jumping to the last month
+                setWeekdayIfInFuture(calendar);
+            }
+
+            // One month has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.MONTH;
+        }
+ 
+        // Set week of year from options in next calendar
+        if (triggerEvery.has("week")) {
+            int weekOfYear = triggerEvery.optInt("week");
+            calendar.set(Calendar.WEEK_OF_YEAR, weekOfYear);
+
+            resetTimeIfNotSetByTrigger(calendar);
+            resetWeekdayIfNotSetByTrigger(calendar);
+            
+            // If the week of year is the first week, set day of year to 1
+            if (weekOfYear == 1) {
+                calendar.set(Calendar.DAY_OF_YEAR, 1);
+                // Correct weekday if it is set, but prevent jumping to the last year
+                setWeekdayIfInFuture(calendar);
+            }
+
+            nextTriggerCalendarFieldToIncrease = Calendar.YEAR;
+        }
+ 
+        // Set month from options in next calendar
+        if (triggerEvery.has("month")) {
+            // The first month is 0 for Calendar
+            calendar.set(Calendar.MONTH, triggerEvery.optInt("month") - 1);
+
+            resetTimeIfNotSetByTrigger(calendar);
+            resetDayIfNotSetByTrigger(calendar);
+
+            // One year has to be added for the next trigger
+            nextTriggerCalendarFieldToIncrease = Calendar.YEAR;
+        }
+
+        return nextTriggerCalendarFieldToIncrease;
     }
 
     /**
-     * Set the week of the month but ensure that the calendar does point to a
-     * date in future.
-     *
-     * @param calendar The calendar to manipulate.
-     *
-     * @return true if the operation could be made.
+     * Set minute/hour to 0 if not set by trigger
+     **/
+    private void resetTimeIfNotSetByTrigger(Calendar calendar) {
+        // Reset minute if not set
+        if (!triggerEvery.has("minute")) calendar.set(Calendar.MINUTE, 0);
+        // Reset hour if not set
+        if (!triggerEvery.has("hour")) calendar.set(Calendar.HOUR_OF_DAY, 0);
+    }
+
+    /**
+     * Set day to 1 if not set by trigger
+     * @param calendar
      */
-    private boolean setWeekOfMonth(Calendar calendar) {
-        int week = calendar.get(WEEK_OF_MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        int weekToSet = specials.get(SPECIALS_INDEX_WEEK_OF_MONTH);
+    private void resetDayIfNotSetByTrigger(Calendar calendar) {
+        if (triggerEvery.has("day") || triggerEvery.has("weekday")) return;
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+    }
 
-        if (week > weekToSet) {
-            if (matchers.get(MATCHER_INDEX_MONTH) == null) {
-                calendar.add(Calendar.MONTH, 1);
-            } else if (matchers.get(MATCHER_INDEX_YEAR) == null) {
-                calendar.add(Calendar.YEAR, 1);
-            } else
-                return false;
+    private void resetWeekdayIfNotSetByTrigger(Calendar calendar) {
+        if (triggerEvery.has("weekday")) return;
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+    }
 
-            if (matchers.get(MATCHER_INDEX_YEAR) != null && calendar.get(Calendar.YEAR) != year) return false;
+    /**
+     * Sets a configured weekday only if it is in the future. This should prevent the calendar
+     * jump to the last month or year, if the date was set to the first of a month or year.
+     */
+    private void setWeekdayIfInFuture(Calendar calendar) {
+        // Not set by options
+        if (!triggerEvery.has("weekday")) return;
+
+        // Only set if in future. For weekday 1 is Monday and for Calendar it is 2,
+        // so we have to consider it
+        if (calendar.get(Calendar.DAY_OF_WEEK) < 1 + triggerEvery.optInt("weekday")) {
+            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEvery.optInt("weekday"));
         }
-
-        int month = calendar.get(Calendar.MONTH);
-
-        calendar.set(WEEK_OF_MONTH, weekToSet);
-
-        if (calendar.get(Calendar.MONTH) != month) {
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            calendar.set(Calendar.MONTH, month);
-        } else
-        if (matchers.get(MATCHER_INDEX_DAY) == null && week != weekToSet) {
-            calendar.set(DAY_OF_WEEK, 2);
-        }
-
-        return true;
     }
 }

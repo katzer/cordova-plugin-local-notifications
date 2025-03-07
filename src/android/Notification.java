@@ -174,17 +174,45 @@ public final class Notification {
     }
 
     /**
-     * Schedule the local notification. It's safe to call this, if there are no more occurrences
-     * or if the schedule time is in the past.
+     * Schedules the next occurrence of the notification. This has also to be called
+     * when the notification is scheduled for the first time, so the first occurrence
+     * can be calculated. If there are no more occurrences, the notification will
+     * be removed from the SharedPreferences.
+     * @return true if the notification was scheduled, false otherwise.
      */
-    public void schedule() {
+    public boolean scheduleNext() {
         Date triggerDate = dateTrigger.getNextTriggerDate();
 
         // No next trigger date available, all triggers are done
         if (triggerDate == null) {
+            Log.d(TAG, "No next trigger date available, remove notification from SharedPreferences" +
+                ", notificationId=" + options.getId() +
+                ", occurrence=" + dateTrigger.getOccurrence() +
+                ", triggerBaseDate=" + dateTrigger.getBaseDate() +
+                ", triggerDate=" + dateTrigger.getTriggerDate() +
+                ", options=" + options);
+            
             // Remove notification options from shared preferences
             removeFromSharedPreferences();
-            return;
+
+            return false;
+        }
+
+        return schedule();
+    }
+
+    /**
+     * Schedules the notification with the current state of the dateTrigger.
+     * If the triggerDate is in the past, the notification will be triggered directly.
+     * @return true if the notification was scheduled, false otherwise, which can happen,
+     * if the notification was triggered directly or an error occured.
+     */
+    public boolean schedule() {
+        Date triggerDate = dateTrigger.getTriggerDate();
+
+        if (triggerDate == null) {
+            Log.e(TAG, "schedule was wrongly called with triggerDate = null, options=" + options);
+            return false;
         }
 
         // Create channel if not exists
@@ -196,24 +224,24 @@ public final class Notification {
             // Notification-ID
             .putExtra(EXTRA_ID, options.getId());
 
-        // Store notification data
+        // Store notification data for restoration
         storeInSharedPreferences();
 
         // Date is in the past, trigger directly
         if (!triggerDate.after(new Date())) {
             trigger(intent);
-            return;
+            return false;
         }
 
         boolean canScheduleExactAlarms = Manager.canScheduleExactAlarms(context);
 
         Log.d(TAG, "Schedule notification" +
             ", notificationId: " + options.getId() +
+            ", canScheduleExactAlarms: " + canScheduleExactAlarms +
             ", intentAction=" + intent.getAction() +
-            ", trigger-date: " + triggerDate +
             ", occurrence: " + dateTrigger.getOccurrence() +
-            ", options=" + options +
-            ", canScheduleExactAlarms: " + canScheduleExactAlarms);
+            ", triggerDate: " + triggerDate +
+            ", options=" + options);
         
         // AlarmManager.set: If there is already an alarm scheduled for the same IntentSender,
         // that previous alarm will first be canceled.
@@ -242,10 +270,13 @@ public final class Notification {
                 }
             }
 
+            return true;
+
             // Maximum 500 alarms can be scheduled.
             // If more are scheduled, an exception will be thrown.
         } catch (Exception exception) {
             Log.d(TAG, "Exception occurred during scheduling notification", exception);
+            return false;
         }
     }
 
@@ -368,13 +399,22 @@ public final class Notification {
      * app restart, retrieve notifications, etc.
      */
     private void storeInSharedPreferences() {
+        Log.d(TAG, "Store notification in SharedPreferences" +
+            ", notificationId=" + options.getId() +
+            ", occurrence=" + dateTrigger.getOccurrence() +
+            ", triggerBaseDate=" + dateTrigger.getBaseDate() +
+            ", triggerDate=" + dateTrigger.getTriggerDate() +
+            ", options=" + options);
+        
         Manager.getSharedPreferences(context).edit()
         // options as JSON string
-        .putString(getSharedPreferencesKeyOptions(options.getId()), options.toString())
+        .putString(getSharedPreferencesKeyOptions(), options.toString())
         // occurrence for restoration
-        .putInt(getSharedPreferencesKeyOccurrence(options.getId()), dateTrigger.getOccurrence())
-        // triggerDate for restoration
-        .putLong(getSharedPreferencesKeyTriggerDate(options.getId()), dateTrigger.getTriggerDate().getTime())
+        .putInt(getSharedPreferencesKeyOccurrence(), dateTrigger.getOccurrence())
+        // trigger base date for restoration
+        .putLong(getSharedPreferencesKeyTriggerBaseDate(), dateTrigger.getBaseDate().getTime())
+        // calculated triggerDate for restoration
+        .putLong(getSharedPreferencesKeyTriggerDate(), dateTrigger.getTriggerDate().getTime())
         .apply();
     }
 
@@ -383,9 +423,10 @@ public final class Notification {
      */
     private void removeFromSharedPreferences() {
         Manager.getSharedPreferences(context).edit()
-        .remove(getSharedPreferencesKeyOptions(options.getId()))
-        .remove(getSharedPreferencesKeyOccurrence(options.getId()))
-        .remove(getSharedPreferencesKeyTriggerDate(options.getId()))
+        .remove(getSharedPreferencesKeyOptions())
+        .remove(getSharedPreferencesKeyOccurrence())
+        .remove(getSharedPreferencesKeyTriggerBaseDate())
+        .remove(getSharedPreferencesKeyTriggerDate())
         .apply();
     }
 
@@ -400,16 +441,33 @@ public final class Notification {
         
         try {
             Notification notification = new Notification(context, new Options(context, new JSONObject(optionsJSONString)));
-            // Restore occurrence in date trigger
-            notification.dateTrigger.setOccurrence(Manager.getSharedPreferences(context).getInt(
-                Notification.getSharedPreferencesKeyOccurrence(notification.getOptions().getId()), 0));
-            
-            // Restore triggerDate in date trigger
-            // The restored triggerTime is only 0 if the data was stored by an older plugin version (older than 1.1.4)
-            long triggerTime = Manager.getSharedPreferences(context).getLong(
-                Notification.getSharedPreferencesKeyTriggerDate(notification.getOptions().getId()), 0);
 
-            if (triggerTime != 0) notification.dateTrigger.setTriggerDate(new Date(triggerTime));
+            // Restore state of dateTrigger
+            // Get occurrence
+            int occurence = Manager.getSharedPreferences(context).getInt(
+                notification.getSharedPreferencesKeyOccurrence(), 0);
+            
+            // Get triger base date
+            long triggerBaseTime = Manager.getSharedPreferences(context).getLong(
+                notification.getSharedPreferencesKeyTriggerBaseDate(), 0);
+
+            // Get triggerDate
+            long triggerTime = Manager.getSharedPreferences(context).getLong(
+                notification.getSharedPreferencesKeyTriggerDate(), 0);
+
+            Log.d(TAG, "Restoring notification from SharedPreferences" +
+                ", notificationId=" + notificationId +
+                ", occurrence=" + occurence +
+                ", triggerBaseDate=" + new Date(triggerBaseTime) +
+                ", triggerDate=" + new Date(triggerTime) +
+                ", options=" + optionsJSONString);
+            
+            // The restored triggerTime is only 0 if the data was stored by an older plugin version (older than 1.1.4)
+            if (triggerTime != 0) {
+                notification.getDateTrigger().restoreState(occurence, new Date(triggerBaseTime), new Date(triggerTime));
+            } else {
+                Log.e(TAG, "Could not restore triggerDate, notificationId=" + notificationId);
+            }
 
             return notification;
         } catch (JSONException exception) {
@@ -437,14 +495,32 @@ public final class Notification {
         }
     }
 
-    public static String getSharedPreferencesKeyOccurrence(int notificationId) {
-        return notificationId + "_occurrence";
+    public String getSharedPreferencesKeyOccurrence() {
+        return options.getId() + "_occurrence";
     }
 
-    public static String getSharedPreferencesKeyTriggerDate(int notificationId) {
-        return notificationId + "_triggerDate";
+    public String getSharedPreferencesKeyTriggerBaseDate() {
+        return options.getId() + "_triggerBaseDate";
     }
 
+    public String getSharedPreferencesKeyTriggerDate() {
+        return options.getId() + "_triggerDate";
+    }
+
+    /**
+     * Get the SharedPreferences key for the notification options.
+     * @return
+     */
+    public String getSharedPreferencesKeyOptions() {
+        return "" + getSharedPreferencesKeyOptions(options.getId());
+    }
+
+    /**
+     * Static version of {@link #getSharedPreferencesKeyOptions()}.
+     * To use, when there is no notification instance available.
+     * @param notificationId
+     * @return
+     */
     public static String getSharedPreferencesKeyOptions(int notificationId) {
         return "" + notificationId;
     }

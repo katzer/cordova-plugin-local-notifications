@@ -68,6 +68,8 @@ public abstract class DateTrigger {
         return 0;
     }
 
+    public abstract boolean isLastOccurrence();
+
     /**
      * Calculates the next trigger. Can return null if there's no next trigger.
      * @param baseCalendar The base calendar from where to calculate the next trigger.
@@ -95,9 +97,6 @@ public abstract class DateTrigger {
         
         if (nextTriggerDate == null) return null;
 
-        // Check if the trigger is within the before option (only for repeating triggers)
-        if (!isWithinTriggerbefore(options, nextTriggerDate)) return null;
-
         // Count occurrence
         occurrence++;
 
@@ -108,31 +107,23 @@ public abstract class DateTrigger {
     }
 
     /**
-     * To restore the triggerDate, when the notification is loaded from the SharedPreferences.
-     * @param date
+     * Restores the state of the trigger, when the notification is loaded from the SharedPreferences
+     * @param occurrence
+     * @param baseDate
+     * @param triggerDate
      */
-    public void setTriggerDate(Date date) {
-        this.triggerDate = date;
+    public void restoreState(int occurrence, Date baseDate, Date triggerDate) {
+        this.occurrence = occurrence;
+        this.baseDate = baseDate;
+        this.triggerDate = triggerDate;
     }
 
     public Date getTriggerDate() {
         return triggerDate;
     }
 
-    /**
-     * Sets the base date from where to calculate the next trigger. This is initially set by
-     * {@link #getFirstBaseDate()} but can be overwritten.
-     */
-    public void setBaseDate(Date baseDate) {
-        this.baseDate = baseDate;
-    }
-
-    /**
-     * Sets the occurrence of the trigger.
-     * @param occurence
-     */
-    public void setOccurrence(int occurence) {
-        this.occurrence = occurence;
+    public Date getBaseDate() {
+        return baseDate;
     }
 
     /**
@@ -142,20 +133,8 @@ public abstract class DateTrigger {
         return occurrence;
     }
 
-    public boolean isLastOccurrence() {
-        // trigger is not repeating like it is for trigger.at and trigger.in
-        // there can only be 1 occurrence 
-        if (!options.isRepeating() && occurrence == 1) return true;
-
-        // Repeating trigger: All occurrences have been run through specified by the count option
-        if (options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount()) return true;
-
-        // It's not the last occurrence
-        return false;
-    }
-
     /**
-     * Converts {@link Date} to {@link Calendar}.
+     * Converts a {@link Date} to {@link Calendar}.
      */
     Calendar dateToCalendar(Date date) {
         Calendar calendar = Calendar.getInstance();
@@ -198,12 +177,9 @@ public abstract class DateTrigger {
 
     /**
      * Checks if the trigger date is within the trigger before option, if present
-     * @param options
-     * @param triggerDate
-     * @return
      */
-    public boolean isWithinTriggerbefore(Options options, Date triggerDate) {
+    public boolean isWithinTriggerbefore(Calendar calendar) {
         // Return true, if there is no trigger before option, otherwise compare against it
-        return !options.getTrigger().has("before") || triggerDate.getTime() < options.getTriggerBefore();
+        return !options.getTrigger().has("before") || calendar.getTimeInMillis() < options.getTriggerBefore();
     }
 }

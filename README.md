@@ -370,7 +370,7 @@ cordova.plugins.notification.local.schedule({
 | before        | Date    |                  | x       |     | |
 | after         | Date    |                  | x       |     | |
 | count         | Int     |                  | x       |     |      |
-| every         | Object  | `minute`, `hour`, `day`, `weekday`, `weekdayOrdinal` <img src="images/apple-icon.svg" width="16">, `week` <img src="images/apple-icon.svg" width="16">, `weekOfMonth`, `month`, `quarter`  <img src="images/apple-icon.svg" width="16">, `year` | x       | x   | |
+| every         | Object  | `minute`, `hour`, `day`, `weekday`, `weekdayOrdinal` <img src="images/apple-icon.svg" width="16">, `week` <img src="images/apple-icon.svg" width="16">, `weekOfMonth`, `month`, `quarter`  <img src="images/apple-icon.svg" width="16"> | x       | x   | |
 
 ### Location based
 <img src="images/apple-icon.svg" width="16"> iOS only

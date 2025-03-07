@@ -340,8 +340,7 @@ public class LocalNotification extends CordovaPlugin {
         for (int index = 0; index < optionsJSONList.length(); index++) {
             Options options = new Options(getContext(), optionsJSONList.optJSONObject(index));
             Notification notification = new Notification(getContext(), options);
-            notification.schedule();
-            fireEvent("add", notification);
+            if (notification.scheduleNext()) fireEvent("add", notification);
         }
 
         hasPermission(command);
