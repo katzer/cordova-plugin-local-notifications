@@ -456,7 +456,7 @@ public class LocalNotification extends CordovaPlugin {
      * Get the type of the notification (unknown, scheduled, triggered).
      */
     private void type(JSONArray args, CallbackContext callbackContext) {
-        Notification notification = Notification.fromSharedPreferences(getContext(), args.optInt(0));
+        Notification notification = Notification.getFromSharedPreferences(getContext(), args.optInt(0));
 
         if (notification == null) {
             callbackContext.success("unknown");
@@ -510,7 +510,7 @@ public class LocalNotification extends CordovaPlugin {
      * Sends options from a notification to WebView
      */
     private void notification(JSONArray args, CallbackContext callbackContext) {
-        Notification notification = Notification.fromSharedPreferences(getContext(), args.optInt(0));
+        Notification notification = Notification.getFromSharedPreferences(getContext(), args.optInt(0));
 
         if (notification != null) {
             callbackContext.success(notification.getOptions().getDict());

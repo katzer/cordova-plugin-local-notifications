@@ -53,7 +53,7 @@ public class ClickHandlerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Notification notification = Notification.fromSharedPreferences(
+        Notification notification = Notification.getFromSharedPreferences(
             getApplicationContext(), getIntent().getExtras().getInt(Notification.EXTRA_ID));
 
         finish();

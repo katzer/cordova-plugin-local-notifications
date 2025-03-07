@@ -61,7 +61,7 @@ public class TriggerReceiver extends BroadcastReceiver {
         if (bundle == null) return;
 
         int notificationId = bundle.getInt(Notification.EXTRA_ID, 0);
-        Notification notification = Notification.fromSharedPreferences(context, notificationId);
+        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
         if (notification == null) return;
 
         notification.setBuilder(new BuilderCreator(notification).setIntentExtras(bundle).create());

@@ -48,7 +48,7 @@ public class ClearReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         if (bundle == null) return;
 
-        Notification notification = Notification.fromSharedPreferences(context, bundle.getInt(Notification.EXTRA_ID));
+        Notification notification = Notification.getFromSharedPreferences(context, bundle.getInt(Notification.EXTRA_ID));
         if (notification == null) return;
 
         // If it is the last occurrence cancel alarm and remove it from SharedPreferences

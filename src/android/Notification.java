@@ -392,7 +392,7 @@ public final class Notification {
     /**
      * Gets the stored notification options from the Android shared Preferences.
      */
-    public static Notification fromSharedPreferences(Context context, int notificationId) {
+    public static Notification getFromSharedPreferences(Context context, int notificationId) {
         String optionsJSONString = Manager.getSharedPreferences(context).getString(
             getSharedPreferencesKeyOptions(notificationId), null);
 

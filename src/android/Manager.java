@@ -155,7 +155,7 @@ public final class Manager {
      * @param updates JSON object with notification options.
      */
     public Notification update(int notificationId, JSONObject updates) {
-        Notification notification = Notification.fromSharedPreferences(context, notificationId);
+        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
         if (notification == null) return null;
 
         notification.update(updates);
@@ -167,7 +167,7 @@ public final class Manager {
      * Clear local notification specified by ID.
      */
     public Notification clear(int notificationId) {
-        Notification notification = Notification.fromSharedPreferences(context, notificationId);
+        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
         if (notification != null) notification.clear();
         return notification;
     }
@@ -187,7 +187,7 @@ public final class Manager {
      * Clear local notification specified by ID.
      */
     public Notification cancel(int notificationId) {
-        Notification notification = Notification.fromSharedPreferences(context, notificationId);
+        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
         if (notification != null) notification.cancel();
         return notification;
     }
@@ -262,7 +262,7 @@ public final class Manager {
         List<Notification> notifications = new ArrayList<Notification>();
 
         for (int notificationId : notificationIds) {
-            Notification notification = Notification.fromSharedPreferences(context, notificationId);
+            Notification notification = Notification.getFromSharedPreferences(context, notificationId);
             if (notification != null) notifications.add(notification);
         }
 
