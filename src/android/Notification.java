@@ -350,6 +350,9 @@ public final class Notification {
 
         // Clear the notification from the status bar if posted
         NotificationManagerCompat.from(context).cancel(getAppName(), getId());
+
+        // Inform WebView about the canceling
+        if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("cancel", this);
     }
 
     /**

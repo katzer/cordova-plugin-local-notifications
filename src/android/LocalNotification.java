@@ -380,12 +380,12 @@ public class LocalNotification extends CordovaPlugin {
     /**
      * Cancel multiple local notifications.
      */
-    private void cancel(JSONArray notificationIds, CallbackContext callbackContext) {
-        for (int index = 0; index < notificationIds.length(); index++) {
-            Notification notification = getManager().cancel(notificationIds.optInt(index, 0));
-            if (notification == null) continue;
-            fireEvent("cancel", notification);
+    private void cancel(JSONArray args, CallbackContext callbackContext) {
+        for (int argsIndex = 0; argsIndex < args.length(); argsIndex++) {
+            Notification notification = Notification.getFromSharedPreferences(getContext(), args.optInt(argsIndex, 0));
+            if (notification != null) notification.cancel();
         }
+
         callbackContext.success();
     }
 
