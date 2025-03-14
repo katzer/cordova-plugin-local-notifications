@@ -59,7 +59,5 @@ public class ClearReceiver extends BroadcastReceiver {
         } else {
             notification.clear();
         }
-
-        if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("clear", notification);
     }
 }

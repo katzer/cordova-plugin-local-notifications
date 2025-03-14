@@ -321,17 +321,20 @@ public final class Notification {
     }
 
     /**
-     * Clear the local notification without canceling repeating alarms.
+     * Clear the local notification without canceling repeating alarms and informs the WebView
+     * about it.
      */
     public void clear() {
         Log.d(TAG, "Clear notification, options=" + options);
+
         // Clear the notification from the statusbar if posted
         NotificationManagerCompat.from(context).cancel(getAppName(), getId());
 
         // If the notification is not repeating, remove notification data from the app
-        if (!options.isRepeating()) {
-          removeFromSharedPreferences();
-        }
+        if (!options.isRepeating()) removeFromSharedPreferences();
+
+        // Inform WebView about the clearing
+        if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("clear", this);
     }
 
     /**

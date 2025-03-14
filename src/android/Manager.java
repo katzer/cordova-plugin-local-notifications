@@ -164,15 +164,6 @@ public final class Manager {
     }
 
     /**
-     * Clear local notification specified by ID.
-     */
-    public Notification clear(int notificationId) {
-        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
-        if (notification != null) notification.clear();
-        return notification;
-    }
-
-    /**
      * Clear all local notifications.
      */
     public void clearAll() {

@@ -403,13 +403,9 @@ public class LocalNotification extends CordovaPlugin {
      * @param args Set of local notification IDs.
      */
     private void clear(JSONArray args, CallbackContext callbackContext) {
-        for (int i = 0; i < args.length(); i++) {
-            int id = args.optInt(i, 0);
-            Notification toast = getManager().clear(id);
-
-            if (toast == null) continue;
-
-            fireEvent("clear", toast);
+        for (int argsIndex = 0; argsIndex < args.length(); argsIndex++) {
+            Notification notification = Notification.getFromSharedPreferences(getContext(), args.optInt(argsIndex, 0));
+            if (notification != null) notification.clear();
         }
 
         callbackContext.success();
