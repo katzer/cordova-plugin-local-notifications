@@ -16,6 +16,7 @@
   - Bugfix: Calculation of next trigger.every, fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
     - The second occurrence of trigger.every was calculated wrong, because the baseDate was not set to the last trigger date of the last occurrence but instead to the current time. Now the triggerDate will be saved in the SharedPreferences and restored when the next occurrence is scheduled and calculated.
   - Bugfix: Only fire add event, if a notification was really scheduled
+- Fire event `clear` or `cancel` whenever a notification is cleared or canceled
 
 ### Common
 - Improve documentation: [trigger property](README.md#triggers)
