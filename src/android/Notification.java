@@ -443,14 +443,17 @@ public final class Notification {
         String optionsJSONString = Manager.getSharedPreferences(context).getString(
             getSharedPreferencesKeyOptions(notificationId), null);
 
-        if (optionsJSONString == null) return null;
+        Log.d(TAG, "Restoring notification from SharedPreferences" +
+            ", notificationId=" + notificationId +
+            ", options=" + optionsJSONString);
         
         try {
+            // Parse options string to JSONObject
             Notification notification = new Notification(context, new Options(context, new JSONObject(optionsJSONString)));
 
             // Restore state of dateTrigger
             // Get occurrence
-            int occurence = Manager.getSharedPreferences(context).getInt(
+            int occurrence = Manager.getSharedPreferences(context).getInt(
                 notification.getSharedPreferencesKeyOccurrence(), 0);
             
             // Get triger base date
@@ -460,20 +463,25 @@ public final class Notification {
             // Get triggerDate
             long triggerTime = Manager.getSharedPreferences(context).getLong(
                 notification.getSharedPreferencesKeyTriggerDate(), 0);
-
-            Log.d(TAG, "Restoring notification from SharedPreferences" +
-                ", notificationId=" + notificationId +
-                ", occurrence=" + occurence +
-                ", triggerBaseDate=" + new Date(triggerBaseTime) +
-                ", triggerDate=" + new Date(triggerTime) +
-                ", options=" + optionsJSONString);
             
-            // The restored triggerTime is only 0 if the data was stored by an older plugin version (older than 1.1.4)
-            if (triggerTime != 0) {
-                notification.getDateTrigger().restoreState(occurence, new Date(triggerBaseTime), new Date(triggerTime));
+            // The saving of occurrence, triggerBaseDate and triggerDate exists since version 1.1.4
+            // Before only the options were saved
+            // Just caclulate the next trigger from the current time
+            // Durring the development of version 1.1.4, first only the occurrence was saved,
+            // later also the triggerBaseDate and triggerDate, so check this also
+            if (occurrence == 0 || triggerBaseTime == 0 || triggerTime == 0) {
+                notification.getDateTrigger().getNextTriggerDate();
+
+                // Restore the state of the trigger date
             } else {
-                Log.e(TAG, "Could not restore triggerDate, notificationId=" + notificationId);
+                notification.getDateTrigger().restoreState(occurrence, new Date(triggerBaseTime), new Date(triggerTime));
             }
+            
+            Log.d(TAG, "Restored trigger date" +
+                ", notificationId=" + notificationId +
+                ", occurrence=" + notification.getDateTrigger().getOccurrence() +
+                ", triggerBaseDate=" + notification.getDateTrigger().getBaseDate() +
+                ", triggerDate=" + notification.getDateTrigger().getTriggerDate());
 
             return notification;
         } catch (JSONException exception) {
