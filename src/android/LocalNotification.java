@@ -140,20 +140,16 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param action  The action to execute.
      * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * @param callbackContext The callback context used when calling back into JavaScript.
      *
      * @return Whether the action was valid.
      */
     @Override
-    public boolean execute(final String action, final JSONArray args, final CallbackContext command) throws JSONException {
-        Log.d(TAG, "execute" + 
-            ", action=" + action +
-            ", args=" + args +
-            ", command=" + command);
+    public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        Log.d(TAG, "execute, action=" + action + ", args=" + args);
 
         if (action.equals("launch")) {
-            launch(command);
+            launch(callbackContext);
             return true;
         }
 
@@ -162,45 +158,45 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equals("ready")) {
                     deviceready();
                 } else if (action.equals("createChannel")) {
-                    createChannel(args, command);
+                    createChannel(args, callbackContext);
                 } else if (action.equals("deleteChannel")) {
-                    deleteChannel(args, command);
+                    deleteChannel(args, callbackContext);
                 } else if (action.equals("hasPermission")) {
-                    hasPermission(command);
+                    hasPermission(callbackContext);
                 } else if (action.equals("requestPermission")) {
-                    requestPermission(command);
+                    requestPermission(callbackContext);
                 } else if (action.equals("actions")) {
-                    actions(args, command);
+                    actions(args, callbackContext);
                 } else if (action.equals("schedule")) {
-                    schedule(args, command);
+                    schedule(args, callbackContext);
                 } else if (action.equals("update")) {
-                    update(args, command);
+                    update(args, callbackContext);
                 } else if (action.equals("cancel")) {
-                    cancel(args, command);
+                    cancel(args, callbackContext);
                 } else if (action.equals("cancelAll")) {
-                    cancelAll(command);
+                    cancelAll(callbackContext);
                 } else if (action.equals("clear")) {
-                    clear(args, command);
+                    clear(args, callbackContext);
                 } else if (action.equals("clearAll")) {
-                    clearAll(command);
+                    clearAll(callbackContext);
                 } else if (action.equals("type")) {
-                    type(args, command);
+                    type(args, callbackContext);
                 } else if (action.equals("ids")) {
-                    ids(args, command);
+                    ids(args, callbackContext);
                 } else if (action.equals("notification")) {
-                    notification(args, command);
+                    notification(args, callbackContext);
                 } else if (action.equals("notifications")) {
-                    notifications(args, command);
+                    notifications(args, callbackContext);
                 } else if (action.equals("canScheduleExactAlarms")) {
-                    canScheduleExactAlarms(command);
+                    canScheduleExactAlarms(callbackContext);
                 } else if (action.equals("openNotificationSettings")) {
-                    openNotificationSettings(command);
+                    openNotificationSettings(callbackContext);
                 } else if (action.equals("openAlarmSettings")) {
-                    openAlarmSettings(command);
+                    openAlarmSettings(callbackContext);
                 } else if (action.equals("getUnusedAppRestrictionsStatus")) {
-                    getUnusedAppRestrictionsStatus(command);
+                    getUnusedAppRestrictionsStatus(callbackContext);
                 } else if (action.equals("openManageUnusedAppRestrictions")) {
-                    openManageUnusedAppRestrictions(command);
+                    openManageUnusedAppRestrictions(callbackContext);
                 }
             }
         });
@@ -210,12 +206,9 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Set launchDetails object.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
     @SuppressLint("DefaultLocale")
-    private void launch(CallbackContext command) {
+    private void launch(CallbackContext callbackContext) {
         if (launchDetails == null) return;
 
         JSONObject details = new JSONObject();
@@ -227,7 +220,7 @@ public class LocalNotification extends CordovaPlugin {
             e.printStackTrace();
         }
 
-        command.success(details);
+        callbackContext.success(details);
 
         launchDetails = null;
     }
@@ -241,11 +234,9 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Ask if if the setting to schedule exact alarms is enabled.
-     *
-     * @param command The callback context used when calling back into JavaScript.
      */
-    private void canScheduleExactAlarms(CallbackContext command) {
-        successBoolean(command, Manager.canScheduleExactAlarms(getContext()));
+    private void canScheduleExactAlarms(CallbackContext callbackContext) {
+        successBoolean(callbackContext, Manager.canScheduleExactAlarms(getContext()));
     }
 
     /**
@@ -330,20 +321,17 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
-     * Schedule multiple local notifications.
-     *
-     * @param optionsJSONList  The notifications to schedule.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * Schedule one or multiple local notifications
+     * @param optionsJSONList The notifications to schedule.
      */
-    private void schedule(JSONArray optionsJSONList, CallbackContext command) {
+    private void schedule(JSONArray optionsJSONList, CallbackContext callbackContext) {
         for (int index = 0; index < optionsJSONList.length(); index++) {
             Options options = new Options(getContext(), optionsJSONList.optJSONObject(index));
             Notification notification = new Notification(getContext(), options);
             if (notification.scheduleNext()) fireEvent("add", notification);
         }
 
-        hasPermission(command);
+        hasPermission(callbackContext);
     }    
     
     /**
@@ -360,14 +348,11 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Deletes a notification channel by an id.
-     *
-     * @param args Contains the channel id as a @String.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * @param args Contains the channel id as a String.
      */
-    private void deleteChannel(JSONArray args, CallbackContext command) {
+    private void deleteChannel(JSONArray args, CallbackContext callbackContext) {
         getManager().deleteChannel(args.optString(0));
-        command.success();
+        callbackContext.success();
     }
 
     /**
@@ -406,49 +391,37 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Cancel all scheduled notifications.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
-    private void cancelAll(CallbackContext command) {
+    private void cancelAll(CallbackContext callbackContext) {
         getManager().cancelAll();
         fireEvent("cancelall");
-        command.success();
+        callbackContext.success();
     }
 
     /**
      * Clear multiple local notifications without canceling them.
-     *
-     * @param ids     Set of local notification IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * @param args Set of local notification IDs.
      */
-    private void clear(JSONArray ids, CallbackContext command) {
-        Manager mgr = getManager();
+    private void clear(JSONArray args, CallbackContext callbackContext) {
+        for (int i = 0; i < args.length(); i++) {
+            int id = args.optInt(i, 0);
+            Notification toast = getManager().clear(id);
 
-        for (int i = 0; i < ids.length(); i++) {
-            int id             = ids.optInt(i, 0);
-            Notification toast = mgr.clear(id);
-
-            if (toast == null)
-                continue;
+            if (toast == null) continue;
 
             fireEvent("clear", toast);
         }
 
-        command.success();
+        callbackContext.success();
     }
 
     /**
      * Clear all triggered notifications without canceling them.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
      */
-    private void clearAll(CallbackContext command) {
+    private void clearAll(CallbackContext callbackContext) {
         getManager().clearAll();
         fireEvent("clearall");
-        command.success();
+        callbackContext.success();
     }
 
     /**
@@ -477,12 +450,9 @@ public class LocalNotification extends CordovaPlugin {
 
     /**
      * Set of IDs from all existent notifications.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
+     * @param args Type of notifications to get IDs from.
      */
-    private void ids(JSONArray args, CallbackContext command) {
+    private void ids(JSONArray args, CallbackContext callbackContext) {
         int type    = args.optInt(0);
         Manager mgr = getManager();
         List<Integer> ids;
@@ -502,7 +472,7 @@ public class LocalNotification extends CordovaPlugin {
                 break;
         }
 
-        command.success(new JSONArray(ids));
+        callbackContext.success(new JSONArray(ids));
     }
 
     /**
@@ -551,10 +521,8 @@ public class LocalNotification extends CordovaPlugin {
     }
     /**
      * Open the Android Notification settings for current app.
-     *
-     * @param command The callback context used when calling back into JavaScript.
      */
-    private void openNotificationSettings(CallbackContext command) {
+    private void openNotificationSettings(CallbackContext callbackContext) {
         String packageName = cordova.getActivity().getPackageName();
         Intent intent = new Intent();
 
@@ -568,18 +536,15 @@ public class LocalNotification extends CordovaPlugin {
         }
 
         cordova.getActivity().startActivity(intent);
-
-        command.success();
+        callbackContext.success();
     }
 
     /**
      * Open the Alarms & Reminders setting for the current app.
      * This setting is available since Android 12 (SDK 31). If this method is called on
-     * Android 11 (SDK 30) or older, the method will just call command.success().
-     * 
-     * @param command The callback context used when calling back into JavaScript.
+     * Android 11 (SDK 30) or older, the method will just call callbackContext.success().
      */
-    private void openAlarmSettings(CallbackContext command) {
+    private void openAlarmSettings(CallbackContext callbackContext) {
         // Setting available since Android 12 (SDK 31)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             cordova.getActivity().startActivity(new Intent(
@@ -587,7 +552,7 @@ public class LocalNotification extends CordovaPlugin {
                 Uri.parse("package:" + cordova.getActivity().getPackageName())));
         }
 
-        command.success();
+        callbackContext.success();
     }
 
     /**
