@@ -724,6 +724,18 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Launch main intent from package.
+     */
+    public static void launchApp(Context context) {
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+
+        if (launchIntent == null) return;
+        
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(launchIntent);
+    }
+
+    /**
      * Convert JSON array of integers to List.
      *
      * @param jsonArray Array of integers.

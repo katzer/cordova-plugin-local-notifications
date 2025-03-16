@@ -65,7 +65,7 @@ public class ClickHandlerActivity extends Activity {
         JSONObject data = new JSONObject();
         setTextInput(action, data);
         
-        if (getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true)) launchApp();
+        if (getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true)) LocalNotification.launchApp(getApplicationContext());
 
         LocalNotification.fireEvent(action, notification, data);
 
@@ -92,24 +92,5 @@ public class ClickHandlerActivity extends Activity {
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
-    }
-
-    /**
-     * Launch main intent from package.
-     */
-    private void launchApp() {
-        Context context = getApplicationContext();
-
-        Intent intent = context
-            .getPackageManager()
-            .getLaunchIntentForPackage(context.getPackageName());
-
-        if (intent == null) return;
-
-        intent.addFlags(
-              Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        context.startActivity(intent);
     }
 }
