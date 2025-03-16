@@ -29,14 +29,10 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 
-import java.util.Calendar;
-
-import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
 import de.appplant.cordova.plugin.localnotification.LocalNotification;
 import de.appplant.cordova.plugin.localnotification.BuilderCreator;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
-import de.appplant.cordova.plugin.localnotification.Options;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class

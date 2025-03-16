@@ -29,10 +29,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import java.util.Date;
 import java.util.List;
 
-import de.appplant.cordova.plugin.localnotification.ClickHandlerActivity;
 import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 
