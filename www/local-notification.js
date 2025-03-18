@@ -43,19 +43,19 @@ exports._commonOptions = {
 }
 
 exports._androidAlarmTypes = {
-    'RTC_WAKEUP': 0,
-    'RTC': 1,
-    'ELAPSED_REALTIME_WAKEUP': 2, // Not supported
-    'ELAPSED_REALTIME': 3, // Not supported
+    RTC_WAKEUP: 0,
+    RTC: 1,
+    ELAPSED_REALTIME_WAKEUP: 2, // Not supported
+    ELAPSED_REALTIME: 3, // Not supported
 }
 
 exports._androidChannelImportanceTypes = {
-    'IMPORTANCE_NONE': 0,
-    'IMPORTANCE_MIN': 1,
-    'IMPORTANCE_LOW': 2,
-    'IMPORTANCE_DEFAULT': 3,
-    'IMPORTANCE_HIGH': 4,
-    'IMPORTANCE_MAX': 5
+    IMPORTANCE_NONE: 0,
+    IMPORTANCE_MIN: 1,
+    IMPORTANCE_LOW: 2,
+    IMPORTANCE_DEFAULT: 3,
+    IMPORTANCE_HIGH: 4,
+    IMPORTANCE_MAX: 5
 }
 
 exports.androidUnusedAppRestrictionsStatusCodes = {
@@ -87,7 +87,7 @@ exports.androidUnusedAppRestrictionsStatusCodes = {
 
 // Options only available on Android
 exports._androidSpecificOptions = {
-    androidAlarmType: "RTC_WAKEUP",
+    androidAlarmType: exports._androidAlarmTypes.RTC_WAKEUP,
     // Alarm will be allowed to execute even when the system is in low-power idle (a.k.a. doze) modes.
     androidAllowWhileIdle: false,
     // Make this notification automatically dismissed when the user touches it
@@ -96,7 +96,7 @@ exports._androidSpecificOptions = {
     androidChannelDescription: null,
     androidChannelEnableVibration: false,
     androidChannelId: "default_channel",
-    androidChannelImportance: "IMPORTANCE_DEFAULT",
+    androidChannelImportance: exports._androidChannelImportanceTypes.IMPORTANCE_DEFAULT,
     androidChannelName: "Default channel",
     // soundUsage of a channel. Default is USAGE_NOTIFICATION
     androidChannelSoundUsage: 5,
@@ -767,13 +767,13 @@ exports._handleDeprecatedProperties = function (options) {
             console.log("Property 'text' as array is deprecated since version 1.1.0. Use 'androidMessages' instead.")
         }
 
-        // "clock: true" to androidShowWhen, since 1.1.0
-        if (options.clock === true) {
-            options.androidShowWhen = true
-            console.log("Property 'clock: true' is deprecated since version 1.1.0. Use 'androidShowWhen: true' instead.")
+        // clock: boolean to androidShowWhen: boolean, since 1.1.0
+        if (typeof options.clock === 'boolean') {
+            options.androidShowWhen = options.clock
+            console.log("Property 'clock: boolean' is deprecated since version 1.1.0. Use 'androidShowWhen: boolean' instead.")
         }
 
-        // "clock: 'chronometer'" to androidUsesChronometer, since 1.1.0
+        // "clock: 'chronometer'" to androidUsesChronometer: true, since 1.1.0
         if (options.clock == "chronometer") {
             options.androidUsesChronometer = true
             console.log("Property 'clock: 'chronometer'' is deprecated since version 1.1.0. Use 'androidUsesChronometer: true' instead.")
@@ -790,6 +790,12 @@ exports._handleDeprecatedProperties = function (options) {
     if (options.sound === true) {
         options.sound = "default"
         console.log(`Property "sound: true" is deprecated since version 1.1.0. Use "sound: 'default'" instead.`)
+    }
+
+    // sound: false changed to sound: null, since 1.1.0
+    if (options.sound === false) {
+        options.sound = null
+        console.log(`Property "sound: false" is deprecated since version 1.1.0. Use "sound: null" instead`)
     }
 
     // Handle renamed and removed properties

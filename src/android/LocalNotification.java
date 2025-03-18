@@ -478,7 +478,7 @@ public class LocalNotification extends CordovaPlugin {
         Notification notification = Notification.getFromSharedPreferences(getContext(), args.optInt(0));
 
         if (notification != null) {
-            callbackContext.success(notification.getOptions().getDict());
+            callbackContext.success(notification.getOptions().getJSON());
         } else {
             callbackContext.success();
         }
@@ -510,7 +510,7 @@ public class LocalNotification extends CordovaPlugin {
         ArrayList<JSONObject> options = new ArrayList<JSONObject>();
 
         for (Notification notification : notifications) {
-            options.add(notification.getOptions().getDict());
+            options.add(notification.getOptions().getJSON());
         }
 
         callbackContext.success(new JSONArray(options));

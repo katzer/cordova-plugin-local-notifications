@@ -885,7 +885,7 @@ There were some properties renamed. You can still use the old ones, but you will
 | channelId               | androidChannelId            |
 | channelImportance       | androidChannelImportance    |
 | channelName             | androidChannelName          |
-| clock                   | Use for `clock: true` = `androidShowWhen` and `clock: 'chronometer'` = `androidUsesChronometer` |
+| clock                   | Use for `clock: boolean` = `androidShowWhen: boolean` and for `clock: 'chronometer'` = `androidUsesChronometer: true` |
 | color                   | androidColor                |
 | defaults                | androidDefaults             |
 | description             | androidChannelDescription   |
@@ -910,6 +910,25 @@ There were some properties renamed. You can still use the old ones, but you will
 | timeoutAfter            | androidTimeoutAfter         |
 | titleCount              | androidTitleCount           |
 | wakeup                  | androidWakeUpScreen         |
+
+##### Changes on androidProgressBar
+The default value changed from:
+
+```json
+{enabled: false, value:0, maxValue:100, indeterminate:false}
+```
+
+to
+
+`null`
+
+The property `androidProgressBar.enabled` is not supported anymore.
+Just set `androidProgressBar: null` to disable the progressbar.
+
+##### Changes on sound
+The property `sound` takes no longer additionally a boolean, now only a string, which points to a sound file.
+- The value `sound: true` is replaced with `sound: 'default'`
+- The value `sound: false` is replaced with `sound: null`
 
 ### Changes since version `1.1.1`
 
@@ -1331,7 +1350,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 Made with :yum: from Leipzig and since 2024 from Cuxhaven
 
 © 2013-2023 [appPlant GmbH][appplant]
-<br>© 2024 [Manuel Beck](https://manuelbeck.software)
+<br>© 2024-2025 [Manuel Beck](https://manuelbeck.software)
 
 
 [ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188

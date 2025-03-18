@@ -2,7 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
- * Copyright (c) Manuel Beck 2024
+ * Copyright (c) Manuel Beck 2024,2025
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -19,11 +19,9 @@
  * Please see the License for the specific language governing rights and
  * limitations under the License.
  */
-
-// codebeat:disable[TOO_MANY_FUNCTIONS]
-
 package de.appplant.cordova.plugin.localnotification;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -34,13 +32,14 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,23 +47,6 @@ import java.util.List;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
-
-import static android.app.AlarmManager.RTC_WAKEUP;
-import static androidx.core.app.NotificationCompat.DEFAULT_LIGHTS;
-import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;
-import static androidx.core.app.NotificationCompat.DEFAULT_VIBRATE;
-import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
-import static androidx.core.app.NotificationCompat.PRIORITY_LOW;
-import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
-import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
-import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
-import static androidx.core.app.NotificationCompat.VISIBILITY_SECRET;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_NONE;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_MIN;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_MAX;
 
 /**
  * Wrapper around the JSON object passed through JS which contains all
@@ -98,8 +80,226 @@ public final class Options {
      */
     public Options(Context context, JSONObject options) {
         this.context = context;
+
+        // Some properties were renamed or the funtionality was changed
+        try {
+            convertPropertiesForVersion110(options);
+            convertPropertiesForVersion111(options);
+        } catch (JSONException exception) {
+            Log.e(TAG, "Could not convert properties for current plugin version", exception);
+        }
+
         this.options = options;
+
         this.assetUtil = new AssetUtil(context);
+    }
+
+    /**
+     * Converts properties for version 1.1.0. There have been some properties renamed.
+     * This removes old properties and sets it under the new name.
+     */
+    public void convertPropertiesForVersion110(JSONObject options) throws JSONException {
+        // autoClear to androidAutoCancel
+        if (options.has("autoClear")) {
+            options.put("androidAutoCancel", options.opt("autoClear"));
+            options.remove("autoClear");
+        }
+
+        // badge to badgeNumber
+        if (options.has("badge")) {
+            options.put("badgeNumber", options.opt("badge"));
+            options.remove("badge");
+        }
+
+        // description to androidChannelDescription
+        if (options.has("description")) {
+            options.put("androidChannelDescription", options.opt("description"));
+            options.remove("description");
+        }
+
+        // channelDescription to androidChannelDescription
+        if (options.has("channelDescription")) {
+            options.put("androidChannelDescription", options.opt("channelDescription"));
+            options.remove("channelDescription");
+        }
+
+        // channelId to androidChannelId
+        if (options.has("channelId")) {
+            options.put("androidChannelId", options.opt("channelId"));
+            options.remove("channelId");
+        }
+
+        // importance to androidChannelImportance
+        if (options.has("importance")) {
+            options.put("androidChannelImportance", options.opt("importance"));
+            options.remove("importance");
+        }
+
+        // channelImportance to androidChannelImportance
+        if (options.has("channelImportance")) {
+            options.put("androidChannelImportance", options.opt("channelImportance"));
+            options.remove("channelImportance");
+        }
+
+        // channelName to androidChannelName
+        if (options.has("channelName")) {
+            options.put("androidChannelName", options.opt("channelName"));
+            options.remove("channelName");
+        }
+
+        // clock to androidShowWhen or androidUsesChronometer
+        if (options.has("clock")) {
+            // Can be boolean or string
+            Object clock = options.opt("clock");
+
+            // clock: boolean to androidShowWhen: boolean
+            if (clock instanceof Boolean) {
+                options.put("androidShowWhen", clock);
+
+                // clock: 'chronometer' to androidUsesChronometer: true
+            } else if (clock instanceof String) {
+                options.put("androidUsesChronometer", (String) clock == "chronometer");
+            }
+
+            options.remove("clock");
+        }
+
+        // color to androidColor
+        if (options.has("color")) {
+            options.put("androidColor", options.opt("color"));
+            options.remove("color");
+        }
+
+        // defaults to androidDefaults
+        if (options.has("defaults")) {
+            options.put("androidDefaults", options.opt("defaults"));
+            options.remove("defaults");
+        }
+
+        // group to androidGroup
+        if (options.has("group")) {
+            options.put("androidGroup", options.opt("group"));
+            options.remove("group");
+        }
+
+        // groupSummary to androidGroupSummary
+        if (options.has("groupSummary")) {
+            options.put("androidGroupSummary", options.opt("groupSummary"));
+            options.remove("groupSummary");
+        }
+
+        // icon to androidLargeIcon
+        if (options.has("icon")) {
+            options.put("androidLargeIcon", options.opt("icon"));
+            options.remove("icon");
+        }
+
+        // iconType to androidLargeIconType
+        if (options.has("iconType")) {
+            options.put("androidLargeIconType", options.opt("iconType"));
+            options.remove("iconType");
+        }
+
+        // lockscreen to androidLockscreen
+        if (options.has("lockscreen")) {
+            options.put("androidLockscreen", options.opt("lockscreen"));
+            options.remove("lockscreen");
+        }
+
+        // onlyAlertOnce to androidOnlyAlertOnce
+        if (options.has("onlyAlertOnce")) {
+            options.put("androidOnlyAlertOnce", options.opt("onlyAlertOnce"));
+            options.remove("onlyAlertOnce");
+        }
+
+        // progressBar to androidProgressBar
+        if (options.has("progressBar")) {
+            JSONObject progressBar = options.optJSONObject("progressBar");
+
+            if (progressBar != null) {
+                // In plugin version prior to 1.1.0 a progressBar object was always set with enabled: false
+                // Only set if property enabled does not exists or is true
+                if (!progressBar.has("enabled") || progressBar.optBoolean("enabled")) {
+                    // Remove enabled property
+                    progressBar.remove("enabled");
+                    options.put("androidProgressBar", progressBar);
+                }
+            }
+
+            options.remove("progressBar");
+        }
+
+        // smallIcon to androidSmallIcon
+        if (options.has("smallIcon")) {
+            options.put("androidSmallIcon", options.opt("smallIcon"));
+            options.remove("smallIcon");
+        }
+
+        // sticky to androidOngoing
+        if (options.has("sticky")) {
+            options.put("androidOngoing", options.opt("sticky"));
+            options.remove("sticky");
+        }
+
+        // ongoing to androidOngoing
+        if (options.has("ongoing")) {
+            options.put("androidOngoing", options.opt("ongoing"));
+            options.remove("ongoing");
+        }
+
+        // sound boolean to sound string
+        // sound: true to sound: 'default'
+        // sound: false to sound: null
+        if (options.opt("sound") instanceof Boolean) {
+            options.put("sound", (Boolean) options.opt("sound") ? "default" : null);
+        }
+
+        // soundUsage to androidChannelSoundUsage
+        if (options.has("soundUsage")) {
+            options.put("androidChannelSoundUsage", options.opt("soundUsage"));
+            options.remove("soundUsage");
+        }
+
+        // summary to androidSummary
+        if (options.has("summary")) {
+            options.put("androidSummary", options.opt("summary"));
+            options.remove("summary");
+        }
+
+        // text Array to androidMessages
+        if (options.optJSONArray("text") != null) {
+            options.put("androidMessages", options.opt("text"));
+            options.remove("text");
+        }
+
+        // timeoutAfter to androidMessages
+        if (options.has("timeoutAfter")) {
+            options.put("androidTimeoutAfter", options.opt("timeoutAfter"));
+            options.remove("timeoutAfter");
+        }
+
+        // titleCount to androidTitleCount
+        if (options.has("titleCount")) {
+            options.put("androidTitleCount", options.opt("titleCount"));
+            options.remove("titleCount");
+        }
+
+        // wakeup to androidWakeUpScreen
+        if (options.has("wakeup")) {
+            options.put("androidWakeUpScreen", options.opt("wakeup"));
+            options.remove("wakeup");
+        }
+    }
+
+    /**
+     *  Converts properties for version 1.1.0. There was one operty renamed.
+     */
+    public void convertPropertiesForVersion111(JSONObject options) throws JSONException {
+        // vibrate to androidChannelEnableVibration
+        if (options.has("vibrate")) {
+            options.put("androidChannelEnableVibration", options.opt("vibrate"));
+            options.remove("vibrate");
+        }
     }
 
     /**
@@ -112,7 +312,7 @@ public final class Options {
     /**
      * Wrapped JSON object.
      */
-    public JSONObject getDict() {
+    public JSONObject getJSON() {
         return options;
     }
 
@@ -133,11 +333,11 @@ public final class Options {
     }
 
     /**
-     * Badge number for the notification
-     * 0 hides the badge number, -1 leaves the badge number unchanged
+     * Badge number for the notification. 0 hides the badge number, -1 leaves the badge number unchanged.
+     * Defaults to 1 if not set.
      */
     public int getBadgeNumber() {
-        return options.optInt("badgeNumber");
+        return options.optInt("badgeNumber", 1);
     }
 
     /**
@@ -147,6 +347,8 @@ public final class Options {
      * They are typically used to indicate a background task that the user is actively engaged with
      * (e.g., playing music) or is pending in some way and therefore occupying the device
      * (e.g., a file download, sync operation, active network connection).
+     * 
+     * Defaults to false if not set.
      */
     public Boolean isAndroidOngoing() {
         return options.optBoolean("androidOngoing", false);
@@ -154,9 +356,10 @@ public final class Options {
 
     /**
      * Make this notification automatically dismissed when the user touches it.
+     * Defaults to true if not set.
      */
     Boolean isAndroidAutoCancel() {
-        return options.optBoolean("androidAutoCancel", false);
+        return options.optBoolean("androidAutoCancel", true);
     }
 
     /**
@@ -244,6 +447,8 @@ public final class Options {
      * Grouped notifications may display in a cluster or stack on devices which support such rendering.
      * To make this notification the summary for its group, also call setGroupSummary(boolean).
      * A sort order can be specified for group members by using setSortKey(String).
+     * 
+     * Defaults to null if not set.
      */
     String getGroup() {
         return options.optString("androidGroup", null);
@@ -254,6 +459,8 @@ public final class Options {
      * Grouped notifications may display in a cluster or stack on devices which
      * support such rendering. Requires a group key also be set using setGroup(String).
      * The group summary may be suppressed if too few notifications are included in the group.
+     * 
+     * Defaults to false if not set.
      */
     boolean isGroupSummary() {
         return options.optBoolean("androidGroupSummary", false);
@@ -269,6 +476,8 @@ public final class Options {
     /**
      * Specifies a duration in milliseconds after which this notification should be canceled,
      * if it is not already canceled.
+     * 
+     * Defaults to 0 if not set.
      */
     long getAndroidTimeoutAfter() {
         return options.optLong("androidTimeoutAfter", 0);
@@ -276,13 +485,15 @@ public final class Options {
 
     /**
      * Since Android 8. The channel id of that notification.
+     * Defaults to 'default_channel' if not set.
      */
     public String getAndroidChannelId() {
         return options.optString("androidChannelId", "default_channel");
     }
 
     /**
-     * Since Android 8
+     * Since Android 8.
+     * Defaults to 'Default channel' if not set.
      * @return
      */
     String getAndroidChannelName() {
@@ -290,16 +501,17 @@ public final class Options {
     }
 
     /**
-     * Since Android 8
+     * Since Android 8. The importance of a notification.
+     * Defaults to {@link NotificationManagerCompat.IMPORTANCE_DEFAULT} if not set.
      * @return
      */
-    int getImportance() {
-        return options.optInt("androidChannelImportance", IMPORTANCE_DEFAULT);
+    int getAndroidChannelImportance() {
+        return options.optInt("androidChannelImportance", NotificationManagerCompat.IMPORTANCE_DEFAULT);
     }
 
     /**
-     * Since Android 8. Channel description.
-     * @return
+     * Channel description. Only for Android 8 and higher.
+     * Defaults to null if not set.
      */
     String getAndroidChannelDescription() {
         return options.optString("androidChannelDescription", null);
@@ -327,43 +539,35 @@ public final class Options {
 
     /**
      * The notification background color for the small icon.
-     *
-     * @return null, if no color is given.
+     * Defaults to {@link NotificationCompat.COLOR_DEFAULT} if not set or invalid.
      */
     public int getColor() {
-        String hex = options.optString("androidColor", null);
-
-        if (hex == null) return NotificationCompat.COLOR_DEFAULT;
+        String androidColor = options.optString("androidColor", null);
+        
+        if (androidColor == null) return NotificationCompat.COLOR_DEFAULT;
 
         try {
-            hex = stripHex(hex);
-
-            // Matches a field in Color.class like BLACK, BLUE, etc.
-            if (hex.matches("[^0-9]*")) {
-                return Color.class
-                        .getDeclaredField(hex.toUpperCase())
-                        .getInt(null);
-            }
-
-            int aRGB = Integer.parseInt(hex, 16);
-            return aRGB + 0xFF000000;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            // Remove leading hash from hex, convert to int, add alpha channel
+            return Integer.parseInt(hexWithoutHash(androidColor), 16) + 0xFF000000;
+        } catch (NumberFormatException exception) {
+            Log.e(TAG, "Could not parse androidColor hex to int: " + androidColor, exception);
+            return NotificationCompat.COLOR_DEFAULT;
         }
-
-        return NotificationCompat.COLOR_DEFAULT;
     }
 
+    /**
+     * Since Android 8, this sets the sound of a notification channel.
+     * Prior to Android 8, this sets the sound directly of a notification.
+     * 
+     * Defaults to 'default' if not set, which represents the default notification sound.
+     */
     String getSound() {
-        return options.optString("sound", null);
+        return options.optString("sound", "default");
     }
 
     /**
      * Sound file path for the local notification.
+     * @return Uri of the sound file or {@link Uri.EMPTY} if not set.
      */
     public Uri getSoundUri() {
         String soundName = getSound();
@@ -377,16 +581,24 @@ public final class Options {
         }
     }
 
+    /**
+     * The sound usage for the notification.
+     * Defaults to {@link AudioAttributes.USAGE_NOTIFICATION} if not set.
+     */
     int getSoundUsage() {
         return options.optInt("androidChannelSoundUsage", AudioAttributes.USAGE_NOTIFICATION);
     }
 
+    /**
+     * Defaults to null if not set.
+     */
     public String getAndroidLargeIcon() {
         return options.optString("androidLargeIcon", null);
     }
 
     /**
      * Type of the large icon.
+     * Defaults to {@link #LARGE_ICON_TYPE_SQUARE} if not set.
      */
     public String getAndroidLargeIconType() {
         return options.optString("androidLargeIconType", LARGE_ICON_TYPE_SQUARE);
@@ -396,6 +608,8 @@ public final class Options {
      * Gets the small icon resource, which will be used to represent the notification in the status bar.
      * The platform template for the expanded view will draw this icon in the left, unless a large icon
      * has also been specified, in which case the small icon will be moved to the right-hand side.
+     * 
+     * Defaults to 'ic_popup_reminder' if not set, or wrongly set.
      */
     int getSmallIcon() {
         String smallIconPath = options.optString("androidSmallIcon");
@@ -403,17 +617,19 @@ public final class Options {
         // Try to get the resource from the app resources or system resources
         int resId = assetUtil.getResourceId(smallIconPath, AssetUtil.RESOURCE_TYPE_DRAWABLE);
 
-        // Log error, if no icon is found
+        // Log error, if no icon is found and fallback to a system icon, which should exists
         if (resId == 0) {
-            Log.e(TAG, "androidSmallIcon not found: " + smallIconPath);
+            Log.e(TAG, "androidSmallIcon not found, using system icon 'ic_popup_reminder', androidSmallIcon=" + smallIconPath);
+            // Fallback to a system icon, which should exists
+            resId = assetUtil.getResourceId("ic_popup_reminder", AssetUtil.RESOURCE_TYPE_DRAWABLE);
         }
-
-        // Fallback to a system icon, which should exists
-        if (resId == 0) resId = assetUtil.getResourceId("ic_popup_reminder", AssetUtil.RESOURCE_TYPE_DRAWABLE);
 
         return resId;
     }
 
+    /**
+     * Defaults to false if not set.
+     */
     boolean isAndroidChannelEnableVibration() {
         return options.optBoolean("androidChannelEnableVibration", false);
     }
@@ -439,7 +655,7 @@ public final class Options {
         if (hex == null) return 0;
 
         try {
-            return Integer.parseInt(stripHex(hex), 16) + 0xFF000000;
+            return Integer.parseInt(hexWithoutHash(hex), 16) + 0xFF000000;
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -481,31 +697,33 @@ public final class Options {
 
     /**
      * Only for Android 7. Defaults for notification, which are bitwise or linked:
-     * DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS.
+     * {@link NotificationCompat.DEFAULT_SOUND},
+     * {@link NotificationCompat.DEFAULT_VIBRATE},
+     * {@link NotificationCompat.DEFAULT_LIGHTS}.
      */
     int getDefaults() {
         int defaults = options.optInt("androidDefaults");
 
         if (isAndroidChannelEnableVibration()) {
-            defaults |= DEFAULT_VIBRATE;
+            defaults |= NotificationCompat.DEFAULT_VIBRATE;
         } else {
-            defaults &= DEFAULT_VIBRATE;
+            defaults &= NotificationCompat.DEFAULT_VIBRATE;
         }
 
         if (getSound() == null) {
-            defaults |= DEFAULT_SOUND;
+            defaults |= NotificationCompat.DEFAULT_SOUND;
 
             // No default sound
         } else {
-            defaults &= DEFAULT_SOUND;
+            defaults &= NotificationCompat.DEFAULT_SOUND;
         }
 
         if (getLed() == null) {
-            defaults |= DEFAULT_LIGHTS;
+            defaults |= NotificationCompat.DEFAULT_LIGHTS;
 
             // No default led
         } else {
-            defaults &= DEFAULT_LIGHTS;
+            defaults &= NotificationCompat.DEFAULT_LIGHTS;
         }
 
         return defaults;
@@ -513,44 +731,40 @@ public final class Options {
 
     /**
      * Gets the visibility for the notification.
-     *
-     * @return VISIBILITY_PUBLIC or VISIBILITY_SECRET
+     * Defaults to {@link NotificationCompat.VISIBILITY_PUBLIC} if not set.
+     * @return {@link NotificationCompat.VISIBILITY_PUBLIC} or {@link NotificationCompat.VISIBILITY_SECRET}
      */
     int getVisibility() {
-        if (options.optBoolean("androidLockscreen", true)) {
-            return VISIBILITY_PUBLIC;
-        } else {
-            return VISIBILITY_SECRET;
-        }
+        return options.optBoolean("androidLockscreen", true) ? NotificationCompat.VISIBILITY_PUBLIC : NotificationCompat.VISIBILITY_SECRET;
     }
 
     /**
      * For Android 7 backward compatibility. Gets the notifications priority
-     * based on {@link #getImportance()}
+     * based on {@link #getAndroidChannelImportance()}
      */
     int getPriorityByImportance() {
-        switch(getImportance()){
-            case IMPORTANCE_NONE: // 0
-                return PRIORITY_MIN;
+        switch(getAndroidChannelImportance()){
+            case NotificationManagerCompat.IMPORTANCE_NONE: // 0
+            case NotificationManagerCompat.IMPORTANCE_MIN: // 1
+                return NotificationCompat.PRIORITY_MIN;
 
-            case IMPORTANCE_MIN: // 1
-                return PRIORITY_MIN;
+            case NotificationManagerCompat.IMPORTANCE_LOW: // 2
+                return NotificationCompat.PRIORITY_LOW;
 
-            case IMPORTANCE_LOW: // 2
-                return PRIORITY_LOW;
+            case NotificationManagerCompat.IMPORTANCE_DEFAULT: // 3
+                return NotificationCompat.PRIORITY_DEFAULT;
 
-            case IMPORTANCE_DEFAULT: // 3
-                return PRIORITY_DEFAULT;
-
-            case IMPORTANCE_MAX: // 5
-                return PRIORITY_MAX;
+            case NotificationManagerCompat.IMPORTANCE_HIGH: // 4
+            case NotificationManagerCompat.IMPORTANCE_MAX: // 5
+                return NotificationCompat.PRIORITY_MAX;
         }
 
-        return PRIORITY_DEFAULT;
+        return NotificationCompat.PRIORITY_DEFAULT;
     }
 
     /**
      * If the Notification should show the when date.
+     * Defaults to true.
      */
     boolean isAndroidShowWhen() {
         return options.optBoolean("androidShowWhen", true);
@@ -561,6 +775,8 @@ public final class Options {
      * the notification will show an automatically updating display of the minutes and seconds since
      * when. Useful when showing an elapsed time (like an ongoing phone call). The counter can also
      * be set to count down to when when using setChronometerCountDown(boolean).
+     * 
+     * Defaults to false if not set.
      */
     boolean isAndroidUsesChronometer() {
         return options.optBoolean("androidUsesChronometer", false);
@@ -568,6 +784,7 @@ public final class Options {
 
     /**
      * If the notification shall display a progress bar.
+     * Defaults to null if not set.
      */
     JSONObject getProgressBar() {
         return options.optJSONObject("androidProgressBar");
@@ -604,6 +821,8 @@ public final class Options {
      * - NotificationCompat.InboxStyle
      * - NotificationCompat.BigPictureStyle
      * - NotificationCompat.BigTextStyle
+     * 
+     * Defaults to null if not set.
      */
     String getSummary() {
         return options.optString("androidSummary", null);
@@ -658,13 +877,13 @@ public final class Options {
     }
 
     /**
-     * Gets the list of messages to display. Only returns something, if option text is filled
-     * with a JSONArray. If it is filled with a String, the method will return null.
-     *
-     * @return null if there are no messages, or option text contains a String.
+     * Gets the list of messages to display.
+     * @return null if there are no messages
      */
     Message[] getAndroidMessages() {
         JSONArray messagesJSONArray = options.optJSONArray("androidMessages");
+
+        // Nothing is set
         if (messagesJSONArray == null) return null;
 
         Message[] messages = new Message[messagesJSONArray.length()];
@@ -690,43 +909,45 @@ public final class Options {
 
     /**
      * Additional text added to the title for displaying the number of messages
-     * if there is more than one. Only used if using MessagingStyle.
+     * if there is more than one. Only used if using {@link NotificationCompat.MessagingStyle}.
+     * 
+     * Defaults to null if not set.
      */
     String getTitleCount() {
-        return options.optString("androidTitleCount");
+        return options.optString("androidTitleCount", null);
     }
 
     /**
-     * Gets if the notification shall only alert once.
-     *
-     * @return true if the notification shall only alert once.
+     * If the notification shall only alert once.
+     * Defaults to false if not set.
      */
     public boolean isOnlyAlertOnce(){
         return options.optBoolean("androidOnlyAlertOnce", false);
     }
 
     /**
-     * Strips the hex code #FF00FF => FF00FF
-     *
-     * @param hex The hex code to strip.
-     *
-     * @return The stripped hex code without a leading #
+     * Defaults to {@link AlarmManager.RTC_WAKEUP} if not set.
      */
-    private String stripHex(String hex) {
-        return (hex.charAt(0) == '#') ? hex.substring(1) : hex;
-    }
-
     public int getAndroidAlarmType() {
-        return options.optInt("androidAlarmType", RTC_WAKEUP);
+        return options.optInt("androidAlarmType", AlarmManager.RTC_WAKEUP);
     }
 
     public boolean isAndroidAllowWhileIdle() {
         return options.optBoolean("androidAllowWhileIdle", false);
     }
 
+    /**
+     * If the display should be turned on when the notification is triggered.
+     * Defaults to true if not set.
+     */
     public boolean isAndroidWakeUpScreen() {
         return options.optBoolean("androidWakeUpScreen", true);
     }
-}
 
-// codebeat:enable[TOO_MANY_FUNCTIONS]
+    /**
+     * @return Returns the hex code without a leading #
+     */
+    private String hexWithoutHash(String hex) {
+        return (hex.charAt(0) == '#') ? hex.substring(1) : hex;
+    }
+}

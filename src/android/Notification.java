@@ -396,7 +396,7 @@ public final class Notification {
      * Encode options to JSON.
      */
     public String toString() {
-        return options.getDict().toString();
+        return options.getJSON().toString();
     }
 
     /**
@@ -502,7 +502,7 @@ public final class Notification {
         while (keys.hasNext()) {
             try {
                 String key = (String) keys.next();
-                options.getDict().put(key, updates.opt(key));
+                options.getJSON().put(key, updates.opt(key));
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
             }

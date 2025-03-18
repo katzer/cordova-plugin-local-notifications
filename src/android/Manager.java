@@ -108,7 +108,7 @@ public final class Manager {
         // Create new channel
         channel = new NotificationChannel(
             options.getAndroidChannelId(),
-            options.getAndroidChannelName(), options.getImportance());
+            options.getAndroidChannelName(), options.getAndroidChannelImportance());
 
         channel.setDescription(options.getAndroidChannelDescription());
         channel.enableVibration(options.isAndroidChannelEnableVibration());
