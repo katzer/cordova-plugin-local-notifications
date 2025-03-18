@@ -355,12 +355,13 @@
         // The first agrument defines, which method was called
         switch ([command.arguments[0] intValue]) {
             // addActions was called
-            case 0:
+            case 0: {
                 NSArray* actions = [command argumentAtIndex:2];
                 [self->_center addActionGroup:[APPNotificationCategory parse:actions
                                                                       withId:actionGroupId]];
                 [self execCallback:command];
                 break;
+            }
             // removeActions was called
             case 1:
                 [self->_center removeActionGroup:actionGroupId];
