@@ -5,18 +5,20 @@
 ### Android
 - Refactor trigger handling
   - `DateTrigger`: Set occurrence initial to 0 (not 1)
-  - Refactor `MatchTrigger` used for `trigger: every { minute: xx, hour: xx, ...}`
+  - Don't schedule all occurrences at once when `trigger.count` is set. Schedule one after the other, like it's done when `trigger.count` is not set
   - Repeating notification: Don't cancel previously posted notification, when scheduling next notification, fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
-  - Don't schedule all occurrences at once when `trigger.count` is set, schedule one after the other, like it's done when `trigger.count` is not set
-  - Remove `Request.java` and use `DateTrigger` directly in a `Notification`. Intialise the appropriate `DateTrigger` when a `Notification` is created.
-  - Restore a trigger date exactly like it was before when a notification is restored for e.g. because of a device reboot, app update, etc.
-  - Rename `Builder` to `BuilderCreator` and set the builder directly in a `Notification`. Don't create a Notification from the Builder.
-  - Fallback for false `unit` when using `trigger: {in: xxx, unit: 'xxx'}`
-    - Unit `minute` will be used if `unit` is set wrong. Fixes [Issue 2060](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060)
-  - Bugfix: Calculation of next trigger.every, fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
-    - The second occurrence of trigger.every was calculated wrong, because the baseDate was not set to the last trigger date of the last occurrence but instead to the current time. Now the triggerDate will be saved in the SharedPreferences and restored when the next occurrence is scheduled and calculated.
-  - Bugfix: Only fire add event, if a notification was really scheduled
-- Fire event `clear` or `cancel` whenever a notification is cleared or canceled
+  - Restore a trigger date exactly like it was before the restoration
+  - Fallback for false `unit` value when using `trigger: {in: xxx, unit: 'xxx'}`
+      - Unit `minute` will be used if `unit` is set wrong.
+      - Fixes [Issue 2060](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060)
+  - Bugfix: Calculation of next `trigger.every`: The second occurrence of `trigger.every` was calculated wrong, because the base date was not set to the last trigger date of the last occurrence but instead to the current time. Now the trigger date will be saved in the `SharedPreferences` of Android and restored when the next occurrence is scheduled and calculated.
+      - Fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
+  - Bugfix: Only fire `add` event, if a notification was scheduled successfully. Before it could also be fired, when an error occurred and the notification was not scheduled.
+  - Fire event `clear` or `cancel` always when a notification is cleared or canceled. Before it could be possible, that these events were not fired though notifications got cleared or canceled.
+  - Code changes:
+      -  Refactor `MatchTrigger` used for `trigger: every { minute: xx, hour: xx, ...}`
+      - Remove `Request.java` and use `DateTrigger` directly in a `Notification`. Intialise the appropriate `DateTrigger` when a `Notification` is created.
+      - Rename `Builder` to `BuilderCreator` and set the builder directly in a `Notification`. Don't create a Notification from the Builder.
 
 ### Common
 - Improve documentation: [trigger property](README.md#triggers)
