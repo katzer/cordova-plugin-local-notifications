@@ -5,6 +5,9 @@
 ## Version 1.1.4 (21.03.2025)
 
 ### Android
+- Restore notifications correctly from old plugin versions
+  - Old properties were only corrected in JavaScript, but not on Java. If an app was updated with the new plugin version and had scheduled notifications before, the notifications could be triggered with no sound and the default `smallIcon` would always be used.
+  - Fixes [Issue 2059](https://github.com/katzer/cordova-plugin-local-notifications/issues/2059)
 - Refactor trigger handling
   - `DateTrigger`: Set occurrence initial to 0 (not 1)
   - Don't schedule all occurrences at once when `trigger.count` is set. Schedule one after the other, like it's done when `trigger.count` is not set
