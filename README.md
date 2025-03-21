@@ -3,15 +3,13 @@
 </p>
 
 <!--
-  GitHub caches the npm badge and generates a github url for it like:
+  GitHub caches the npm badge and changes the url to a cached github url like:
   https://camo.githubusercontent.com/11f744ab82c...
-  To update the badge a query parameter was added "cacheParam", which has to be increased, when the badge should
-  be updated.
-  The GitHub cache could also be cleared by
+  The GitHub can be cleared with the following bash command:
   curl -X PURGE https://camo.githubusercontent.com/11f744ab82c...
   The browser would have to be cleared also to let the updated badge appear.
 -->
-[![npm version](https://badge.fury.io/js/cordova-plugin-local-notification.svg)](https://badge.fury.io/js/cordova-plugin-local-notification?cacheParam=1)
+[![npm version](https://badge.fury.io/js/cordova-plugin-local-notification.svg)](https://badge.fury.io/js/cordova-plugin-local-notification)
 <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
 </a>
