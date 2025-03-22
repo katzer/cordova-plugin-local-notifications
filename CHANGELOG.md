@@ -1,7 +1,5 @@
 # ChangeLog
 
-## Version 1.1.6-dev
-
 ## Version 1.1.5 (22.03.2025)
 
 ### Android
