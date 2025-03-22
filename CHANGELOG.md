@@ -1,5 +1,8 @@
 # ChangeLog
 
+## Version 1.1.7 (22.03.2025)
+- Fix for npm: The dev version 1.1.6-dev was accidentally published to npm and there were also problems with version 1.1.6. Correct this to 1.1.7.
+
 ## Version 1.1.6 (22.03.2025)
 - Fix for npm: The dev version 1.1.6-dev was accidentally published to npm. This will correct this as published as 1.1.6.
 
