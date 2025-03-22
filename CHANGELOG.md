@@ -1,5 +1,8 @@
 # ChangeLog
 
+## Version 1.1.6 (22.03.2025)
+- Fix for npm: The dev version 1.1.6-dev was accidentally published to npm. This will correct this as published as 1.1.6.
+
 ## Version 1.1.5 (22.03.2025)
 
 ### Android
