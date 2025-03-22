@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.1.5-dev
+## Version 1.1.5 (22.03.2025)
 
 ### Android
 - Bugfix: Don't crash when getting none existent notification. Calling `cancel` could crash the app, if a notification does not exist for an id.
