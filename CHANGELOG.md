@@ -2,6 +2,10 @@
 
 ## Version 1.1.5-dev
 
+### Android
+- Bugfix: Don't crash when getting none existent notification. Calling `cancel` could crash the app, if a notification does not exist for an id.
+  - Fixes [Issue 2064](https://github.com/katzer/cordova-plugin-local-notifications/issues/2064)
+
 ## Version 1.1.4 (21.03.2025)
 
 ### Android
