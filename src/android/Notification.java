@@ -437,7 +437,8 @@ public final class Notification {
     }
 
     /**
-     * Gets the stored notification options from the Android shared Preferences.
+     * Gets a stored notification from the {@link SharedPreferences} by id.
+     * If the notification does not exists, null will be returned.
      */
     public static Notification getFromSharedPreferences(Context context, int notificationId) {
         String optionsJSONString = Manager.getSharedPreferences(context).getString(
@@ -446,6 +447,13 @@ public final class Notification {
         Log.d(TAG, "Restoring notification from SharedPreferences" +
             ", notificationId=" + notificationId +
             ", options=" + optionsJSONString);
+        
+        // Notification does not exists
+        if (optionsJSONString == null) {
+            Log.w(TAG, "Could not restore notification from SharedPreferences, options are null" +
+                ", notificationId=" + notificationId);
+            return null;
+        }
         
         try {
             // Parse options string to JSONObject
