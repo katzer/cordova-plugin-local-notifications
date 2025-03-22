@@ -25,3 +25,5 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      # Purge the cache of the GitHub CDN to update the NPM badge in the readme
+      - run: curl -X PURGE https://camo.githubusercontent.com/11f744ab82ca8017011e9aba93139ea753fa9bc6d6c7d96b81cbde52205ec5fd/68747470733a2f2f62616467652e667572792e696f2f6a732f636f72646f76612d706c7567696e2d6c6f63616c2d6e6f74696669636174696f6e2e737667
