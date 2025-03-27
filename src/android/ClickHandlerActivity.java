@@ -69,9 +69,11 @@ public class ClickHandlerActivity extends Activity {
 
         LocalNotification.fireEvent(action, notification, data);
 
-        if (notification.getOptions().isAndroidOngoing()) return;
+        Options options = notification.getOptions();
 
-        if (notification.getDateTrigger().isLastOccurrence()) {
+        if (options.isAndroidOngoing()) return;
+
+        if (options.getTrigger().isLastOccurrence()) {
             notification.cancel();
         } else {
             notification.clear();

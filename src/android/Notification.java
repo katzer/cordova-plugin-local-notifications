@@ -51,7 +51,7 @@ import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
 import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
-import de.appplant.cordova.plugin.localnotification.trigger.DateTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
 import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
 
@@ -81,15 +81,14 @@ public final class Notification {
     private final Options options;
 
     /**
+     * trigger property, can be {@link IntervalTrigger} or {@link MatchTrigger}.
+     */
+    private OptionsTrigger optionsTrigger;
+
+    /**
      * Notification builder instance. Can be {@code null}.
      */
     private NotificationCompat.Builder builder;
-
-    /**
-     * DateTrigger for the trigger property.
-     * Can be {@link IntervalTrigger} or {@link MatchTrigger}.
-     */
-    private final DateTrigger dateTrigger;
 
     /**
      * Constructor
@@ -108,19 +107,9 @@ public final class Notification {
      */
     Notification(Context context, Options options, NotificationCompat.Builder builder) {
         this.context = context;
-        this.options = options;
         this.builder = builder;
-
-        // DateTrigger for the trigger property
-        // If trigger.every exists and is an object, a MatchTrigger will be created, otherwise an IntervalTrigger
-        this.dateTrigger = options.getTrigger().opt("every") instanceof JSONObject ?
-            // Example: trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
-            new MatchTrigger(options) :
-            // Examples:
-            // trigger: { at: new Date(2017, 10, 27, 15) }
-            // trigger: { in: 1, unit: 'hour' }
-            // trigger: { every: 'day', count: 5 }
-            new IntervalTrigger(options);
+        this.options = options;
+        this.optionsTrigger = options.getTrigger();
     }
 
     public void setBuilder(NotificationCompat.Builder builder) {
@@ -139,10 +128,6 @@ public final class Notification {
      */
     public Options getOptions() {
         return options;
-    }
-
-    public DateTrigger getDateTrigger() {
-        return dateTrigger;
     }
 
     /**
@@ -181,15 +166,15 @@ public final class Notification {
      * @return true if the notification was scheduled, false otherwise.
      */
     public boolean scheduleNext() {
-        Date triggerDate = dateTrigger.getNextTriggerDate();
+        Date triggerDate = optionsTrigger.getNextTriggerDate();
 
         // No next trigger date available, all triggers are done
         if (triggerDate == null) {
             Log.d(TAG, "No next trigger date available, remove notification from SharedPreferences" +
                 ", notificationId=" + options.getId() +
-                ", occurrence=" + dateTrigger.getOccurrence() +
-                ", triggerBaseDate=" + dateTrigger.getBaseDate() +
-                ", triggerDate=" + dateTrigger.getTriggerDate() +
+                ", occurrence=" + optionsTrigger.getOccurrence() +
+                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+                ", triggerDate=" + optionsTrigger.getTriggerDate() +
                 ", options=" + options);
             
             // Remove notification options from shared preferences
@@ -208,7 +193,7 @@ public final class Notification {
      * if the notification was triggered directly or an error occured.
      */
     public boolean schedule() {
-        Date triggerDate = dateTrigger.getTriggerDate();
+        Date triggerDate = optionsTrigger.getTriggerDate();
 
         if (triggerDate == null) {
             Log.e(TAG, "schedule was wrongly called with triggerDate = null, options=" + options);
@@ -239,7 +224,7 @@ public final class Notification {
             ", notificationId: " + options.getId() +
             ", canScheduleExactAlarms: " + canScheduleExactAlarms +
             ", intentAction=" + intent.getAction() +
-            ", occurrence: " + dateTrigger.getOccurrence() +
+            ", occurrence: " + optionsTrigger.getOccurrence() +
             ", triggerDate: " + triggerDate +
             ", options=" + options);
         
@@ -331,7 +316,7 @@ public final class Notification {
         NotificationManagerCompat.from(context).cancel(getAppName(), getId());
 
         // If the notification is not repeating, remove notification data from the app
-        if (!options.isRepeating()) removeFromSharedPreferences();
+        if (!options.getTrigger().isRepeating()) removeFromSharedPreferences();
 
         // Inform WebView about the clearing
         if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("clear", this);
@@ -407,20 +392,20 @@ public final class Notification {
     private void storeInSharedPreferences() {
         Log.d(TAG, "Store notification in SharedPreferences" +
             ", notificationId=" + options.getId() +
-            ", occurrence=" + dateTrigger.getOccurrence() +
-            ", triggerBaseDate=" + dateTrigger.getBaseDate() +
-            ", triggerDate=" + dateTrigger.getTriggerDate() +
+            ", occurrence=" + optionsTrigger.getOccurrence() +
+            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+            ", triggerDate=" + optionsTrigger.getTriggerDate() +
             ", options=" + options);
         
         Manager.getSharedPreferences(context).edit()
         // options as JSON string
         .putString(getSharedPreferencesKeyOptions(), options.toString())
         // occurrence for restoration
-        .putInt(getSharedPreferencesKeyOccurrence(), dateTrigger.getOccurrence())
+        .putInt(getSharedPreferencesKeyOccurrence(), optionsTrigger.getOccurrence())
         // trigger base date for restoration
-        .putLong(getSharedPreferencesKeyTriggerBaseDate(), dateTrigger.getBaseDate().getTime())
+        .putLong(getSharedPreferencesKeyTriggerBaseDate(), optionsTrigger.getBaseDate().getTime())
         // calculated triggerDate for restoration
-        .putLong(getSharedPreferencesKeyTriggerDate(), dateTrigger.getTriggerDate().getTime())
+        .putLong(getSharedPreferencesKeyTriggerDate(), optionsTrigger.getTriggerDate().getTime())
         .apply();
     }
 
@@ -472,24 +457,26 @@ public final class Notification {
             long triggerTime = Manager.getSharedPreferences(context).getLong(
                 notification.getSharedPreferencesKeyTriggerDate(), 0);
             
+            OptionsTrigger optionsTrigger = notification.getOptions().getTrigger();
+
             // The saving of occurrence, triggerBaseDate and triggerDate exists since version 1.1.4
             // Before only the options were saved
             // Just caclulate the next trigger from the current time
             // Durring the development of version 1.1.4, first only the occurrence was saved,
             // later also the triggerBaseDate and triggerDate, so check this also
             if (occurrence == 0 || triggerBaseTime == 0 || triggerTime == 0) {
-                notification.getDateTrigger().getNextTriggerDate();
+                optionsTrigger.getNextTriggerDate();
 
                 // Restore the state of the trigger date
             } else {
-                notification.getDateTrigger().restoreState(occurrence, new Date(triggerBaseTime), new Date(triggerTime));
+                optionsTrigger.restoreState(occurrence, new Date(triggerBaseTime), new Date(triggerTime));
             }
             
             Log.d(TAG, "Restored trigger date" +
                 ", notificationId=" + notificationId +
-                ", occurrence=" + notification.getDateTrigger().getOccurrence() +
-                ", triggerBaseDate=" + notification.getDateTrigger().getBaseDate() +
-                ", triggerDate=" + notification.getDateTrigger().getTriggerDate());
+                ", occurrence=" + optionsTrigger.getOccurrence() +
+                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+                ", triggerDate=" + optionsTrigger.getTriggerDate());
 
             return notification;
         } catch (JSONException exception) {

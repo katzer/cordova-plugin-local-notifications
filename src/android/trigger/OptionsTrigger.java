@@ -24,17 +24,16 @@ package de.appplant.cordova.plugin.localnotification.trigger;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.Date;
+import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.localnotification.Options;
 
-public abstract class DateTrigger {
+public abstract class OptionsTrigger {
 
-    public static final String TAG = "DateTrigger";
-
-    // Default unit is SECOND
-    public enum Unit { SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR }
+    public static final String TAG = "OptionsTrigger";
     
-    public Options options;
+    Options options;
+    JSONObject triggerJSON;
 
     int occurrence = 0;
 
@@ -51,8 +50,9 @@ public abstract class DateTrigger {
     /**
      * @param options Notification options
      */
-    public DateTrigger(Options options) {
+    public OptionsTrigger(Options options) {
         this.options = options;
+        this.triggerJSON = options.getTriggerJSON();
         // Set the base date from where to calculate the next trigger
         // This can be set by config or is set to the current date
         this.baseDate = getFirstTriggerFromConfig() > 0 ? new Date(getFirstTriggerFromConfig()) : new Date();
@@ -63,8 +63,8 @@ public abstract class DateTrigger {
      * @return 0 if there is nothing set in the config
      */
     private long getFirstTriggerFromConfig() {
-        if (options.getTriggerFirstAt() > 0) return options.getTriggerFirstAt();
-        if (options.getTriggerAfter() > 0) return options.getTriggerAfter();
+        if (triggerJSON.has("at")) return getTriggerFirstAt();
+        if (triggerJSON.has("after")) return getTriggerAfter();
         return 0;
     }
 
@@ -142,37 +142,56 @@ public abstract class DateTrigger {
         return calendar;
     }
 
+    public long getTriggerAt() {
+        return triggerJSON.optLong("at", 0);
+    }
+
+    public int getTriggerIn() {
+        return triggerJSON.optInt("in", 0);
+    }
+
+    public String getTriggerUnit() {
+        return triggerJSON.optString("unit", null);
+    }
+
     /**
-     * Adds the amount of {@link Unit} to the calendar.
-     * @param calendar The calendar to manipulate.
+     * Only for repeating notifications, when the first notification should be triggered.
      */
-    void addInterval(Calendar calendar, Unit unit, int amount) {
-        switch (unit) {
-            case SECOND:
-                calendar.add(Calendar.SECOND, amount);
-                break;
-            case MINUTE:
-                calendar.add(Calendar.MINUTE, amount);
-                break;
-            case HOUR:
-                calendar.add(Calendar.HOUR_OF_DAY, amount);
-                break;
-            case DAY:
-                calendar.add(Calendar.DAY_OF_YEAR, amount);
-                break;
-            case WEEK:
-                calendar.add(Calendar.WEEK_OF_YEAR, amount);
-                break;
-            case MONTH:
-                calendar.add(Calendar.MONTH, amount);
-                break;
-            case QUARTER:
-                calendar.add(Calendar.MONTH, amount * 3);
-                break;
-            case YEAR:
-                calendar.add(Calendar.YEAR, amount);
-                break;
-        }
+    public long getTriggerFirstAt() {
+        return triggerJSON.optLong("firstAt", 0);
+    }
+
+    /**
+     * Only for repeating notifications, when the first notification should be triggered.
+     */
+    public long getTriggerAfter() {
+        return triggerJSON.optLong("after", 0);
+    }
+
+    /**
+     * If a repeating notification should be stopped after some occurrences. -1 means infinite.
+     * @return
+     */
+    public int getTriggerCount() {
+        return triggerJSON.optInt("count", -1);
+    }
+
+    /**
+     * Gets trigger.every as string. If trigger.every is an object, it returns null
+     */
+    public String getTriggerEveryAsString() {
+        return triggerJSON.opt("every") instanceof String ? triggerJSON.optString("every") : null;
+    }
+
+    /**
+     * Gets trigger.every as object. If trigger.every is a String, it returns null
+     */
+    public JSONObject getTriggerEveryAsObject() {
+        return triggerJSON.optJSONObject("every");
+    }
+
+    public long getTriggerBefore() {
+        return triggerJSON.optLong("before", 0);
     }
 
     /**
@@ -180,6 +199,20 @@ public abstract class DateTrigger {
      */
     public boolean isWithinTriggerbefore(Calendar calendar) {
         // Return true, if there is no trigger before option, otherwise compare against it
-        return !options.getTrigger().has("before") || calendar.getTimeInMillis() < options.getTriggerBefore();
+        return !triggerJSON.has("before") || calendar.getTimeInMillis() < getTriggerBefore();
+    }
+
+    /**
+     * If it's a repeating notification. It must not be endless, when it has a count property.
+     */
+    public boolean isRepeating() {
+        return triggerJSON.has("every");
+    }
+
+    /**
+     * If the trigger shall be infinite.
+     */
+    public boolean isRepeatingInfinite() {
+        return isRepeating() && !triggerJSON.has("count");
     }
 }

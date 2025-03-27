@@ -46,6 +46,9 @@ import java.util.List;
 
 import de.appplant.cordova.plugin.localnotification.action.Action;
 import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
+import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 /**
@@ -65,6 +68,7 @@ public final class Options {
 
     // The original JSON object
     private final JSONObject options;
+    private final OptionsTrigger optionsTrigger;
 
     // The application context
     private final Context context;
@@ -92,6 +96,17 @@ public final class Options {
         this.options = options;
 
         this.assetUtil = new AssetUtil(context);
+
+        // Trigger property
+        // If trigger.every exists and is an object, a MatchTrigger will be created, otherwise an IntervalTrigger
+        this.optionsTrigger = getTriggerJSON().opt("every") instanceof JSONObject ?
+            // Example: trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
+            new MatchTrigger(this) :
+            // Examples:
+            // trigger: { at: new Date(2017, 10, 27, 15) }
+            // trigger: { in: 1, unit: 'hour' }
+            // trigger: { every: 'day', count: 5 }
+            new IntervalTrigger(this);
     }
 
     /**
@@ -363,76 +378,14 @@ public final class Options {
     }
 
     /**
-     * Gets the raw trigger spec as provided by the user.
+     * Gets the trigger property as an Object.
      */
-    public JSONObject getTrigger() {
+    public OptionsTrigger getTrigger() {
+        return optionsTrigger;
+    }
+
+    public JSONObject getTriggerJSON() {
         return options.optJSONObject("trigger");
-    }
-
-    public long getTriggerAt() {
-        return getTrigger().optLong("at", 0);
-    }
-
-    public int getTriggerIn() {
-        return getTrigger().optInt("in", 0);
-    }
-
-    public String getTriggerUnit() {
-        return getTrigger().optString("unit", null);
-    }
-
-    /**
-     * Only for repeating notifications, when the first notification should be triggered.
-     */
-    public long getTriggerFirstAt() {
-        return getTrigger().optLong("firstAt", 0);
-    }
-
-    /**
-     * Only for repeating notifications, when the first notification should be triggered.
-     */
-    public long getTriggerAfter() {
-        return getTrigger().optLong("after", 0);
-    }
-
-    /**
-     * If a repeating notification should be stopped after some occurrences. -1 means infinite.
-     * @return
-     */
-    public int getTriggerCount() {
-        return getTrigger().optInt("count", -1);
-    }
-
-    /**
-     * Gets trigger.every as string. If trigger.every is an object, it returns null
-     */
-    public String getTriggerEveryAsString() {
-        return getTrigger().opt("every") instanceof String ? getTrigger().optString("every") : null;
-    }
-
-    /**
-     * Gets trigger.every as object. If trigger.every is a String, it returns null
-     */
-    public JSONObject getTriggerEveryAsObject() {
-        return getTrigger().optJSONObject("every");
-    }
-
-    /**
-     * If it's a repeating notification. It must not be endless, when it has a count property.
-     */
-    public boolean isRepeating() {
-        return getTrigger().has("every");
-    }
-
-    /**
-     * If the trigger shall be infinite.
-     */
-    public boolean isRepeatingInfinite() {
-        return isRepeating() && getTriggerCount() < 0;
-    }
-
-    public long getTriggerBefore() {
-        return getTrigger().optLong("before", 0);
     }
     
     /**

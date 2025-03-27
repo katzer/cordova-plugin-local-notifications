@@ -200,7 +200,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification/action" />
 
         <source-file
-            src="src/android/trigger/DateTrigger.java"
+            src="src/android/trigger/OptionsTrigger.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file

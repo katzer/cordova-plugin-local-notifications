@@ -37,7 +37,7 @@ import de.appplant.cordova.plugin.localnotification.Options;
  *   trigger: { in: 1, unit: 'hour' }
  *   trigger: { every: 'day', count: 5 }
  */
-public class IntervalTrigger extends DateTrigger {
+public class IntervalTrigger extends OptionsTrigger {
 
     public static final String TAG = "IntervalTrigger";
 
@@ -47,9 +47,9 @@ public class IntervalTrigger extends DateTrigger {
 
     public boolean isLastOccurrence() {
         // trigger.at and trigger.in have maximum 1 occurrence 
-        return ((options.getTriggerAt() > 0 || options.getTriggerIn() > 0) && occurrence == 1) ||
+        return ((triggerJSON.has("at") || triggerJSON.has("in")) && occurrence == 1) ||
             // trigger.every: Check if trigger.count is exceeded if set
-           (options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount());
+           (triggerJSON.has("count") && occurrence >= getTriggerCount());
     }
 
     /**
@@ -59,70 +59,80 @@ public class IntervalTrigger extends DateTrigger {
     public Date calculateNextTrigger(Calendar baseCalendar) {
         Log.d(TAG, "Calculating next trigger" +
             ", baseCalendar=" + baseCalendar.getTime() +
-            ", occurrence=" + occurrence +
-            ", unit=" + getUnit() +
-            ", amount=" + getUnitAmount() +
-            ", trigger.count=" + options.getTriggerCount());
+            ", triggerOptions=" + triggerJSON.toString() +
+            ", occurrence=" + occurrence);
 
         // All occurrences are done
         if (isLastOccurrence()) return null;
 
-        // trigger.at
-        if (options.getTriggerAt() > 0) return new Date(options.getTriggerAt());
+        // trigger: { at: new Date(2017, 10, 27, 15) }
+        if (options.getJSON().has("at")) return new Date(getTriggerAt());
 
-        // trigger.in
-        // trigger.every
-        addInterval(baseCalendar, getUnit(), getUnitAmount());
-
-        Log.d(TAG, "Next trigger calculated, triggerDate=" + baseCalendar.getTime());
-
-        // Check if the trigger is within the before option (only for repeating triggers)
-        if (!isWithinTriggerbefore(baseCalendar)) return null;
-
-        return baseCalendar.getTime();
-    }
-
-    /**
-     * Gets a {@link Unit} enum determined from the trigger option.
-     * Examples:
-     *   trigger: { in: 1, unit: 'hour' } resolves to Unit.HOUR
-     *   trigger: { every: 'day', count: 5 } resolves to Unit.DAY
-     * Defaults to Unit.SECOND, when nothing set
-     */
-    private Unit getUnit() {
-        // When nothing given or input is invalid
-        Unit defaultUnit = Unit.MINUTE;
-
-        // First, try unit option, if available
-        String unit = options.getTriggerUnit();
-
-        // If unit not available, try every option
-        if (unit == null) unit = options.getTriggerEveryAsString();
-
-        // If every option not available, set default
-        if (unit == null) unit = defaultUnit.toString();
-
-        // Convert string to enum
+        // trigger: { in: 1, unit: 'hour' }
+        // trigger: { every: 'day', count: 5 }
+        // Catch wrong trigger units
         try {
-            return Unit.valueOf(unit.toUpperCase());
-        } catch (Exception exception) {
-            Log.e(TAG, "Could not convert unit to Enum, using default of '" + defaultUnit + "', value=" + unit, exception);
-            return defaultUnit;
+            // trigger: { in: 1, unit: 'hour' }
+            if (triggerJSON.has("in")) {
+                addInterval(baseCalendar, getTriggerUnit(), getTriggerIn());
+
+                // trigger: { every: 'day', count: 5 }
+            } else if (triggerJSON.has("every")) {
+                addInterval(baseCalendar, getTriggerEveryAsString(), 1);
+
+                // Check if the trigger is within the before option
+                if (!isWithinTriggerbefore(baseCalendar)) return null;
+            }
+
+            Log.d(TAG, "Next trigger calculated, triggerDate=" + baseCalendar.getTime());
+            return baseCalendar.getTime();
+        } catch (IllegalArgumentException exception) {
+            Log.e(TAG, "Error calculating next trigger, trigger unit is wrong: " + exception.getMessage());
+            return null;
         }
     }
 
     /**
-     * How often a {@link Unit} should be added
+     * Adds the amount of triggerUnit to the calendar.
+     * @param calendar The calendar to manipulate.
      */
-    private int getUnitAmount() {
-        // trigger: { in: 1, unit: 'hour' }
-        // Add amount by in option
-        if (options.getTriggerIn() > 0) return options.getTriggerIn();
+    private void addInterval(Calendar calendar, String triggerUnit, int amount) {
+        switch (triggerUnit) {
+            case "second":
+                calendar.add(Calendar.SECOND, amount);
+                break;
 
-        // trigger: { every: 'day', count: 5 }
-        // Amount should be added by one
-        if (options.getTriggerEveryAsString() != null) return 1;
+            case "minute":
+                calendar.add(Calendar.MINUTE, amount);
+                break;
 
-        return 0;
+            case "hour":
+                calendar.add(Calendar.HOUR_OF_DAY, amount);
+                break;
+
+            case "day":
+                calendar.add(Calendar.DAY_OF_YEAR, amount);
+                break;
+
+            case "week":
+                calendar.add(Calendar.WEEK_OF_YEAR, amount);
+                break;
+
+            case "month":
+                calendar.add(Calendar.MONTH, amount);
+                break;
+
+            case "quarter":
+                calendar.add(Calendar.MONTH, amount * 3);
+                break;
+
+            case "year":
+                calendar.add(Calendar.YEAR, amount);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown trigger unit: " + triggerUnit);
+
+        }
     }
 }

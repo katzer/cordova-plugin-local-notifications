@@ -52,7 +52,7 @@ public class ClearReceiver extends BroadcastReceiver {
         if (notification == null) return;
 
         // If it is the last occurrence cancel alarm and remove it from SharedPreferences
-        if (notification.getDateTrigger().isLastOccurrence()) {
+        if (notification.getOptions().getTrigger().isLastOccurrence()) {
             notification.cancel();
 
             // If there are more occurrences clear only from statusbar, so that the next occurrence can be shown

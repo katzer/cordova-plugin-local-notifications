@@ -28,7 +28,7 @@ import java.util.Date;
 
 import de.appplant.cordova.plugin.localnotification.Options;
 
-public class MatchTrigger extends DateTrigger {
+public class MatchTrigger extends OptionsTrigger {
 
     private JSONObject triggerEvery;
 
@@ -37,12 +37,12 @@ public class MatchTrigger extends DateTrigger {
      */
     public MatchTrigger(Options options) {
         super(options);
-        this.triggerEvery = options.getTriggerEveryAsObject();
+        this.triggerEvery = getTriggerEveryAsObject();
     }
 
     public boolean isLastOccurrence() {
         // Check if trigger.count is exceeded if it is set
-        return options.getTriggerCount() > 0 && occurrence >= options.getTriggerCount();
+        return triggerJSON.has("count") && occurrence >= getTriggerCount();
     }
 
     /**
@@ -53,7 +53,7 @@ public class MatchTrigger extends DateTrigger {
         Log.d(TAG, "Calculating next trigger" +
             ", baseCalendar=" + baseCalendar.getTime() +
             ", occurrence=" + occurrence +
-            ", trigger.count=" + options.getTriggerCount());
+            ", trigger.count=" + getTriggerCount());
         
         // All occurrences are done
         if (isLastOccurrence()) return null;
