@@ -25,7 +25,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-local-notification"
-        version="1.1.7">
+        version="1.1.8-dev">
 
     <name>LocalNotification</name>
 
@@ -114,7 +114,15 @@
                     android:resource="@xml/shared_files_provider_paths"/>
             </provider>
 
-            <!-- Notification was clicked by the user -->
+            <!--
+              Notification was clicked by the user
+
+              Attributes:
+
+              - android:taskAffinity="" : Combined with the FLAG_ACTIVITY_NEW_TASK flag that you use in code,
+                set this attribute blank to ensure this activity doesn't go into the app's default task.
+                Any existing tasks that have the app's default affinity aren't affected.
+            -->
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.ClickHandlerActivity"
                 android:exported="false"
