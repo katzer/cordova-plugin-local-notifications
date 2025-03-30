@@ -2,6 +2,16 @@
 
 ## Version 1.1.8-dev
 
+### Android
+
+- Code refactoring
+  - Renamed `DateTrigger.java` to `OptionsTrigger.java`
+  - All `trigger` propertiers are handled by `OptionsTrigger`
+  - `Options` class instantiates the right trigger class for the `trigger` property instead of the `Notification` class
+- Bugfix: `trigger.unit` and `trigger.every` (String) could fail in different user locales. The value of those two properties was upper cased by [String.toUpperCase()](https://developer.android.com/reference/java/lang/String#toUpperCase()) and turned after into an `Enum`. The method `String.toUpperCase()` is locale aware and will use the current user locale to upper case the string. In Turkish, for e.g., the value `minute` would become upper cased to `MİNUTE` where the I has a dot above it and would not recognized as an Enum. Now enums will not be used anymore and the values are taken as they come from JavaScript and are expected to be lower cased like `minute`, `hour` etc.
+  - Thanks @TheNotorius0 for sharing his experiences in issue [2060](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060) as a [comment](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060#issuecomment-2751895663) and also @pahenator for initially posting the issue.
+  - Thanks @iamAdamGoodman noting that `trigger.at` was not functioning after adding these changes in issue [2070](https://github.com/katzer/cordova-plugin-local-notifications/issues/2070)
+
 ## Version 1.1.7 (22.03.2025)
 - Fix for npm: The dev version 1.1.6-dev was accidentally published to npm and there were also problems with version 1.1.6. Correct this to 1.1.7.
 
