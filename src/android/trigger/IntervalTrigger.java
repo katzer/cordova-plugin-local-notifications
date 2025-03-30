@@ -66,7 +66,7 @@ public class IntervalTrigger extends OptionsTrigger {
         if (isLastOccurrence()) return null;
 
         // trigger: { at: new Date(2017, 10, 27, 15) }
-        if (options.getJSON().has("at")) return new Date(getTriggerAt());
+        if (triggerJSON.has("at")) return new Date(getTriggerAt());
 
         // trigger: { in: 1, unit: 'hour' }
         // trigger: { every: 'day', count: 5 }
