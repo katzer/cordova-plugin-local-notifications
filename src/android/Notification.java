@@ -378,13 +378,6 @@ public final class Notification {
     }
 
     /**
-     * Encode options to JSON.
-     */
-    public String toString() {
-        return options.getJSON().toString();
-    }
-
-    /**
      * Stores the information of this notification in the SharedPreferences.
      * This will allow the application to restore the notification upon device reboot,
      * app restart, retrieve notifications, etc.
