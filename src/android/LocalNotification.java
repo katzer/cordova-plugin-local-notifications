@@ -736,6 +736,14 @@ public class LocalNotification extends CordovaPlugin {
     }
 
     /**
+     * Get the app name.
+     * @return String App name.
+     */
+    public static String getAppName(Context context) {
+        return (String) context.getPackageManager().getApplicationLabel(context.getApplicationInfo());
+    }
+
+    /**
      * Convert JSON array of integers to List.
      *
      * @param jsonArray Array of integers.

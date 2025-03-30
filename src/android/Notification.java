@@ -279,7 +279,9 @@ public final class Notification {
     public void show() {
         if (builder == null) return;
         Log.d(TAG, "Show notification, options=" + options);
-        NotificationManagerCompat.from(context).notify(getAppName(), getId(), builder.build());
+        NotificationManagerCompat.from(context).notify(
+            LocalNotification.getAppName(context),
+            getId(), builder.build());
     }
 
     /**
@@ -313,7 +315,7 @@ public final class Notification {
         Log.d(TAG, "Clear notification, options=" + options);
 
         // Clear the notification from the statusbar if posted
-        NotificationManagerCompat.from(context).cancel(getAppName(), getId());
+        NotificationManagerCompat.from(context).cancel(LocalNotification.getAppName(context), getId());
 
         // If the notification is not repeating, remove notification data from the app
         if (!options.getTrigger().isRepeating()) removeFromSharedPreferences();
@@ -334,7 +336,7 @@ public final class Notification {
         removeFromSharedPreferences();
 
         // Clear the notification from the status bar if posted
-        NotificationManagerCompat.from(context).cancel(getAppName(), getId());
+        NotificationManagerCompat.from(context).cancel(LocalNotification.getAppName(context), getId());
 
         // Inform WebView about the canceling
         if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("cancel", this);
@@ -367,14 +369,6 @@ public final class Notification {
         // Intent#filterEquals: That is, if their action, data, type, identity, class, and categories are the same.
         // This does not compare any extra data included in the intents.
         getAlarmManager().cancel(pendingIntent);
-    }
-
-    /**
-     * Get the app name.
-     * @return String App name.
-     */
-    private String getAppName() {
-        return (String) context.getPackageManager().getApplicationLabel(context.getApplicationInfo());
     }
 
     /**
