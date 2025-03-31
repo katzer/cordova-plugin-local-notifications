@@ -88,6 +88,11 @@ public abstract class OptionsTrigger {
         // Clear the last trigger date, so it's reflecting the current status of this date trigger
         triggerDate = null;
 
+        Log.d(TAG, "Get next trigger date" +
+            ", baseDate=" + baseDate +
+            ", triggerOptions=" + triggerJSON.toString() +
+            ", occurrence=" + occurrence);
+
         // All occurrences have been run through
         if (isLastOccurrence()) return null;
 

@@ -57,11 +57,6 @@ public class IntervalTrigger extends OptionsTrigger {
      * @param baseCalendar The base calendar from where to calculate the next trigger.
      */
     public Date calculateNextTrigger(Calendar baseCalendar) {
-        Log.d(TAG, "Calculating next trigger" +
-            ", baseCalendar=" + baseCalendar.getTime() +
-            ", triggerOptions=" + triggerJSON.toString() +
-            ", occurrence=" + occurrence);
-
         // All occurrences are done
         if (isLastOccurrence()) return null;
 
