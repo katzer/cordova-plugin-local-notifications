@@ -34,7 +34,7 @@ import de.appplant.cordova.plugin.localnotification.Notification;
 /**
  * The clear intent receiver is triggered when the user clears a
  * notification manually. It removes the notification from the
- * SharedPreferences.
+ * SharedPreferences if it was the last onex to trigger.
  */
 public class ClearReceiver extends BroadcastReceiver {
 
@@ -51,13 +51,6 @@ public class ClearReceiver extends BroadcastReceiver {
         Notification notification = Notification.getFromSharedPreferences(context, bundle.getInt(Notification.EXTRA_ID));
         if (notification == null) return;
 
-        // If it is the last occurrence cancel alarm and remove it from SharedPreferences
-        if (notification.getOptions().getTrigger().isLastOccurrence()) {
-            notification.cancel();
-
-            // If there are more occurrences clear only from statusbar, so that the next occurrence can be shown
-        } else {
-            notification.clear();
-        }
+        notification.clear();
     }
 }

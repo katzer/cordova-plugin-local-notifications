@@ -727,6 +727,7 @@ public class LocalNotification extends CordovaPlugin {
      * Launch main intent from package.
      */
     public static void launchApp(Context context) {
+        Log.d(TAG, "Launching the app");
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
 
         if (launchIntent == null) return;

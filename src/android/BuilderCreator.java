@@ -290,16 +290,21 @@ public final class BuilderCreator {
      * Will bring the app to foreground.
      */
     private void setContentIntent(NotificationCompat.Builder builder) {
-        Intent intent = new Intent(context, ClickHandlerActivity.class)
+        Intent resultIntent = new Intent(context, ClickHandlerActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch());
 
-        if (intentExtras != null) intent.putExtras(intentExtras);
+        // Set the Activity to start in a new, empty task.
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        builder.setContentIntent(PendingIntent.getActivity(
-            context, random.nextInt(), intent, PendingIntent.FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT));
+        if (intentExtras != null) resultIntent.putExtras(intentExtras);
+
+        // Create the PendingIntent
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+            context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        builder.setContentIntent(resultPendingIntent);
     }
 
     /**

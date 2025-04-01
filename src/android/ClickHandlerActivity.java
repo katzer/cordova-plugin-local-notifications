@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import androidx.core.app.RemoteInput;
 
 import org.json.JSONException;
@@ -44,6 +45,8 @@ import de.appplant.cordova.plugin.localnotification.action.Action;
  */
 public class ClickHandlerActivity extends Activity {
 
+    private static final String TAG = "ClickHandlerActivity";
+
     /**
      * Activity started when local notification was clicked by the user.
      * @param notification Wrapper around the local notification.
@@ -51,20 +54,28 @@ public class ClickHandlerActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Creating ClickHandlerActivity");
         super.onCreate(savedInstanceState);
 
-        Notification notification = Notification.getFromSharedPreferences(
-            getApplicationContext(), getIntent().getExtras().getInt(Notification.EXTRA_ID));
+        int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);
+        Log.d(TAG, "notification clicked, id=" + notificationId);
 
-        finish();
-        
-        if (notification == null) return;
+        Notification notification = Notification.getFromSharedPreferences(getApplicationContext(), notificationId);
+
+        // This should never happen. A notification always be available in the SharedPreferences
+        // when the user clicks on it.
+        // If the notification is not stored anymore in the SharedPreferences, just open the app
+        if (notification == null) {
+            LocalNotification.launchApp(getApplicationContext());
+            finish();
+            return;
+        }
 
         // Gets input from action and sets it in data
         String action = getIntent().getExtras().getString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
         JSONObject data = new JSONObject();
         setTextInput(action, data);
-        
+            
         if (getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true)) LocalNotification.launchApp(getApplicationContext());
 
         LocalNotification.fireEvent(action, notification, data);
@@ -73,11 +84,11 @@ public class ClickHandlerActivity extends Activity {
 
         if (options.isAndroidOngoing()) return;
 
-        if (options.getTrigger().isLastOccurrence()) {
-            notification.cancel();
-        } else {
-            notification.clear();
-        }
+        // Will remove the notification from SharedPreferences if it is the last one
+        notification.clear();
+
+        // Finish this activity, so the unterlying app activity is shown
+        finish();
     }
 
     /**

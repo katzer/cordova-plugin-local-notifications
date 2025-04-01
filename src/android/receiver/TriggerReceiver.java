@@ -80,7 +80,12 @@ public class TriggerReceiver extends BroadcastReceiver {
             LocalNotification.fireEvent("trigger", notification);
         }
 
-        // Schedule next notification if available
+        // Schedule next notification if available. The notification
+        // will not be removed from the SharedPreferences, if there is no
+        // next trigger. So the ClickHandlerActivity
+        // and ClearReceiver can still read the notification data. They
+        // will remove the notification from the SharedPreferences if they are
+        // executed. A notification can ony be cleared or clicked.
         notification.scheduleNext();
     }
 }

@@ -159,27 +159,26 @@ public final class Notification {
     }
 
     /**
-     * Schedules the next occurrence of the notification. This has also to be called
+     * Schedules the first or next occurrence of the notification. This has also to be called
      * when the notification is scheduled for the first time, so the first occurrence
-     * can be calculated. If there are no more occurrences, the notification will
-     * be removed from the SharedPreferences.
-     * @return true if the notification was scheduled, false otherwise.
+     * can be calculated.
+     * @return true if the notification was scheduled, false otherwise, which can happen,
+     * if the notification was triggered directly, an error occured or there is no next trigger date.
      */
     public boolean scheduleNext() {
         Date triggerDate = optionsTrigger.getNextTriggerDate();
 
         // No next trigger date available, all triggers are done
+        // The notification will not be removed from SharedPreferences.
+        // This will always do the ClearReceiver and ClickHandlerActivity
         if (triggerDate == null) {
-            Log.d(TAG, "No next trigger date available, remove notification from SharedPreferences" +
+            Log.d(TAG, "No next trigger date available" +
                 ", notificationId=" + options.getId() +
                 ", occurrence=" + optionsTrigger.getOccurrence() +
                 ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
                 ", triggerDate=" + optionsTrigger.getTriggerDate() +
                 ", options=" + options);
             
-            // Remove notification options from shared preferences
-            removeFromSharedPreferences();
-
             return false;
         }
 
@@ -308,8 +307,9 @@ public final class Notification {
     }
 
     /**
-     * Clear the local notification without canceling repeating alarms and informs the WebView
-     * about it.
+     * Clears the notification from Statusbar. If the notification was the last one,
+     * the notification will be removed from SharedPreferences.
+     * The WebView will receive a clear event, if the app is running.
      */
     public void clear() {
         Log.d(TAG, "Clear notification, options=" + options);
@@ -317,15 +317,18 @@ public final class Notification {
         // Clear the notification from the statusbar if posted
         NotificationManagerCompat.from(context).cancel(LocalNotification.getAppName(context), getId());
 
-        // If the notification is not repeating, remove notification data from the app
-        if (!options.getTrigger().isRepeating()) removeFromSharedPreferences();
+        // If it is the last occurrence remove the notification from SharedPreferences
+        if (options.getTrigger().isLastOccurrence()) {
+            removeFromSharedPreferences();
+        }
 
         // Inform WebView about the clearing
         if (LocalNotification.isAppRunning()) LocalNotification.fireEvent("clear", this);
     }
 
     /**
-     * Cancel the local notification.
+     * Cancels the notification and removes it from SharedPreferences.
+     * The WebView will receive a cancel event, if the app is running.
      */
     public void cancel() {
         Log.d(TAG, "Cancel notification, options=" + options);
@@ -400,6 +403,13 @@ public final class Notification {
      * Removes the notification data from the SharedPreferences.
      */
     private void removeFromSharedPreferences() {
+        Log.d(TAG, "Remove notification from SharedPreferences" +
+            ", notificationId=" + options.getId() +
+            ", occurrence=" + optionsTrigger.getOccurrence() +
+            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+            ", triggerDate=" + optionsTrigger.getTriggerDate() +
+            ", options=" + options);
+
         Manager.getSharedPreferences(context).edit()
         .remove(getSharedPreferencesKeyOptions())
         .remove(getSharedPreferencesKeyOccurrence())
