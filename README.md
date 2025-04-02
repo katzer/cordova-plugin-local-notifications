@@ -93,6 +93,11 @@ The property `vibrate` was renamed to [androidChannelEnableVibration](#property-
 #### iOS
 A notification will be always showed in the notification center like on Android. Happens also if [iOSForeground](#property-iosforeground) is `false`.
 
+### Updates in Version 1.1.4
+
+#### Android
+Notifications with an old `trigger.at` date will be shown when you schedule them. Before they were ignored.
+
 ## Basics
 
 The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.
