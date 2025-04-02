@@ -5,6 +5,8 @@
 ### Android
 
 - Bugfix: Open app when notification clicked. The app was not opened anymore, when a notification was clicked
+- Bugfix: Already posted notifications could not be updated
+- Bugfix: Already posted notifications will be shown again, when the app updates or the device reboots.
 - Bugfix: `trigger.unit` and `trigger.every` (String) could fail in different user locales. The value of those two properties was upper cased by [String.toUpperCase()](https://developer.android.com/reference/java/lang/String#toUpperCase()) and turned after into an `Enum`. The method `String.toUpperCase()` is locale aware and will use the current user locale to upper case the string. In Turkish, for e.g., the value `minute` would become upper cased to `MİNUTE` where the I has a dot above it and would not recognized as an Enum. Now enums will not be used anymore and the values are taken as they come from JavaScript and are expected to be lower cased like `minute`, `hour` etc.
   - Thanks [TheNotorius0](https://github.com/TheNotorius0) for sharing his experiences in issue [2060](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060) as a [comment](https://github.com/katzer/cordova-plugin-local-notifications/issues/2060#issuecomment-2751895663) and also [pahenator](https://github.com/pahenator) for initially posting the issue.
   - Thanks [iamAdamGoodman](https://github.com/iamAdamGoodman) noting that `trigger.at` was not functioning after adding these changes in issue [2070](https://github.com/katzer/cordova-plugin-local-notifications/issues/2070)
