@@ -28,10 +28,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.PowerManager;
 import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.MessagingStyle;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.collection.ArraySet;
 import androidx.core.util.Pair;
@@ -50,8 +54,11 @@ import java.util.Set;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
+import de.appplant.cordova.plugin.localnotification.action.Action;
+import de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver;
 import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
 import de.appplant.cordova.plugin.localnotification.trigger.OptionsTrigger;
+import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
 import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
 
@@ -71,9 +78,6 @@ public final class Notification {
     // Extra key for the id
     public static final String EXTRA_ID = "NOTIFICATION_ID";
 
-    // Extra key for the update flag
-    public static final String EXTRA_UPDATE = "NOTIFICATION_UPDATE";
-
     // Application context passed by constructor
     private final Context context;
 
@@ -86,34 +90,15 @@ public final class Notification {
     private OptionsTrigger optionsTrigger;
 
     /**
-     * Notification builder instance. Can be {@code null}.
-     */
-    private NotificationCompat.Builder builder;
-
-    /**
-     * Constructor
-     * @param context Application context.
-     * @param options Parsed notification options.
-     */
-    public Notification(Context context, Options options) {
-        this(context, options, null);
-    }
-
-    /**
      * Constructor
      * @param context Application context.
      * @param options Parsed notification options.
      * @param builder Pre-configured notification builder.
      */
-    Notification(Context context, Options options, NotificationCompat.Builder builder) {
+    Notification(Context context, Options options) {
         this.context = context;
-        this.builder = builder;
         this.options = options;
         this.optionsTrigger = options.getTrigger();
-    }
-
-    public void setBuilder(NotificationCompat.Builder builder) {
-        this.builder = builder;
     }
 
     /**
@@ -170,13 +155,13 @@ public final class Notification {
 
         // No next trigger date available, all triggers are done
         // The notification will not be removed from SharedPreferences.
-        // This will always do the ClearReceiver and ClickHandlerActivity
+        // This will always do the ClearReceiver and NotificationClickActivity
         if (triggerDate == null) {
             Log.d(TAG, "No next trigger date available" +
                 ", notificationId=" + options.getId() +
                 ", occurrence=" + optionsTrigger.getOccurrence() +
-                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
                 ", triggerDate=" + optionsTrigger.getTriggerDate() +
+                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
                 ", options=" + options);
             
             return false;
@@ -200,36 +185,39 @@ public final class Notification {
         }
 
         // Create channel if not exists
-        Manager.createChannel(getContext(), options);
-
-        Intent intent = new Intent(context, TriggerReceiver.class)
-            // action identifier for the intent like "NOTIFICATION_ID1173"
-            .setAction(getIntentActionIdentifier())
-            // Notification-ID
-            .putExtra(EXTRA_ID, options.getId());
+        Manager.createChannel(context, options);
 
         // Store notification data for restoration
+        // Needed for NotificationClickActivity and ClearReceiver
         storeInSharedPreferences();
 
-        // Date is in the past, trigger directly
+        // Date is in the past, show directly
         if (!triggerDate.after(new Date())) {
-            trigger(intent);
+            show(false);
+            scheduleNext();
             return false;
         }
 
         boolean canScheduleExactAlarms = Manager.canScheduleExactAlarms(context);
 
+        // Intent when the alarm goes off
+        Intent alarmFiresIntent = new Intent(context, TriggerReceiver.class)
+            // action identifier for the intent like "NOTIFICATION_ID1173"
+            .setAction(getIntentActionIdentifier())
+            // Notification-ID
+            .putExtra(EXTRA_ID, options.getId());
+        
         Log.d(TAG, "Schedule notification" +
             ", notificationId: " + options.getId() +
             ", canScheduleExactAlarms: " + canScheduleExactAlarms +
-            ", intentAction=" + intent.getAction() +
+            ", intentAction=" + alarmFiresIntent.getAction() +
             ", occurrence: " + optionsTrigger.getOccurrence() +
             ", triggerDate: " + triggerDate +
             ", options=" + options);
         
         // AlarmManager.set: If there is already an alarm scheduled for the same IntentSender,
         // that previous alarm will first be canceled.
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent alarmFiresPendingIntent = PendingIntent.getBroadcast(context, 0, alarmFiresIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // A maximum of 500 alarms can be scheduled, catch exception
         try {
@@ -237,20 +225,20 @@ public final class Notification {
             if (options.isAndroidAllowWhileIdle()) {
                 if (canScheduleExactAlarms) {
                     getAlarmManager().setExactAndAllowWhileIdle(
-                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                        options.getAndroidAlarmType(), triggerDate.getTime(), alarmFiresPendingIntent);
                 } else {
                     getAlarmManager().setAndAllowWhileIdle(
-                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                        options.getAndroidAlarmType(), triggerDate.getTime(), alarmFiresPendingIntent);
                 }
 
                 // Execute alarm by RTC or RTC_WAKEUP
             } else {
                 if (canScheduleExactAlarms) {
                     getAlarmManager().setExact(
-                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                        options.getAndroidAlarmType(), triggerDate.getTime(), alarmFiresPendingIntent);
                 } else {
                     getAlarmManager().set(
-                        options.getAndroidAlarmType(), triggerDate.getTime(), pendingIntent);
+                        options.getAndroidAlarmType(), triggerDate.getTime(), alarmFiresPendingIntent);
                 }
             }
 
@@ -265,22 +253,32 @@ public final class Notification {
     }
 
     /**
-     * Trigger local notification specified by intent.
-     * @param intent The intent to broadcast.
+     * Present the notification to the user
      */
-    private void trigger(Intent intent) {
-        new TriggerReceiver().onReceive(context, intent);
-    }
+    public void show(boolean isUpdate) {
+        Log.d(TAG, "Show notification, options=" + options + ", isUpdate=" + isUpdate);
 
-    /**
-     * Present the local notification to user.
-     */
-    public void show() {
-        if (builder == null) return;
-        Log.d(TAG, "Show notification, options=" + options);
+        NotificationCompat.Builder builder = getBuilder(isUpdate);
+
+        // Notification should be silent
+        if (builder == null) {
+            Log.d(TAG, "Notification is silent, don't show it");
+            return;
+        }
+
+        // Turn the screen on
+        PowerManager.WakeLock wakeLock = options.isAndroidWakeUpScreen() ? Manager.wakeUpScreen(context) : null;
+
         NotificationManagerCompat.from(context).notify(
-            LocalNotification.getAppName(context),
-            getId(), builder.build());
+            LocalNotification.getAppName(context), options.getId(), builder.build());
+
+        // The wake lock has to be released after the notification was shown
+        if (wakeLock != null) wakeLock.release();
+
+        // Fire trigger event if it's not an update and the app is running
+        if (!isUpdate && LocalNotification.isAppRunning()) {
+            LocalNotification.fireEvent("trigger", this);
+        }
     }
 
     /**
@@ -288,22 +286,16 @@ public final class Notification {
      * @param updates The properties to update.
      */
     void update(JSONObject updates) {
+        Log.d(TAG, "Update notification, options=" + options + ", updates=" + updates);
+
         // Update options of notification
         mergeJSONObjects(updates);
-        Log.d(TAG, "Update notification, options=" + options);
 
         // Store notification data
         storeInSharedPreferences();
 
-        // Update already triggered notification in status bar
-        if (getType() == Type.TRIGGERED) {
-            Intent intent = new Intent(context, TriggerReceiver.class)
-                    .setAction(Manager.PREF_KEY_ID + options.getId())
-                    .putExtra(Notification.EXTRA_ID, options.getId())
-                    .putExtra(Notification.EXTRA_UPDATE, true);
-
-            trigger(intent);
-        }
+        // Update triggered notification in status bar
+        if (getType() == Type.TRIGGERED) show(true);
     }
 
     /**
@@ -383,8 +375,8 @@ public final class Notification {
         Log.d(TAG, "Store notification in SharedPreferences" +
             ", notificationId=" + options.getId() +
             ", occurrence=" + optionsTrigger.getOccurrence() +
-            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
             ", triggerDate=" + optionsTrigger.getTriggerDate() +
+            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
             ", options=" + options);
         
         Manager.getSharedPreferences(context).edit()
@@ -406,8 +398,8 @@ public final class Notification {
         Log.d(TAG, "Remove notification from SharedPreferences" +
             ", notificationId=" + options.getId() +
             ", occurrence=" + optionsTrigger.getOccurrence() +
-            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
             ", triggerDate=" + optionsTrigger.getTriggerDate() +
+            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
             ", options=" + options);
 
         Manager.getSharedPreferences(context).edit()
@@ -472,8 +464,8 @@ public final class Notification {
             Log.d(TAG, "Restored trigger date" +
                 ", notificationId=" + notificationId +
                 ", occurrence=" + optionsTrigger.getOccurrence() +
-                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
-                ", triggerDate=" + optionsTrigger.getTriggerDate());
+                ", triggerDate=" + optionsTrigger.getTriggerDate() +
+                ", triggerBaseDate=" + optionsTrigger.getBaseDate());
 
             return notification;
         } catch (JSONException exception) {
@@ -536,5 +528,266 @@ public final class Notification {
      */
     private AlarmManager getAlarmManager() {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    /**
+     * Creates a {@link NotificationCompat.Builder} from options
+     * @return The builder instance or null if the notification is silent.
+     */
+    public NotificationCompat.Builder getBuilder(boolean isUpdate) {
+        if (options.isSilent()) return null;
+
+        Bundle extras = new Bundle();
+        extras.putInt(Notification.EXTRA_ID, options.getId());
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, options.getAndroidChannelId())
+            .setExtras(extras)
+            .setOnlyAlertOnce(options.isOnlyAlertOnce())
+            .setContentTitle(options.getTitle())
+            .setContentText(options.getText())
+            // Text that summarizes this notification for accessibility services.
+            // Since Android 5, this text is no longer shown on screen, but it is
+            // still useful to accessibility services (where it serves as an audible announcement
+            // of the notification's appearance).
+            .setTicker(options.getText())
+            // Since Android 8 shows as a badge count for Launchers that support badging
+            // prior to 8 it could be shown in the header
+            .setNumber(options.getBadgeNumber())
+            .setAutoCancel(options.isAndroidAutoCancel())
+            .setOngoing(options.isAndroidOngoing())
+            .setColor(options.getColor())
+            .setVisibility(options.getVisibility())
+            // Show the Notification when date
+            .setShowWhen(options.isAndroidShowWhen())
+            // Show the Notification#when field as a stopwatch. Instead of presenting when as a timestamp,
+            // the notification will show an automatically updating display of the minutes and seconds since
+            // when
+            .setUsesChronometer(options.isAndroidUsesChronometer())
+            .setGroup(options.getGroup())
+            .setGroupSummary(options.isGroupSummary());
+
+        // Specify the duration in milliseconds after which this notification should be canceled
+        if (options.getAndroidTimeoutAfter() >= 0) builder.setTimeoutAfter(options.getAndroidTimeoutAfter());
+
+        // Settings for Android older than 8
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setDefaults(options.getDefaults());
+            builder.setPriority(options.getPriorityByImportance());
+            builder.setLights(options.getLedColor(), options.getLedOn(), options.getLedOff());
+
+            Uri soundUri = options.getSoundUri();
+
+            // Set sound only, if the notification should not be updated
+            if (soundUri != Uri.EMPTY && !isUpdate) {
+                // Grant permission to the system to play the sound, needed in Android 7 and 8
+                Manager.grantUriPermission(context, soundUri);
+                builder.setSound(soundUri);
+            }
+        }
+
+        if (options.getProgressBar() != null) {
+            builder.setProgress(
+                options.getProgressMaxValue(),
+                options.getProgressValue(),
+                options.isProgressIndeterminate());
+        }
+
+        // Get smallIcon from resources only
+        //
+        // There exists also a setSmallIcon(IconCompat icon) method, but tested on Android 15, when multiple notifications with the
+        // same icon are posted, the app icon will be shown in statusbar instead of the small icon. This does not happen,
+        // when using the setSmallIcon(int icon) method.
+        builder.setSmallIcon(options.getSmallIcon());
+
+        Bitmap largeIcon = new AssetUtil(context).getBitmap(options.getAndroidLargeIcon());
+        
+        if (largeIcon != null) {
+            if (options.getAndroidLargeIconType().equals(Options.LARGE_ICON_TYPE_CIRCLE)) {
+                largeIcon = AssetUtil.getCircleBitmap(largeIcon);
+            }
+
+            builder.setLargeIcon(largeIcon);
+        }
+
+        applyStyle(builder);
+        addActions(builder);
+
+        // Supply a PendingIntent to send when the notification is cleared by the user directly from the notification panel
+        setDeleteIntent(builder);
+
+        // Supply a PendingIntent to send when the notification is clicked
+        setContentIntent(builder);
+
+        return builder;
+    }
+
+    /**
+     * Find out and set the notification style.
+     * @param builder Notification builder instance.
+     */
+    private void applyStyle(NotificationCompat.Builder builder) {
+        if (applyMessagingStyle(builder)) return;
+        if (applyBigPictureStyle(builder)) return;
+        if (applyInboxStyle(builder)) return;
+        if (applyBigTextStyle(builder)) return;
+    }
+
+    /**
+     * Apply messaging style
+     * @param builder Notification builder instance
+     * @return true if the messaging style was applied
+     */
+    private boolean applyMessagingStyle(NotificationCompat.Builder builder) {
+        MessagingStyle.Message[] messages = options.getAndroidMessages();
+        if (messages == null) return false;
+
+        // Find if there is a notification already displayed with this ID.
+        StatusBarNotification activeNotification = new Manager(context).getActiveNotification(options.getId());
+
+        MessagingStyle style = activeNotification != null ?
+            // If the notification was already displayed, extract the MessagingStyle to add the message
+            MessagingStyle.extractMessagingStyleFromNotification(activeNotification.getNotification()) :
+            // No active notification, create a new style
+            new NotificationCompat.MessagingStyle("");
+
+        // Add the new messages to the style
+        for (MessagingStyle.Message message : messages) {
+            style.addMessage(message);
+        }
+
+        String title = options.getTitle();
+
+        // Add the count of messages to the title if there is more than 1.
+        Integer messagesCount = style.getMessages().size();
+
+        if (messagesCount > 1 && options.getTitleCount() != null && !options.getTitleCount().trim().isEmpty()) {
+            title += " " + options.getTitleCount().replace("%n%", "" + messagesCount);
+        }
+
+        style.setConversationTitle(title);
+
+        // Use the style.
+        builder.setStyle(style);
+
+        return true; // style applied
+    }
+
+    /**
+     * Apply big picture style. Only uses the first attachment.
+     * @param builder Notification builder instance
+     * @return true if the big picture style was applied
+     */
+    private boolean applyBigPictureStyle(NotificationCompat.Builder builder) {
+        List<Bitmap> attachmentsPictures = options.getAttachments();
+        if (attachmentsPictures == null || attachmentsPictures.size() == 0) return false;
+
+        builder.setStyle(new NotificationCompat.BigPictureStyle(builder)
+            .setSummaryText(options.getSummary() != null ? options.getSummary() : options.getText())
+            .bigPicture(attachmentsPictures.get(0))
+        );
+
+        return true; // style applied
+    }
+
+    /**
+     * Apply inbox style
+     * @param builder Notification builder instance
+     * @return true if the inbox style was applied
+     */
+    private boolean applyInboxStyle(NotificationCompat.Builder builder) {
+        if (!options.getText().contains("\n")) return false;
+
+        NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle(builder)
+            .setSummaryText(options.getSummary());
+
+        for (String line : options.getText().split("\n")) {
+            style.addLine(line);
+        }
+
+        builder.setStyle(style);
+        return true; // style applied
+    }
+
+    /**
+     * Apply big text style
+     * @param builder Notification builder instance
+     * @return true if the big text style was applied
+     */
+    private boolean applyBigTextStyle(NotificationCompat.Builder builder) {
+        if (options.getSummary() == null && options.getText().length() < 45) return false;
+        builder.setStyle(new NotificationCompat.BigTextStyle(builder)
+            .setSummaryText(options.getSummary())
+            .bigText(options.getText()));
+        return true; // style applied
+    }
+
+    /**
+     * Supply a PendingIntent to send when the notification is cleared by the user directly
+     * from the notification panel. For example, this intent is sent when the user clicks the
+     * "Clear all" button, or the individual "X" buttons on notifications.
+     * This intent is not sent when the application calls NotificationManager.cancel(int).
+     */
+    private void setDeleteIntent(NotificationCompat.Builder builder) {
+        Intent intent = new Intent(context, ClearReceiver.class)
+            .setAction(options.getId().toString())
+            .putExtra(Notification.EXTRA_ID, options.getId());
+
+        builder.setDeleteIntent(PendingIntent.getBroadcast(
+            context, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
+    }
+
+    /**
+     * Supply a PendingIntent to send when the notification is clicked.
+     * Will bring the app to foreground.
+     */
+    private void setContentIntent(NotificationCompat.Builder builder) {
+        Intent clickIntent = new Intent(context, NotificationClickActivity.class)
+            .putExtra(Notification.EXTRA_ID, options.getId())
+            .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
+            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch());
+
+        // Set the Activity to start in a new, empty task.
+        clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        // Create the PendingIntent
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(
+            context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        builder.setContentIntent(clickPendingIntent);
+    }
+
+    /**
+     * Add all actions to the builder if there are any actions.
+     */
+    private void addActions(NotificationCompat.Builder builder) {
+        Action[] actions = options.getActions();
+        if (actions == null) return;
+
+        for (Action action : actions) {
+            NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
+                action.getIcon(), action.getTitle(), getPendingIntentForAction(action));
+
+            if (action.isWithInput()) {
+                actionBuilder.addRemoteInput(action.getInput());
+            }
+
+            builder.addAction(actionBuilder.build());
+        }
+    }
+
+    /**
+     * Returns a new PendingIntent for a notification action, including the
+     * action's identifier.
+     *
+     * @param action Notification action needing the PendingIntent
+     */
+    private PendingIntent getPendingIntentForAction(Action action) {
+        Intent actionClickIntent = new Intent(context, NotificationClickActivity.class)
+                .putExtra(Notification.EXTRA_ID, options.getId())
+                .putExtra(Action.EXTRA_ID, action.getId())
+                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        return PendingIntent.getActivity(context, 0, actionClickIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

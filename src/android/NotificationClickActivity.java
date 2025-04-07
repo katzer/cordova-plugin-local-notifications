@@ -43,9 +43,9 @@ import de.appplant.cordova.plugin.localnotification.action.Action;
  * The activity calls the background callback and brings the launch intent
  * up to foreground.
  */
-public class ClickHandlerActivity extends Activity {
+public class NotificationClickActivity extends Activity {
 
-    private static final String TAG = "ClickHandlerActivity";
+    private static final String TAG = "NotificationClickActivity";
 
     /**
      * Activity started when local notification was clicked by the user.
@@ -54,7 +54,7 @@ public class ClickHandlerActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "Creating ClickHandlerActivity");
+        Log.d(TAG, "Creating NotificationClickActivity");
         super.onCreate(savedInstanceState);
 
         int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);

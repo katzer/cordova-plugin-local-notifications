@@ -124,7 +124,7 @@
                 Any existing tasks that have the app's default affinity aren't affected.
             -->
             <activity
-                android:name="de.appplant.cordova.plugin.localnotification.ClickHandlerActivity"
+                android:name="de.appplant.cordova.plugin.localnotification.NotificationClickActivity"
                 android:exported="false"
                 android:taskAffinity=""
                 android:excludeFromRecents="true" />
@@ -184,7 +184,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/ClickHandlerActivity.java"
+            src="src/android/NotificationClickActivity.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
@@ -230,10 +230,6 @@
         <source-file
             src="src/android/util/CallbackContextUtil.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification/util" />
-
-        <source-file
-            src="src/android/BuilderCreator.java"
-            target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
             src="src/android/Manager.java"

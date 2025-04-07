@@ -297,7 +297,7 @@ public final class Manager {
      * Wake up the screen and returns a WakeLock, which have to be release, after the work is done.
      * @return WakeLock, which have to be release, after the work is done.
      */
-    public PowerManager.WakeLock wakeUpScreen() {
+    public static PowerManager.WakeLock wakeUpScreen(Context context) {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLook = powerManager.newWakeLock(
             PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "LocalNotification");

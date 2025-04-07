@@ -25,13 +25,8 @@ package de.appplant.cordova.plugin.localnotification.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.PowerManager;
 import android.util.Log;
 
-import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.BuilderCreator;
-import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 
 /**
@@ -53,36 +48,15 @@ public class TriggerReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Received action: " + intent.getAction());
 
-        Bundle bundle = intent.getExtras();
-        if (bundle == null) return;
-
-        int notificationId = bundle.getInt(Notification.EXTRA_ID, 0);
-        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
-        if (notification == null) return;
-
-        notification.setBuilder(new BuilderCreator(notification).setIntentExtras(bundle).create());
-
-        PowerManager.WakeLock wakeLock = null;
-
-        // Turn the screen on
-        if (notification.getOptions().isAndroidWakeUpScreen()) {
-            wakeLock = new Manager(context).wakeUpScreen();
-        }
+        Notification notification = Notification.getFromSharedPreferences(
+            context, intent.getExtras().getInt(Notification.EXTRA_ID, 0));
 
         // Show the notification
-        notification.show();
-
-        // The wake lock has to be released after the notification was shown
-        if (wakeLock != null) wakeLock.release();
-
-        // Fire trigger event only, if notification was not updated
-        if (!bundle.getBoolean(Notification.EXTRA_UPDATE, false) && LocalNotification.isAppRunning()) {
-            LocalNotification.fireEvent("trigger", notification);
-        }
+        notification.show(false);
 
         // Schedule next notification if available. The notification
         // will not be removed from the SharedPreferences, if there is no
-        // next trigger. So the ClickHandlerActivity
+        // next trigger. So the NotificationClickActivity
         // and ClearReceiver can still read the notification data. They
         // will remove the notification from the SharedPreferences if they are
         // executed. A notification can ony be cleared or clicked.

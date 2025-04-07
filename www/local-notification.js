@@ -39,7 +39,8 @@ exports._commonOptions = {
     sound: 'default',
     // If empty, the app name will be used
     title: "",
-    trigger: {type : "calendar"}
+    // type can be 'calendar' or 'location'
+    trigger: {type: "calendar"}
 }
 
 exports._androidAlarmTypes = {
@@ -728,15 +729,15 @@ exports._correctOptions = function (options, mergeDefaults = false) {
     // No auto cancelling, if the notification is ongoing
     if (options.androidOngoing) options.androidAutoCancel = false
 
-    exports._convertTrigger(options);
-    exports._convertActions(options);
-    exports._convertAndroidProgressBar(options);
-
     if (mergeDefaults) {
         for (const key in this._defaults) {
             if (options[key] === undefined) options[key] = exports._defaults[key];
         }
     }
+
+    exports._prepareTrigger(options);
+    exports._prepareActions(options);
+    exports._prepareAndroidProgressBar(options);
 
     // Convert Enums
     // Android: alarmType string to integer
@@ -881,15 +882,13 @@ exports._androidHandleOldPropertyPriority = function (options) {
  *
  * @return [ Map ] Interaction object with category & actions.
  */
-exports._convertActions = function (options) {
-    var actions = [];
+exports._prepareActions = function (options) {
+    // options.actions is a string or not set
+    if (!options.actions || typeof options.actions === 'string') return options;
 
-    if (!options.actions || typeof options.actions === 'string')
-        return options;
+    let actions = [];
 
-    for (var i = 0, len = options.actions.length; i < len; i++) {
-        var action = options.actions[i];
-
+    for (const action of options.actions) {
         if (!action.id) {
             console.warn('Action with title ' + action.title + ' ' +
                          'has no id and will not be added.');
@@ -897,7 +896,6 @@ exports._convertActions = function (options) {
         }
 
         action.id = action.id.toString();
-
         actions.push(action);
     }
 
@@ -911,73 +909,36 @@ exports._convertActions = function (options) {
  * @param {Object} options
  * @return {Object} Converted options
  */
-exports._convertTrigger = function (options) {
-    if (!options.trigger) return;
-
+exports._prepareTrigger = function (options) {
     let trigger = options.trigger;
 
-    trigger.type = trigger.type || trigger.center ? 'location' : 'calendar';
-    var isCal = trigger.type == 'calendar';
-
-    // Get trigger date from trigger
-    var date = exports._getValueFor(trigger, 'at', 'firstAt', 'date');
-
-    // Fallback: Get trigger date from options, if not defined in trigger
-    if (isCal && !date) {
-        date = exports._getValueFor(options, 'at', 'firstAt', 'date');
+    // trigger type missing, set one
+    if (!trigger.type) {
+        trigger.type = trigger.center ? "location" : "calendar";
     }
 
-    // Fallback: Transfer every option to trigger
-    if (isCal && !trigger.every && options.every) {
-        trigger.every = options.every;
-    }
+    if (trigger.type == "calendar") {
+        // Set default trigger time at now if nothing is set
+        if (!trigger.at && !trigger.in && !trigger.every) trigger.at = new Date();
 
-    if (isCal && (trigger.in || trigger.every)) {
-        date = null;
-    }
+        // Convert dates to numbers
+        if (trigger.at) trigger.at = exports._dateToNumber(trigger.at);
+        if (trigger.firstAt) trigger.firstAt = exports._dateToNumber(trigger.firstAt);
+        if (trigger.before) trigger.before = exports._dateToNumber(trigger.before);
+        if (trigger.after) trigger.after = exports._dateToNumber(trigger.after);
 
-    var dateToNum = function (date) {
-        var num = typeof date == 'object' ? date.getTime() : date;
-        return Math.round(num);
-    };
+        //  Warning that trigger.count is not supported on iOS
+        if (device.platform == 'iOS' && trigger.count) {
+            console.warn('trigger.count is not supported on iOS.');
+        }
 
-    if (isCal && date) {
-        trigger.at = dateToNum(date);
-    }
-
-    if (isCal && trigger.firstAt) {
-        trigger.firstAt = dateToNum(trigger.firstAt);
-    }
-
-    if (isCal && trigger.before) {
-        trigger.before = dateToNum(trigger.before);
-    }
-
-    if (isCal && trigger.after) {
-        trigger.after = dateToNum(trigger.after);
-    }
-
-    if (trigger.count && device.platform == 'iOS') {
-        console.warn('trigger: { count: } is not supported on iOS.');
-    }
-
-    if (!isCal) {
+        // Location trigger, set defaults
+    } else {
         trigger.notifyOnEntry = !!trigger.notifyOnEntry;
-        trigger.notifyOnExit  = trigger.notifyOnExit === true;
-        trigger.radius        = trigger.radius || 5;
-        trigger.single        = !!trigger.single;
+        trigger.notifyOnExit = trigger.notifyOnExit === true;
+        trigger.radius = trigger.radius || 5;
+        trigger.single = !!trigger.single;
     }
-
-    if (!isCal || trigger.at) {
-        delete trigger.every;
-    }
-
-    delete options.every;
-    delete options.at;
-    delete options.firstAt;
-    delete options.date;
-
-    options.trigger = trigger;
 
     return options;
 };
@@ -986,10 +947,10 @@ exports._convertTrigger = function (options) {
  * Convert the passed values for the progressBar to their required type.
  * @param {Object} options
  */
-exports._convertAndroidProgressBar = function (options) {
-    if (options.androidProgressBar === undefined) return
-    let progressBar = options.androidProgressBar
+exports._prepareAndroidProgressBar = function (options) {
+    if (!options.androidProgressBar) return
 
+    let progressBar = options.androidProgressBar
     progressBar.value = progressBar.value || 0;
     progressBar.maxValue = progressBar.maxValue || 100;
     progressBar.indeterminate = progressBar.indeterminate || false;
@@ -1096,4 +1057,8 @@ exports._toArray = function (object) {
 
 exports._deepCopy = function (object) {
     return JSON.parse(JSON.stringify(object));
+};
+
+exports._dateToNumber = function (date) {
+    return date instanceof Date ? date.getTime() : date;
 };

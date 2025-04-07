@@ -31,7 +31,7 @@ import android.media.RingtoneManager;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.MessagingStyle.Message;
+import androidx.core.app.NotificationCompat.MessagingStyle;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
@@ -833,13 +833,13 @@ public final class Options {
      * Gets the list of messages to display.
      * @return null if there are no messages
      */
-    Message[] getAndroidMessages() {
+    MessagingStyle.Message[] getAndroidMessages() {
         JSONArray messagesJSONArray = options.optJSONArray("androidMessages");
 
         // Nothing is set
         if (messagesJSONArray == null) return null;
 
-        Message[] messages = new Message[messagesJSONArray.length()];
+        MessagingStyle.Message[] messages = new MessagingStyle.Message[messagesJSONArray.length()];
 
         for (int i = 0; i < messages.length; i++) {
             JSONObject messageJSON = messagesJSONArray.optJSONObject(i);
@@ -848,7 +848,7 @@ public final class Options {
             Bitmap personBitmap = assetUtil.getBitmap(messageJSON.optString("personIcon", null));
             IconCompat personIcon = personBitmap != null ? IconCompat.createWithBitmap(AssetUtil.getCircleBitmap(personBitmap)) : null;
 
-            messages[i] = new Message(
+            messages[i] = new MessagingStyle.Message(
                 messageJSON.optString("message"),
                 messageJSON.optLong("date", System.currentTimeMillis()),
                 new Person.Builder()

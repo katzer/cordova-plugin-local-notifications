@@ -27,8 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
 
 /**
@@ -45,12 +43,9 @@ public class ClearReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle = intent.getExtras();
-        if (bundle == null) return;
+        Notification notification = Notification.getFromSharedPreferences(context, intent.getExtras().getInt(Notification.EXTRA_ID));
 
-        Notification notification = Notification.getFromSharedPreferences(context, bundle.getInt(Notification.EXTRA_ID));
-        if (notification == null) return;
-
+        // Will remove the notification from SharedPreferences if it is the last one
         notification.clear();
     }
 }
