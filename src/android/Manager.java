@@ -140,7 +140,7 @@ public final class Manager {
         Log.d(TAG, "Delete channel, id=" + channelId);
 
         // Cancel all notifications regarding this channel
-        for (Notification notification : new Manager(context).getNotifications()) {
+        for (Notification notification : new Manager(context).getNotificationsFromSharedPreferences()) {
             if (notification.getOptions().getAndroidChannelId().equals(channelId)) {
                 notification.cancel();
             }
@@ -178,7 +178,7 @@ public final class Manager {
      * Cancel all local notifications.
      */
     public void cancelAll() {
-        for (Notification notification : getNotifications()) {
+        for (Notification notification : getNotificationsFromSharedPreferences()) {
             notification.cancel();
         }
 
@@ -233,14 +233,14 @@ public final class Manager {
     /**
      * List of all local notification.
      */
-    public List<Notification> getNotifications() {
-        return getNotifications(getNotificationIds());
+    public List<Notification> getNotificationsFromSharedPreferences() {
+        return getNotificationsFromSharedPreferences(getNotificationIds());
     }
 
     /**
      * List of local notifications with matching ID.
      */
-    public List<Notification> getNotifications(List<Integer> notificationIds) {
+    public List<Notification> getNotificationsFromSharedPreferences(List<Integer> notificationIds) {
         List<Notification> notifications = new ArrayList<Notification>();
 
         for (int notificationId : notificationIds) {
@@ -257,7 +257,7 @@ public final class Manager {
      * @param type The notification life cycle type
      */
     public List<Notification> getByType(Notification.Type type) {
-        return type == Notification.Type.ALL ? getNotifications() : getNotifications(getNotificationIdsByType(type));
+        return type == Notification.Type.ALL ? getNotificationsFromSharedPreferences() : getNotificationsFromSharedPreferences(getNotificationIdsByType(type));
     }
 
     /**

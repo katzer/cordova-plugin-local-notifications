@@ -494,7 +494,7 @@ public class LocalNotification extends CordovaPlugin {
 
         switch (type) {
             case 0:
-                notifications = getManager().getNotifications();
+                notifications = getManager().getNotificationsFromSharedPreferences();
                 break;
             case 1:
                 notifications = getManager().getByType(SCHEDULED);
@@ -503,7 +503,7 @@ public class LocalNotification extends CordovaPlugin {
                 notifications = getManager().getByType(TRIGGERED);
                 break;
             case 3:
-                notifications = getManager().getNotifications(toList(ids));
+                notifications = getManager().getNotificationsFromSharedPreferences(toList(ids));
                 break;
         }
 

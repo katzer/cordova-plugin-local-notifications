@@ -59,7 +59,7 @@ public class RestoreReceiver extends BroadcastReceiver {
             // The app is granted the SCHEDULE_EXACT_ALARM permission
             intent.getAction().equals(AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED)) {
 
-            List<Notification> notifications = new Manager(context).getNotifications();
+            List<Notification> notifications = new Manager(context).getNotificationsFromSharedPreferences();
             Log.d(TAG, "Restoring notifications, count: " + notifications.size());
 
             for (Notification notification : notifications) {
