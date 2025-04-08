@@ -85,10 +85,23 @@ public final class Options {
     public Options(Context context, JSONObject options) {
         this.context = context;
 
-        // Some properties were renamed or the funtionality was changed
+        // When notifications are scheduled in JavaScript and old properties are set,
+        // they will already be corrected in JavaScript.
+        // If the app was updated with a new plugin version and notifications were scheduled before
+        // they cannot be corrected by JavaScript for the current plugin version when the RestoreReceiver was called,
+        // because Cordova is not initialized yet. Do this in Java instead.
         try {
-            convertPropertiesForVersion110(options);
-            convertPropertiesForVersion111(options);
+            // Check if meta.version is older then current plugin version
+            JSONObject meta = options.getJSONObject("meta");
+
+            if (isVersionOlder(meta.getString("version"), "1.1.8-dev")) {
+                convertPropertiesForVersion110(options);
+                convertPropertiesForVersion111(options);
+                convertPropertiesForVersion118(options);
+                // Update meta.version
+                meta.put("version", "1.1.8-dev");
+                options.put("meta", meta);
+            }
         } catch (JSONException exception) {
             Log.e(TAG, "Could not convert properties for current plugin version", exception);
         }
@@ -114,6 +127,8 @@ public final class Options {
      * This removes old properties and sets it under the new name.
      */
     public void convertPropertiesForVersion110(JSONObject options) throws JSONException {
+        Log.d(TAG, "Converting properties for version 1.1.0");
+        
         // autoClear to androidAutoCancel
         if (options.has("autoClear")) {
             options.put("androidAutoCancel", options.opt("autoClear"));
@@ -307,13 +322,29 @@ public final class Options {
     }
 
     /**
-     *  Converts properties for version 1.1.0. There was one operty renamed.
+     *  Converts properties for version 1.1.0
      */
     public void convertPropertiesForVersion111(JSONObject options) throws JSONException {
+        Log.d(TAG, "Converting properties for version 1.1.1");
+
         // vibrate to androidChannelEnableVibration
         if (options.has("vibrate")) {
             options.put("androidChannelEnableVibration", options.opt("vibrate"));
             options.remove("vibrate");
+        }
+    }
+
+    /**
+     *  Converts properties for version 1.1.8
+     */
+    public void convertPropertiesForVersion118(JSONObject options) throws JSONException {
+        Log.d(TAG, "Converting properties for version 1.1.8");
+
+        // Ensure, there is minimum a trigger.at otherwise it would schedule notifications endless
+        JSONObject trigger = options.getJSONObject("trigger");
+
+        if (!trigger.has("at") && !trigger.has("in") && !trigger.has("every")) {
+            trigger.put("at", new Date().getTime());
         }
     }
 
@@ -902,5 +933,42 @@ public final class Options {
      */
     private String hexWithoutHash(String hex) {
         return (hex.charAt(0) == '#') ? hex.substring(1) : hex;
+    }
+
+    /**
+     * Converts a version string to an int.
+     * @param version
+     * @return
+     */
+    public static int versionStringToInt(String version) {
+        // Split the version string by '.' and '-'
+        // example 1.1.1-dev would converted to 10101
+        String[] parts = version.split("[.\\-]");
+
+        // Version calculation taken from
+        // https://cordova.apache.org/docs/en/12.x-2025.01/guide/platforms/android/index.html#setting-the-version-code
+        return Integer.parseInt(parts[0]) * 10000 + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[2]);
+    }
+
+    /**
+     * Compares two version strings. The strings will be converted to int and
+     * compared by {@link Integer#compare(int, int)}.
+     * @param version1
+     * @param version2
+     * @return -1 if version1 is older than version2, 0 if they are equal and 1 if
+     * version1 is newer than version2.
+     */
+    public static int compareVersion(String version1, String version2) {
+        return Integer.compare(versionStringToInt(version1), versionStringToInt(version2));
+    }
+
+    /**
+     * Compares two version strings.
+     * @param version1
+     * @param version2
+     * @return true if version1 is older than version2.
+     */
+    public static boolean isVersionOlder(String version1, String version2) {
+        return compareVersion(version1, version2) < 0;
     }
 }
