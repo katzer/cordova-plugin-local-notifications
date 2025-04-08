@@ -326,8 +326,7 @@ public class LocalNotification extends CordovaPlugin {
      */
     private void schedule(JSONArray optionsJSONList, CallbackContext callbackContext) {
         for (int index = 0; index < optionsJSONList.length(); index++) {
-            Options options = new Options(getContext(), optionsJSONList.optJSONObject(index));
-            Notification notification = new Notification(getContext(), options);
+            Notification notification = new Notification(getContext(), optionsJSONList.optJSONObject(index));
             if (notification.scheduleNext()) fireEvent("add", notification);
         }
 

@@ -95,10 +95,10 @@ public final class Notification {
      * @param options Parsed notification options.
      * @param builder Pre-configured notification builder.
      */
-    Notification(Context context, Options options) {
+    Notification(Context context, JSONObject options) {
         this.context = context;
-        this.options = options;
-        this.optionsTrigger = options.getTrigger();
+        this.options = new Options(context, options);
+        this.optionsTrigger = this.options.getTrigger();
     }
 
     /**
@@ -431,7 +431,7 @@ public final class Notification {
         
         try {
             // Parse options string to JSONObject
-            Notification notification = new Notification(context, new Options(context, new JSONObject(optionsJSONString)));
+            Notification notification = new Notification(context, new JSONObject(optionsJSONString));
 
             // Restore state of dateTrigger
             // Get occurrence
