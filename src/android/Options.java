@@ -44,11 +44,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.appplant.cordova.plugin.localnotification.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
-import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
-import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
-import de.appplant.cordova.plugin.localnotification.trigger.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 /**
@@ -68,7 +66,6 @@ public final class Options {
 
     // The original JSON object
     private final JSONObject options;
-    private final OptionsTrigger optionsTrigger;
 
     // The application context
     private final Context context;
@@ -107,19 +104,7 @@ public final class Options {
         }
 
         this.options = options;
-
         this.assetUtil = new AssetUtil(context);
-
-        // Trigger property
-        // If trigger.every exists and is an object, a MatchTrigger will be created, otherwise an IntervalTrigger
-        this.optionsTrigger = getTriggerJSON().opt("every") instanceof JSONObject ?
-            // Example: trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
-            new MatchTrigger(this) :
-            // Examples:
-            // trigger: { at: new Date(2017, 10, 27, 15) }
-            // trigger: { in: 1, unit: 'hour' }
-            // trigger: { every: 'day', count: 5 }
-            new IntervalTrigger(this);
     }
 
     /**
@@ -411,8 +396,8 @@ public final class Options {
     /**
      * Gets the trigger property as an Object.
      */
-    public OptionsTrigger getTrigger() {
-        return optionsTrigger;
+    public OptionsTrigger getOptionsTrigger() {
+        return new OptionsTrigger(getTriggerJSON());
     }
 
     public JSONObject getTriggerJSON() {

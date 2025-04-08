@@ -24,16 +24,20 @@ package de.appplant.cordova.plugin.localnotification.trigger;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.Date;
+
 import org.json.JSONObject;
 
 import de.appplant.cordova.plugin.localnotification.Options;
+import de.appplant.cordova.plugin.localnotification.OptionsTrigger;
 
-public abstract class OptionsTrigger {
+public abstract class TriggerHandler {
 
-    public static final String TAG = "OptionsTrigger";
-    
+    public static final String TAG = "TriggerHandler";
+
     Options options;
-    JSONObject triggerJSON;
+    
+    /** Helper for trigger property */
+    OptionsTrigger optionsTrigger;
 
     int occurrence = 0;
 
@@ -50,22 +54,12 @@ public abstract class OptionsTrigger {
     /**
      * @param options Notification options
      */
-    public OptionsTrigger(Options options) {
+    public TriggerHandler(Options options) {
         this.options = options;
-        this.triggerJSON = options.getTriggerJSON();
+        this.optionsTrigger = options.getOptionsTrigger();
         // Set the base date from where to calculate the next trigger
         // This can be set by config or is set to the current date
-        this.baseDate = getFirstTriggerFromConfig() > 0 ? new Date(getFirstTriggerFromConfig()) : new Date();
-    }
-
-    /**
-     * Only for repeating triggers, when the first trigger should occur by config.
-     * @return 0 if there is nothing set in the config
-     */
-    private long getFirstTriggerFromConfig() {
-        if (triggerJSON.has("at")) return getTriggerFirstAt();
-        if (triggerJSON.has("after")) return getTriggerAfter();
-        return 0;
+        this.baseDate = new Date();
     }
 
     public abstract boolean isLastOccurrence();
@@ -90,7 +84,7 @@ public abstract class OptionsTrigger {
 
         Log.d(TAG, "Get next trigger date" +
             ", baseDate=" + baseDate +
-            ", triggerOptions=" + triggerJSON.toString() +
+            ", triggerOptions=" + optionsTrigger.toString() +
             ", occurrence=" + occurrence);
 
         // All occurrences have been run through
@@ -98,7 +92,7 @@ public abstract class OptionsTrigger {
 
         Date nextTriggerDate = calculateNextTrigger(dateToCalendar(baseDate));
 
-        Log.d(TAG, "Next trigger date: " + nextTriggerDate + ", notificaitonId=" + options.getId());
+        Log.d(TAG, "Next trigger date: " + nextTriggerDate + ", notificationId=" + options.getId());
         
         if (nextTriggerDate == null) return null;
 
@@ -147,77 +141,54 @@ public abstract class OptionsTrigger {
         return calendar;
     }
 
-    public long getTriggerAt() {
-        return triggerJSON.optLong("at", 0);
-    }
-
-    public int getTriggerIn() {
-        return triggerJSON.optInt("in", 0);
-    }
-
-    public String getTriggerUnit() {
-        return triggerJSON.optString("unit", null);
-    }
-
-    /**
-     * Only for repeating notifications, when the first notification should be triggered.
-     */
-    public long getTriggerFirstAt() {
-        return triggerJSON.optLong("firstAt", 0);
-    }
-
-    /**
-     * Only for repeating notifications, when the first notification should be triggered.
-     */
-    public long getTriggerAfter() {
-        return triggerJSON.optLong("after", 0);
-    }
-
-    /**
-     * If a repeating notification should be stopped after some occurrences. -1 means infinite.
-     * @return
-     */
-    public int getTriggerCount() {
-        return triggerJSON.optInt("count", -1);
-    }
-
-    /**
-     * Gets trigger.every as string. If trigger.every is an object, it returns null
-     */
-    public String getTriggerEveryAsString() {
-        return triggerJSON.opt("every") instanceof String ? triggerJSON.optString("every") : null;
-    }
-
-    /**
-     * Gets trigger.every as object. If trigger.every is a String, it returns null
-     */
-    public JSONObject getTriggerEveryAsObject() {
-        return triggerJSON.optJSONObject("every");
-    }
-
-    public long getTriggerBefore() {
-        return triggerJSON.optLong("before", 0);
-    }
-
     /**
      * Checks if the trigger date is within the trigger before option, if present
      */
     public boolean isWithinTriggerbefore(Calendar calendar) {
         // Return true, if there is no trigger before option, otherwise compare against it
-        return !triggerJSON.has("before") || calendar.getTimeInMillis() < getTriggerBefore();
+        return !optionsTrigger.has("before") || calendar.getTimeInMillis() < optionsTrigger.getBefore();
     }
 
     /**
-     * If it's a repeating notification. It must not be endless, when it has a count property.
+     * Adds the amount of triggerUnit to the calendar.
+     * @param calendar The calendar to manipulate.
      */
-    public boolean isRepeating() {
-        return triggerJSON.has("every");
-    }
+    public void addInterval(Calendar calendar, String triggerUnit, int amount) {
+        switch (triggerUnit) {
+            case "second":
+                calendar.add(Calendar.SECOND, amount);
+                break;
 
-    /**
-     * If the trigger shall be infinite.
-     */
-    public boolean isRepeatingInfinite() {
-        return isRepeating() && !triggerJSON.has("count");
+            case "minute":
+                calendar.add(Calendar.MINUTE, amount);
+                break;
+
+            case "hour":
+                calendar.add(Calendar.HOUR_OF_DAY, amount);
+                break;
+
+            case "day":
+                calendar.add(Calendar.DAY_OF_YEAR, amount);
+                break;
+
+            case "week":
+                calendar.add(Calendar.WEEK_OF_YEAR, amount);
+                break;
+
+            case "month":
+                calendar.add(Calendar.MONTH, amount);
+                break;
+
+            case "quarter":
+                calendar.add(Calendar.MONTH, amount * 3);
+                break;
+
+            case "year":
+                calendar.add(Calendar.YEAR, amount);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown trigger unit: " + triggerUnit);
+        }
     }
 }

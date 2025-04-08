@@ -27,22 +27,42 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.appplant.cordova.plugin.localnotification.Options;
+import de.appplant.cordova.plugin.localnotification.OptionsTrigger;
 
-public class MatchTrigger extends OptionsTrigger {
+public class TriggerHandlerEvery extends TriggerHandler {
 
-    private JSONObject triggerEvery;
+    public static final String TAG = "TriggerHandlerEvery";
+
+    /** Is null if trigger.every is a JSONObject */
+    private String triggerEveryString;
+
+    /** Is null if trigger.every is a String */
+    private JSONObject triggerEveryJSONObject;
 
     /**
-     * E.g. trigger every: { minute: 10, hour: 9, day: 27, month: 10 }
+     * Example:
+     * trigger: { every: 'day', count: 5 }
+     * trigger every: { minute: 10, hour: 9, day: 27, month: 10 }
      */
-    public MatchTrigger(Options options) {
+    public TriggerHandlerEvery(Options options) {
         super(options);
-        this.triggerEvery = getTriggerEveryAsObject();
+        // trigger.every can be String or JSONObject, only one of them
+        // will be set
+        this.triggerEveryString = optionsTrigger.getEveryAsString();
+        this.triggerEveryJSONObject = optionsTrigger.getEveryAsJSONObject();
+
+        // Change base date if firstAt or after is set
+        if (optionsTrigger.has("firstAt")) {
+            this.baseDate = new Date(optionsTrigger.getFirstAt());
+
+        } else if (optionsTrigger.has("after")) {
+            this.baseDate = new Date(optionsTrigger.getAfter());
+        }
     }
 
     public boolean isLastOccurrence() {
         // Check if trigger.count is exceeded if it is set
-        return triggerJSON.has("count") && occurrence >= getTriggerCount();
+        return optionsTrigger.has("count") && occurrence >= optionsTrigger.getCount();
     }
 
     /**
@@ -55,24 +75,36 @@ public class MatchTrigger extends OptionsTrigger {
 
         Calendar nextCalendar = (Calendar) baseCalendar.clone();
 
-        // Set calendar to trigger.every values like minute: 20, hour: 9, etc.
-        // Returns the next higher Calendar field for calculating the next trigger
-        // If 0 is returned the options are empty or wrong
-        int nextTriggerCalendarFieldToIncrease = setToEveryValues(nextCalendar);
+        // trigger: { every: 'day', count: 5 }
+        if (triggerEveryString != null) {
+            try {
+                addInterval(nextCalendar, triggerEveryString, 1);
+            } catch (IllegalArgumentException exception) {
+                Log.e(TAG, "Error calculating next trigger, trigger unit is wrong: " + exception.getMessage());
+                return null;
+            }
 
-        // Nothing should be increased, options are empty or wrong
-        if (nextTriggerCalendarFieldToIncrease == 0) return null;
+            // trigger every: { minute: 10, hour: 9, day: 27, month: 10 }
+        } else if (triggerEveryJSONObject != null) {
+            // Set calendar to trigger.every values like minute: 20, hour: 9, etc.
+            // Returns the next higher Calendar field for calculating the next trigger
+            // If 0 is returned the options are empty or wrong
+            int nextTriggerCalendarFieldToIncrease = setEveryValues(nextCalendar);
 
-        // If the next trigger is in the past or equal, increase the calendar
-        // The trigger could be set by trigger.every to the past.
-        // For e.g., if the current time is 9:30 and every: {minute: 10} is set, the trigger
-        // would be set to 9:10. To get a next trigger, the hour have to be increased by 1 to 10:10.
-        if (nextCalendar.compareTo(baseCalendar) <= 0) {
-            nextCalendar.add(nextTriggerCalendarFieldToIncrease, 1);
-            // Correct trigger after incrementing it
-            // Example: If weekday was set to monday and a year was added,
-            // the weekday could be changed to another day, set to monday again
-            setToEveryValues(nextCalendar);
+            // Nothing should be increased, options are empty or wrong
+            if (nextTriggerCalendarFieldToIncrease == 0) return null;
+
+            // If the next trigger is in the past or equal, increase the calendar
+            // The trigger could be set by trigger.every to the past.
+            // For e.g., if the current time is 9:30 and every: {minute: 10} is set, the trigger
+            // would be set to 9:10. To get a next trigger, the hour have to be increased by 1 to 10:10.
+            if (nextCalendar.compareTo(baseCalendar) <= 0) {
+                nextCalendar.add(nextTriggerCalendarFieldToIncrease, 1);
+                // Correct trigger after incrementing it
+                // Example: If weekday was set to monday and a year was added,
+                // the weekday could be changed to another day, set to monday again
+                setEveryValues(nextCalendar);
+            }
         }
 
         // Check if the trigger is within the before option
@@ -89,39 +121,39 @@ public class MatchTrigger extends OptionsTrigger {
      * or {@link Calendar.DAY_OF_YEAR} when maximum hour is set.
      * Returns 0 if no or wrong trigger.every values are set.
      */
-    private int setToEveryValues(Calendar calendar) {
+    private int setEveryValues(Calendar calendar) {
         int nextTriggerCalendarFieldToIncrease = 0;
 
         // Set second to 0
         calendar.set(Calendar.SECOND, 0);
 
         // Set minute from options in next calendar
-        if (triggerEvery.has("minute")) {
-            calendar.set(Calendar.MINUTE, triggerEvery.optInt("minute"));
+        if (triggerEveryJSONObject.has("minute")) {
+            calendar.set(Calendar.MINUTE, triggerEveryJSONObject.optInt("minute"));
             // One hour has to be added for the next trigger
             nextTriggerCalendarFieldToIncrease = Calendar.HOUR;
         }
 
         // Set hour from options in next calendar
-        if (triggerEvery.has("hour")) {
-            calendar.set(Calendar.HOUR_OF_DAY, triggerEvery.optInt("hour"));
+        if (triggerEveryJSONObject.has("hour")) {
+            calendar.set(Calendar.HOUR_OF_DAY, triggerEveryJSONObject.optInt("hour"));
             resetTimeIfNotSetByTrigger(calendar);
             // One day has to be added for the next trigger
             nextTriggerCalendarFieldToIncrease = Calendar.DAY_OF_YEAR;
         }
 
         // Set day from options in next calendar
-        if (triggerEvery.has("day")) {
-            calendar.set(Calendar.DAY_OF_MONTH, triggerEvery.optInt("day"));
+        if (triggerEveryJSONObject.has("day")) {
+            calendar.set(Calendar.DAY_OF_MONTH, triggerEveryJSONObject.optInt("day"));
             resetTimeIfNotSetByTrigger(calendar);
             // One month has to be added for the next trigger
             nextTriggerCalendarFieldToIncrease = Calendar.MONTH;
         }
  
         // Set weekday (day of week) from options in next calendar (1 = Monday, 7 = Sunday)
-        if (triggerEvery.has("weekday")) {
+        if (triggerEveryJSONObject.has("weekday")) {
             // Calendar.MONDAY is 2, so we have to add 1 to the weekday
-            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEvery.optInt("weekday"));
+            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEveryJSONObject.optInt("weekday"));
 
             resetTimeIfNotSetByTrigger(calendar);
 
@@ -130,9 +162,9 @@ public class MatchTrigger extends OptionsTrigger {
         }
  
         // Set weekOfMonth from options in next calendar
-        if (triggerEvery.has("weekOfMonth")) {
+        if (triggerEveryJSONObject.has("weekOfMonth")) {
  
-            int weekOfMonth = triggerEvery.optInt("weekOfMonth");
+            int weekOfMonth = triggerEveryJSONObject.optInt("weekOfMonth");
             calendar.set(Calendar.WEEK_OF_MONTH, weekOfMonth);
  
             // Reset hour/minute
@@ -151,8 +183,8 @@ public class MatchTrigger extends OptionsTrigger {
         }
  
         // Set week of year from options in next calendar
-        if (triggerEvery.has("week")) {
-            int weekOfYear = triggerEvery.optInt("week");
+        if (triggerEveryJSONObject.has("week")) {
+            int weekOfYear = triggerEveryJSONObject.optInt("week");
             calendar.set(Calendar.WEEK_OF_YEAR, weekOfYear);
 
             resetTimeIfNotSetByTrigger(calendar);
@@ -169,9 +201,9 @@ public class MatchTrigger extends OptionsTrigger {
         }
  
         // Set month from options in next calendar
-        if (triggerEvery.has("month")) {
+        if (triggerEveryJSONObject.has("month")) {
             // The first month is 0 for Calendar
-            calendar.set(Calendar.MONTH, triggerEvery.optInt("month") - 1);
+            calendar.set(Calendar.MONTH, triggerEveryJSONObject.optInt("month") - 1);
 
             resetTimeIfNotSetByTrigger(calendar);
             resetDayIfNotSetByTrigger(calendar);
@@ -188,9 +220,9 @@ public class MatchTrigger extends OptionsTrigger {
      **/
     private void resetTimeIfNotSetByTrigger(Calendar calendar) {
         // Reset minute if not set
-        if (!triggerEvery.has("minute")) calendar.set(Calendar.MINUTE, 0);
+        if (!triggerEveryJSONObject.has("minute")) calendar.set(Calendar.MINUTE, 0);
         // Reset hour if not set
-        if (!triggerEvery.has("hour")) calendar.set(Calendar.HOUR_OF_DAY, 0);
+        if (!triggerEveryJSONObject.has("hour")) calendar.set(Calendar.HOUR_OF_DAY, 0);
     }
 
     /**
@@ -198,12 +230,12 @@ public class MatchTrigger extends OptionsTrigger {
      * @param calendar
      */
     private void resetDayIfNotSetByTrigger(Calendar calendar) {
-        if (triggerEvery.has("day") || triggerEvery.has("weekday")) return;
+        if (triggerEveryJSONObject.has("day") || triggerEveryJSONObject.has("weekday")) return;
         calendar.set(Calendar.DAY_OF_MONTH, 1);
     }
 
     private void resetWeekdayIfNotSetByTrigger(Calendar calendar) {
-        if (triggerEvery.has("weekday")) return;
+        if (triggerEveryJSONObject.has("weekday")) return;
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
     }
 
@@ -213,12 +245,12 @@ public class MatchTrigger extends OptionsTrigger {
      */
     private void setWeekdayIfInFuture(Calendar calendar) {
         // Not set by options
-        if (!triggerEvery.has("weekday")) return;
+        if (!triggerEveryJSONObject.has("weekday")) return;
 
         // Only set if in future. For weekday 1 is Monday and for Calendar it is 2,
         // so we have to consider it
-        if (calendar.get(Calendar.DAY_OF_WEEK) < 1 + triggerEvery.optInt("weekday")) {
-            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEvery.optInt("weekday"));
+        if (calendar.get(Calendar.DAY_OF_WEEK) < 1 + triggerEveryJSONObject.optInt("weekday")) {
+            calendar.set(Calendar.DAY_OF_WEEK, 1 + triggerEveryJSONObject.optInt("weekday"));
         }
     }
 }

@@ -208,15 +208,19 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification/action" />
 
         <source-file
-            src="src/android/trigger/OptionsTrigger.java"
+            src="src/android/trigger/TriggerHandler.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
-            src="src/android/trigger/IntervalTrigger.java"
+            src="src/android/trigger/TriggerHandlerAt.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
-            src="src/android/trigger/MatchTrigger.java"
+            src="src/android/trigger/TriggerHandlerIn.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
+
+        <source-file
+            src="src/android/trigger/TriggerHandlerEvery.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification/trigger" />
 
         <source-file
@@ -241,6 +245,10 @@
 
         <source-file
             src="src/android/Options.java"
+            target-dir="src/de/appplant/cordova/plugin/localnotification" />
+
+        <source-file
+            src="src/android/OptionsTrigger.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
     </platform>
 

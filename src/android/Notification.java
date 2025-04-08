@@ -54,13 +54,15 @@ import java.util.Set;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
+import de.appplant.cordova.plugin.localnotification.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 import de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver;
 import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
-import de.appplant.cordova.plugin.localnotification.trigger.OptionsTrigger;
+import de.appplant.cordova.plugin.localnotification.trigger.TriggerHandler;
+import de.appplant.cordova.plugin.localnotification.trigger.TriggerHandlerAt;
+import de.appplant.cordova.plugin.localnotification.trigger.TriggerHandlerIn;
+import de.appplant.cordova.plugin.localnotification.trigger.TriggerHandlerEvery;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
-import de.appplant.cordova.plugin.localnotification.trigger.IntervalTrigger;
-import de.appplant.cordova.plugin.localnotification.trigger.MatchTrigger;
 
 /**
  * Wrapper class around OS notification class. Handles basic operations
@@ -85,9 +87,9 @@ public final class Notification {
     private final Options options;
 
     /**
-     * trigger property, can be {@link IntervalTrigger} or {@link MatchTrigger}.
+     * Trigger handler for trigger.at/in/every
      */
-    private OptionsTrigger optionsTrigger;
+    private TriggerHandler triggerhandler;
 
     /**
      * Constructor
@@ -98,7 +100,28 @@ public final class Notification {
     Notification(Context context, JSONObject options) {
         this.context = context;
         this.options = new Options(context, options);
-        this.optionsTrigger = this.options.getTrigger();
+        OptionsTrigger optionsTrigger = this.options.getOptionsTrigger();
+
+        // Handle trigger.at
+        // Example: trigger: { at: new Date(2017, 10, 27, 15) }
+        if (optionsTrigger.getJSON().has("at")) {
+            this.triggerhandler = new TriggerHandlerAt(this.options);
+
+            // Handle trigger.in
+            // Example: trigger: { in: 1, unit: 'hour' }
+        } else if (optionsTrigger.getJSON().has("in")) {
+            this.triggerhandler = new TriggerHandlerIn(this.options);
+
+            // Handle trigger.every
+            // Example:
+            // trigger: { every: 'day', count: 5 }
+            // trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
+        } else if (optionsTrigger.getJSON().has("every")) {
+            this.triggerhandler = new TriggerHandlerEvery(this.options);
+
+        } else {
+            throw new IllegalArgumentException("Trigger not property set");
+        }
     }
 
     /**
@@ -151,7 +174,7 @@ public final class Notification {
      * if the notification was triggered directly, an error occured or there is no next trigger date.
      */
     public boolean scheduleNext() {
-        Date triggerDate = optionsTrigger.getNextTriggerDate();
+        Date triggerDate = triggerhandler.getNextTriggerDate();
 
         // No next trigger date available, all triggers are done
         // The notification will not be removed from SharedPreferences.
@@ -159,9 +182,9 @@ public final class Notification {
         if (triggerDate == null) {
             Log.d(TAG, "No next trigger date available" +
                 ", notificationId=" + options.getId() +
-                ", occurrence=" + optionsTrigger.getOccurrence() +
-                ", triggerDate=" + optionsTrigger.getTriggerDate() +
-                ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+                ", occurrence=" + triggerhandler.getOccurrence() +
+                ", triggerDate=" + triggerhandler.getTriggerDate() +
+                ", triggerBaseDate=" + triggerhandler.getBaseDate() +
                 ", options=" + options);
             
             return false;
@@ -177,7 +200,7 @@ public final class Notification {
      * if the notification was triggered directly or an error occured.
      */
     public boolean schedule() {
-        Date triggerDate = optionsTrigger.getTriggerDate();
+        Date triggerDate = triggerhandler.getTriggerDate();
 
         if (triggerDate == null) {
             Log.e(TAG, "schedule was wrongly called with triggerDate = null, options=" + options);
@@ -211,7 +234,7 @@ public final class Notification {
             ", notificationId: " + options.getId() +
             ", canScheduleExactAlarms: " + canScheduleExactAlarms +
             ", intentAction=" + alarmFiresIntent.getAction() +
-            ", occurrence: " + optionsTrigger.getOccurrence() +
+            ", occurrence: " + triggerhandler.getOccurrence() +
             ", triggerDate: " + triggerDate +
             ", options=" + options);
         
@@ -310,7 +333,7 @@ public final class Notification {
         NotificationManagerCompat.from(context).cancel(LocalNotification.getAppName(context), getId());
 
         // If it is the last occurrence remove the notification from SharedPreferences
-        if (options.getTrigger().isLastOccurrence()) {
+        if (triggerhandler.isLastOccurrence()) {
             removeFromSharedPreferences();
         }
 
@@ -374,20 +397,20 @@ public final class Notification {
     private void storeInSharedPreferences() {
         Log.d(TAG, "Store notification in SharedPreferences" +
             ", notificationId=" + options.getId() +
-            ", occurrence=" + optionsTrigger.getOccurrence() +
-            ", triggerDate=" + optionsTrigger.getTriggerDate() +
-            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+            ", occurrence=" + triggerhandler.getOccurrence() +
+            ", triggerDate=" + triggerhandler.getTriggerDate() +
+            ", triggerBaseDate=" + triggerhandler.getBaseDate() +
             ", options=" + options);
         
         Manager.getSharedPreferences(context).edit()
         // options as JSON string
         .putString(getSharedPreferencesKeyOptions(), options.toString())
         // occurrence for restoration
-        .putInt(getSharedPreferencesKeyOccurrence(), optionsTrigger.getOccurrence())
+        .putInt(getSharedPreferencesKeyOccurrence(), triggerhandler.getOccurrence())
         // trigger base date for restoration
-        .putLong(getSharedPreferencesKeyTriggerBaseDate(), optionsTrigger.getBaseDate().getTime())
+        .putLong(getSharedPreferencesKeyTriggerBaseDate(), triggerhandler.getBaseDate().getTime())
         // calculated triggerDate for restoration
-        .putLong(getSharedPreferencesKeyTriggerDate(), optionsTrigger.getTriggerDate().getTime())
+        .putLong(getSharedPreferencesKeyTriggerDate(), triggerhandler.getTriggerDate().getTime())
         .apply();
     }
 
@@ -397,9 +420,9 @@ public final class Notification {
     private void removeFromSharedPreferences() {
         Log.d(TAG, "Remove notification from SharedPreferences" +
             ", notificationId=" + options.getId() +
-            ", occurrence=" + optionsTrigger.getOccurrence() +
-            ", triggerDate=" + optionsTrigger.getTriggerDate() +
-            ", triggerBaseDate=" + optionsTrigger.getBaseDate() +
+            ", occurrence=" + triggerhandler.getOccurrence() +
+            ", triggerDate=" + triggerhandler.getTriggerDate() +
+            ", triggerBaseDate=" + triggerhandler.getBaseDate() +
             ", options=" + options);
 
         Manager.getSharedPreferences(context).edit()
@@ -446,7 +469,7 @@ public final class Notification {
             long triggerTime = Manager.getSharedPreferences(context).getLong(
                 notification.getSharedPreferencesKeyTriggerDate(), 0);
             
-            OptionsTrigger optionsTrigger = notification.getOptions().getTrigger();
+            TriggerHandler triggerHandler = notification.getTriggerHandler();
 
             // The saving of occurrence, triggerBaseDate and triggerDate exists since version 1.1.4
             // Before only the options were saved
@@ -454,18 +477,18 @@ public final class Notification {
             // Durring the development of version 1.1.4, first only the occurrence was saved,
             // later also the triggerBaseDate and triggerDate, so check this also
             if (occurrence == 0 || triggerBaseTime == 0 || triggerTime == 0) {
-                optionsTrigger.getNextTriggerDate();
+                triggerHandler.getNextTriggerDate();
 
                 // Restore the state of the trigger date
             } else {
-                optionsTrigger.restoreState(occurrence, new Date(triggerBaseTime), new Date(triggerTime));
+                triggerHandler.restoreState(occurrence, new Date(triggerBaseTime), new Date(triggerTime));
             }
             
             Log.d(TAG, "Restored trigger date" +
                 ", notificationId=" + notificationId +
-                ", occurrence=" + optionsTrigger.getOccurrence() +
-                ", triggerDate=" + optionsTrigger.getTriggerDate() +
-                ", triggerBaseDate=" + optionsTrigger.getBaseDate());
+                ", occurrence=" + triggerHandler.getOccurrence() +
+                ", triggerDate=" + triggerHandler.getTriggerDate() +
+                ", triggerBaseDate=" + triggerHandler.getBaseDate());
 
             return notification;
         } catch (JSONException exception) {
@@ -521,6 +544,10 @@ public final class Notification {
      */
     public static String getSharedPreferencesKeyOptions(int notificationId) {
         return "" + notificationId;
+    }
+
+    public TriggerHandler getTriggerHandler() {
+        return triggerhandler;
     }
 
     /**
