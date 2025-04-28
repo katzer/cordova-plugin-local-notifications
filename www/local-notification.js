@@ -321,12 +321,31 @@ exports.canScheduleExactAlarms = function (callback, scope) {
  * @param {Object} args Optional, can be {skipPermission: true} to skip the permission check
  */
 exports.schedule = function (options, callback, scope, args) {
-    const optionsList = exports._toArray(options);
+    let optionsList = exports._toArray(options);
 
     for (const options of optionsList) {
         // Correct renamed properties and set defaults
         exports._correctOptions(options, true);
     }
+
+    // Filter out notifications where the trigger time is in the past
+    // On iOS notifications are ignored if the trigger time is in the past, so filter
+    // them already here out
+    optionsList = optionsList.filter((option) => {
+        // No trigger.at set, don't filter out
+        if (!option.trigger || !option.trigger.at) return true;
+
+        // Calculate difference to now
+        const triggerAtDiff = option.trigger.at - new Date().getTime();
+
+        // Trigger time is in the future don't filter out
+        if (triggerAtDiff > 0) return true;
+
+        // Trigger time is in the past, filter out
+        console.warn("Notification trigger time is in the past, ignoring it, options=", JSON.stringify(option));
+
+        return false;
+    });
 
     // Skip permission check if requested and schedule directly
     if (args && args.skipPermission) {
@@ -919,13 +938,26 @@ exports._prepareTrigger = function (options) {
 
     if (trigger.type == "calendar") {
         // Set default trigger time at now if nothing is set
-        if (!trigger.at && !trigger.in && !trigger.every) trigger.at = new Date();
+        if (!trigger.at && !trigger.in && !trigger.every) trigger.at = new Date().getTime();
 
         // Convert dates to numbers
         if (trigger.at) trigger.at = exports._dateToNumber(trigger.at);
         if (trigger.firstAt) trigger.firstAt = exports._dateToNumber(trigger.firstAt);
         if (trigger.before) trigger.before = exports._dateToNumber(trigger.before);
         if (trigger.after) trigger.after = exports._dateToNumber(trigger.after);
+
+        // On iOS notifications will be ignored if the trigger time is in the past
+        // Correct trigger.at if trigger time is maximum 5 seconds in the past
+        if (trigger.at) {
+            // Calculate the difference to now
+            const triggerAtDiff = trigger.at - new Date().getTime();
+
+            // Only correct if maximum 5 seconds in the past
+            if (triggerAtDiff > -5000 && triggerAtDiff <= 0) {
+                // Set it a little bit in the future so it will be definitely triggered
+                trigger.at = new Date().getTime() + 5000;
+            }
+        }
 
         //  Warning that trigger.count is not supported on iOS
         if (device.platform == 'iOS' && trigger.count) {
