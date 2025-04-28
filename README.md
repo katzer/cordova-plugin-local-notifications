@@ -98,6 +98,10 @@ A notification will be always showed in the notification center like on Android.
 #### Android
 Notifications with an old `trigger.at` date will be shown when you schedule them. Before they were ignored.
 
+### Updates in Version 1.1.8
+
+Notifications with `trigger.at` date more than 5 seconds in the past will be ignored. iOS did always ignore passed notifications.
+
 ## Basics
 
 The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.

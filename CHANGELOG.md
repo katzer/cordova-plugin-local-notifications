@@ -4,6 +4,7 @@
 
 ### Android
 
+- Bugfix: Handle passed `trigger.at` dates: If `trigger.at` lays more then 5 seconds in the past, ignore it, otherwise keep sure, it will be posted on iOS and Android by setting the trigger time 5 seconds in the future.
 - Bugfix: Open app when notification clicked. The app was not opened anymore, when a notification was clicked
 - Bugfix: Already posted notifications could not be updated
 - Bugfix: Already posted notifications will be shown again, when the app updates or the device reboots.
