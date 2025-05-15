@@ -43,6 +43,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static android.os.Build.VERSION.SDK_INT;
@@ -64,6 +65,8 @@ public final class Manager {
     public static final String TAG = "Manager";
     
     private Context context;
+
+    private static final Random randomGenerator = new Random();
 
     public Manager(Context context) {
         this.context = context;
@@ -314,6 +317,11 @@ public final class Manager {
     public static void grantUriPermission(Context context, Uri uri) {
         context.grantUriPermission("com.android.systemui", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
-}
 
-// codebeat:enable[TOO_MANY_FUNCTIONS]
+    /**
+     * Gets a random request code between 1 and Integer.MAX_VALUE.
+     */
+    public static int getRandomRequestCode() {
+        return randomGenerator.nextInt(Integer.MAX_VALUE) + 1;
+    }
+}

@@ -777,44 +777,46 @@ public final class Notification {
         clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // Create the PendingIntent
-        PendingIntent clickPendingIntent = PendingIntent.getActivity(
-            context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context,
+            // Each click intent have to get a unique request code, so they don't overwrite each other
+            Manager.getRandomRequestCode(),
+            clickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         builder.setContentIntent(clickPendingIntent);
     }
 
     /**
-     * Add all actions to the builder if there are any actions.
+     * Add actions to the builder if there are any.
      */
     private void addActions(NotificationCompat.Builder builder) {
         Action[] actions = options.getActions();
         if (actions == null) return;
 
         for (Action action : actions) {
-            NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
-                action.getIcon(), action.getTitle(), getPendingIntentForAction(action));
-
-            if (action.isWithInput()) {
-                actionBuilder.addRemoteInput(action.getInput());
-            }
-
-            builder.addAction(actionBuilder.build());
+            addAction(builder, action);
         }
     }
 
     /**
-     * Returns a new PendingIntent for a notification action, including the
-     * action's identifier.
-     *
-     * @param action Notification action needing the PendingIntent
+     * Add an action to the builder.
      */
-    private PendingIntent getPendingIntentForAction(Action action) {
+    private void addAction(NotificationCompat.Builder builder, Action action) {
         Intent actionClickIntent = new Intent(context, NotificationClickActivity.class)
-                .putExtra(Notification.EXTRA_ID, options.getId())
-                .putExtra(Action.EXTRA_ID, action.getId())
-                .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            .putExtra(Notification.EXTRA_ID, options.getId())
+            .putExtra(Action.EXTRA_ID, action.getId())
+            .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        return PendingIntent.getActivity(context, 0, actionClickIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent actionClickPendingIntent = PendingIntent.getActivity(context,
+            // Each action intent have to get a unique request code, so they don't overwrite each other
+            Manager.getRandomRequestCode(),
+            actionClickIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
+                action.getIcon(), action.getTitle(), actionClickPendingIntent);
+
+        if (action.isWithInput()) actionBuilder.addRemoteInput(action.getInput());
+
+        builder.addAction(actionBuilder.build());
     }
 }

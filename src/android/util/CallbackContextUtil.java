@@ -23,8 +23,9 @@
 package de.appplant.cordova.plugin.localnotification.util;
 
 import android.util.Log;
+import de.appplant.cordova.plugin.localnotification.Manager;
+
 import java.util.HashMap;
-import java.util.Random;
 
 import org.apache.cordova.CallbackContext;
 
@@ -61,11 +62,11 @@ public final class CallbackContextUtil {
     }
 
     /**
-     * Store a {@link CallbackContext} for later retrieval and return a random request code for which it is stored.
+     * Store a {@link CallbackContext} for later retrieval and return a random request code.
      * @return Random request code for the stored context.
      */
     public static int storeContext(CallbackContext callbackContext) {
-        return storeContext(callbackContext, getRandomRequestCode());
+        return storeContext(callbackContext, Manager.getRandomRequestCode());
     }
 
     /**
@@ -83,16 +84,5 @@ public final class CallbackContextUtil {
     public static void clearContext(int requestCode) {
         if (!callbackContexts.containsKey(requestCode)) return;
         callbackContexts.remove(requestCode);
-    }
-
-    /**
-     * Generate a random request code between 1 and 1000000 which is not already in use.
-     */
-    private static Integer getRandomRequestCode() {
-        do {
-            int requestCode = new Random().nextInt(1000000) + 1;
-            // Only return, if the request code is not already in use
-            if (!callbackContexts.containsKey(requestCode)) return requestCode;
-        } while (true);
     }
 }
