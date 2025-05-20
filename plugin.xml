@@ -79,6 +79,15 @@
 
     <!-- android -->
     <platform name="android">
+        <!--
+          Enable Cordova-Android's Kotlin support
+          Note: This is only needed for Cordova-Android 13.0.0 and lower.
+          For cordova-android 14.0.0 this can be removed.
+        -->
+        <config-file target="config.xml" parent="/*">
+            <preference name="GradlePluginKotlinEnabled" value="true" />
+        </config-file>
+
         <framework src="src/android/build/localnotification.gradle" custom="true" type="gradleReference"/>
 
         <preference name="ANDROIDX_CORE_VERSION" default="1.12.0"/>
