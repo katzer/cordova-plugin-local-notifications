@@ -111,6 +111,10 @@ public final class Action {
     public RemoteInput buildRemoteInput() {
         return new RemoteInput.Builder(getId())
                 .setLabel(actionOptionsJSON.optString("emptyText"))
+                // Specifies whether the user can provide arbitrary text values
+                // The default is true. If you specify false, you must either provide a non-null and
+                // non-empty array to setChoices, or enable a data result in setAllowDataType.
+                // Otherwise an IllegalArgumentException is thrown
                 .setAllowFreeFormInput(actionOptionsJSON.optBoolean("editable", true))
                 .setChoices(getChoices())
                 .build();
