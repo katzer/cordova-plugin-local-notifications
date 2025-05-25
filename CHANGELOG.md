@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.1.8-dev
+## Version 1.1.8 (25.05.2025)
 
 ### Android
 
@@ -15,6 +15,7 @@
   - Thanks [iamAdamGoodman](https://github.com/iamAdamGoodman) noting that `trigger.at` was not functioning after adding these changes in issue [2070](https://github.com/katzer/cordova-plugin-local-notifications/issues/2070)
   - Throw exception if the `trigger` property is set wrong
 - Bugfix: Use `cordova-android` default Kotlin support mechanism. The plugin has bypassed `cordova-android` default Kotlin support mechanism by defining `kotlin-bom` in `localnotification.gradle`. To enable Cordova-Android's Kotlin support, the preference flag `GradlePluginKotlinEnabled` is set to true in `plugin.xml` and `kotlin-bom` was removed. Fixes https://github.com/katzer/cordova-plugin-local-notifications/issues/2076
+- Set default notification id to 1 instead of 0
 - Code refactoring
   - Renamed `DateTrigger.java` to `TriggerHandler.java`
   - Added `OptionsTrigger` which is a helper to read the trigger properties

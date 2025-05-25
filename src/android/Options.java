@@ -91,12 +91,12 @@ public final class Options {
             // Check if meta.version is older then current plugin version
             JSONObject meta = options.getJSONObject("meta");
 
-            if (isVersionOlder(meta.getString("version"), "1.1.8-dev")) {
+            if (isVersionOlder(meta.getString("version"), "1.1.8")) {
                 convertPropertiesForVersion110(options);
                 convertPropertiesForVersion111(options);
                 convertPropertiesForVersion118(options);
                 // Update meta.version
-                meta.put("version", "1.1.8-dev");
+                meta.put("version", "1.1.8");
                 options.put("meta", meta);
             }
         } catch (JSONException exception) {
