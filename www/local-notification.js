@@ -29,7 +29,7 @@ exports._commonOptions = {
     // Custom data for the notification. Can be used, when the notification
     // is send back to the app, e.g. by clicking on it.
     data: null,
-    id: 0,
+    id: 1,
     launch: true,
     silent: false,
     text: "",

@@ -100,24 +100,28 @@ Notifications with an old `trigger.at` date will be shown when you schedule them
 
 ### Updates in Version 1.1.8
 
-Notifications with `trigger.at` date more than 5 seconds in the past will be ignored. iOS did always ignore passed notifications.
+- Notifications with `trigger.at` date more than 5 seconds in the past will be ignored. iOS did always ignore passed notifications.
+- If no [id](#property-id) of a notification is set, it will default to `1` instead of `0`.
 
 ## Basics
 
-The plugin creates the object `cordova.plugins.notification.local` and is accessible after *deviceready* has been fired.
+The plugin creates the object `cordova.plugins.notification.local` and is accessible after the `deviceready` event has been fired.
+
+You can schedule a single notification as follows:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'My first notification',
     text: 'Thats pretty easy...'
 });
 ```
 
-<p style="text-align: center;">
-    <img width="320" src="images/ios-notification.png">
-</p>
+<img width="320" src="images/ios-notification.png">
 
-The plugin allows to schedule multiple notifications at once.
+You have always to set an unique ID for every notification. The plugin does not automatically set an ID. If you do not set an ID, it will default to `1`. If you reuse an ID of a previous scheduled notification, the previous one will be canceled.
+
+The plugin allows to schedule multiple notifications at once:
 
 ```js
 cordova.plugins.notification.local.schedule([
@@ -230,6 +234,7 @@ Then you have to assign the defined actions when scheduling a notification:
 
 ```javascript
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Justin Rhyss',
     text: 'Do you want to go see a movie tonight?',
     actions: 'YES_NO_CATEGORY'
@@ -264,6 +269,7 @@ Schedule with registered actions:
 
 ```javascript
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Justin Rhyss',
     text: 'Do you want to go see a movie tonight?',
     actions: 'REPLY_NO_CATEGORY'
@@ -324,6 +330,7 @@ Trigger at a fixed date:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Design team meeting',
     text: '3:00 - 4:00 PM',
     trigger: { at: new Date(2017, 10, 27, 15) }
@@ -339,6 +346,7 @@ Relative from now:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Design team meeting',
     trigger: { in: 1, unit: 'hour' }
 });
@@ -355,6 +363,7 @@ Repeat relative from now:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Design team meeting',
     trigger: { every: 'day', count: 5 } // count is only supported by Android
 });
@@ -371,6 +380,7 @@ Trigger every time the date matches:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Happy Birthday!!!',
     trigger: { every: { month: 10, day: 27, hour: 9, minute: 0 } }
 });
@@ -390,6 +400,7 @@ To trigger when the user enters a region:
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Welcome to our office',
     trigger: {
         type: 'location',
@@ -415,6 +426,7 @@ Notifications can include an animated progress indicator that shows users the st
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'Sync in progress',
     text: 'Copied 2 of 10 files',
     androidProgressBar: {
@@ -450,6 +462,7 @@ Split the text by line breaks if the message comes from a single person and just
 
 ```js
 cordova.plugins.notification.local.schedule({
+    id: 1,
     title: 'The Big Meeting',
     text: '4:15 - 5:15 PM\nBig Conference Room',
     androidSmallIcon: 'res://ic_menu_my_calendar',
@@ -524,11 +537,35 @@ Your app can present multiple notifications as a single group:
 
 ```js
 cordova.plugins.notification.local.schedule([
-    { id: 0, title: 'Design team meeting', ... },
-    { id: 1, androidSummary: 'me@gmail.com', androidGroup: 'email', androidGroupSummary: true },
-    { id: 2, title: 'Please take all my money', ... androidGroup: 'email' },
-    { id: 3, title: 'A question regarding this plugin', ... androidGroup: 'email' },
-    { id: 4, title: 'Wellcome back home', ... androidGroup: 'email' }
+    {
+        id: 1,
+        title: 'Design team meeting',
+        ...
+    },
+    {
+        id: 2,
+        androidSummary: 'me@gmail.com',
+        androidGroup: 'email',
+        androidGroupSummary: true
+    },
+    {
+        id: 3,
+        title: 'Please take all my money',
+        ...,
+        androidGroup: 'email'
+    },
+    {
+        id: 4,
+        title: 'A question regarding this plugin',
+        ...,
+        androidGroup: 'email'
+    },
+    {
+        id: 5,
+        title: 'Wellcome back home',
+        ...,
+        androidGroup: 'email'
+    }
 ]);
 ```
 
@@ -959,7 +996,7 @@ These properties can be used on all platforms, but some may behave differently o
 | [attachments](#property-attachments) | `[]`              | List of resources, to attach to the notification. |
 | [badgeNumber](#property-badgenumber) | Android: `1`, iOS: `-1` | Sets the badge for the application. The behaviour differs on Android and iOS.  |
 | data                   | `null`            | Custom data for the notification. Can be used, when the notification is send back to the app, e.g. by clicking on it. |
-| id                     | `0`               | Id of the notification as number. |
+| [id](#property-id)     | `1`               | ID of a notification as number. |
 | launch                 | `true`            | If a click on the notification should launch the app. |
 | [priority](#property-priority) | `0` (=PRIORITY_DEFAULT) | Deprecated. Use [androidChannelImportance](#property-androidchannelimportance), [androidAlarmType](#property-androidalarmtype) and [androidAllowWhileIdle](#property-androidallowwhileidle) |
 | silent                | `false`            | iOS: Don't show a notification, make no sound, no vibration, when app is in foreground. Android: Don't show a notification (Does not create a Builder. Must be tested if that works) |
@@ -1212,6 +1249,11 @@ Sets [UNMutableNotificationContent#badge](https://developer.apple.com/documentat
 You can clear the badge with the function [iOSClearBadge](#iosclearbadge).
 
 The badge will also be cleared, if you call `clearAll` or `cancelAll`.
+
+#### Property `id`
+Default: `1`
+
+ID of a notification as number. This has to be unique for every notification. If you do not set an ID, it will default to 1. If you use an ID of a previous scheduled notification again, the previous one will be canceled.
 
 #### Property `iOSForeground`
 Default: `true`
