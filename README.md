@@ -300,6 +300,9 @@ cordova.plugins.notification.local.schedule({
 | :----------- | :----------- |
 | <img width="240" src="images/ios-actions-with-input.png"> | <img width="240" src="images/android-actions-with-input-not-clicked.png"><br><img width="240" src="images/android-actions-with-input-clicked.png"> |
 
+OS native documentation:
+- Android: https://developer.android.com/develop/ui/views/notifications/build-notification#reply-action
+
 ### Handle action events
 You can subscribe to an action event.
 
