@@ -108,7 +108,7 @@ public final class Action {
     /**
      * Gets the input config in case of the action is of type input.
      */
-    public RemoteInput getInput() {
+    public RemoteInput buildRemoteInput() {
         return new RemoteInput.Builder(getId())
                 .setLabel(actionOptionsJSON.optString("emptyText"))
                 .setAllowFreeFormInput(actionOptionsJSON.optBoolean("editable", true))

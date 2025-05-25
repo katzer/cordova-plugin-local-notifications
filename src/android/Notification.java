@@ -815,7 +815,7 @@ public final class Notification {
         NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
                 action.getIcon(), action.getTitle(), actionClickPendingIntent);
 
-        if (action.isWithInput()) actionBuilder.addRemoteInput(action.getInput());
+        if (action.isWithInput()) actionBuilder.addRemoteInput(action.buildRemoteInput());
 
         builder.addAction(actionBuilder.build());
     }
