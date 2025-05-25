@@ -125,8 +125,14 @@ The plugin allows to schedule multiple notifications at once:
 
 ```js
 cordova.plugins.notification.local.schedule([
-    { id: 1, title: 'My first notification' },
-    { id: 2, title: 'My first notification' }
+    {
+        id: 1,
+        title: 'My first notification'
+    },
+    {
+        id: 2,
+        title: 'My second notification'
+    }
 ]);
 ```
 
@@ -169,7 +175,7 @@ If your app runs on Android 12 and newer and the user doesn't interact with your
 The documentation says that permissions are also revoked, but testing the hibernation behavior on an Android 15 emulator showed, that the app keeps the permission to post notifications.
 
 #### Notes
-- Android introduced this behavior in Android 11 and additionally backported this to Android 6 to 10 through the Google Play Store but only the permissions are revoked and not the pending notifications. Because permissions are only needed since Android 13, this does not affect this plugin. Since Android 12 notifications are also canceld besides revoking the permissions.
+- Android introduced this behavior in Android 11 and additionally backported this to Android 6 to 10 through the Google Play Store but only the permissions are revoked and not the pending notifications. Because permissions are only needed since Android 13, this does not affect this plugin. Since Android 12 notifications are also canceled besides revoking the permissions.
 - You can manually test the hibernation behavior, see [App hibernation > Manually invoke hibernation behavior](https://developer.android.com/topic/performance/app-hibernation#manually-invoke).
 - To see a complete list, what counts as app usage and what not, see [App hibernation > App usage](https://developer.android.com/topic/performance/app-hibernation#app-usage).
 - 3 months are based on executing `adb shell device_config get permissions \ auto_revoke_unused_threshold_millis2` which will return `7776000000` milliseconds on an Android 15 Emulator which are nearly 3 months (~2.96 months).
@@ -211,7 +217,7 @@ Android removes all alarms when the app is updated. The plugin reschedules all a
 Android removes all alarms when the device reboots. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_BOOT_COMPLETED](https://developer.android.com/reference/android/content/Intent#ACTION_BOOT_COMPLETED), but only after the device has been unlocked.
 
 #### User grants exact alarms
-If you use [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) for scheduling exact alarms and the user permits the permission in the "Alarms & Reminders", inexact alarms will be rescheduled as exact alarms. This is done by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED](https://developer.android.com/reference/android/app/AlarmManager#ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED). This action will not be called if the user revokes the permission. All exact alarms will be canceld then.
+If you use [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) for scheduling exact alarms and the user permits the permission in the "Alarms & Reminders", inexact alarms will be rescheduled as exact alarms. This is done by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED](https://developer.android.com/reference/android/app/AlarmManager#ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED). This action will not be called if the user revokes the permission. All exact alarms will be canceled then.
 
 [](README.md#android-15-alarms-get-canceled-on-force-stop)
 #### Android 15: Alarms get canceled on `Force stop`
@@ -225,8 +231,14 @@ You can add actions, which can be a button or an input to a notification. Before
 
 ```javascript
 cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
-    { id: 'YES_ACTION', title: 'Yes' },
-    { id: 'NO_ACTION',  title: 'No'  }
+    {
+        id: 'YES_ACTION',
+        title: 'Yes'
+    },
+    {
+        id: 'NO_ACTION',
+        title: 'No'
+    }
 ]);
 ```
 
@@ -260,8 +272,16 @@ Register actions:
 
 ```javascript
 cordova.plugins.notification.local.addActions('REPLY_NO_CATEGORY', [
-    { id: 'REPLY_ACTION', type: 'input', title: 'Reply', emptyText: 'Type message',},
-    { id: 'NO_ACTION', title: 'No'}
+    {
+        id: 'REPLY_ACTION',
+        type: 'input',
+        title: 'Reply',
+        emptyText: 'Type message'
+    },
+    {
+        id: 'NO_ACTION',
+        title: 'No'
+    }
 ]);
 ```
 
@@ -864,7 +884,7 @@ This is only available, if [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-perm
 
 This method will not wait for the user to be returned back to the app. For this, the `resume`-event can be used. The callback will just return `OK`, after starting the activity.
 - If the user grants permission, already inexact scheduled notifications will be rescheduled as exact alarms.
-- If exact alarms were already granted and the user revokes it, the app will be killed and all scheduled notifications will be canceld. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
+- If exact alarms were already granted and the user revokes it, the app will be killed and all scheduled notifications will be canceled. The app have to schedule the notifications as inexact alarms again, when the app is opened the next time, see https://developer.android.com/develop/background-work/services/alarms/schedule#using-schedule-exact-permission.
 - On Android older then 12, it will just call the `successCallback`, without doing anything. 
 
 ### openManageUnusedAppRestrictions
