@@ -39,8 +39,12 @@ exports._commonOptions = {
     sound: 'default',
     // If empty, the app name will be used
     title: "",
-    // type can be 'calendar' or 'location'
-    trigger: {type: "calendar"}
+    // Default will be set on _prepareTrigger if nothing is set
+    trigger: null,
+    meta: {
+        plugin:  'cordova-plugin-local-notification',
+        version: '1.1.9-dev'
+    }
 }
 
 exports._androidAlarmTypes = {
@@ -180,15 +184,6 @@ exports._deprecatedProperties = {
     wakeup: {newPropertyKey: 'androidWakeUpScreen', since: "1.1.0"},
 }
 
-// Defaults
-exports._defaults = {
-    ...exports._commonOptions,
-    meta: {
-        plugin:  'cordova-plugin-local-notification',
-        version: '1.1.9-dev'
-    }
-};
-
 /**
  * Setting some things before 'deviceready' event has fired.
  */
@@ -196,20 +191,12 @@ channel.onCordovaReady.subscribe(function () {
     channel.onCordovaInfoReady.subscribe(function () {
         console.log("LocalNotification: onCordovaInfoReady");
 
-        // Merge defaults for Android
-        if (device.platform == 'Android') {
-            exports._defaults = {
-                ...exports._defaults,
-                ...exports._androidSpecificOptions
-            }
-
-            // Merge defaults for iOS
-        } else if (device.platform == 'iOS') {
-            exports._defaults = {
-                ...exports._defaults,
-                ...exports._iOSSpecificOptions
-            }
-        }
+        // Set defaults
+        exports._defaults = {
+            ...exports._commonOptions,
+            // Platform specific defaults
+            ...(device.platform == 'Android' ? exports._androidSpecificOptions : exports._iOSSpecificOptions)
+        };
 
         exports._setLaunchDetails();
     });
@@ -266,8 +253,8 @@ exports.setDefaults = function (newDefaults) {
  * @param {Object} scope The callback function's scope
  */
 exports.createChannel = function (options, callback, scope) {
-    // Correct renamed properties and set defaults
-    exports._correctOptions(options, true);
+    options = exports._optionsWithDefaults(options)
+    exports._prepareOptions(options);
     exports._exec('createChannel', options, callback, scope);
 };
 
@@ -315,34 +302,33 @@ exports.canScheduleExactAlarms = function (callback, scope) {
 
 /**
  * Schedule notifications
- * @param {Object|Array} options The notifications to schedule
+ * @param {Object|Array} optionsArg The notifications to schedule
  * @param {Function} callback
  * @param {Object} scope The callback function's scope.
  * @param {Object} args Optional, can be {skipPermission: true} to skip the permission check
  */
-exports.schedule = function (options, callback, scope, args) {
-    let optionsList = exports._toArray(options);
+exports.schedule = function (optionsArg, callback, scope, args) {
+    let optionsList = exports._toArray(optionsArg);
 
-    for (const options of optionsList) {
-        // Correct renamed properties and set defaults
-        exports._correctOptions(options, true);
+    for (let i = 0; i < optionsList.length; i++) {
+        let options = exports._optionsWithDefaults(optionsList[i])
+        exports._prepareOptions(options);
+        // Store back the prepared options
+        optionsList[i] = options;
     }
 
     // Filter out notifications where the trigger time is in the past
     // On iOS notifications are ignored if the trigger time is in the past, so filter
     // them already here out
-    optionsList = optionsList.filter((option) => {
-        // No trigger.at set, don't filter out
-        if (!option.trigger || !option.trigger.at) return true;
-
+    optionsList = optionsList.filter((options) => {
         // Calculate difference to now
-        const triggerAtDiff = option.trigger.at - new Date().getTime();
+        const triggerAtDiff = options.trigger.at - new Date().getTime();
 
         // Trigger time is in the future don't filter out
         if (triggerAtDiff > 0) return true;
 
         // Trigger time is in the past, filter out
-        console.warn("Notification trigger time is in the past, ignoring it, options=", JSON.stringify(option));
+        console.warn("Notification trigger time is in the past, ignoring it, options=", JSON.stringify(options));
 
         return false;
     });
@@ -381,7 +367,7 @@ exports.update = function (options, callback, scope, args) {
         // Correct renamed properties and don't merge defaults
         // The defaults are not merged, because otherwise, some values
         // could be set back to a default value
-        exports._correctOptions(options, false);
+        exports._prepareOptions(options);
     }
 
     // Skip permission check if requested and update directly
@@ -727,32 +713,35 @@ exports.getKey = function (object, value) {
  **/
 
 /**
- * Correct renamed propertie and merge defaults optionally, also do the following:
- * - correct options to their required type
- * - warn about wrong smallIcon uri
- * - log unknown and deprecated properties
+ * Adds defaults to options if not present.
+ * This will not merge options objects like trigger.
+ * They will just be overwritten by the user options and not merged.
+ * @param {*} options
+ * @returns {Object} User options with defaults
+ */
+exports._optionsWithDefaults = function (options) {
+    // Create a deep copy of defaults, so objects like trigger
+    // are copied and not referenced and changes on them would
+    // not impact the defaults
+    return {...exports._deepCopy(exports._defaults), ...options}
+}
+
+/**
+ * - Correct renamed properties
+ * - Correct options to their required type
+ * - Warn about wrong smallIcon uri
+ * - Log unknown and deprecated properties
  * - Remove null values, because of a Android bug
  * @param {Object} options The options to convert
  */
-exports._correctOptions = function (options, mergeDefaults = false) {
+exports._prepareOptions = function (options) {
     exports._handleDeprecatedProperties(options)
-
-    // Warn about wrong androidSmallIcon uri
-    if (options.androidSmallIcon && !options.androidSmallIcon.match(/^res:/)) {
-        console.warn('Property "androidSmallIcon" must be of kind res://...')
-    }
 
     // Convert custom data to string
     options.data = JSON.stringify(options.data)
 
     // No auto cancelling, if the notification is ongoing
     if (options.androidOngoing) options.androidAutoCancel = false
-
-    if (mergeDefaults) {
-        for (const key in this._defaults) {
-            if (options[key] === undefined) options[key] = exports._defaults[key];
-        }
-    }
 
     exports._prepareTrigger(options);
     exports._prepareActions(options);
@@ -929,12 +918,10 @@ exports._prepareActions = function (options) {
  * @return {Object} Converted options
  */
 exports._prepareTrigger = function (options) {
-    let trigger = options.trigger;
+    let trigger = options.trigger || {};
 
-    // trigger type missing, set one
-    if (!trigger.type) {
-        trigger.type = trigger.center ? "location" : "calendar";
-    }
+    // Set trigger type
+    if (!trigger.type) trigger.type = trigger.center ? "location" : "calendar";
 
     if (trigger.type == "calendar") {
         // Set default trigger time at now if nothing is set
@@ -956,6 +943,7 @@ exports._prepareTrigger = function (options) {
             if (triggerAtDiff > -5000 && triggerAtDiff <= 0) {
                 // Set it a little bit in the future so it will be definitely triggered
                 trigger.at = new Date().getTime() + 5000;
+                console.log("Correct trigger.at 5 seconds in the future because it was a bit in the past, new trigger.at=" + trigger.at);
             }
         }
 
@@ -971,6 +959,8 @@ exports._prepareTrigger = function (options) {
         trigger.radius = trigger.radius || 5;
         trigger.single = !!trigger.single;
     }
+
+    options.trigger = trigger;
 
     return options;
 };

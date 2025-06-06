@@ -1026,7 +1026,7 @@ These properties can be used on all platforms, but some may behave differently o
 | text                  | `""`               | Text of the notification. Android features: 1. If the text contains line breaks (`\n`) the notification style [NotificationCompat.InboxStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.InboxStyle) will be used. 2. If the text is longer then 44 chars, the notifications style [NotificationCompat.BigTextStyle](https://developer.android.com/reference/androidx/core/app/NotificationCompat.BigTextStyle) will be used. |
 | [sound](#property-sound) | `default`          | Sets the sound of a notification. On iOS it also turns on/off the vibration. |
 | title                 | `""` (Sets the app name)               | Title of the notification. Has to be a String. If it is empty, the app name will be used. |
-| [trigger](#triggers)  | `{type : "calendar"}`| Notifications may trigger immediately or depend on calendar or location. |
+| [trigger](#triggers)  | `{at: new Date(), type : "calendar"}`| Notifications may trigger depend on time or location (iOS only) |
 
 ### Android properties
 
