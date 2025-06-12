@@ -1,10 +1,11 @@
 # ChangeLog
 
-## Version 1.1.9-dev
+## Version 1.1.9 (12.06.2025)
 
 ### Android
 - Bugfix: Subsequent notifications were ignored, when posting them without `trigger.at`: If no `trigger.at` was set, it was set to the current time, but due shallow copying the default properties, the `trigger`-property of the defaults was changed also to that time and all subsequent notifications were getting the time which resulted in being ignored.
   - Fixes https://github.com/katzer/cordova-plugin-local-notifications/issues/2082
+
 ## Version 1.1.8 (25.05.2025)
 
 ### Android
