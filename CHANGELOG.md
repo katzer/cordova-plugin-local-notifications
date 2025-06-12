@@ -1,5 +1,7 @@
 # ChangeLog
 
+## Version 1.2.0-dev
+
 ## Version 1.1.9 (12.06.2025)
 
 ### Android
