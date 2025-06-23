@@ -803,13 +803,21 @@ cordova.plugins.notification.local.createChannel({
     androidChannelId: "my_channel_01", // string, to separate something in the id, use "_" instead of "-"
     androidChannelName: "My Channel Name", // string, defaults to "Default Channel"
     androidChannelDescription: "Description of channel", // string (optional)
-    androidChannelImportance: "IMPORTANCE_DEFAULT", // string (optional), see property documentation for importance
-    androidChannelEnableLights: true, // bool (optional), default is false
-    androidChannelEnableVibration: true, // bool (optional), default is false
-    sound: 'www/audio/ring.mp3', // string (optional), defaults to "default", which represents the default sound for a notification. If you set `null`, no sound will be set for the notification
+    androidChannelImportance: "IMPORTANCE_DEFAULT", // string (optional)
+    androidChannelEnableLights: true, // boolean (optional), default is false
+    androidChannelEnableVibration: true, // boolean (optional), default is false
+    sound: 'www/audio/ring.mp3', // string (optional)
     androidChannelSoundUsage: 5 // int (optional), default is USAGE_NOTIFICATION
   }, successCallback, this)
 ```
+
+Property documentation:
+- [androidChannelId](#property-androidchannelid)
+- [androidChannelImportance](#property-androidchannelimportance)
+- [androidChannelEnableLights](#property-androidchannelenablelights)
+- [androidChannelEnableVibration](#property-androidchannelenablevibration)
+- [sound](#property-sound)
+- [androidChannelSoundUsage](#property-androidchannelsoundusage)
 
 ### deleteChannel
 <img src="images/android-icon.svg" width="16"> Android only
