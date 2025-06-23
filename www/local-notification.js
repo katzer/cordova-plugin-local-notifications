@@ -321,6 +321,12 @@ exports.schedule = function (optionsArg, callback, scope, args) {
     // On iOS notifications are ignored if the trigger time is in the past, so filter
     // them already here out
     optionsList = optionsList.filter((options) => {
+
+        // Don't filter out, if trigger.at is not set
+        if (!options.trigger || !options.trigger.at) {
+            return true;
+        }
+
         // Calculate difference to now
         const triggerAtDiff = options.trigger.at - new Date().getTime();
 
