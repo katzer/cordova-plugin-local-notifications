@@ -1037,13 +1037,13 @@ These properties are only available on Android.
 | [androidAlarmType](#property-androidalarmtype) | `RTC_WAKEUP` |              |
 | [androidAllowWhileIdle](#property-androidallowwhileidle) | `false` | Alarm will be allowed to execute even when the system is in low-power idle (a.k.a. doze) modes. |
 | androidAutoCancel      | `true`            | Make this notification automatically dismissed when the user touches it |
-| androidChannelDescription | `null`            | Sets the `description` of a [notification channel](#android-notification-channels). |
-| androidChannelEnableLights | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#create-channel) should display notification lights, on devices that support that feature. |
+| androidChannelDescription | `null`            | Sets the `description` of a [notification channel](#notification-channels). |
+| androidChannelEnableLights | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#android-channels) should display notification lights, on devices that support that feature. |
 | [androidChannelEnableVibration](#property-androidchannelenablevibration) | `false`            | Enables the vibration of a channel. |
 | [androidChannelId](#property-androidchannelid) | `default_channel` | Specifies the channel id to be posted on. |
-| androidChannelImportance | `IMPORTANCE_DEFAULT` | Sets the [importance](#property-androidchannelimportance) of a [notification channel](#android-notification-channels) |
-| androidChannelName     | `Default channel` | Set the `channelName` for the notification to be posted on. See [Android Notification Channels](#android-notification-channels) for more information. |
-| androidChannelSoundUsage | `5` (=USAGE_NOTIFICATION) | Sets the [androidChannelSoundUsage](#property-androidchannelsoundusage) of a [notification channel](#create-channel). |
+| androidChannelImportance | `IMPORTANCE_DEFAULT` | Sets the [importance](#property-androidchannelimportance) of a [notification channel](#notification-channels) |
+| androidChannelName     | `Default channel` | Set the `channelName` for the notification to be posted on. See [Android Notification Channels](#notification-channels) for more information. |
+| androidChannelSoundUsage | `5` (=USAGE_NOTIFICATION) | Sets the [androidChannelSoundUsage](#property-androidchannelsoundusage) of a [notification channel](#notification-channels). |
 | [androidColor](#property-androidcolor) | `null`            | The notification background color for the small icon in the notification style. |
 | [androidGroup](#grouping) | `null`            | Set this notification to be part of a group of notifications sharing the same key. Grouped notifications may display in a cluster or stack on devices which support such rendering. To make this notification the summary for its group, also call setGroupSummary(boolean). A sort order can be specified for group members by using setSortKey(String) (not implemented yet). Calls [Notification.Builder#setGroup(java.lang.String)](https://developer.android.com/reference/android/app/Notification.Builder#setGroup(java.lang.String)) |
 | [androidGroupSummary](#grouping) | `false`        | Set this notification to be the group summary for a group of notifications. Grouped notifications may display in a cluster or stack on devices which support such rendering. Requires a group key also be set using setGroup(String). The group summary may be suppressed if too few notifications are included in the group. Calls [Notification.Builder#setGroupSummary(boolean)](https://developer.android.com/reference/android/app/Notification.Builder#setGroupSummary(boolean)) |
@@ -1107,7 +1107,7 @@ If the alarm should be scheduled on a specific time or in relevance to the time,
 #### Property `androidChannelEnableVibration`
 Default: `false`
 
-Sets the vibration of a [notification channel](#create-channel) by setting [NotificationChannel#enableVibration(boolean)](https://developer.android.com/reference/android/app/NotificationChannel#enableVibration(boolean)). On Android 7 this sets the vibration of a notification directly.
+Sets the vibration of a [notification channel](#notification-channels) by setting [NotificationChannel#enableVibration(boolean)](https://developer.android.com/reference/android/app/NotificationChannel#enableVibration(boolean)). On Android 7 this sets the vibration of a notification directly.
 
 #### Property `androidChannelId`
 Default: `default_channel`
@@ -1312,7 +1312,7 @@ Example:
 - `www/mySound.wav` - [Documentation](#resource-pattern-file)
 
 ##### Android
-Before Android 8 it sets the sound of a notification. Since Android 8 it sets the sound of a [notification channel](#create-channel).
+Before Android 8 it sets the sound of a notification. Since Android 8 it sets the sound of a [notification channel](#notification-channels).
 
 ##### iOS
 Enables/disables also the vibration. If no sound is set, no vibration will occur.
