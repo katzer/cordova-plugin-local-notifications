@@ -1038,7 +1038,7 @@ These properties are only available on Android.
 | [androidAllowWhileIdle](#property-androidallowwhileidle) | `false` | Alarm will be allowed to execute even when the system is in low-power idle (a.k.a. doze) modes. |
 | androidAutoCancel      | `true`            | Make this notification automatically dismissed when the user touches it |
 | androidChannelDescription | `null`            | Sets the `description` of a [notification channel](#notification-channels). |
-| androidChannelEnableLights | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#android-channels) should display notification lights, on devices that support that feature. |
+| [androidChannelEnableLights](#property-androidchannelenablelights) | `false` | Can be `true` or `false`and sets whether notifications posted to a [notification channel](#android-channels) should display notification lights, on devices that support that feature. |
 | [androidChannelEnableVibration](#property-androidchannelenablevibration) | `false`            | Enables the vibration of a channel. |
 | [androidChannelId](#property-androidchannelid) | `default_channel` | Specifies the channel id to be posted on. |
 | androidChannelImportance | `IMPORTANCE_DEFAULT` | Sets the [importance](#property-androidchannelimportance) of a [notification channel](#notification-channels) |
@@ -1062,7 +1062,7 @@ These properties are only available on Android.
 | androidUsesChronometer | `false`           | Show the Notification#when field as a stopwatch. Instead of presenting when as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call). Was former handeld by `clock: 'chronometer'` |
 | androidWakeUpScreen    | `true`            | If the screen should go on, when a notification arrives |
 | androidDefaults        | `0`               | Android 7 only. Sets the default notification options that will be used only on Android 7. Bitwise-or of: DEFAULT_SOUND, DEFAULT_VIBRATE, DEFAULT_LIGHTS. |
-| led                    | `false`           | Android 7 only. Can be a Hex-String like `#FF00FF` or `{color: '#FF00FF', on: 500, off: 500}` and sets the led of a notification. Replaced by `androidChannelEnableLights`. |
+| led                    | `false`           | Android 7 only. Can be a Hex-String like `#FF00FF` or `{color: '#FF00FF', on: 500, off: 500}` and sets the led of a notification. Replaced by [androidChannelEnableLights](#property-androidchannelenablelights). |
 
 ### iOS properties
 
@@ -1103,6 +1103,13 @@ If the alarm should be scheduled on a specific time or in relevance to the time,
 | [RTC](https://developer.android.com/reference/android/app/AlarmManager#RTC) | x | Alarm time in `System.currentTimeMillis()` (wall clock time in UTC). This alarm does not wake the device up; if it goes off while the device is asleep, it will not be delivered until the next time the device wakes up. |
 | [ELAPSED_REALTIME_WAKEUP](https://developer.android.com/reference/android/app/AlarmManager#ELAPSED_REALTIME_WAKEUP) | - | Alarm time in `SystemClock.elapsedRealtime()` (time since boot, including sleep), which will wake up the device (the CPU, not the screen) when it goes off. |
 | [ELAPSED_REALTIME](https://developer.android.com/reference/android/app/AlarmManager#ELAPSED_REALTIME) | - | Alarm time in `SystemClock.elapsedRealtime()` (time since boot, including sleep). This alarm does not wake the device up; if it goes off while the device is asleep, it will not be delivered until the next time the device wakes up. |
+
+#### Property `androidChannelEnableLights`
+Default: `false`
+
+Can be `true` or `false`and sets whether notifications posted to a [notification channel](#notification-channels) should display notification lights, on devices that support that feature.
+
+Android documentation: https://developer.android.com/reference/android/app/NotificationChannel#enableLights(boolean)
 
 #### Property `androidChannelEnableVibration`
 Default: `false`
