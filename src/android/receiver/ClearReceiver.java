@@ -43,9 +43,24 @@ public class ClearReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Notification notification = Notification.getFromSharedPreferences(context, intent.getExtras().getInt(Notification.EXTRA_ID));
+        try {
+            if (intent == null || intent.getExtras() == null) {
+                return; // No action, can't proceed safely
+            }
 
-        // Will remove the notification from SharedPreferences if it is the last one
-        notification.clear();
+            int notificationId = intent.getExtras().getInt(Notification.EXTRA_ID, -1);
+
+            Notification notification = Notification.getFromSharedPreferences(context, notificationId);
+
+            if (notification == null) {
+                Log.w("ClearReceiver", "No notification found in SharedPreferences for ID: " + notificationId);
+                return;
+            }
+
+            // Will remove the notification from SharedPreferences if it is the last one
+            notification.clear();
+        } catch (Exception e) {
+            Log.e("ClearReceiver", "Error processing clear notification intent", e);
+        }
     }
 }

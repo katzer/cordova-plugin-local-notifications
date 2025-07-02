@@ -46,20 +46,23 @@ public class TriggerReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Received action: " + intent.getAction());
+        Log.d(TAG, "Received action: " + (intent != null ? intent.getAction() : "null"));
 
-        Notification notification = Notification.getFromSharedPreferences(
-            context, intent.getExtras().getInt(Notification.EXTRA_ID, 0));
+        if (intent == null || intent.getExtras() == null) {
+            Log.e(TAG, "Intent or extras is null");
+            return;
+        }
 
-        // Show the notification
+        int notificationId = intent.getExtras().getInt(Notification.EXTRA_ID, -1);
+        Notification notification = Notification.getFromSharedPreferences(context, notificationId);
+
+        if (notification == null) {
+            Log.e(TAG, "Notification not found in shared preferences for ID: " + notificationId);
+            return;
+        }
+
+        // Safe to use now
         notification.show(false);
-
-        // Schedule next notification if available. The notification
-        // will not be removed from the SharedPreferences, if there is no
-        // next trigger. So the NotificationClickActivity
-        // and ClearReceiver can still read the notification data. They
-        // will remove the notification from the SharedPreferences if they are
-        // executed. A notification can ony be cleared or clicked.
         notification.scheduleNext();
     }
 }
