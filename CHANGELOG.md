@@ -2,6 +2,9 @@
 
 ## Version 1.2.0-dev
 
+### Common
+- Bugfix: Don't filter out notifications where `trigger.at` is not set: Notifications were filtered out when something other than `trigger.at` was set like `trigger.in`, or `trigger.every`
+
 ## Version 1.1.9 (12.06.2025)
 
 ### Android
