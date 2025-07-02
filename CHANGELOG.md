@@ -1,5 +1,7 @@
 # ChangeLog
 
+## Version 1.2.1-dev
+
 ## Version 1.2.0 (02.07.2025)
 
 ### Common
