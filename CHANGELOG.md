@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.2.0-dev
+## Version 1.2.0 (02.07.2025)
 
 ### Common
 - Bugfix: Don't filter out notifications where `trigger.at` is not set: Notifications were filtered out when something other than `trigger.at` was set like `trigger.in`, or `trigger.every`
