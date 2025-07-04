@@ -48,8 +48,13 @@ public class TriggerReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Received action: " + intent.getAction());
 
-        Notification notification = Notification.getFromSharedPreferences(
-            context, intent.getExtras().getInt(Notification.EXTRA_ID, 0));
+        Notification notification = Notification.getFromSharedPreferences(context, intent.getExtras().getInt(Notification.EXTRA_ID));
+
+        // Notification not found for id in SharedPreferences
+        if (notification == null) {
+            Log.w(TAG, "Notification not found for id, doing nothing, id=" + intent.getExtras().getInt(Notification.EXTRA_ID));
+            return;
+        }
 
         // Show the notification
         notification.show(false);

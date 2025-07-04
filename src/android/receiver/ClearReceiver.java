@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import de.appplant.cordova.plugin.localnotification.Notification;
 
@@ -36,6 +37,8 @@ import de.appplant.cordova.plugin.localnotification.Notification;
  */
 public class ClearReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "ClearReceiver";
+
     /**
      * Called when the notification was cleared from the notification center.
      * @param context Application context
@@ -44,6 +47,12 @@ public class ClearReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Notification notification = Notification.getFromSharedPreferences(context, intent.getExtras().getInt(Notification.EXTRA_ID));
+
+        // Notification not found for id in SharedPreferences
+        if (notification == null) {
+            Log.w(TAG, "Notification not found for id, doing nothing, id=" + intent.getExtras().getInt(Notification.EXTRA_ID));
+            return;
+        }
 
         // Will remove the notification from SharedPreferences if it is the last one
         notification.clear();
