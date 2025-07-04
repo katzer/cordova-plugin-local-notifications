@@ -2,6 +2,10 @@
 
 ## Version 1.2.1-dev
 
+### Android
+- Bugfix: Prevent `NullPointerException` for trigger and clear
+  - It could happen, that a `NullPointerException` occurred, when a notification was triggered or a user cleared a notification, because the notification data was not found any longer in the `SharedPreferences`
+
 ## Version 1.2.0 (02.07.2025)
 
 ### Common
