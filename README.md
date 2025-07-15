@@ -76,8 +76,21 @@ Install from local source:
 
 ## Upgrade Notice
 
-### Updates in version 1.1.0
-A lot of properties were renamed, see [Changed properties](#changes-since-version-110).
+### Version 0.9.0-beta.3 (13.02.2018)
+- Last version which supports `cordova-android` older than `13.0.0` and supports minimum `cordova-android` version `6.0.0` which is Android version `4.1`
+- Last version which supports the Windows platform
+
+### Version 1.0.0 (17.08.2024)
+- Removed Windows platform
+- Support for Android 12-14 and uses AndroidX
+- Raised minimum `cordova-android`version from `6.0.0` to `13.0.0`, which raised the minimum Android version from `4.1` `SDK 16` to `7.0` `SDK 24`
+- Raised minimum `cordova-ios` version from `4.3.0` to `7.0.0`
+- Raised minimum Cordova version from `3.6.0` to `12.0.0`
+- Raised minimum `cordova-plugin-device` version from `2.0.0` to `3.0.0`
+
+### Updates in version 1.1.0 (23.12.2024)
+- Proper handling of Android channels
+- Properties were renamed for the Android platform, see [Changed properties](#changes-since-version-110).
 
 #### Android
 The [Default channel](#default-channel) id was changed from `default-channel-id` to `default_channel`. If you upgrade to this version and schedule notifications, there will be two channels from then on, the old one and the new one. You can remove the old one with [deleteChannel](#deletechannel).
