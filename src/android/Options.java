@@ -921,18 +921,34 @@ public final class Options {
     }
 
     /**
-     * Converts a version string to an int.
+     * Converts a version string to a comparable int. The version
+     * must have two or three digits separated by dots.
+     * Pre-release identifiers like "-dev" or "-beta" will be removed before.
+     * 
+     * The calculation of the int will be as follows:
+     * MAJOR * 10000 + MINOR * 100 + PATCH
+     * 
+     * Examples:
+     * - 1.1.1-dev to 10101
+     * - 1.2.1-dev to 10201
+     * - 0.9-beta.3 to 903
+     *
+     * Version calculation taken from:
+     * https://cordova.apache.org/docs/en/12.x-2025.01/guide/platforms/android/index.html#setting-the-version-code
+     *
      * @param version
      * @return
      */
     public static int versionStringToInt(String version) {
-        // Split the version string by '.' and '-'
-        // example 1.1.1-dev would converted to 10101
-        String[] parts = version.split("[.\\-]");
+        // Remove pre-release identifiers -dev and -beta, split by dot
+        String[] parts = version.replaceAll("-dev|-beta", "").split("\\.");
 
-        // Version calculation taken from
-        // https://cordova.apache.org/docs/en/12.x-2025.01/guide/platforms/android/index.html#setting-the-version-code
-        return Integer.parseInt(parts[0]) * 10000 + Integer.parseInt(parts[1]) * 100 + Integer.parseInt(parts[2]);
+        int major = Integer.parseInt(parts[0]);
+        int minor = Integer.parseInt(parts[1]);
+        // Optional patch version
+        int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+
+        return major * 10000 + minor * 100 + patch;
     }
 
     /**
