@@ -5,6 +5,9 @@
 ### Android
 - Bugfix: Prevent `NullPointerException` for trigger and clear
   - It could happen, that a `NullPointerException` occurred, when a notification was triggered or a user cleared a notification, because the notification data was not found any longer in the `SharedPreferences`
+- Bugfix: Handle crash when updating from plugin version `0.9-beta.3` and notifications were already scheduled with the old plugin version.
+  - This was due to not handling correctly the `-beta` in the version string `0.9-beta.3` when trying to convert the string to an int. Now the pre-release identifiers `-dev` and `-beta` will be removed, before the version string will be converted to an int.
+  - Fixes [#2087](https://github.com/katzer/cordova-plugin-local-notifications/issues/2087)
 
 ## Version 1.2.0 (02.07.2025)
 
