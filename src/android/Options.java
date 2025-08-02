@@ -82,21 +82,22 @@ public final class Options {
     public Options(Context context, JSONObject options) {
         this.context = context;
 
-        // When notifications are scheduled in JavaScript and old properties are set,
-        // they will already be corrected in JavaScript.
-        // If the app was updated with a new plugin version and notifications were scheduled before
-        // they cannot be corrected by JavaScript for the current plugin version when the RestoreReceiver was called,
-        // because Cordova is not initialized yet. Do this in Java instead.
+        // Workaround: Correct properties in Java instead in JavaScript
+        // when the app was updated. {@link RestoreReceiver} will be called
+        // and there is no WebView at this point because no Activity will be started.
         try {
-            // Check if meta.version is older then current plugin version
+            // Check meta.version
             JSONObject meta = options.getJSONObject("meta");
+            String metaVersion = meta.getString("version");
 
-            if (isVersionOlder(meta.getString("version"), "1.1.8")) {
-                convertPropertiesForVersion110(options);
-                convertPropertiesForVersion111(options);
-                convertPropertiesForVersion118(options);
-                // Update meta.version
-                meta.put("version", "1.1.8");
+            // Update properties for older versions
+            if (isVersionOlder(metaVersion, "1.1.0")) convertPropertiesForVersion110(options);
+            if (isVersionOlder(metaVersion, "1.1.1")) convertPropertiesForVersion111(options);
+            if (isVersionOlder(metaVersion, "1.1.8")) convertPropertiesForVersion118(options);
+
+            // Update meta.version always if it is older
+            if (isVersionOlder(metaVersion, "1.2.1-dev")) {
+                meta.put("version", "1.2.1-dev");
                 options.put("meta", meta);
             }
         } catch (JSONException exception) {
