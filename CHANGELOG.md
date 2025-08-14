@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.2.1-dev
+## Version 1.2.1
 
 ### Android
 - Bugfix: Prevent `NullPointerException` for trigger and clear
