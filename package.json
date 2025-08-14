@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-local-notification",
-  "version": "1.2.1",
+  "version": "1.2.2-dev",
   "description": "Schedules and queries for local notifications",
   "cordova": {
     "id": "cordova-plugin-local-notification",

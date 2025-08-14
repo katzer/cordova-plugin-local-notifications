@@ -43,7 +43,7 @@ exports._commonOptions = {
     trigger: null,
     meta: {
         plugin:  'cordova-plugin-local-notification',
-        version: '1.2.1'
+        version: '1.2.2-dev'
     }
 }
 
