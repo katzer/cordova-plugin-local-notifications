@@ -2,6 +2,13 @@
 
 ## Version 1.2.2-dev
 
+### Common
+
+- Add plugin method `getDefaults` back
+  - The `getDefaults` method was accidentally removed in version `1.1.0`
+  - Thanks to @randnetdd who reported this issue
+  - Fixes [#2088](https://github.com/katzer/cordova-plugin-local-notifications/issues/2088)
+
 ## Version 1.2.1 (14.08.2025)
 
 ### Android
