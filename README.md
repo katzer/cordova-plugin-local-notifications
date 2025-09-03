@@ -851,7 +851,7 @@ These will delete all associated notificiations for this channel. If you create 
 
 ### getDefaults
 
-Returns the default values all properties on each platform.
+Returns the default values of all properties on each platform.
 
 Example:
 

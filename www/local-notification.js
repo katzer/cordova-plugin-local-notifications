@@ -247,6 +247,13 @@ exports.setDefaults = function (newDefaults) {
 };
 
 /**
+ * Gets the default settings.
+ */
+exports.getDefaults = function () {
+    return this._defaults;
+};
+
+/**
  * Android only: Create notification channel
  * @param {Object} options channel options
  * @param {Function} callback The function to be exec as the callback
