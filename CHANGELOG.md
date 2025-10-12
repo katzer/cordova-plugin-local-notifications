@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.2.2-dev
+## Version 1.2.2 (12.10.2025)
 
 ### iOS
 - Ignore deprecation warning about using `UNNotificationPresentationOptionAlert`
