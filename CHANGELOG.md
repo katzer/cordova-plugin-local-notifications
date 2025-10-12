@@ -9,6 +9,10 @@
   - Thanks to @randnetdd who reported this issue
   - Fixes [#2088](https://github.com/katzer/cordova-plugin-local-notifications/issues/2088)
 
+### iOS
+- Ignore deprecation warning about using `UNNotificationPresentationOptionAlert`
+  - XCode could give a deprecation warning about using `UNNotificationPresentationOptionAlert` which is deprecated since iOS 14. The code is already written in such a way that it can only be used on iOS 13 and older versions. So ignore the deprecation warning.
+
 ## Version 1.2.1 (14.08.2025)
 
 ### Android
