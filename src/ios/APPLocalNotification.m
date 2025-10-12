@@ -494,7 +494,10 @@
                 
                 // iOS older then 14: Show notification as banner and in notification center
             } else {
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 presentationOptions |= UNNotificationPresentationOptionAlert;
+                #pragma clang diagnostic pop
             }
         }
     }
