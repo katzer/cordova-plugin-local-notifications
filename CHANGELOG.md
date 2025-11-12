@@ -2,6 +2,11 @@
 
 ## Version 1.2.3-dev
 
+### Android
+
+- Bugfix: Make Actions persistent
+  - Actions were not stored persistent. If the app was killed and a notification appeared, the actions were not shown anymore.
+
 ## Version 1.2.2 (12.10.2025)
 
 ### iOS
