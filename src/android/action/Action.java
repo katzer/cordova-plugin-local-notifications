@@ -35,19 +35,14 @@ import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
  * that it may be generated each time the notification is built. Necessary to
  * compensate for missing functionality in the support library.
  */
-public final class Action {
+public class Action {
 
     // Key name for bundled extras
     public static final String EXTRA_ID = "NOTIFICATION_ACTION_ID";
 
-    // The id for the click action
-    public static final String CLICK_ACTION_ID = "click";
+    private Context context;
 
-    // The application context
-    private final Context context;
-
-    // The action spec
-    private final JSONObject actionOptionsJSON;
+    private JSONObject actionOptionsJSON;
 
     /**
      * Structure to encapsulate a named action that can be shown as part of
@@ -56,7 +51,7 @@ public final class Action {
      * @param context The application context.
      * @param actionOptionsJSON The action options.
      */
-    Action(Context context, JSONObject actionOptionsJSON) {
+    public Action(Context context, JSONObject actionOptionsJSON) {
         this.context = context;
         this.actionOptionsJSON = actionOptionsJSON;
     }
@@ -66,6 +61,10 @@ public final class Action {
      */
     public String getId() {
         return actionOptionsJSON.optString("id", getTitle());
+    }
+
+    public String getType() {
+        return actionOptionsJSON.optString("type", "button");
     }
 
     /**
@@ -93,7 +92,7 @@ public final class Action {
     /**
      * Gets the value of the launch flag.
      */
-    public boolean isLaunchingApp() {
+    public boolean isLaunch() {
         return actionOptionsJSON.optBoolean("launch", false);
     }
 
@@ -137,5 +136,4 @@ public final class Action {
 
         return choices;
     }
-
 }

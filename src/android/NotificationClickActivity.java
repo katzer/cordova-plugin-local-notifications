@@ -39,71 +39,79 @@ import de.appplant.cordova.plugin.localnotification.Options;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 
 /**
- * The receiver activity is triggered when a notification is clicked by a user.
- * The activity calls the background callback and brings the launch intent
- * up to foreground.
+ * Handle notification or action click.
+ * To be able to launch the app on Android 12 and newer, an Activity must be used,
+ * instead of a BroadcastReceiver, otherwise a trampoline error would occur,
+ * if the app is in background or killed, see:
+ * https://developer.android.com/about/versions/12/behavior-changes-12#notification-trampolines
  */
 public class NotificationClickActivity extends Activity {
 
     private static final String TAG = "NotificationClickActivity";
 
-    /**
-     * Activity started when local notification was clicked by the user.
-     * @param notification Wrapper around the local notification.
-     * @param bundle The bundled extras.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "Creating NotificationClickActivity");
         super.onCreate(savedInstanceState);
 
         int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);
-        Log.d(TAG, "notification clicked, id=" + notificationId);
-
+        // Get the clicked action id, if an action was clicked, otherwise it is null
+        String actionId = getIntent().getStringExtra(Action.EXTRA_ID);
+        // If the app should be launched
+        boolean launch = getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true);
         Notification notification = Notification.getFromSharedPreferences(getApplicationContext(), notificationId);
+        
+        Log.d(TAG, "Notification clicked, id=" + notificationId + ", actionId=" + actionId + ", launch=" + launch);
 
-        // This should never happen. A notification always be available in the SharedPreferences
-        // when the user clicks on it.
-        // If the notification is not stored anymore in the SharedPreferences, just open the app
-        if (notification == null) {
-            LocalNotification.launchApp(getApplicationContext());
-            finish();
-            return;
+        // Check if the notification data is available
+        // Normally it should be available, but in some cases it isn't
+        if (notification != null) {
+            // Handle action click
+            if (actionId != null) {
+                // Fire action click event to JS
+                LocalNotification.fireEvent(
+                    actionId,
+                    notification,
+                    // Get input data for action, if it is an input action
+                    getRemoteInputData(getIntent(), actionId));
+
+                // Handle notification click
+            } else {
+                // Fire notification click event to JS
+                LocalNotification.fireEvent("click", notification);
+            }
+
+            // Clear notification from statusbar if it should not be ongoing
+            // This will also remove the notification from the SharedPreferences
+            // if it is the last one
+            if (!notification.getOptions().isAndroidOngoing()) {
+                notification.clear();
+            }
+        } else {
+            Log.w(TAG, "Notification data not found, id=" + notificationId);
         }
 
-        // Gets input from action and sets it in data
-        String action = getIntent().getExtras().getString(Action.EXTRA_ID, Action.CLICK_ACTION_ID);
-        JSONObject data = new JSONObject();
-        setTextInput(action, data);
-            
-        if (getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true)) LocalNotification.launchApp(getApplicationContext());
+        // Launch the app if required
+        if (launch) LocalNotification.launchApp(getApplicationContext());
 
-        LocalNotification.fireEvent(action, notification, data);
-
-        Options options = notification.getOptions();
-
-        if (options.isAndroidOngoing()) return;
-
-        // Will remove the notification from SharedPreferences if it is the last one
-        notification.clear();
-
-        // Finish this activity, so the unterlying app activity is shown
         finish();
     }
 
     /**
-     * Set the text if any remote input is given.
-     * @param action The action where to look for.
-     * @param data The object to extend.
+     * Gets the input data for an action, if available.
+     * @param intent The received intent.
+     * @param actionId The action where to look for.
      */
-    private void setTextInput(String action, JSONObject data) {
-        Bundle input = RemoteInput.getResultsFromIntent(getIntent());
-        if (input == null) return;
+    private JSONObject getRemoteInputData(Intent intent, String actionId) {
+        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        if (remoteInput == null) return null;
 
         try {
-            data.put("text", input.getCharSequence(action));
+            JSONObject data = new JSONObject();
+            data.put("text", remoteInput.getCharSequence(actionId).toString());
+            return data;
         } catch (JSONException jsonException) {
-            jsonException.printStackTrace();
+            Log.e(TAG, "Failed to build remote input JSON", jsonException);
+            return null;
         }
     }
 }

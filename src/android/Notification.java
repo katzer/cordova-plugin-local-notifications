@@ -54,8 +54,8 @@ import java.util.Set;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 
-import de.appplant.cordova.plugin.localnotification.OptionsTrigger;
 import de.appplant.cordova.plugin.localnotification.action.Action;
+import de.appplant.cordova.plugin.localnotification.action.ActionGroup;
 import de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver;
 import de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver;
 import de.appplant.cordova.plugin.localnotification.trigger.TriggerHandler;
@@ -768,31 +768,29 @@ public final class Notification {
      * Will bring the app to foreground.
      */
     private void setContentIntent(NotificationCompat.Builder builder) {
+        // Route content tap to a transparent activity to avoid trampoline and still run plugin logic
         Intent clickIntent = new Intent(context, NotificationClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
-            .putExtra(Action.EXTRA_ID, Action.CLICK_ACTION_ID)
-            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch());
+            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        // Set the Activity to start in a new, empty task.
-        clickIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        // Create the PendingIntent
-        PendingIntent clickPendingIntent = PendingIntent.getActivity(context,
-            // Each click intent have to get a unique request code, so they don't overwrite each other
+        PendingIntent contentPendingIntent = PendingIntent.getActivity(
+            context,
             Manager.getRandomRequestCode(),
-            clickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            clickIntent,
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-        builder.setContentIntent(clickPendingIntent);
+        builder.setContentIntent(contentPendingIntent);
     }
 
     /**
      * Add actions to the builder if there are any.
      */
     private void addActions(NotificationCompat.Builder builder) {
-        Action[] actions = options.getActions();
-        if (actions == null) return;
+        ActionGroup actionGroup = options.getActionsGroup();
+        if (actionGroup == null) return;
 
-        for (Action action : actions) {
+        for (Action action : actionGroup.getActions()) {
             addAction(builder, action);
         }
     }
@@ -801,16 +799,18 @@ public final class Notification {
      * Add an action to the builder.
      */
     private void addAction(NotificationCompat.Builder builder, Action action) {
+        // Route content tap to a transparent activity to avoid trampoline and still run plugin logic
         Intent actionClickIntent = new Intent(context, NotificationClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Action.EXTRA_ID, action.getId())
-            .putExtra(Options.EXTRA_LAUNCH, action.isLaunchingApp())
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            .putExtra(Options.EXTRA_LAUNCH, action.isLaunch())
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        PendingIntent actionClickPendingIntent = PendingIntent.getActivity(context,
-            // Each action intent have to get a unique request code, so they don't overwrite each other
+        PendingIntent actionClickPendingIntent = PendingIntent.getActivity(
+            context,
             Manager.getRandomRequestCode(),
-            actionClickIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            actionClickIntent,
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
                 action.getIcon(), action.getTitle(), actionClickPendingIntent);

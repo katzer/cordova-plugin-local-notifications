@@ -25,109 +25,37 @@ import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.N;
+import de.appplant.cordova.plugin.localnotification.Manager;
 
-public final class ActionGroup {
+public class ActionGroup {
 
-    // Saves all groups for later lookup.
-    private static final Map<String, ActionGroup> groups = new HashMap<String, ActionGroup>();
+    private static final String TAG = "ActionGroup";
 
-    // The ID of the action group.
-    private final String id;
+    // Action group id
+    private String id;
+
+    // Actions JSON array, needed for storage
+    private JSONArray actionsJSONArray;
 
     // List of actions
-    private final Action[] actions;
+    private List<Action> actions;
 
-    /**
-     * Lookup the action groups with the specified group id.
-     *
-     * @param id The ID of the action group to find.
-     *
-     * @return Null if no group was found.
-     */
-    public static ActionGroup lookup(String id) {
-        return groups.get(id);
-    }
-
-    /**
-     * Register the action group for later lookup.
-     *
-     * @param group The action group to register.
-     */
-    public static void register(ActionGroup group) {
-        groups.put(group.getId(), group);
-    }
-
-    /**
-     * Unregister the action group.
-     *
-     * @param id The id of the action group to remove.
-     */
-    public static void unregister(String id) {
-        groups.remove(id);
-    }
-
-    /**
-     * Check if a action group with that id is registered.
-     *
-     * @param id The id of the action group to check for.
-     */
-    public static boolean isRegistered(String id) {
-        return groups.containsKey(id);
-    }
-
-    /**
-     * Creates an action group by parsing the specified action specs.
-     *
-     * @param list The list of actions.
-     *
-     * @return A new action group.
-     */
-    public static ActionGroup parse(Context context, JSONArray list) {
-        return parse(context, null, list);
-    }
-
-    /**
-     * Creates an action group by parsing the specified action specs.
-     * @param actionGroupId
-     * @param actionsJSONArray The list of actions.
-     * @return A new action group.
-     */
-    public static ActionGroup parse(Context context, String actionGroupId, JSONArray actionsJSONArray) {
-        List<Action> actions = new ArrayList<Action>(actionsJSONArray.length());
+    private Context context;
+    
+    public ActionGroup(Context context, String actionGroupId, JSONArray actionsJSONArray) {
+        this.context = context;
+        this.id = actionGroupId;
+        this.actionsJSONArray = actionsJSONArray;
+        this.actions = new ArrayList<Action>(actionsJSONArray.length());
 
         for (int i = 0; i < actionsJSONArray.length(); i++) {
-            JSONObject actionOptions = actionsJSONArray.optJSONObject(i);
-            String actionType = actionOptions.optString("type", "button");
-
-            if (!(actionType.equals("button") || actionType.equals("input"))) {
-                Log.w("Action", "Unknown type: " + actionType);
-                continue;
-            }
-
-            actions.add(new Action(context, actionOptions));
+            this.actions.add(new Action(context, actionsJSONArray.optJSONObject(i)));
         }
-
-        return new ActionGroup(actionGroupId, actions.toArray(new Action[actions.size()]));
-    }
-
-    /**
-     * Creates an action group.
-     *
-     * @param id      The ID of the group.
-     * @param actions The list of actions.
-     */
-    private ActionGroup(String id, Action[] actions) {
-        this.id      = id;
-        this.actions = actions;
     }
 
     /**
@@ -140,8 +68,51 @@ public final class ActionGroup {
     /**
      * Gets the action list.
      */
-    public Action[] getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 
+    /**
+     * Stores this action group in the {@link SharedPreferences}.
+     */
+    public void store() {
+        Manager.getSharedPreferences(context).edit()
+            .putString("ACTION_GROUP_" + id, actionsJSONArray.toString())
+            .apply();
+    }
+
+    /**
+     * Removes the action group from the {@link SharedPreferences}.
+     * @param context
+     * @param actionGroupId
+     */
+    public static void remove(Context context, String actionGroupId) {
+        Manager.getSharedPreferences(context).edit()
+            .remove("ACTION_GROUP_" + actionGroupId)
+            .apply();
+    }
+
+    /**
+     * Gets the action group with the specified actionGroupId from the
+     * {@link SharedPreferences}.
+     *
+     * @param context The application context.
+     * @param actionGroupId The id of the action group to get.
+     *
+     * @return The restored action group from {@link SharedPreferences} or <code>null</code> if not found.
+     */
+    public static ActionGroup get(Context context, String actionGroupId) {
+        String actionsJSON = Manager.getSharedPreferences(context)
+            .getString("ACTION_GROUP_" + actionGroupId, null);
+
+        if (actionsJSON == null) return null;
+
+        try {
+            JSONArray actionsJSONArray = new JSONArray(actionsJSON);
+            return new ActionGroup(context, actionGroupId, actionsJSONArray);
+        } catch (JSONException jsonException) {
+            Log.e(TAG, "Failed to restore action group: " + actionGroupId, jsonException);
+            return null;
+        }
+    }
 }

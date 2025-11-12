@@ -304,18 +304,17 @@ public class LocalNotification extends CordovaPlugin {
         switch (args.optInt(0)) {
             // addActions was called
             case 0:
-                ActionGroup group = ActionGroup.parse(getContext(), actionGroupId, args.optJSONArray(2));
-                ActionGroup.register(group);
+                new ActionGroup(getContext(), actionGroupId, args.optJSONArray(2)).store();
                 callbackContext.success();
                 break;
             // removeActions was called
             case 1:
-                ActionGroup.unregister(actionGroupId);
+                ActionGroup.remove(getContext(), actionGroupId);
                 callbackContext.success();
                 break;
             // hasActions was called
             case 2:
-                successBoolean(callbackContext, ActionGroup.isRegistered(actionGroupId));
+                successBoolean(callbackContext, ActionGroup.get(getContext(), actionGroupId) != null);
                 break;
         }
     }
@@ -634,7 +633,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param event The event name.
      */
     private void fireEvent(String event) {
-        fireEvent(event, null, new JSONObject());
+        fireEvent(event, null, null);
     }
 
     /**
@@ -644,7 +643,7 @@ public class LocalNotification extends CordovaPlugin {
      * @param notification Optional notification to pass with.
      */
     public static void fireEvent(String event, Notification notification) {
-        fireEvent(event, notification, new JSONObject());
+        fireEvent(event, notification, null);
     }
 
     /**
@@ -654,15 +653,14 @@ public class LocalNotification extends CordovaPlugin {
      * @param notification Optional notification to pass with.
      * @param data Event object with additional data.
      */
-    static void fireEvent(String event, Notification notification, JSONObject data) {
+    public static void fireEvent(String event, Notification notification, JSONObject data) {
+        if (data == null) data = new JSONObject();
+
         try {
             data.put("event", event);
             data.put("foreground", isInForeground());
             data.put("queued", !deviceready);
-
-            if (notification != null) {
-                data.put("notification", notification.getId());
-            }
+            if (notification != null) data.put("notification", notification.getId());
         } catch (JSONException exception) {
             exception.printStackTrace();
         }
@@ -726,12 +724,18 @@ public class LocalNotification extends CordovaPlugin {
      * Launch main intent from package.
      */
     public static void launchApp(Context context) {
-        Log.d(TAG, "Launching the app");
+        // Returns a "good" intent to launch a front-door activity in a package.
+        // The current implementation looks first for a main activity in the category
+        // Intent.CATEGORY_INFO, and next for a main activity
+        // in the category Intent.CATEGORY_LAUNCHER.
+        // Returns null if neither are found.
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-
-        if (launchIntent == null) return;
-        
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if (launchIntent == null) {
+            Log.e(TAG, "Could not launch app, launch intent not found for package: " + context.getPackageName());
+            return;
+        }
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Log.d(TAG, "Launching the app");
         context.startActivity(launchIntent);
     }
 
@@ -769,5 +773,3 @@ public class LocalNotification extends CordovaPlugin {
         return cordova.getActivity();
     }
 }
-
-// codebeat:enable[TOO_MANY_FUNCTIONS]

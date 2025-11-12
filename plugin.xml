@@ -124,17 +124,19 @@
             </provider>
 
             <!--
-              Notification was clicked by the user
+              Activity used to handle notification or action clicks without trampoline error on Android 12+,
+              when the app should be started from the background or killed state.
 
-              Attributes:
-
-              - android:taskAffinity="" : Combined with the FLAG_ACTIVITY_NEW_TASK flag that you use in code,
+              Explanation of the attributes:
+              - android:taskAffinity="": Combined with the FLAG_ACTIVITY_NEW_TASK flag that you use in code,
                 set this attribute blank to ensure this activity doesn't go into the app's default task.
                 Any existing tasks that have the app's default affinity aren't affected.
+              - android:excludeFromRecents="true": Excludes the new task from the Recents screen so that
+                the user can't accidentally navigate back to it.
             -->
             <activity
                 android:name="de.appplant.cordova.plugin.localnotification.NotificationClickActivity"
-                android:exported="false"
+                android:launchMode="singleTask"
                 android:taskAffinity=""
                 android:excludeFromRecents="true" />
             
