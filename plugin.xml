@@ -135,7 +135,7 @@
                 the user can't accidentally navigate back to it.
             -->
             <activity
-                android:name="de.appplant.cordova.plugin.localnotification.NotificationClickActivity"
+                android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
                 android:launchMode="singleTask"
                 android:taskAffinity=""
                 android:excludeFromRecents="true" />
@@ -195,7 +195,7 @@
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file
-            src="src/android/NotificationClickActivity.java"
+            src="src/android/ClickActivity.java"
             target-dir="src/de/appplant/cordova/plugin/localnotification" />
 
         <source-file

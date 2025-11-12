@@ -45,9 +45,9 @@ import de.appplant.cordova.plugin.localnotification.action.Action;
  * if the app is in background or killed, see:
  * https://developer.android.com/about/versions/12/behavior-changes-12#notification-trampolines
  */
-public class NotificationClickActivity extends Activity {
+public class ClickActivity extends Activity {
 
-    private static final String TAG = "NotificationClickActivity";
+    private static final String TAG = "ClickActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

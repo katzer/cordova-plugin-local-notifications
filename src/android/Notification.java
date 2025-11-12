@@ -178,7 +178,7 @@ public final class Notification {
 
         // No next trigger date available, all triggers are done
         // The notification will not be removed from SharedPreferences.
-        // This will always do the ClearReceiver and NotificationClickActivity
+        // This will always do the ClearReceiver and ClickActivity
         if (triggerDate == null) {
             Log.d(TAG, "No next trigger date available" +
                 ", notificationId=" + options.getId() +
@@ -211,7 +211,7 @@ public final class Notification {
         Manager.createChannel(context, options);
 
         // Store notification data for restoration
-        // Needed for NotificationClickActivity and ClearReceiver
+        // Needed for ClickActivity and ClearReceiver
         storeInSharedPreferences();
 
         // Date is in the past, show directly
@@ -769,7 +769,7 @@ public final class Notification {
      */
     private void setContentIntent(NotificationCompat.Builder builder) {
         // Route content tap to a transparent activity to avoid trampoline and still run plugin logic
-        Intent clickIntent = new Intent(context, NotificationClickActivity.class)
+        Intent clickIntent = new Intent(context, ClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -800,7 +800,7 @@ public final class Notification {
      */
     private void addAction(NotificationCompat.Builder builder, Action action) {
         // Route content tap to a transparent activity to avoid trampoline and still run plugin logic
-        Intent actionClickIntent = new Intent(context, NotificationClickActivity.class)
+        Intent actionClickIntent = new Intent(context, ClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Action.EXTRA_ID, action.getId())
             .putExtra(Options.EXTRA_LAUNCH, action.isLaunch())
