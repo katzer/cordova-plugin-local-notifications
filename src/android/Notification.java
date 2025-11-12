@@ -810,7 +810,9 @@ public final class Notification {
             context,
             Manager.getRandomRequestCode(),
             actionClickIntent,
-            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            // Input actions need FLAG_MUTABLE, otherwise it would give the error
+            // "PendingIntents attached to actions with remote inputs must be mutable"
+            (action.isWithInput() ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_IMMUTABLE) | PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
                 action.getIcon(), action.getTitle(), actionClickPendingIntent);
