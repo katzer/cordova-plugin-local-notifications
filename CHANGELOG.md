@@ -6,6 +6,7 @@
 
 - Bugfix: Make Actions persistent
   - Actions were not stored persistent. If the app was killed and a notification appeared, the actions were not shown anymore.
+- Bugfix: Use `Object.assign` instead of spread in object literals in `local-notification.js`, to make this plugin work with an Android 7 emulator, where the WebView can't be updated
 
 ## Version 1.2.2 (12.10.2025)
 
