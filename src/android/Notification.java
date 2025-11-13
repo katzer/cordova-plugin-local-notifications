@@ -68,7 +68,7 @@ import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
  * Wrapper class around OS notification class. Handles basic operations
  * like show, delete, cancel for a single local notification instance.
  */
-public final class Notification {
+public class Notification {
 
     private static final String TAG = "Notification";
 
@@ -78,13 +78,13 @@ public final class Notification {
     }
 
     // Extra key for the id
-    public static final String EXTRA_ID = "NOTIFICATION_ID";
+    public static String EXTRA_ID = "NOTIFICATION_ID";
 
     // Application context passed by constructor
-    private final Context context;
+    private Context context;
 
     // Notification options passed by JS
-    private final Options options;
+    private Options options;
 
     /**
      * Trigger handler for trigger.at/in/every
@@ -97,7 +97,7 @@ public final class Notification {
      * @param options Parsed notification options.
      * @param builder Pre-configured notification builder.
      */
-    Notification(Context context, JSONObject options) {
+    public Notification(Context context, JSONObject options) {
         this.context = context;
         this.options = new Options(context, options);
         OptionsTrigger optionsTrigger = this.options.getOptionsTrigger();
@@ -308,7 +308,7 @@ public final class Notification {
      * Update the notification properties.
      * @param updates The properties to update.
      */
-    void update(JSONObject updates) {
+    public void update(JSONObject updates) {
         Log.d(TAG, "Update notification, options=" + options + ", updates=" + updates);
 
         // Update options of notification
@@ -321,6 +321,28 @@ public final class Notification {
         if (getType() == Type.TRIGGERED) show(true);
     }
 
+    /**
+     * Handle when the notification was clicked.
+     */
+    public void handleClick() {
+        Log.d(TAG, "Handle click, options=" + options);
+        
+        // Fire notification click event to JS
+        LocalNotification.fireEvent("click", this);
+
+        // Clear notification from statusbar if it should not be ongoing
+        // This will also remove the notification from the SharedPreferences
+        // if it is the last one
+        if (!options.isAndroidOngoing()) clear();
+
+        // Launch the app if required
+        if (options.isLaunch()) LocalNotification.launchApp(context);
+    }
+
+    public void handleActionClick(Intent intent, String actionId) {
+        options.getActionsGroup().getActionById(actionId).handleClick(intent, this);
+    }
+    
     /**
      * Clears the notification from Statusbar. If the notification was the last one,
      * the notification will be removed from SharedPreferences.
@@ -771,7 +793,6 @@ public final class Notification {
         // Route content tap to a transparent activity to avoid trampoline and still run plugin logic
         Intent clickIntent = new Intent(context, ClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
-            .putExtra(Options.EXTRA_LAUNCH, options.isLaunch())
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent contentPendingIntent = PendingIntent.getActivity(
@@ -803,7 +824,6 @@ public final class Notification {
         Intent actionClickIntent = new Intent(context, ClickActivity.class)
             .putExtra(Notification.EXTRA_ID, options.getId())
             .putExtra(Action.EXTRA_ID, action.getId())
-            .putExtra(Options.EXTRA_LAUNCH, action.isLaunch())
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent actionClickPendingIntent = PendingIntent.getActivity(

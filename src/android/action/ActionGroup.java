@@ -73,6 +73,22 @@ public class ActionGroup {
     }
 
     /**
+     * Gets the action by id.
+     * @param actionId The id of the action to get.
+     * @return The action with the specified id or <code>null</code> if not found.
+     */
+    public Action getActionById(String actionId) {
+        for (Action action : actions) {
+            if (action.getId().equals(actionId)) {
+                return action;
+            }
+        }
+        
+        Log.w(TAG, "Action not found, id=" + actionId);
+        return null;
+    }
+
+    /**
      * Stores this action group in the {@link SharedPreferences}.
      */
     public void store() {

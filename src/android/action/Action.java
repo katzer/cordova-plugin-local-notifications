@@ -22,11 +22,17 @@
 package de.appplant.cordova.plugin.localnotification.action;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import androidx.core.app.RemoteInput;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 
+import de.appplant.cordova.plugin.localnotification.LocalNotification;
+import de.appplant.cordova.plugin.localnotification.Notification;
 import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 
 /**
@@ -36,6 +42,8 @@ import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
  * compensate for missing functionality in the support library.
  */
 public class Action {
+
+    private static final String TAG = "Action";
 
     // Key name for bundled extras
     public static final String EXTRA_ID = "NOTIFICATION_ACTION_ID";
@@ -135,5 +143,45 @@ public class Action {
         }
 
         return choices;
+    }
+
+    public void handleClick(Intent intent, Notification notification) {
+        Log.d(TAG, "Handle action click, options=" + actionOptionsJSON);
+
+        // Fire action click event to JS
+        LocalNotification.fireEvent(
+            getId(),
+            notification,
+            // Get input data for action, if it is an input action
+            getRemoteInputData(intent));
+
+        // Clear notification from statusbar if it should not be ongoing
+        // This will also remove the notification from the SharedPreferences
+        // if it is the last one
+        if (!notification.getOptions().isAndroidOngoing()) {
+            notification.clear();
+        }
+
+        // Launch the app if required
+        if (isLaunch()) LocalNotification.launchApp(context);
+    }
+
+    /**
+     * Gets the input data for an action, if available.
+     * @param intent The received intent.
+     * @param actionId The action where to look for.
+     */
+    private JSONObject getRemoteInputData(Intent intent) {
+        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        if (remoteInput == null) return null;
+
+        try {
+            JSONObject data = new JSONObject();
+            data.put("text", remoteInput.getCharSequence(getId()).toString());
+            return data;
+        } catch (JSONException jsonException) {
+            Log.e(TAG, "Failed to build remote input JSON", jsonException);
+            return null;
+        }
     }
 }

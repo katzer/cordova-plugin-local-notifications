@@ -57,9 +57,6 @@ import de.appplant.cordova.plugin.localnotification.util.AssetUtil;
 public final class Options {
 
     private static final String TAG = "Options";
-    
-    // Key name for bundled launch extra
-    public static final String EXTRA_LAUNCH = "NOTIFICATION_LAUNCH";
 
     public static final String LARGE_ICON_TYPE_SQUARE = "square";
     public static final String LARGE_ICON_TYPE_CIRCLE = "circle";

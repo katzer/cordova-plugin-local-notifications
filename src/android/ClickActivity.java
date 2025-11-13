@@ -23,19 +23,10 @@
 package de.appplant.cordova.plugin.localnotification;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import androidx.core.app.RemoteInput;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import de.appplant.cordova.plugin.localnotification.LocalNotification;
-import de.appplant.cordova.plugin.localnotification.Manager;
 import de.appplant.cordova.plugin.localnotification.Notification;
-import de.appplant.cordova.plugin.localnotification.Options;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 
 /**
@@ -56,62 +47,25 @@ public class ClickActivity extends Activity {
         int notificationId = getIntent().getExtras().getInt(Notification.EXTRA_ID);
         // Get the clicked action id, if an action was clicked, otherwise it is null
         String actionId = getIntent().getStringExtra(Action.EXTRA_ID);
-        // If the app should be launched
-        boolean launch = getIntent().getBooleanExtra(Options.EXTRA_LAUNCH, true);
         Notification notification = Notification.getFromSharedPreferences(getApplicationContext(), notificationId);
         
-        Log.d(TAG, "Notification clicked, id=" + notificationId + ", actionId=" + actionId + ", launch=" + launch);
+        Log.d(TAG, "Notification clicked, id=" + notificationId + ", actionId=" + actionId);
 
         // Check if the notification data is available
         // Normally it should be available, but in some cases it isn't
         if (notification != null) {
             // Handle action click
             if (actionId != null) {
-                // Fire action click event to JS
-                LocalNotification.fireEvent(
-                    actionId,
-                    notification,
-                    // Get input data for action, if it is an input action
-                    getRemoteInputData(getIntent(), actionId));
+                notification.handleActionClick(getIntent(), actionId);
 
                 // Handle notification click
             } else {
-                // Fire notification click event to JS
-                LocalNotification.fireEvent("click", notification);
-            }
-
-            // Clear notification from statusbar if it should not be ongoing
-            // This will also remove the notification from the SharedPreferences
-            // if it is the last one
-            if (!notification.getOptions().isAndroidOngoing()) {
-                notification.clear();
+                notification.handleClick();
             }
         } else {
             Log.w(TAG, "Notification data not found, id=" + notificationId);
         }
 
-        // Launch the app if required
-        if (launch) LocalNotification.launchApp(getApplicationContext());
-
         finish();
-    }
-
-    /**
-     * Gets the input data for an action, if available.
-     * @param intent The received intent.
-     * @param actionId The action where to look for.
-     */
-    private JSONObject getRemoteInputData(Intent intent, String actionId) {
-        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-        if (remoteInput == null) return null;
-
-        try {
-            JSONObject data = new JSONObject();
-            data.put("text", remoteInput.getCharSequence(actionId).toString());
-            return data;
-        } catch (JSONException jsonException) {
-            Log.e(TAG, "Failed to build remote input JSON", jsonException);
-            return null;
-        }
     }
 }

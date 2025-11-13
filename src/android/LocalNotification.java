@@ -735,7 +735,7 @@ public class LocalNotification extends CordovaPlugin {
             return;
         }
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        Log.d(TAG, "Launching the app");
+        Log.d(TAG, "Launching app");
         context.startActivity(launchIntent);
     }
 
