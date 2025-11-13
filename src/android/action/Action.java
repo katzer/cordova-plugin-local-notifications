@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.localnotification.action;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import androidx.core.app.RemoteInput;
 
@@ -159,7 +160,30 @@ public class Action {
         // This will also remove the notification from the SharedPreferences
         // if it is the last one
         if (!notification.getOptions().isAndroidOngoing()) {
-            notification.clear();
+            // A clear does not work on notifications with input fields:
+            // https://stackoverflow.com/questions/54219914/cancel-notification-with-remoteinput-not-working
+            // Google recommends after a reply to update the notificiation without the input action:
+            // https://developer.android.com/develop/ui/views/notifications/build-notification#retrieve-user-reply
+            // We update the notification without actions and cancel it after a timeout
+            if (isWithInput()) {
+                try {
+                    notification.update(new JSONObject("{\"actions\": null}"));
+                    // Clear the notification after a delay, because the update needs a little bit time to complete
+                    // To be compatible with Android 7, this is done with a Handler
+                    // Since Android 8, this could be handled with the property androidTimeoutAfter
+                    new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                        new Runnable() {
+                            public void run() {
+                                notification.clear();
+                            }
+                        }, 
+                    500);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Failed to update notification", e);
+                }
+            } else {
+                notification.clear();
+            }
         }
 
         // Launch the app if required
