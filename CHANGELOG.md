@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Version 1.2.3-dev
+## Version 1.2.3 (22.11.2025)
 
 ### Android
 
