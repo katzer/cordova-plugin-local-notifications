@@ -6,7 +6,14 @@
 
 - Bugfix: Make Actions persistent
   - Actions were not stored persistent. If the app was killed and a notification appeared, the actions were not shown anymore.
+  - Fixes [Issue #2090](https://github.com/katzer/cordova-plugin-local-notifications/issues/2090).
+- Auto dismiss notifications with input action: A clear does not work on notifications with input fields. Google recommends to update the notificiation after an input was made without adding actions. The input does this and removes the notification after a short delay. Fixes [Issue #2080](https://github.com/katzer/cordova-plugin-local-notifications/issues/2080).
 - Bugfix: Use `Object.assign` instead of spread in object literals in `local-notification.js`, to make this plugin work with an Android 7 emulator, where the WebView can't be updated
+- Some code refactoring
+
+### Common
+
+- Readme: Improve documenation of actions and events
 
 ## Version 1.2.2 (12.10.2025)
 
