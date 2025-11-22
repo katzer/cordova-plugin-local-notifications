@@ -231,12 +231,15 @@ You can read everything about it in the [Android documentatation](https://develo
 Android removes all alarms when the app is updated. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_MY_PACKAGE_REPLACED](https://developer.android.com/reference/android/content/Intent#ACTION_MY_PACKAGE_REPLACED).
 
 #### Device reboot
+
 Android removes all alarms when the device reboots. The plugin reschedules all alarms by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_BOOT_COMPLETED](https://developer.android.com/reference/android/content/Intent#ACTION_BOOT_COMPLETED), but only after the device has been unlocked.
 
 #### User grants exact alarms
+
 If you use [SCHEDULE_EXACT_ALARM](#exact-alarms-user-grants-permission) for scheduling exact alarms and the user permits the permission in the "Alarms & Reminders", inexact alarms will be rescheduled as exact alarms. This is done by a [BroadcastReceiver](https://developer.android.com/develop/background-work/background-tasks/broadcasts) listening to [ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED](https://developer.android.com/reference/android/app/AlarmManager#ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED). This action will not be called if the user revokes the permission. All exact alarms will be canceled then.
 
 [](README.md#android-15-alarms-get-canceled-on-force-stop)
+
 #### Android 15: Alarms get canceled on `Force stop`
 Since Android 15 all pending alarms will get canceled if the user force stops an app, this is a change by Google, see https://developer.android.com/about/versions/15/behavior-changes-all#enhanced-stop-states. The alarms will be re-registered, if the user starts the app again. If the user clears the app from the app stack the alarms will not get canceled.
 
@@ -244,13 +247,16 @@ Keep in mind, that force stopping is only known by advised users and if they do 
 
 ## Actions
 
-You can add actions, which can be a button or an input to a notification. Before you can use them you have to pre-define them:
+You can add actions to a notification, which can be a button or an input.
+Before you can use them you have to create an action group with some actions.
 
 ```javascript
+// Creates an action group with the id 'YES_NO_CATEGORY' and two actions.
 cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
     {
-        id: 'YES_ACTION',
-        title: 'Yes'
+        id: 'YES_ACTION', // Action id
+        title: 'Yes', // Action button title
+        launch: true // Click on action will open the app
     },
     {
         id: 'NO_ACTION',
@@ -259,7 +265,15 @@ cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
 ]);
 ```
 
-Then you have to assign the defined actions when scheduling a notification:
+To see which properties can be set see [Action properties](#action-properties).
+
+By default a click on an action will not open the app. To launch the app when a notification was clicked, set `launch: true`.
+
+Note for Android: If `launch` is not set and the app is killed, the event will be hold back in a background process of the app to wait for the next time the app starts, but could be lost, if the system kills the app background process.
+
+If the `type` of an action is not set, it defaults to `button`.
+
+After the action group is defined, you can assign it to a notification:
 
 ```javascript
 cordova.plugins.notification.local.schedule({
@@ -277,15 +291,9 @@ cordova.plugins.notification.local.schedule({
 
 On iOS the actions are not visible by default. You have to long press on the notification to see them.
 
-Icons on action buttons are not possible. Android had supported it, but stopped this in [Android 7](https://developer.android.com/reference/android/app/Notification.Action.Builder#Builder(int,%20java.lang.CharSequence,%20android.app.PendingIntent)).
+### Action Input
 
-The plugin knows two types of actions `button` and `input`. If you do not specifiy a type, an action is by default a button.
-
-### Input
-
-You can define an action as input.
-
-Register actions:
+Create an action group with an action input:
 
 ```javascript
 cordova.plugins.notification.local.addActions('REPLY_NO_CATEGORY', [
@@ -293,7 +301,8 @@ cordova.plugins.notification.local.addActions('REPLY_NO_CATEGORY', [
         id: 'REPLY_ACTION',
         type: 'input',
         title: 'Reply',
-        emptyText: 'Type message'
+        emptyText: 'Type message',
+        launch: true // Will open the app
     },
     {
         id: 'NO_ACTION',
@@ -302,7 +311,9 @@ cordova.plugins.notification.local.addActions('REPLY_NO_CATEGORY', [
 ]);
 ```
 
-Schedule with registered actions:
+To see which properties can be set for an action input see [Action properties](#action-properties).
+
+Schedule notification with the defined action group:
 
 ```javascript
 cordova.plugins.notification.local.schedule({
@@ -317,49 +328,53 @@ cordova.plugins.notification.local.schedule({
 | :----------- | :----------- |
 | <img width="240" src="images/ios-actions-with-input.png"> | <img width="240" src="images/android-actions-with-input-not-clicked.png"><br><img width="240" src="images/android-actions-with-input-clicked.png"> |
 
-OS native documentation:
-- Android: https://developer.android.com/develop/ui/views/notifications/build-notification#reply-action
+#### Read input data
 
-### Handle action events
-You can subscribe to an action event.
-
-Example:
+You have to subscribe to the event of the action id. The parameter `event` in the event callback will contain the input data of the user:
 
 ```javascript
-cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
-    { id: 'YES_ACTION', title: 'Yes' },
-    { id: 'NO_ACTION',  title: 'No'  }
-]);
-```
-
-You have to subscribe to the action id:
-
-```javascript
-cordova.plugins.notification.local.on('YES_ACTION', (notification, eopts) => {
-    // Your code
+cordova.plugins.notification.local.on('REPLY_ACTION', (notification, event) => {
+    // User made an input, event.text contains the input
+    console.log("user input data=" + event.text);
 });
 ```
 
-To unsubcribe see [Events](#events).
+
+##### Android sepcifics
+
+When a notification has an input action, it can't be cleared from the statusbar (see
+[Stackoverflow](https://stackoverflow.com/questions/54219914/cancel-notification-with-remoteinput-not-working) or [plugin issue #2080](https://github.com/katzer/cordova-plugin-local-notifications/issues/2080)).
+Google recommends to update the notification after the user made an input and show the reply without the actions. This plugin does this, but without showing the reply of the user and directly clear the notification after the update. Because the notiification will be updated after the input, you will get also an `update` event for that notification.
+
+### Handle action events
+
+See [Subscribe to an action event](#subscribe-to-an-action-event).
 
 ### Action properties
 
-Actions do have a set of configurable properties. Not all of them are supported across all platforms.
+#### Common
 
-| Property     | Type         | Android | iOS |
-| :----------- | :----------- | :------ | :-- |
-| id           | button+input | x       | x   |
-| title        | button+input | x       | x   |
-| launch       | button+input | x       | x   |
-| ui           | button+input |         | x   |
-| needsAuth    | button+input |         | x   |
-| icon         | button+input | x       |     |
-| emptyText    | input        | x       | x   |
-| submitTitle  | input        |         | x   |
-| editable     | input        | x       |     |
-| choices      | input        | x       |     |
-| defaultValue | input        |         |     |
+These common properties can be specified for an action of type `button` or `input`:
 
+| Property     | Android | iOS | Description |
+| :----------- | :------ | :-- | :---------- |
+| id           | x       | x   | Action id. Also needed to listen to the [action event](#subscribe-to-an-action-event). |
+| title        | x       | x   | Title of the action button |
+| launch       | x       | x   | If the app should be launched, when the user clicks on an action button or sends the input of an action input. Default is `false`. |
+| ui           |         | x   | <img src="images/apple-icon.svg" width="16"> Can be set to `decline` which will display the action button with special highlighting to indicate that it performs a destructive task. Sets natively [UNNotificationActionOptionDestructive](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/destructive?language=objc). |
+| needsAuth    |         | x   | <img src="images/apple-icon.svg" width="16"> If set to `true` the action can be performed only on an unlocked device. When the user selects an action with this option, the system prompts the user to unlock the device. After unlocking, the system notifies your app of the selected action. You might use option to perform actions that require accessing data that is encrypted while the device is locked. Sets natively [UNNotificationActionOptionAuthenticationRequired](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/authenticationrequired?language=objc). |
+| icon         | x       |     | <img src="images/android-icon.svg" width="16"> Is not supported anymore for normal notifications since Android 7, see [Google Blog article for notifications on Android 7](https://android-developers.googleblog.com/2016/06/notifications-in-android-n.html). It will be only used on Android Wear. |
+
+#### Action input properties
+
+These properties can additionally be specified for an `input` action:
+
+| Property     | Android | iOS | Description |
+| :----------- | :------ | :-- | :---------- |
+| emptyText    | x       | x   | Placeholder text for input field. |
+| submitTitle  |         | x   | <img src="images/apple-icon.svg" width="16"> Title for submit button. Defaults to `Submit`. |
+| editable     | x       |     | <img src="images/android-icon.svg" width="16"> Specifies whether the user can provide arbitrary text values. If you specify `false`, you must provide a non-null and non-empty array for `choices`. Default is `true`. |
+| choices      | x       |     | <img src="images/android-icon.svg" width="16"> A String array of pre-defined choices for users input. You must provide a non-null and non-empty array if you disabled free form input by setting `editable` to `false`. |
 
 ## Triggers
 
@@ -705,20 +720,73 @@ The permission `USE_EXACT_ALARM` exists since Android 13 and will be used from t
 
 ## Events
 
-The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall` and [action events](#handle-action-events).
+The following events are supported: `add`, `trigger`, `click`, `clear`, `cancel`, `update`, `clearall` and `cancelall`. Clicks on actions will trigger an event for the action id.
+
+### Subscribe to an event
 
 ```js
-cordova.plugins.notification.local.on(event, callback, scope);
+cordova.plugins.notification.local.on('click', (notification, event) => {
+    // A notification was clicked
+});
 ```
 
-To unsubscribe from events:
+### Subscribe to an action event
+
+If you want to listen when an action was clicked or an input was made, you have to subscribe to the action id:
+
+Example:
 
 ```js
-cordova.plugins.notification.local.un(event, callback, scope);
+// Define an action group with the action ids 'YES_ACTION' and 'NO_ACTION'
+cordova.plugins.notification.local.addActions('YES_NO_CATEGORY', [
+    {
+        id: 'YES_ACTION',
+        title: 'Yes'
+    },
+    {
+        id: 'NO_ACTION',
+        title: 'No'
+    }
+]);
+
+// Subscribe to the action click event for 'YES_ACTION'
+cordova.plugins.notification.local.on('YES_ACTION', (notification, event) => {
+    // yes action was clicked
+});
 ```
 
-__Note:__ You have to provide the exact same callback to `cordova.plugins.notification.local.un` as you provided to `cordova.plugins.notification.local.on` to make unsubscribing work.
-Hence you should define your callback as a separate function, not inline. If you want to use `this` inside of your callback, you also have to provide `this` as `scope` to `cordova.plugins.notification.local.on`.
+__Note:__
+A click on an action will **not** open the app by default. In Android, the event will be hold back in a background process of the app to wait for the next time the app starts, but could be lost, if the system kills the app background process. To avoid this, define the action with property `launch: true`.
+
+#### Content of `event` parameter
+
+The `event` parameter of the event callback can contain the following properties:
+
+| Property     | Type         | Android | iOS | Description |
+| :----------- | :----------- | :------ | :-- | :---------- |
+| event        | String       | x       | x   | Contains the event name like `click`, `clear` or the action id, if an action was clicked. |
+| foreground   | Boolean      | x       | x   | If the app was in foreground, when the event was fired. |
+| queued       | Boolean      | x       | x   | If the event was hold, because `deviceready` was not yet fired. |
+| notification | int          | x       | x   | Notification id |
+| text         | String       | x       | x   | Contains the input data of a user made to an input action. |
+
+### Unsubscribe from an event
+
+To unsubscribe from an event, you have to use the same callback you used for subscribing to the event.
+
+Example:
+
+```js
+const clickEventCallback = (notification, event) => {
+    // Click event was triggered
+};
+
+// Register to the click event with the given callback
+cordova.plugins.notification.local.on('click', clickEventCallback);
+
+// Unregister from the click event
+cordova.plugins.notification.local.un('click', clickEventCallback);
+```
 
 ### Fire manually
 
