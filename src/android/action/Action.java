@@ -109,11 +109,10 @@ public class Action {
     }
 
     /**
-     * Gets the type for the action.
+     * Returns true if the action is of type input.
      */
-    public boolean isWithInput() {
-        String type = actionOptionsJSON.optString("type");
-        return type.equals("input");
+    public boolean isInput() {
+        return getType().equals("input");
     }
 
     /**
@@ -168,7 +167,7 @@ public class Action {
             // Google recommends after a reply to update the notificiation without the input action:
             // https://developer.android.com/develop/ui/views/notifications/build-notification#retrieve-user-reply
             // We update the notification without actions and cancel it after a timeout
-            if (isWithInput()) {
+            if (isInput()) {
                 try {
                     notification.update(new JSONObject("{\"actions\": null}"));
                     // Clear the notification after a delay, because the update needs a little bit time to complete
