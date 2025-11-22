@@ -84,7 +84,9 @@ public class Action {
     }
 
     /**
-     * Gets the icon for the action.
+     * Gets the icon for the action. Since Android 7 (Nougat) icons for actions
+     * are not shown anymore. They would only be used on Android Wear.
+     * See: https://android-developers.googleblog.com/2016/06/notifications-in-android-n.html
      */
     public int getIcon() {
         String iconPath = actionOptionsJSON.optString("icon");
@@ -99,7 +101,8 @@ public class Action {
     }
 
     /**
-     * Gets the value of the launch flag.
+     * If the app shpould be launched when the action is clicked.
+     * Default is <code>false</code>.
      */
     public boolean isLaunch() {
         return actionOptionsJSON.optBoolean("launch", false);

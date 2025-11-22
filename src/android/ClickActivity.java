@@ -2,7 +2,7 @@
  * Apache 2.0 License
  *
  * Copyright (c) Sebastian Katzer 2017
- * Copyright (c) Manuel Beck 2024
+ * Copyright (c) Manuel Beck 2024-2025
  *
  * This file contains Original Code and/or Modifications of Original Code
  * as defined in and that are subject to the Apache License
@@ -30,7 +30,7 @@ import de.appplant.cordova.plugin.localnotification.Notification;
 import de.appplant.cordova.plugin.localnotification.action.Action;
 
 /**
- * Handle notification or action click.
+ * Handle a notification or action click.
  * To be able to launch the app on Android 12 and newer, an Activity must be used,
  * instead of a BroadcastReceiver, otherwise a trampoline error would occur,
  * if the app is in background or killed, see:

@@ -651,16 +651,17 @@ public class LocalNotification extends CordovaPlugin {
      *
      * @param event The event name.
      * @param notification Optional notification to pass with.
-     * @param data Event object with additional data.
+     * @param eventData Event object with additional data.
      */
-    public static void fireEvent(String event, Notification notification, JSONObject data) {
-        if (data == null) data = new JSONObject();
+    public static void fireEvent(String event, Notification notification, JSONObject eventData) {
+        if (eventData == null) eventData = new JSONObject();
 
         try {
-            data.put("event", event);
-            data.put("foreground", isInForeground());
-            data.put("queued", !deviceready);
-            if (notification != null) data.put("notification", notification.getId());
+            eventData.put("event", event);
+            eventData.put("foreground", isInForeground());
+            eventData.put("queued", !deviceready);
+            // Set notification id
+            if (notification != null) eventData.put("notification", notification.getId());
         } catch (JSONException exception) {
             exception.printStackTrace();
         }
@@ -673,7 +674,10 @@ public class LocalNotification extends CordovaPlugin {
             "cordova.plugins.notification.local.fireEvent('%s', %s)",
             event,
             // params
-            (notification != null ? notification.getOptions().toString() + ", " : "") + data.toString()));
+            // notification
+            (notification != null ? notification.getOptions().toString() + ", " : "")
+            // event data
+            + eventData.toString()));
     }
 
     /**
