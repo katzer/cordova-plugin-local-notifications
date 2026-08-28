@@ -1,5 +1,17 @@
 # ChangeLog
 
+## Version 1.2.4
+
+### Android
+
+- fix(android): Check extras in `ClickActivity`, `ClearReceiver` and `TriggerReceiver` ([#2096](https://github.com/katzer/cordova-plugin-local-notifications/pull/2096))
+
+### Common
+
+- chore: bump dev version to 1.2.4-dev ([#2095](https://github.com/katzer/cordova-plugin-local-notifications/pull/2095))
+- doc(readme): improve badges and other minor changes ([#2097](https://github.com/katzer/cordova-plugin-local-notifications/pull/2097))
+- fix(readme): fix badges using this package (#2097) ([#2098](https://github.com/katzer/cordova-plugin-local-notifications/pull/2098))
+
 ## Version 1.2.3 (22.11.2025)
 
 ### Android
