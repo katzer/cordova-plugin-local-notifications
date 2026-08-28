@@ -1,23 +1,10 @@
-<p style="text-align: center;">
-    <img src="images/logo.png">
-</p>
+# Cordova Plugin Local Notifications
 
-<!-- Apache license -->
+[![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-google-maps-sdk/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-google-maps-sdk)
+[![GitHub](https://img.shields.io/github/package-json/v/GitToTheHub/cordova-plugin-google-maps-sdk?label=Development%20(Git))](https://github.com/GitToTheHub/cordova-plugin-google-maps-sdk)
 <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
 </a>
-
-# Version 1.2.4-dev
-
-Stable release:
-<!--
-  GitHub caches the npm badge and changes the url to a cached github url like:
-  https://camo.githubusercontent.com/11f744ab82c...
-  The GitHub can be cleared with the following bash command:
-  curl -X PURGE https://camo.githubusercontent.com/11f744ab82c...
-  The browser would have to be cleared also to let the updated badge appear.
--->
-[![npm version](https://badge.fury.io/js/cordova-plugin-local-notification.svg)](https://badge.fury.io/js/cordova-plugin-local-notification)
 
 A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
 
