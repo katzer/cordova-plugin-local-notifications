@@ -1,7 +1,7 @@
 # Cordova Plugin Local Notifications
 
-[![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-google-maps-sdk/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-google-maps-sdk)
-[![GitHub](https://img.shields.io/github/package-json/v/GitToTheHub/cordova-plugin-google-maps-sdk?label=Development%20(Git))](https://github.com/GitToTheHub/cordova-plugin-google-maps-sdk)
+[![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-local-notification/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-local-notification)
+[![GitHub](https://img.shields.io/github/package-json/v/katzer/cordova-plugin-local-notifications?label=Development%20(Git))](https://github.com/katzer/cordova-plugin-local-notifications)
 <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
 </a>
