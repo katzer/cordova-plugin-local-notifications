@@ -1,29 +1,27 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: Node.js Package
-
+name: Publish Package to npmjs
 on:
-  # Run workflow, when a new release is created
+  # Run workflow, when a new release is published
   release:
-    types: [created]
-
+    types: [published]
   # Allows to run this workflow manually
   workflow_dispatch:
-
 jobs:
-
-  publish-npm:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - run: npm publish
+      - run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      # Purge the cache of the GitHub CDN to update the NPM badge in the readme
-      - run: curl -X PURGE https://camo.githubusercontent.com/11f744ab82ca8017011e9aba93139ea753fa9bc6d6c7d96b81cbde52205ec5fd/68747470733a2f2f62616467652e667572792e696f2f6a732f636f72646f76612d706c7567696e2d6c6f63616c2d6e6f74696669636174696f6e2e737667
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
