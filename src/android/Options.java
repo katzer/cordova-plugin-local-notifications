@@ -93,8 +93,8 @@ public final class Options {
             if (isVersionOlder(metaVersion, "1.1.8")) convertPropertiesForVersion118(options);
 
             // Update meta.version to current plugin version
-            if (!metaVersion.equals("1.2.3")) {
-                meta.put("version", "1.2.3");
+            if (!metaVersion.equals("1.2.4-dev")) {
+                meta.put("version", "1.2.4-dev");
                 options.put("meta", meta);
             }
         } catch (JSONException exception) {
