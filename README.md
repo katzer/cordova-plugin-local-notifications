@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
 </a>
 
-# Version 1.2.3
+# Version 1.2.4-dev
 
 Stable release:
 <!--
