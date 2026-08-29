@@ -1,6 +1,6 @@
 # Cordova Plugin Local Notifications &gt;&gt; *Continued*</div>
 
-<img src="images/logo.png">
+<img src="images/logo.png" height="80">
 
 [![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-local-notifications-continued/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-local-notifications-continued)
 [![GitHub](https://img.shields.io/github/package-json/v/GitToTheHub/cordova-plugin-local-notifications-continued?label=Development%20(Git))](https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued)
