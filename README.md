@@ -1,10 +1,13 @@
-# Cordova Plugin Local Notifications
+# <div style="display: flex; align-items: center; gap: 10px;"><img src="images/cordova-app-notified-logo.png" width="100"><div>Cordova Plugin Local Notifications<br>&gt;&gt; *Continued*</div>
 
-[![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-local-notification/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-local-notification)
-[![GitHub](https://img.shields.io/github/package-json/v/katzer/cordova-plugin-local-notifications?label=Development%20(Git))](https://github.com/katzer/cordova-plugin-local-notifications)
+[![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-local-notifications-continued/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-local-notifications-continued)
+[![GitHub](https://img.shields.io/github/package-json/v/GitToTheHub/cordova-plugin-local-notifications-continued?label=Development%20(Git))](https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued)
 <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
 </a>
+
+> [!NOTE]
+> Since plugin version 1.2.4 (28th August 2026) this plugin will be continued to be maintained here. The original author of [cordova-plugin-local-notifications](https://github.com/katzer/cordova-plugin-local-notifications) stopped some years ago supporting the plugin and I continued the maintenance on his repository, but I decided now to continue it on my own fork.
 
 A notification is a message you display to the user outside of your app's normal UI. When you tell the system to issue a notification, it first appears as an icon in the notification area. To see the details of the notification, the user opens the notification drawer. Both the notification area and the notification drawer are system-controlled areas that the user can view at any time.
 
@@ -35,43 +38,53 @@ The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on 
 
 #### NPM
 
-Execute from the projects root folder:
+##### Since Version 1.2.4
 
-    $ cordova plugin add cordova-plugin-local-notification
+```bash
+cordova plugin add cordova-plugin-local-notifications-continued
+```
 
 Install a specific version:
 
-    $ cordova plugin add cordova-plugin-local-notification@VERSION
+```bash
+cordova plugin add cordova-plugin-local-notifications-continued@1.2.4
+```
 
-#### Git
-Install the latest head version:
+##### Version Older Than 1.2.4 (Original from katzer)
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
+```bash
+cordova plugin add cordova-plugin-local-notification@1.2.3
+```
 
-Install from a branch:
+#### GitHub
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git#branch
+Install the latest development version from GitHub:
+
+```bash
+cordova plugin add https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued
+```
 
 Install from a tag:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git#v1.0.0
+```bash
+cordova plugin add https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued#v1.2.4
+```
 
 Install from a specific commit:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git#5e4f131
-
-#### Local
-Install from local source:
-
-    $ cordova plugin add <path> --nofetch --nosave --link
+```bash
+cordova plugin add https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued#5e4f131
+```
 
 ## Upgrade Notice
 
 ### Version 0.9.0-beta.3 (13.02.2018)
+
 - Last version which supports `cordova-android` older than `13.0.0` and supports minimum `cordova-android` version `6.0.0` which is Android version `4.1`
 - Last version which supports the Windows platform
 
 ### Version 1.0.0 (17.08.2024)
+
 - Removed Windows platform
 - Support for Android 12-14 and uses AndroidX
 - Raised minimum `cordova-android`version from `6.0.0` to `13.0.0`, which raised the minimum Android version from `4.1` `SDK 16` to `7.0` `SDK 24`
@@ -80,26 +93,32 @@ Install from local source:
 - Raised minimum `cordova-plugin-device` version from `2.0.0` to `3.0.0`
 
 ### Updates in version 1.1.0 (23.12.2024)
+
 - Proper handling of Android channels
 - Properties were renamed for the Android platform, see [Changed properties](#changes-since-version-110).
 
 #### Android
+
 The [Default channel](#default-channel) id was changed from `default-channel-id` to `default_channel`. If you upgrade to this version and schedule notifications, there will be two channels from then on, the old one and the new one. You can remove the old one with [deleteChannel](#deletechannel).
 
 #### iOS
+
 [iOSForeground](#property-iosforeground) is `true` by default
 
 ### Updates in version 1.1.1
 
 #### Android
+
 The property `vibrate` was renamed to [androidChannelEnableVibration](#property-androidchannelenablevibration).
 
 #### iOS
+
 A notification will be always showed in the notification center like on Android. Happens also if [iOSForeground](#property-iosforeground) is `false`.
 
 ### Updates in Version 1.1.4
 
 #### Android
+
 Notifications with an old `trigger.at` date will be shown when you schedule them. Before they were ignored.
 
 ### Updates in Version 1.1.8
@@ -1510,13 +1529,11 @@ A shared file in `[Installed-App-Path]/files/shared_files`. This is necessary to
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-Made with :yum: from Leipzig and since 2024 from Cuxhaven
+Made with :yum: from Leipzig and continued by Manuel Beck since 2024
 
 © 2013-2023 [appPlant GmbH][appplant]
-<br>© 2024-2025 [Manuel Beck](https://manuelbeck.software)
+<br>© 2024-2026 [Manuel Beck](https://manuelbeck.software)
 
-
-[ticket_template]: https://github.com/katzer/cordova-plugin-local-notifications/issues/1188
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
 [npm]: https://www.npmjs.com/package/cordova-plugin-local-notification

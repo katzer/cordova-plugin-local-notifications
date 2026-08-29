@@ -42,7 +42,7 @@ exports._commonOptions = {
     // Default will be set on _prepareTrigger if nothing is set
     trigger: null,
     meta: {
-        plugin:  'cordova-plugin-local-notification',
+        plugin:  'cordova-plugin-local-notifications-continued',
         version: '1.2.4' // Current plugin version
     }
 }

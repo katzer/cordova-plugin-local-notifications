@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugin-local-notification",
+  "name": "cordova-plugin-local-notifications-continued",
   "version": "1.2.4",
   "description": "Schedules and queries for local notifications",
   "cordova": {
-    "id": "cordova-plugin-local-notification",
+    "id": "cordova-plugin-local-notifications-continued",
     "platforms": [
       "android",
       "ios"
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git"
+    "url": "git+https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued.git"
   },
   "keywords": [
     "notification",
@@ -47,7 +47,7 @@
   "funding": "https://github.com/sponsors/GitToTheHub",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
+    "url": "https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued/issues"
   },
-  "homepage": "https://github.com/katzer/cordova-plugin-local-notifications#readme"
+  "homepage": "https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued#readme"
 }

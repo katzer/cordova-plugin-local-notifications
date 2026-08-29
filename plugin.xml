@@ -24,20 +24,20 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-local-notification"
+        id="cordova-plugin-local-notifications-continued"
         version="1.2.4">
 
     <name>LocalNotification</name>
 
     <description>Schedules and queries for local notifications</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-local-notifications.git</repo>
+    <repo>https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued.git</repo>
 
     <keywords>notification, local notification, user notification</keywords>
 
     <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer and Manuel Beck</author>
+    <author>Sebastián Katzer, Manuel Beck</author>
 
     <dependency id="cordova-plugin-device" version=">=3.0.0" />
 
