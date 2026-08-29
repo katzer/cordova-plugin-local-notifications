@@ -1,4 +1,6 @@
-# <div style="display: flex; align-items: center; gap: 10px;"><img src="images/cordova-app-notified-logo.png" width="100"><div>Cordova Plugin Local Notifications<br>&gt;&gt; *Continued*</div>
+# Cordova Plugin Local Notifications &gt;&gt; *Continued*</div>
+
+<img src="images/logo.png">
 
 [![npm - Latest](https://img.shields.io/npm/v/cordova-plugin-local-notifications-continued/latest?label=Latest%20Release%20(npm))](https://npmjs.com/package/cordova-plugin-local-notifications-continued)
 [![GitHub](https://img.shields.io/github/package-json/v/GitToTheHub/cordova-plugin-local-notifications-continued?label=Development%20(Git))](https://github.com/GitToTheHub/cordova-plugin-local-notifications-continued)
